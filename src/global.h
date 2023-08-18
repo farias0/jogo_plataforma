@@ -1,0 +1,9 @@
+#ifndef _GLOBAL_H_INCLUDED_
+#define _GLOBAL_H_INCLUDED_
+
+
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 720
+
+
+#endif // _GLOBAL_H_INCLUDED_
