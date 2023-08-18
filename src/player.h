@@ -19,6 +19,8 @@ extern Rectangle playerHitbox;
 void InitializePlayer();
 void SetPlayerPosition(Vector2 pos);
 void MovePlayer(PlayerMovementType type, PlayerMovementDirection direction);
+void PlayerStartJump();
+void PlayerTick();
 void DrawPlayer();
 
 

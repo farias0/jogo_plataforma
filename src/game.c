@@ -20,6 +20,12 @@ void resetGameState(GameState *state) {
     SetPlayerPosition((Vector2){ (float)SCREEN_WIDTH/4, (float)FLOOR_HEIGHT-playerHitbox.height });
 }
 
+void updateWindowTitle() {
+    char title[50];
+    sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());
+    SetWindowTitle(title);
+}
+
 int main(int argc, char **argv)
 {
     GameState state;
@@ -64,6 +70,12 @@ int main(int argc, char **argv)
                 MovePlayer(state.playerMovementType, PLAYER_MOVEMENT_RIGHT);
             if (IsKeyDown(KEY_LEFT) && playerHitbox.x > 0)
                 MovePlayer(state.playerMovementType, PLAYER_MOVEMENT_LEFT);
+
+            if (IsKeyPressed(KEY_X)) PlayerStartJump();
+
+            PlayerTick();
+
+            updateWindowTitle();
         }
 
 render:
