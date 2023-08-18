@@ -17,7 +17,7 @@ void resetGameState(GameState *state) {
 
     state->playerMovementType = PLAYER_MOVEMENT_DEFAULT;
 
-    SetPlayerPosition((Vector2){ (float)SCREEN_WIDTH/4, (float)SCREEN_HEIGHT*4/7 });
+    SetPlayerPosition((Vector2){ (float)SCREEN_WIDTH/4, (float)FLOOR_HEIGHT-playerHitbox.height });
 }
 
 int main(int argc, char **argv)
@@ -76,6 +76,9 @@ render:
 
             if (state.isPaused && !state.isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
             if (state.isPlayerDead) DrawText("YOU DIED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 60, RAYWHITE);
+
+
+            DrawRectangle(0, FLOOR_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, PURPLE);
 
 
             // Gamepad

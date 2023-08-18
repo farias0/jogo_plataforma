@@ -5,5 +5,7 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
+#define FLOOR_HEIGHT 600
+
 
 #endif // _GLOBAL_H_INCLUDED_
