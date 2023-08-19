@@ -40,7 +40,7 @@ void ClearEntityList(Entity *head) {
 }
 
 void SetEntityPosition(Entity *entity, float x, float y) {
-    entity->hitbox.x = y;
+    entity->hitbox.x = x;
     entity->hitbox.y = y;
 }
 

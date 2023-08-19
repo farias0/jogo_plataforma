@@ -30,15 +30,20 @@ void updateWindowTitle() {
 int main(int argc, char **argv)
 {
     GameState state;
-    Entity *player = InitializePlayer(NULL);
-    Entity *entities = player;
+    Entity *player;
+    Entity *entities;
 
     int gamepadIdx = 0;
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Jogo de plataforma");
     SetTargetFPS(60);
 
-    resetGameState(&state, player);
+    { // Initialization
+        player = InitializePlayer(NULL);
+        entities = player;
+
+        resetGameState(&state, player);
+    }
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {

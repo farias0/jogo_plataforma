@@ -26,11 +26,6 @@ double jumpStartTimestamp = -1; // Second in which current jump started; -1 mean
 float jumpStartPlayerY = -1; // Player's Y when the current jump started
 bool isPlayerDescending = false; // If the player is currently descending from a jump
 
-static Texture2D a;
-
-void Test() {
-    a = LoadTexture("../assets/player_default_1.png");
-}
 
 /*
     Instantiates a new player and put it in the list, right after listItem.
@@ -44,8 +39,7 @@ Entity *InitializePlayer(Entity *listItem) {
                             HasSprite +
                             DoesTick;
     newPlayer->hitbox = (Rectangle){ 0.0f, 0.0f, PLAYER_WIDTH, PLAYER_HEIGHT };
-    Test();
-    // newPlayer->sprite = a;
+    newPlayer->sprite = LoadTexture("../assets/player_default_1.png");
 
     if (listItem) {
         Entity *nextItem = listItem->next;
