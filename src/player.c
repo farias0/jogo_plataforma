@@ -26,11 +26,6 @@ double jumpStartTimestamp = -1; // Second in which current jump started; -1 mean
 float jumpStartPlayerY = -1; // Player's Y when the current jump started
 bool isPlayerDescending = false; // If the player is currently descending from a jump
 
-
-/*
-    Instantiates a new player and put it in the list, right after listItem.
-    Returns a pointer to the new player.
-*/
 Entity *InitializePlayer(Entity *listItem) {
     Entity *newPlayer = MemAlloc(sizeof(Entity));
 
@@ -41,16 +36,8 @@ Entity *InitializePlayer(Entity *listItem) {
     newPlayer->hitbox = (Rectangle){ 0.0f, 0.0f, PLAYER_WIDTH, PLAYER_HEIGHT };
     newPlayer->sprite = LoadTexture("../assets/player_default_1.png");
 
-    if (listItem) {
-        Entity *nextItem = listItem->next;
-
-        nextItem->previous = newPlayer;
-        newPlayer->previous = listItem;
-
-        listItem->next = newPlayer;
-        newPlayer->next = nextItem;
-    }
-
+    AddToEntityList(listItem, newPlayer);
+    
     return newPlayer;
 }
 

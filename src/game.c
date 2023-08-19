@@ -4,6 +4,9 @@
 #include "global.h"
 #include "entity.h"
 #include "player.h"
+#include "enemy.h"
+
+#define ENEMY_SPAWN_RATE 8.0f
 
 typedef struct GameState {
     bool isPaused;
@@ -32,6 +35,8 @@ int main(int argc, char **argv)
     GameState state;
     Entity *player;
     Entity *entities;
+
+    double lastEnemySpawnTimestamp = -ENEMY_SPAWN_RATE;
 
     int gamepadIdx = 0;
 
@@ -64,6 +69,12 @@ int main(int argc, char **argv)
                 state.isPaused = true;
             }
 
+
+            if (IsKeyDown(KEY_BACKSPACE)) {
+                int __dummy; __dummy++; // DEBUG: Put breakpoint here
+            }
+
+
             // Player
             Vector2 playerDelta = { 0.0f, 0.0f };
 
@@ -77,7 +88,25 @@ int main(int argc, char **argv)
 
             if (IsKeyPressed(KEY_X)) PlayerStartJump(player);
 
-            TickAllEntities(entities);
+
+            // Enemy
+            if (GetTime() - lastEnemySpawnTimestamp > ENEMY_SPAWN_RATE) {
+                InitializeEnemy(entities);
+                lastEnemySpawnTimestamp = GetTime();
+            }
+
+
+            // Destroy offscreen enemies
+            Entity *currentEntity = entities;
+            do {
+                if ((currentEntity->components & IsEnemy) && (currentEntity->hitbox.x + currentEntity->hitbox.width < 0)) {
+                    entities = DestroyEntity(currentEntity);
+                }
+                currentEntity = currentEntity->next;
+            } while (currentEntity != entities);
+
+
+            TickAllEntities(entities, player);
 
             updateWindowTitle();
         }

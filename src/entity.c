@@ -2,21 +2,25 @@
 
 #include "entity.h"
 #include "player.h"
+#include "enemy.h"
 
-Entity *AddToEntityList(Entity *head, Entity *toBeAdded) {
+    /*
+        Adds a new entity right after listItem.
+    */
+void AddToEntityList(Entity *listItem, Entity *toBeAdded) {
     
-    if (!head) return toBeAdded;
+    if (listItem) {
+        Entity *nextItem = listItem->next;
 
-    Entity *last = head;
+        nextItem->previous = toBeAdded;
+        toBeAdded->previous = listItem;
 
-    while (last->next) {
-        last = last->next;
+        listItem->next = toBeAdded;
+        toBeAdded->next = nextItem;
+    } else {
+        toBeAdded->next = toBeAdded;
+        toBeAdded->previous = toBeAdded;
     }
-
-    toBeAdded->previous = last;
-    last->next = toBeAdded;
-
-    return head;
 }
 
 int RemoveFromEntityList(Entity *head, Entity *toBeRemoved) {
@@ -44,18 +48,51 @@ void SetEntityPosition(Entity *entity, float x, float y) {
     entity->hitbox.y = y;
 }
 
-void TickAllEntities(Entity *entity) {
-    while (entity) {
-        if (entity->components & IsPlayer != 0) PlayerTick(entity);
+void TickAllEntities(Entity *listItem, Entity *player) {
+    Entity *currentItem = listItem;
 
-        entity = entity->next;
-    }
+    do {
+        if (currentItem->components & IsPlayer) PlayerTick(currentItem);
+        else if (currentItem->components & IsEnemy) EnemyTick(currentItem, player);
+
+        currentItem = currentItem->next;
+    } while (currentItem != listItem);
 }
 
-void DrawAllEntities(Entity *entity) {
-    while (entity) {
-        if (entity->components & IsPlayer != 0) DrawPlayer(entity);
+void DrawAllEntities(Entity *listItem) {
+    Entity *currentItem = listItem;
 
-        entity = entity->next;
-    }
+    do {
+        if (currentItem->components & IsPlayer) DrawPlayer(currentItem);
+        else if (currentItem->components & IsEnemy) DrawEnemy(currentItem);
+
+        currentItem = currentItem->next;
+    } while (currentItem != listItem);
+}
+
+Entity *DestroyEntity(Entity *entity) {
+    Entity *listReference = entity;
+    if (entity == entity->next) listReference = 0;
+    else listReference = entity->next;
+
+    entity->next->previous = entity->previous;
+    entity->previous->next = entity->next;
+
+    MemFree(entity);
+
+    return listReference;
+}
+
+int CountEntities(Entity *listItem) {
+    if (listItem == 0) return 0;
+
+    Entity *currentItem = listItem;
+    int counter = 0;
+
+    do {
+        counter++;
+        currentItem = currentItem->next;
+    } while (currentItem != listItem);
+
+    return counter;
 }

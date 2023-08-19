@@ -5,10 +5,11 @@
 #include <raylib.h>
 
 enum Components {
-    HasPosition     = 0x1,
-    IsPlayer        = 0x2,
-    HasSprite       = 0x4,
-    DoesTick        = 0x8
+    HasPosition     = 1,
+    IsPlayer        = 2,
+    HasSprite       = 4,
+    DoesTick        = 8,
+    IsEnemy         = 16
 };
 
 typedef struct Entity {
@@ -25,13 +26,15 @@ typedef struct Entity {
     TODO: Entity system implemented as a linked list.
     Should reimplement it as a data structure that uses contiguous memory.
 */
-Entity *AddToEntityList(Entity *head, Entity *toBeAdded);
+void AddToEntityList(Entity *listItem, Entity *toBeAdded);
 int RemoveFromEntityList(Entity *head, Entity *toBeRemoved);
 void ClearEntityList(Entity *head);
 
 // Common operations
 void SetEntityPosition(Entity *entity, float x, float y); // Sets the position of the hitbox
-void TickAllEntities(Entity *entity);
+void TickAllEntities(Entity *entity, Entity *player);
 void DrawAllEntities(Entity *entity);
+Entity *DestroyEntity(Entity *entity);
+int CountEntities(Entity *listItem);
 
 #endif // _ENTITY_H_INCLUDED_
