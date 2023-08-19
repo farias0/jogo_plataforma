@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "global.h"
+#include "entity.h"
 #include "player.h"
 
 typedef struct GameState {
@@ -11,13 +12,13 @@ typedef struct GameState {
     PlayerMovementType playerMovementType;
 } GameState;
 
-void resetGameState(GameState *state) {
+void resetGameState(GameState *state, Entity *player) {
     state->isPaused = false;
     state->isPlayerDead = false;
 
     state->playerMovementType = PLAYER_MOVEMENT_DEFAULT;
 
-    SetPlayerPosition((Vector2){ (float)SCREEN_WIDTH/4, (float)FLOOR_HEIGHT-playerHitbox.height });
+    SetEntityPosition(player, SCREEN_WIDTH/4, (float)FLOOR_HEIGHT-player->hitbox.height);
 }
 
 void updateWindowTitle() {
@@ -29,17 +30,15 @@ void updateWindowTitle() {
 int main(int argc, char **argv)
 {
     GameState state;
+    Entity *player = InitializePlayer(NULL);
+    Entity *entities = player;
 
     int gamepadIdx = 0;
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Jogo de plataforma");
     SetTargetFPS(60);
 
-    { // Initialization
-        InitializePlayer();
-
-        resetGameState(&state);
-    }
+    resetGameState(&state, player);
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -49,7 +48,7 @@ int main(int argc, char **argv)
             if (state.isPaused) {
                 if (IsKeyPressed(KEY_ENTER)) {
                     if (state.isPlayerDead) {
-                        resetGameState(&state);
+                        resetGameState(&state, player);
                     } else {
                         state.isPaused = false;
                     }
@@ -66,14 +65,14 @@ int main(int argc, char **argv)
             if (IsKeyDown(KEY_Z)) state.playerMovementType = PLAYER_MOVEMENT_RUNNING;
             else state.playerMovementType = PLAYER_MOVEMENT_DEFAULT;
 
-            if (IsKeyDown(KEY_RIGHT) && (playerHitbox.x + playerHitbox.width) < SCREEN_WIDTH)
-                MovePlayer(state.playerMovementType, PLAYER_MOVEMENT_RIGHT);
-            if (IsKeyDown(KEY_LEFT) && playerHitbox.x > 0)
-                MovePlayer(state.playerMovementType, PLAYER_MOVEMENT_LEFT);
+            if (IsKeyDown(KEY_RIGHT) && (player->hitbox.x + player->hitbox.width) < SCREEN_WIDTH)
+                MovePlayer(player, state.playerMovementType, PLAYER_MOVEMENT_RIGHT);
+            if (IsKeyDown(KEY_LEFT) && player->hitbox.x > 0)
+                MovePlayer(player, state.playerMovementType, PLAYER_MOVEMENT_LEFT);
 
-            if (IsKeyPressed(KEY_X)) PlayerStartJump();
+            if (IsKeyPressed(KEY_X)) PlayerStartJump(player);
 
-            PlayerTick();
+            TickAllEntities(entities);
 
             updateWindowTitle();
         }
@@ -84,7 +83,7 @@ render:
 
             ClearBackground(BLACK);
 
-            DrawPlayer();
+            DrawAllEntities(entities);
 
             if (state.isPaused && !state.isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
             if (state.isPlayerDead) DrawText("YOU DIED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 60, RAYWHITE);

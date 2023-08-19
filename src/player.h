@@ -4,6 +4,8 @@
 
 #include <raylib.h>
 
+#include "entity.h"
+
 typedef enum PlayerMovementType {
     PLAYER_MOVEMENT_DEFAULT,
     PLAYER_MOVEMENT_RUNNING
@@ -14,14 +16,11 @@ typedef enum PlayerMovementDirection {
     PLAYER_MOVEMENT_RIGHT
 } PlayerMovementDirection;
 
-extern Rectangle playerHitbox;
-
-void InitializePlayer();
-void SetPlayerPosition(Vector2 pos);
-void MovePlayer(PlayerMovementType type, PlayerMovementDirection direction);
-void PlayerStartJump();
-void PlayerTick();
-void DrawPlayer();
+Entity *InitializePlayer(Entity *listItem);
+void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection direction);
+void PlayerStartJump(Entity *player);
+void PlayerTick(Entity *player);
+void DrawPlayer(Entity *player);
 
 
 #endif // _PLAYER_H_INCLUDED_

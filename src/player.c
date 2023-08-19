@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "player.h"
+#include "entity.h"
 #include "global.h"
 
 
@@ -21,42 +22,62 @@
 #define PLAYER_END_JUMP_DISTANCE_GROUND 1 // Distance from the ground to end the jump when descending 
 
 
-static Texture2D sprite;
-
-Rectangle playerHitbox = { 0.0f, 0.0f, PLAYER_WIDTH, PLAYER_HEIGHT };
-
 double jumpStartTimestamp = -1; // Second in which current jump started; -1 means not jumping
 float jumpStartPlayerY = -1; // Player's Y when the current jump started
 bool isPlayerDescending = false; // If the player is currently descending from a jump
 
+static Texture2D a;
 
-void InitializePlayer() {
-    sprite = LoadTexture("../assets/player_default_1.png");
+void Test() {
+    a = LoadTexture("../assets/player_default_1.png");
 }
 
-void SetPlayerPosition(Vector2 pos) {
-    playerHitbox.x = pos.x;
-    playerHitbox.y = pos.y;
+/*
+    Instantiates a new player and put it in the list, right after listItem.
+    Returns a pointer to the new player.
+*/
+Entity *InitializePlayer(Entity *listItem) {
+    Entity *newPlayer = MemAlloc(sizeof(Entity));
+
+    newPlayer->components = HasPosition +
+                            IsPlayer +
+                            HasSprite +
+                            DoesTick;
+    newPlayer->hitbox = (Rectangle){ 0.0f, 0.0f, PLAYER_WIDTH, PLAYER_HEIGHT };
+    Test();
+    // newPlayer->sprite = a;
+
+    if (listItem) {
+        Entity *nextItem = listItem->next;
+
+        nextItem->previous = newPlayer;
+        newPlayer->previous = listItem;
+
+        listItem->next = newPlayer;
+        newPlayer->next = nextItem;
+    }
+
+    return newPlayer;
 }
 
-void MovePlayer(PlayerMovementType type, PlayerMovementDirection direction) {
+void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection direction) {
     float amount = PLAYER_SPEED_DEFAULT;
     if (type == PLAYER_MOVEMENT_RUNNING) amount = PLAYER_SPEED_FAST;
 
     switch (direction) {
-        case PLAYER_MOVEMENT_LEFT: playerHitbox.x -= amount; break;
-        case PLAYER_MOVEMENT_RIGHT: playerHitbox.x += amount; break;
+        case PLAYER_MOVEMENT_LEFT: player->hitbox.x -= amount; break;
+        case PLAYER_MOVEMENT_RIGHT: player->hitbox.x += amount; break;
     }
 }
 
-void PlayerStartJump() {
+void PlayerStartJump(Entity *player) {
     if (jumpStartTimestamp == -1) {
         jumpStartTimestamp = GetTime();
-        jumpStartPlayerY = playerHitbox.y;
+        jumpStartPlayerY = player->hitbox.y;
     }
 }
 
-void PlayerTick() {
+void PlayerTick(Entity *player) {
 
     if (jumpStartTimestamp != -1) {     // Player jumping
 
@@ -64,20 +85,20 @@ void PlayerTick() {
         double jumpCurrentFactor = (jumpTimeDelta/PLAYER_JUMP_DURATION) * M_PI;
         double jumpCurrentDelta = sin(jumpCurrentFactor) * PLAYER_JUMP_HEIGHT;
         float newPlayerY = jumpStartPlayerY - jumpCurrentDelta;
-        if (newPlayerY > playerHitbox.y) isPlayerDescending = true;
-        playerHitbox.y = newPlayerY;
+        if (newPlayerY > player->hitbox.y) isPlayerDescending = true;
+        player->hitbox.y = newPlayerY;
 
-        if (isPlayerDescending && abs((playerHitbox.y + playerHitbox.height) - FLOOR_HEIGHT) < PLAYER_END_JUMP_DISTANCE_GROUND) { 
+        if (isPlayerDescending && abs((player->hitbox.y + player->hitbox.height) - FLOOR_HEIGHT) < PLAYER_END_JUMP_DISTANCE_GROUND) { 
             // End jump
             jumpStartTimestamp = -1;
             jumpStartPlayerY = -1;
             isPlayerDescending = false;
-            playerHitbox.y = FLOOR_HEIGHT - playerHitbox.height;
+            player->hitbox.y = FLOOR_HEIGHT - player->hitbox.height;
             return;
         }
     }
 }
 
-void DrawPlayer() {
-    DrawTextureEx(sprite, (Vector2){playerHitbox.x, playerHitbox.y}, 0, PLAYER_SPRITE_SCALE, WHITE);
+void DrawPlayer(Entity *player) {
+    DrawTextureEx(player->sprite, (Vector2){player->hitbox.x, player->hitbox.y}, 0, PLAYER_SPRITE_SCALE, WHITE);
 }
