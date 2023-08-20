@@ -14,17 +14,33 @@
 #define PLAYER_WIDTH (float)(PLAYER_SPRITE_SCALE * 32)
 #define PLAYER_HEIGHT (float)(PLAYER_SPRITE_SCALE * 64)
 
+#define PLAYERS_UPPERBODY_PROPORTION 0.75f // What % of the player's height is upperbody, for hitboxes
+
 #define PLAYER_SPEED_DEFAULT 4.0f
 #define PLAYER_SPEED_FAST 8.0f
 
-#define PLAYER_JUMP_DURATION 1.5f // In seconds
-#define PLAYER_JUMP_HEIGHT PLAYER_HEIGHT * 1.5
+#define PLAYER_JUMP_DURATION 1.0f // In seconds
+#define PLAYER_JUMP_HEIGHT PLAYER_HEIGHT * 1.0
 #define PLAYER_END_JUMP_DISTANCE_GROUND 1 // Distance from the ground to end the jump when descending 
 
+Rectangle playersUpperbody, playersLowebody;
 
 double jumpStartTimestamp = -1; // Second in which current jump started; -1 means not jumping
 float jumpStartPlayerY = -1; // Player's Y when the current jump started
 bool isPlayerDescending = false; // If the player is currently descending from a jump
+
+
+void calculatePlayersHitboxes(Entity *player) {
+    playersUpperbody = (Rectangle){
+        player->hitbox.x,       player->hitbox.y,
+        player->hitbox.width,   player->hitbox.height * PLAYERS_UPPERBODY_PROPORTION
+    };
+
+    playersLowebody = (Rectangle){
+        player->hitbox.x,       player->hitbox.y + playersUpperbody.height,
+        player->hitbox.width,   player->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION)
+    };
+}
 
 Entity *InitializePlayer(Entity *listItem) {
     Entity *newPlayer = MemAlloc(sizeof(Entity));
@@ -36,8 +52,10 @@ Entity *InitializePlayer(Entity *listItem) {
     newPlayer->hitbox = (Rectangle){ 0.0f, 0.0f, PLAYER_WIDTH, PLAYER_HEIGHT };
     newPlayer->sprite = LoadTexture("../assets/player_default_1.png");
 
+    calculatePlayersHitboxes(newPlayer);
+
     AddToEntityList(listItem, newPlayer);
-    
+
     return newPlayer;
 }
 
@@ -49,6 +67,8 @@ void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection
         case PLAYER_MOVEMENT_LEFT: player->hitbox.x -= amount; break;
         case PLAYER_MOVEMENT_RIGHT: player->hitbox.x += amount; break;
     }
+
+    calculatePlayersHitboxes(player);
 }
 
 void PlayerStartJump(Entity *player) {
@@ -78,6 +98,8 @@ void PlayerTick(Entity *player) {
             return;
         }
     }
+
+    calculatePlayersHitboxes(player);
 }
 
 void DrawPlayer(Entity *player) {

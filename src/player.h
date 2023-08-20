@@ -16,6 +16,12 @@ typedef enum PlayerMovementDirection {
     PLAYER_MOVEMENT_RIGHT
 } PlayerMovementDirection;
 
+/*
+    TODO: Currently only the player has more than one hitbox,
+        but eventually every entity should support multiple hitboxes.
+*/
+extern Rectangle playersUpperbody, playersLowebody;
+
 Entity *InitializePlayer(Entity *listItem);
 void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection direction);
 void PlayerStartJump(Entity *player);

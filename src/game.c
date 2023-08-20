@@ -6,7 +6,7 @@
 #include "player.h"
 #include "enemy.h"
 
-#define ENEMY_SPAWN_RATE 8.0f
+#define ENEMY_SPAWN_RATE 1.0f
 
 typedef struct GameState {
     bool isPaused;
@@ -15,13 +15,17 @@ typedef struct GameState {
     PlayerMovementType playerMovementType;
 } GameState;
 
-void resetGameState(GameState *state, Entity *player) {
+void resetGameState(GameState *state, Entity **entities, Entity **player) {
     state->isPaused = false;
     state->isPlayerDead = false;
 
     state->playerMovementType = PLAYER_MOVEMENT_DEFAULT;
 
-    SetEntityPosition(player, SCREEN_WIDTH/4, (float)FLOOR_HEIGHT-player->hitbox.height);
+    DestroyAllEntities(*entities);
+    *player = InitializePlayer(NULL);
+    *entities = *player;
+
+    SetEntityPosition(*player, SCREEN_WIDTH/4, (float)FLOOR_HEIGHT - (*player)->hitbox.height);
 }
 
 void updateWindowTitle() {
@@ -44,10 +48,7 @@ int main(int argc, char **argv)
     SetTargetFPS(60);
 
     { // Initialization
-        player = InitializePlayer(NULL);
-        entities = player;
-
-        resetGameState(&state, player);
+        resetGameState(&state, &entities, &player);
     }
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -58,7 +59,7 @@ int main(int argc, char **argv)
             if (state.isPaused) {
                 if (IsKeyPressed(KEY_ENTER)) {
                     if (state.isPlayerDead) {
-                        resetGameState(&state, player);
+                        resetGameState(&state, &entities, &player);
                     } else {
                         state.isPaused = false;
                     }
@@ -96,14 +97,34 @@ int main(int argc, char **argv)
             }
 
 
-            // Destroy offscreen enemies
-            Entity *currentEntity = entities;
+            // Collision
+            Entity *enemy = entities;
             do {
-                if ((currentEntity->components & IsEnemy) && (currentEntity->hitbox.x + currentEntity->hitbox.width < 0)) {
-                    entities = DestroyEntity(currentEntity);
+
+                if (enemy->components & IsEnemy) {
+
+                    // Enemy offscreen
+                    if  (enemy->hitbox.x + enemy->hitbox.width < 0) {
+                        entities = DestroyEntity(enemy); // TODO: How does this break the loop?
+                        break;
+                    }
+
+                    // Enemy hit player
+                    if (CheckCollisionRecs(enemy->hitbox, playersUpperbody)) {
+                        state.isPlayerDead = true;
+                        state.isPaused = true;
+                        break;
+                    }
+
+                    // Player hit enemy
+                    if (CheckCollisionRecs(enemy->hitbox, playersLowebody)) {
+                        entities = DestroyEntity(enemy); // TODO: How does this break the loop?
+                        break;
+                    }
                 }
-                currentEntity = currentEntity->next;
-            } while (currentEntity != entities);
+
+                enemy = enemy->next;
+            } while (enemy != entities);
 
 
             TickAllEntities(entities, player);
@@ -119,14 +140,22 @@ render:
 
             DrawAllEntities(entities);
 
+            // HUD
             if (state.isPaused && !state.isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
             if (state.isPlayerDead) DrawText("YOU DIED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 60, RAYWHITE);
 
 
+            // Debug
+            char entity_count[50];
+            sprintf(entity_count, "%d entities", CountEntities(entities));
+            DrawText(entity_count, 10, 20, 20, WHITE);
+
+
+            // Floor
             DrawRectangle(0, FLOOR_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, PURPLE);
 
 
-            // Gamepad
+            // Gamepad debug
             if (IsGamepadAvailable(gamepadIdx)) {
                 char gpad[27];
                 sprintf(gpad, "Gamepad index: %i", gamepadIdx);

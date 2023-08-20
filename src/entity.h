@@ -35,6 +35,7 @@ void SetEntityPosition(Entity *entity, float x, float y); // Sets the position o
 void TickAllEntities(Entity *entity, Entity *player);
 void DrawAllEntities(Entity *entity);
 Entity *DestroyEntity(Entity *entity);
+void DestroyAllEntities(Entity *listItem);
 int CountEntities(Entity *listItem);
 
 #endif // _ENTITY_H_INCLUDED_

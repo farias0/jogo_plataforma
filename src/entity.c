@@ -83,6 +83,12 @@ Entity *DestroyEntity(Entity *entity) {
     return listReference;
 }
 
+void DestroyAllEntities(Entity *listItem) {
+    while (listItem) {
+        listItem = DestroyEntity(listItem);
+    }
+}
+
 int CountEntities(Entity *listItem) {
     if (listItem == 0) return 0;
 
