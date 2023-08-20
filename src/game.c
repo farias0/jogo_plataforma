@@ -5,12 +5,15 @@
 #include "entity.h"
 #include "player.h"
 #include "enemy.h"
+#include "level.h"
 
 #define ENEMY_SPAWN_RATE 1.0f
 
 typedef struct GameState {
     bool isPaused;
     bool isPlayerDead;
+
+    Level *loadedLevel;
 
     PlayerMovementType playerMovementType;
 } GameState;
@@ -24,6 +27,9 @@ void resetGameState(GameState *state, Entity **entities, Entity **player) {
     DestroyAllEntities(*entities);
     *player = InitializePlayer(NULL);
     *entities = *player;
+
+    state->loadedLevel = LoadLevel();
+    InitializeLevel(state->loadedLevel);
 
     SetEntityPosition(*player, SCREEN_WIDTH/4, (float)FLOOR_HEIGHT - (*player)->hitbox.height);
 }
@@ -91,10 +97,10 @@ int main(int argc, char **argv)
 
 
             // Enemy
-            if (GetTime() - lastEnemySpawnTimestamp > ENEMY_SPAWN_RATE) {
-                InitializeEnemy(entities);
-                lastEnemySpawnTimestamp = GetTime();
-            }
+            // if (GetTime() - lastEnemySpawnTimestamp > ENEMY_SPAWN_RATE) {
+            //     InitializeEnemy(entities);
+            //     lastEnemySpawnTimestamp = GetTime();
+            // }
 
 
             // Collision
@@ -139,6 +145,7 @@ render:
             ClearBackground(BLACK);
 
             DrawAllEntities(entities);
+            DrawLevel(state.loadedLevel);
 
             // HUD
             if (state.isPaused && !state.isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
@@ -149,10 +156,6 @@ render:
             char entity_count[50];
             sprintf(entity_count, "%d entities", CountEntities(entities));
             DrawText(entity_count, 10, 20, 20, WHITE);
-
-
-            // Floor
-            DrawRectangle(0, FLOOR_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT, PURPLE);
 
 
             // Gamepad debug

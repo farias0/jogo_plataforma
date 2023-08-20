@@ -19,7 +19,7 @@
 #define PLAYER_SPEED_DEFAULT 4.0f
 #define PLAYER_SPEED_FAST 8.0f
 
-#define PLAYER_JUMP_DURATION 1.0f // In seconds
+#define PLAYER_JUMP_DURATION 0.75f // In seconds
 #define PLAYER_JUMP_HEIGHT PLAYER_HEIGHT * 1.0
 #define PLAYER_END_JUMP_DISTANCE_GROUND 1 // Distance from the ground to end the jump when descending 
 
