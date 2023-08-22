@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "player.h"
 #include "enemy.h"
+#include "level.h"
 
     /*
         Adds a new entity right after listItem.
@@ -65,6 +66,7 @@ void DrawAllEntities(Entity *listItem) {
     do {
         if (currentItem->components & IsPlayer) DrawPlayer(currentItem);
         else if (currentItem->components & IsEnemy) DrawEnemy(currentItem);
+        else if (currentItem->components & IsLevelElement) DrawLevel(currentItem);
 
         currentItem = currentItem->next;
     } while (currentItem != listItem);

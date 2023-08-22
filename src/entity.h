@@ -9,7 +9,8 @@ enum Components {
     IsPlayer        = 2,
     HasSprite       = 4,
     DoesTick        = 8,
-    IsEnemy         = 16
+    IsEnemy         = 16,
+    IsLevelElement  = 32
 };
 
 typedef struct Entity {
@@ -19,7 +20,7 @@ typedef struct Entity {
     unsigned long int components;
     
     Rectangle hitbox;
-    Texture2D sprite;
+    Texture2D sprite;   // TODO be a pointer
 } Entity;
 
 /*

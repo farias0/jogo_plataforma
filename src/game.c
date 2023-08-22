@@ -13,8 +13,6 @@ typedef struct GameState {
     bool isPaused;
     bool isPlayerDead;
 
-    Level *loadedLevel;
-
     PlayerMovementType playerMovementType;
 } GameState;
 
@@ -28,8 +26,7 @@ void resetGameState(GameState *state, Entity **entities, Entity **player) {
     *player = InitializePlayer(NULL);
     *entities = *player;
 
-    state->loadedLevel = LoadLevel();
-    InitializeLevel(state->loadedLevel);
+    InitializeLevel(*entities);
 
     SetEntityPosition(*player, SCREEN_WIDTH/4, (float)FLOOR_HEIGHT - (*player)->hitbox.height);
 }
@@ -97,10 +94,10 @@ int main(int argc, char **argv)
 
 
             // Enemy
-            // if (GetTime() - lastEnemySpawnTimestamp > ENEMY_SPAWN_RATE) {
-            //     InitializeEnemy(entities);
-            //     lastEnemySpawnTimestamp = GetTime();
-            // }
+            if (GetTime() - lastEnemySpawnTimestamp > ENEMY_SPAWN_RATE) {
+                InitializeEnemy(entities);
+                lastEnemySpawnTimestamp = GetTime();
+            }
 
 
             // Collision
@@ -145,7 +142,6 @@ render:
             ClearBackground(BLACK);
 
             DrawAllEntities(entities);
-            DrawLevel(state.loadedLevel);
 
             // HUD
             if (state.isPaused && !state.isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
