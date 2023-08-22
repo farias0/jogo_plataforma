@@ -38,5 +38,6 @@ void DrawAllEntities(Entity *entity);
 Entity *DestroyEntity(Entity *entity);
 void DestroyAllEntities(Entity *listItem);
 int CountEntities(Entity *listItem);
+bool IsOnTheGround(Entity *entity); // If the entity has a level tile immediately bellow it (is "on the ground")
 
 #endif // _ENTITY_H_INCLUDED_

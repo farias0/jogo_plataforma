@@ -23,6 +23,8 @@
 #define PLAYER_JUMP_HEIGHT PLAYER_HEIGHT * 1.0
 #define PLAYER_END_JUMP_DISTANCE_GROUND 1 // Distance from the ground to end the jump when descending 
 
+#define PLAYER_FALL_SPEED 4.0f
+
 Rectangle playersUpperbody, playersLowebody;
 
 double jumpStartTimestamp = -1; // Second in which current jump started; -1 means not jumping
@@ -79,6 +81,10 @@ void PlayerStartJump(Entity *player) {
 }
 
 void PlayerTick(Entity *player) {
+
+    if (!IsOnTheGround(player)) {
+        player->hitbox.y += PLAYER_FALL_SPEED;
+    }
 
     if (jumpStartTimestamp != -1) {     // Player jumping
 

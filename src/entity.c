@@ -1,9 +1,13 @@
 #include <raylib.h>
+#include <stdlib.h>
 
 #include "entity.h"
 #include "player.h"
 #include "enemy.h"
 #include "level.h"
+
+#define ON_THE_GROUND_Y_TOLERANCE 1 // The difference between the y of the hitbox and the ground to be considered "on the ground"
+
 
     /*
         Adds a new entity right after listItem.
@@ -103,4 +107,27 @@ int CountEntities(Entity *listItem) {
     } while (currentItem != listItem);
 
     return counter;
+}
+
+bool IsOnTheGround(Entity *entity) {
+
+    int entitysFoot = entity->hitbox.y + entity->hitbox.height;
+    Entity *possibleGround = entity->next;
+
+    while (possibleGround != entity) {
+
+        int debug = abs(possibleGround->hitbox.y - entitysFoot);
+
+        if (possibleGround->components & IsLevelElement &&
+            possibleGround->hitbox.x < (entity->hitbox.x + entity->hitbox.width) &&
+            entity->hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) && 
+            abs(possibleGround->hitbox.y - entitysFoot) <= ON_THE_GROUND_Y_TOLERANCE) {
+                
+                return true;
+            } 
+
+        possibleGround = possibleGround->next;
+    }
+
+    return false;    
 }

@@ -7,7 +7,7 @@
 #include "enemy.h"
 #include "level.h"
 
-#define ENEMY_SPAWN_RATE 1.0f
+#define ENEMY_SPAWN_RATE 4.0f // It's actually the inverse of rate. Period?
 
 typedef struct GameState {
     bool isPaused;
@@ -28,7 +28,7 @@ void resetGameState(GameState *state, Entity **entities, Entity **player) {
 
     InitializeLevel(*entities);
 
-    SetEntityPosition(*player, SCREEN_WIDTH/4, (float)FLOOR_HEIGHT - (*player)->hitbox.height);
+    SetEntityPosition(*player, SCREEN_WIDTH/5, 100);
 }
 
 void updateWindowTitle() {
@@ -100,34 +100,42 @@ int main(int argc, char **argv)
             }
 
 
-            // Collision
-            Entity *enemy = entities;
-            do {
+            {   // Collision
 
-                if (enemy->components & IsEnemy) {
-
-                    // Enemy offscreen
-                    if  (enemy->hitbox.x + enemy->hitbox.width < 0) {
-                        entities = DestroyEntity(enemy); // TODO: How does this break the loop?
-                        break;
-                    }
-
-                    // Enemy hit player
-                    if (CheckCollisionRecs(enemy->hitbox, playersUpperbody)) {
-                        state.isPlayerDead = true;
-                        state.isPaused = true;
-                        break;
-                    }
-
-                    // Player hit enemy
-                    if (CheckCollisionRecs(enemy->hitbox, playersLowebody)) {
-                        entities = DestroyEntity(enemy); // TODO: How does this break the loop?
-                        break;
-                    }
+                if (player->hitbox.y > FLOOR_DEATH_HEIGHT) {
+                    state.isPlayerDead = true;
+                    state.isPaused = true;
+                    goto render;
                 }
 
-                enemy = enemy->next;
-            } while (enemy != entities);
+                Entity *enemy = entities;
+                do {
+
+                    if (enemy->components & IsEnemy) {
+
+                        // Enemy offscreen
+                        if  (enemy->hitbox.x + enemy->hitbox.width < 0) {
+                            entities = DestroyEntity(enemy); // TODO: How does this break the loop?
+                            break;
+                        }
+
+                        // Enemy hit player
+                        if (CheckCollisionRecs(enemy->hitbox, playersUpperbody)) {
+                            state.isPlayerDead = true;
+                            state.isPaused = true;
+                            break;
+                        }
+
+                        // Player hit enemy
+                        if (CheckCollisionRecs(enemy->hitbox, playersLowebody)) {
+                            entities = DestroyEntity(enemy); // TODO: How does this break the loop?
+                            break;
+                        }
+                    }
+
+                    enemy = enemy->next;
+                } while (enemy != entities);
+            }
 
 
             TickAllEntities(entities, player);

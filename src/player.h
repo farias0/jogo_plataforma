@@ -28,5 +28,11 @@ void PlayerStartJump(Entity *player);
 void PlayerTick(Entity *player);
 void DrawPlayer(Entity *player);
 
+/*
+    TODO Replace this with a PlayerState object accessible by the game
+*/
+void PlayerFallsDead(Entity *player); // Start "fell down into a pit" animation
+
+
 
 #endif // _PLAYER_H_INCLUDED_
