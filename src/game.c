@@ -7,8 +7,6 @@
 #include "enemy.h"
 #include "level.h"
 
-#define ENEMY_SPAWN_RATE 4.0f // It's actually the inverse of rate. Period?
-
 typedef struct GameState {
     bool isPaused;
     bool isPlayerDead;
@@ -42,8 +40,6 @@ int main(int argc, char **argv)
     GameState state;
     Entity *player;
     Entity *entities;
-
-    double lastEnemySpawnTimestamp = -ENEMY_SPAWN_RATE;
 
     int gamepadIdx = 0;
 
@@ -91,13 +87,6 @@ int main(int argc, char **argv)
                 MovePlayer(player, state.playerMovementType, PLAYER_MOVEMENT_LEFT);
 
             if (IsKeyPressed(KEY_X)) PlayerStartJump(player);
-
-
-            // Enemy
-            if (GetTime() - lastEnemySpawnTimestamp > ENEMY_SPAWN_RATE) {
-                InitializeEnemy(entities);
-                lastEnemySpawnTimestamp = GetTime();
-            }
 
 
             {   // Collision

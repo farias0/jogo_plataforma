@@ -21,6 +21,7 @@ typedef struct Entity {
     
     Rectangle hitbox;
     Texture2D sprite;   // TODO be a pointer
+    bool isFacingRight;
 } Entity;
 
 /*

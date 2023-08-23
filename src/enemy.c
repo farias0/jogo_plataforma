@@ -11,21 +11,21 @@
 #define ENEMY_WIDTH (float)(ENEMY_SPRITE_SCALE * 32)
 #define ENEMY_HEIGHT (float)(ENEMY_SPRITE_SCALE * 32)
 
-#define ENEMY_SPAWN_X SCREEN_WIDTH * 3/4
-
-#define ENEMY_SPEED_DEFAULT 8.0f
+#define ENEMY_SPEED_DEFAULT 4.0f
 
 
-Entity *InitializeEnemy(Entity *listItem) { 
+Entity *InitializeEnemy(Entity *listItem, int x, int y) { 
     Entity *newEnemy = MemAlloc(sizeof(Entity));
 
     newEnemy->components = HasPosition +
                             HasSprite +
                             DoesTick +
-                            IsEnemy;
-    newEnemy->hitbox = (Rectangle){ ENEMY_SPAWN_X, FLOOR_HEIGHT-ENEMY_HEIGHT, ENEMY_WIDTH, ENEMY_HEIGHT };
+                            IsEnemy +
+                            IsLevelElement;
+    newEnemy->hitbox = (Rectangle){ x - (ENEMY_WIDTH/2), y - ENEMY_HEIGHT, ENEMY_WIDTH, ENEMY_HEIGHT };
     // TODO load assets only once reference them from the sprite property. An asset manager, basically.
     newEnemy->sprite = LoadTexture("../assets/enemy_default_1.png");
+    newEnemy->isFacingRight = false;
 
     AddToEntityList(listItem, newEnemy);
 
@@ -33,7 +33,12 @@ Entity *InitializeEnemy(Entity *listItem) {
 }
 
 void EnemyTick(Entity *enemy, Entity *player) {
-    enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
+    int x_back = enemy->hitbox.x;
+    enemy->hitbox.x -= ENEMY_SPEED_DEFAULT * (-1 * !enemy->isFacingRight);
+    if (!IsOnTheGround(enemy)) {
+        enemy->hitbox.x = x_back;
+        enemy->isFacingRight = !(enemy->isFacingRight);
+    }
 }
 
 void DrawEnemy(Entity *enemy) {

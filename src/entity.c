@@ -119,8 +119,8 @@ bool IsOnTheGround(Entity *entity) {
         int debug = abs(possibleGround->hitbox.y - entitysFoot);
 
         if (possibleGround->components & IsLevelElement &&
-            possibleGround->hitbox.x < (entity->hitbox.x + entity->hitbox.width) &&
-            entity->hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) && 
+            possibleGround->hitbox.x < (entity->hitbox.x + (entity->hitbox.width/2)) &&
+            entity->hitbox.x + (entity->hitbox.width/2) < (possibleGround->hitbox.x + possibleGround->hitbox.width) && 
             abs(possibleGround->hitbox.y - entitysFoot) <= ON_THE_GROUND_Y_TOLERANCE) {
                 
                 return true;

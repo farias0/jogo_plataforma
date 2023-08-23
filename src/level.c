@@ -3,6 +3,7 @@
 #include "level.h"
 #include "global.h"
 #include "entity.h"
+#include "enemy.h"
 
 #define FLOOR_TILE_SIZE 32
 
@@ -38,23 +39,26 @@ Entity *InitializeLevel(Entity *entitiesItem) {
     block2->sprite = floorTileTexture;
     AddToEntityList(block1, block2);
 
+    Entity *enemy1 = InitializeEnemy(block2,
+                                        block2->hitbox.x + (block2->hitbox.width / 2),
+                                        block2->hitbox.y);
+
     Entity *block3 = MemAlloc(sizeof(Entity));
     block3->components = HasPosition +
                             HasSprite +
                             IsLevelElement;
-    block2->hitbox.x       = x_spacing;
-    block2->hitbox.y       = FLOOR_HEIGHT;
-    block2->hitbox.width   = width;
-    block2->hitbox.height  = FLOOR_TILE_SIZE * 10;
-    block2->sprite = floorTileTexture;
     block3->hitbox.x       = x_spacing * 2;
     block3->hitbox.y       = FLOOR_HEIGHT;
     block3->hitbox.width   = width;
     block3->hitbox.height  = FLOOR_TILE_SIZE * 10;
     block3->sprite = floorTileTexture;
-    AddToEntityList(block2, block3);
+    AddToEntityList(enemy1, block3);
 
-    return block3;
+    Entity *enemy2 = InitializeEnemy(block3,
+                                        block3->hitbox.x + (block3->hitbox.width / 2),
+                                        block3->hitbox.y);
+
+    return enemy2;
 }
 
 void DrawLevel(Entity *entity) {
