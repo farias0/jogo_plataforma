@@ -6,7 +6,7 @@
 #include "enemy.h"
 #include "level.h"
 
-#define ON_THE_GROUND_Y_TOLERANCE 1 // The difference between the y of the hitbox and the ground to be considered "on the ground"
+#define ON_THE_GROUND_Y_TOLERANCE 5 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 
 
     /*

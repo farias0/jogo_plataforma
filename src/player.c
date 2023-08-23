@@ -23,7 +23,7 @@
 #define PLAYER_JUMP_HEIGHT PLAYER_HEIGHT * 1.0
 #define PLAYER_END_JUMP_DISTANCE_GROUND 1 // Distance from the ground to end the jump when descending 
 
-#define PLAYER_FALL_SPEED 4.0f
+#define PLAYER_FALL_SPEED 8.0f
 
 Rectangle playersUpperbody, playersLowebody;
 
@@ -74,17 +74,13 @@ void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection
 }
 
 void PlayerStartJump(Entity *player) {
-    if (jumpStartTimestamp == -1) {
+    if (jumpStartTimestamp == -1 && IsOnTheGround(player)) {
         jumpStartTimestamp = GetTime();
         jumpStartPlayerY = player->hitbox.y;
     }
 }
 
 void PlayerTick(Entity *player) {
-
-    if (!IsOnTheGround(player)) {
-        player->hitbox.y += PLAYER_FALL_SPEED;
-    }
 
     if (jumpStartTimestamp != -1) {     // Player jumping
 
@@ -95,7 +91,8 @@ void PlayerTick(Entity *player) {
         if (newPlayerY > player->hitbox.y) isPlayerDescending = true;
         player->hitbox.y = newPlayerY;
 
-        if (isPlayerDescending && abs((player->hitbox.y + player->hitbox.height) - FLOOR_HEIGHT) < PLAYER_END_JUMP_DISTANCE_GROUND) { 
+        if (newPlayerY > jumpStartPlayerY) {
+        //if (isPlayerDescending && abs((player->hitbox.y + player->hitbox.height) - FLOOR_HEIGHT) < PLAYER_END_JUMP_DISTANCE_GROUND) { 
             // End jump
             jumpStartTimestamp = -1;
             jumpStartPlayerY = -1;
@@ -103,6 +100,10 @@ void PlayerTick(Entity *player) {
             player->hitbox.y = FLOOR_HEIGHT - player->hitbox.height;
             return;
         }
+    }
+
+    else if (!IsOnTheGround(player)) {
+        player->hitbox.y += PLAYER_FALL_SPEED;
     }
 
     calculatePlayersHitboxes(player);
