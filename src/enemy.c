@@ -34,7 +34,8 @@ Entity *InitializeEnemy(Entity *listItem, int x, int y) {
 
 void EnemyTick(Entity *enemy, Entity *player) {
     int x_back = enemy->hitbox.x;
-    enemy->hitbox.x -= ENEMY_SPEED_DEFAULT * (-1 * !enemy->isFacingRight);
+    if (enemy->isFacingRight) enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
+    else enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
     if (!IsOnTheGround(enemy)) {
         enemy->hitbox.x = x_back;
         enemy->isFacingRight = !(enemy->isFacingRight);
