@@ -26,6 +26,7 @@ Entity *InitializeLevel(Entity *entitiesItem) {
     block1->hitbox.width   = width;
     block1->hitbox.height  = FLOOR_TILE_SIZE * 10;
     block1->sprite = floorTileTexture;
+    block1->spriteScale = FLOOR_TILE_SIZE;
     AddToEntityList(entitiesItem, block1);
 
     Entity *block2 = MemAlloc(sizeof(Entity));
@@ -37,6 +38,7 @@ Entity *InitializeLevel(Entity *entitiesItem) {
     block2->hitbox.width   = width;
     block2->hitbox.height  = FLOOR_TILE_SIZE * 10;
     block2->sprite = floorTileTexture;
+    block2->spriteScale = FLOOR_TILE_SIZE;
     AddToEntityList(block1, block2);
 
     Entity *enemy1 = InitializeEnemy(block2,
@@ -52,6 +54,7 @@ Entity *InitializeLevel(Entity *entitiesItem) {
     block3->hitbox.width   = width;
     block3->hitbox.height  = FLOOR_TILE_SIZE * 10;
     block3->sprite = floorTileTexture;
+    block3->spriteScale = FLOOR_TILE_SIZE;
     AddToEntityList(enemy1, block3);
 
     Entity *enemy2 = InitializeEnemy(block3,
@@ -59,24 +62,4 @@ Entity *InitializeLevel(Entity *entitiesItem) {
                                         block3->hitbox.y);
 
     return enemy2;
-}
-
-void DrawLevel(Entity *entity) {
-    
-    // How many tiles to be drawn in each axis
-    int xTilesCount = entity->hitbox.width / FLOOR_TILE_SIZE;
-    int yTilesCount = entity->hitbox.height / FLOOR_TILE_SIZE;
-
-    for (int xCurrent = 0; xCurrent < xTilesCount; xCurrent++) {
-        for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
-            DrawTextureEx(
-                            floorTileTexture,
-                            (Vector2){entity->hitbox.x + (xCurrent * FLOOR_TILE_SIZE),
-                                        entity->hitbox.y + (yCurrent * FLOOR_TILE_SIZE)},
-                            0,
-                            1,
-                            WHITE
-                        );
-        }
-    }
 }

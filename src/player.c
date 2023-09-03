@@ -53,6 +53,7 @@ Entity *InitializePlayer(Entity *listItem) {
                             DoesTick;
     newPlayer->hitbox = (Rectangle){ 0.0f, 0.0f, PLAYER_WIDTH, PLAYER_HEIGHT };
     newPlayer->sprite = LoadTexture("../assets/player_default_1.png");
+    newPlayer->spriteScale = PLAYER_SPRITE_SCALE;
 
     calculatePlayersHitboxes(newPlayer);
 
@@ -107,8 +108,4 @@ void PlayerTick(Entity *player) {
     }
 
     calculatePlayersHitboxes(player);
-}
-
-void DrawPlayer(Entity *player) {
-    DrawTextureEx(player->sprite, (Vector2){player->hitbox.x, player->hitbox.y}, 0, PLAYER_SPRITE_SCALE, WHITE);
 }

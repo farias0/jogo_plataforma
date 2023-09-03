@@ -138,7 +138,46 @@ render:
 
             ClearBackground(BLACK);
 
-            DrawAllEntities(entities);
+
+            // DrawAllEntities(entities);
+
+            // Draw entities
+            {
+                Entity *currentItem = entities;
+
+                do {
+                    if (currentItem->components & IsPlayer)
+                        DrawTextureEx(currentItem->sprite, (Vector2){currentItem->hitbox.x, currentItem->hitbox.y}, 0, currentItem->spriteScale, WHITE);
+
+                    else if (currentItem->components & IsEnemy)
+                        DrawTextureEx(currentItem->sprite, (Vector2){currentItem->hitbox.x, currentItem->hitbox.y}, 0, currentItem->spriteScale, WHITE);
+
+                    else if (currentItem->components & IsLevelElement) {
+                        
+                        // Currently the only level element is a floor area to be tiled with a sprite
+
+                        // How many tiles to be drawn in each axis
+                        int xTilesCount = currentItem->hitbox.width / currentItem->spriteScale;
+                        int yTilesCount = currentItem->hitbox.height / currentItem->spriteScale;
+
+                        for (int xCurrent = 0; xCurrent < xTilesCount; xCurrent++) {
+                            for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
+                                DrawTextureEx(
+                                                currentItem->sprite,
+                                                (Vector2){currentItem->hitbox.x + (xCurrent * currentItem->spriteScale),
+                                                            currentItem->hitbox.y + (yCurrent * currentItem->spriteScale)},
+                                                0,
+                                                1,
+                                                WHITE
+                                            );
+                            }
+                        }
+                    }
+
+                    currentItem = currentItem->next;
+                } while (currentItem != entities);
+            }
+
 
             // HUD
             if (state.isPaused && !state.isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);

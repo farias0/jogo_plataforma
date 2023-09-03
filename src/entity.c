@@ -64,18 +64,6 @@ void TickAllEntities(Entity *listItem, Entity *player) {
     } while (currentItem != listItem);
 }
 
-void DrawAllEntities(Entity *listItem) {
-    Entity *currentItem = listItem;
-
-    do {
-        if (currentItem->components & IsPlayer) DrawPlayer(currentItem);
-        else if (currentItem->components & IsEnemy) DrawEnemy(currentItem);
-        else if (currentItem->components & IsLevelElement) DrawLevel(currentItem);
-
-        currentItem = currentItem->next;
-    } while (currentItem != listItem);
-}
-
 Entity *DestroyEntity(Entity *entity) {
     Entity *listReference = entity;
     if (entity == entity->next) listReference = 0;

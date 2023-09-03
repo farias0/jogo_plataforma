@@ -21,6 +21,8 @@ typedef struct Entity {
     
     Rectangle hitbox;
     Texture2D sprite;   // TODO be a pointer
+    float spriteScale;  // TODO wrap spriteScale together with sprite in some kind of "Sprite" struct 
+
     bool isFacingRight;
 } Entity;
 
@@ -35,7 +37,6 @@ void ClearEntityList(Entity *head);
 // Common operations
 void SetEntityPosition(Entity *entity, float x, float y); // Sets the position of the hitbox
 void TickAllEntities(Entity *entity, Entity *player);
-void DrawAllEntities(Entity *entity);
 Entity *DestroyEntity(Entity *entity);
 void DestroyAllEntities(Entity *listItem);
 int CountEntities(Entity *listItem);

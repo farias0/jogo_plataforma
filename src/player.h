@@ -26,7 +26,6 @@ Entity *InitializePlayer(Entity *listItem);
 void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection direction);
 void PlayerStartJump(Entity *player);
 void PlayerTick(Entity *player);
-void DrawPlayer(Entity *player);
 
 /*
     TODO Replace this with a PlayerState object accessible by the game

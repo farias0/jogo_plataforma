@@ -6,7 +6,6 @@
 #include "entity.h"
 
 Entity *InitializeLevel(Entity *entitiesItem);
-void DrawLevel(Entity *entity);
 
 
 #endif // _LEVEL_H_INCLUDED_

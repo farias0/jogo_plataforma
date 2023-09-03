@@ -25,6 +25,7 @@ Entity *InitializeEnemy(Entity *listItem, int x, int y) {
     newEnemy->hitbox = (Rectangle){ x - (ENEMY_WIDTH/2), y - ENEMY_HEIGHT, ENEMY_WIDTH, ENEMY_HEIGHT };
     // TODO load assets only once reference them from the sprite property. An asset manager, basically.
     newEnemy->sprite = LoadTexture("../assets/enemy_default_1.png");
+    newEnemy->spriteScale = ENEMY_SPRITE_SCALE;
     newEnemy->isFacingRight = false;
 
     AddToEntityList(listItem, newEnemy);
@@ -34,14 +35,12 @@ Entity *InitializeEnemy(Entity *listItem, int x, int y) {
 
 void EnemyTick(Entity *enemy, Entity *player) {
     int x_back = enemy->hitbox.x;
+    
     if (enemy->isFacingRight) enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
     else enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
+    
     if (!IsOnTheGround(enemy)) {
         enemy->hitbox.x = x_back;
         enemy->isFacingRight = !(enemy->isFacingRight);
     }
-}
-
-void DrawEnemy(Entity *enemy) {
-    DrawTextureEx(enemy->sprite, (Vector2){enemy->hitbox.x, enemy->hitbox.y}, 0, ENEMY_SPRITE_SCALE, WHITE);
 }
