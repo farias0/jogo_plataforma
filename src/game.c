@@ -38,8 +38,8 @@ void updateWindowTitle() {
 int main(int argc, char **argv)
 {
     GameState state;
-    Entity *player;
-    Entity *entities;
+    Entity *player = 0;
+    Entity *entities = 0;
 
     int gamepadIdx = 0;
 
