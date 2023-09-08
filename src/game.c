@@ -6,6 +6,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "level.h"
+#include "camera.h"
 
 typedef struct GameState {
     bool isPaused;
@@ -14,19 +15,19 @@ typedef struct GameState {
     PlayerMovementType playerMovementType;
 } GameState;
 
-void resetGameState(GameState *state, Entity **entities, Entity **player) {
+void resetGameState(GameState *state) {
     state->isPaused = false;
     state->isPlayerDead = false;
 
     state->playerMovementType = PLAYER_MOVEMENT_DEFAULT;
 
-    DestroyAllEntities(*entities);
-    *player = InitializePlayer(NULL);
-    *entities = *player;
+    DestroyAllEntities(ENTITIES);
+    PLAYER = InitializePlayer(NULL);
+    ENTITIES = PLAYER;
+    CAMERA = InitializeCamera(ENTITIES);
+    InitializeLevel(ENTITIES);
 
-    InitializeLevel(*entities);
-
-    SetEntityPosition(*player, SCREEN_WIDTH/5, 100);
+    SetEntityPosition(PLAYER, SCREEN_WIDTH/5, 100);
 }
 
 void updateWindowTitle() {
@@ -38,8 +39,9 @@ void updateWindowTitle() {
 int main(int argc, char **argv)
 {
     GameState state;
-    Entity *player = 0;
-    Entity *entities = 0;
+    ENTITIES = 0;
+    PLAYER = 0;
+    CAMERA = 0;
 
     int gamepadIdx = 0;
 
@@ -47,7 +49,7 @@ int main(int argc, char **argv)
     SetTargetFPS(60);
 
     { // Initialization
-        resetGameState(&state, &entities, &player);
+        resetGameState(&state);
     }
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -58,7 +60,7 @@ int main(int argc, char **argv)
             if (state.isPaused) {
                 if (IsKeyPressed(KEY_ENTER)) {
                     if (state.isPlayerDead) {
-                        resetGameState(&state, &entities, &player);
+                        resetGameState(&state);
                     } else {
                         state.isPaused = false;
                     }
@@ -81,30 +83,38 @@ int main(int argc, char **argv)
             if (IsKeyDown(KEY_Z)) state.playerMovementType = PLAYER_MOVEMENT_RUNNING;
             else state.playerMovementType = PLAYER_MOVEMENT_DEFAULT;
 
-            if (IsKeyDown(KEY_RIGHT) && (player->hitbox.x + player->hitbox.width) < SCREEN_WIDTH)
-                MovePlayer(player, state.playerMovementType, PLAYER_MOVEMENT_RIGHT);
-            if (IsKeyDown(KEY_LEFT) && player->hitbox.x > 0)
-                MovePlayer(player, state.playerMovementType, PLAYER_MOVEMENT_LEFT);
+            if (IsKeyDown(KEY_RIGHT) && (PLAYER->hitbox.x + PLAYER->hitbox.width) < SCREEN_WIDTH)
+                MovePlayer(PLAYER, state.playerMovementType, PLAYER_MOVEMENT_RIGHT);
+            if (IsKeyDown(KEY_LEFT) && PLAYER->hitbox.x > 0)
+                MovePlayer(PLAYER, state.playerMovementType, PLAYER_MOVEMENT_LEFT);
 
-            if (IsKeyPressed(KEY_X)) PlayerStartJump(player);
+            if (IsKeyPressed(KEY_X)) PlayerStartJump(PLAYER);
+
+
+            // Camera (debug)
+            float cameraSpeed = 8.0f;
+            if (IsKeyDown(KEY_A)) CAMERA->hitbox.x -= cameraSpeed;
+            if (IsKeyDown(KEY_D)) CAMERA->hitbox.x += cameraSpeed;
+            if (IsKeyDown(KEY_W)) CAMERA->hitbox.y -= cameraSpeed;
+            if (IsKeyDown(KEY_S)) CAMERA->hitbox.y += cameraSpeed;
 
 
             {   // Collision
 
-                if (player->hitbox.y > FLOOR_DEATH_HEIGHT) {
+                if (PLAYER->hitbox.y > FLOOR_DEATH_HEIGHT) {
                     state.isPlayerDead = true;
                     state.isPaused = true;
                     goto render;
                 }
 
-                Entity *enemy = entities;
+                Entity *enemy = ENTITIES;
                 do {
 
                     if (enemy->components & IsEnemy) {
 
                         // Enemy offscreen
                         if  (enemy->hitbox.x + enemy->hitbox.width < 0) {
-                            entities = DestroyEntity(enemy); // TODO: How does this break the loop?
+                            ENTITIES = DestroyEntity(enemy); // TODO: How does this break the loop?
                             break;
                         }
 
@@ -117,17 +127,17 @@ int main(int argc, char **argv)
 
                         // Player hit enemy
                         if (CheckCollisionRecs(enemy->hitbox, playersLowebody)) {
-                            entities = DestroyEntity(enemy); // TODO: How does this break the loop?
+                            ENTITIES = DestroyEntity(enemy); // TODO: How does this break the loop?
                             break;
                         }
                     }
 
                     enemy = enemy->next;
-                } while (enemy != entities);
+                } while (enemy != ENTITIES);
             }
 
 
-            TickAllEntities(entities, player);
+            TickAllEntities(ENTITIES, PLAYER);
 
             updateWindowTitle();
         }
@@ -143,14 +153,17 @@ render:
 
             // Draw entities
             {
-                Entity *currentItem = entities;
+                Entity *currentItem = ENTITIES;
 
                 do {
+                    float inSceneX = currentItem->hitbox.x - CAMERA->hitbox.x;
+                    float inSceneY = currentItem->hitbox.y - CAMERA->hitbox.y;
+
                     if (currentItem->components & IsPlayer)
-                        DrawTextureEx(currentItem->sprite, (Vector2){currentItem->hitbox.x, currentItem->hitbox.y}, 0, currentItem->spriteScale, WHITE);
+                        DrawTextureEx(currentItem->sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->spriteScale, WHITE);
 
                     else if (currentItem->components & IsEnemy)
-                        DrawTextureEx(currentItem->sprite, (Vector2){currentItem->hitbox.x, currentItem->hitbox.y}, 0, currentItem->spriteScale, WHITE);
+                        DrawTextureEx(currentItem->sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->spriteScale, WHITE);
 
                     else if (currentItem->components & IsLevelElement) {
                         
@@ -164,8 +177,8 @@ render:
                             for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
                                 DrawTextureEx(
                                                 currentItem->sprite,
-                                                (Vector2){currentItem->hitbox.x + (xCurrent * currentItem->spriteScale),
-                                                            currentItem->hitbox.y + (yCurrent * currentItem->spriteScale)},
+                                                (Vector2){inSceneX + (xCurrent * currentItem->spriteScale),
+                                                            inSceneY + (yCurrent * currentItem->spriteScale)},
                                                 0,
                                                 1,
                                                 WHITE
@@ -175,7 +188,7 @@ render:
                     }
 
                     currentItem = currentItem->next;
-                } while (currentItem != entities);
+                } while (currentItem != ENTITIES);
             }
 
 
@@ -186,7 +199,7 @@ render:
 
             // Debug
             char entity_count[50];
-            sprintf(entity_count, "%d entities", CountEntities(entities));
+            sprintf(entity_count, "%d entities", CountEntities(ENTITIES));
             DrawText(entity_count, 10, 20, 20, WHITE);
 
 

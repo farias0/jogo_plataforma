@@ -67,8 +67,14 @@ void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection
     if (type == PLAYER_MOVEMENT_RUNNING) amount = PLAYER_SPEED_FAST;
 
     switch (direction) {
-        case PLAYER_MOVEMENT_LEFT: player->hitbox.x -= amount; break;
-        case PLAYER_MOVEMENT_RIGHT: player->hitbox.x += amount; break;
+        case PLAYER_MOVEMENT_LEFT:
+            player->hitbox.x -= amount;
+            CAMERA->hitbox.x -= amount;
+            break;
+        case PLAYER_MOVEMENT_RIGHT:
+            player->hitbox.x += amount;
+            CAMERA->hitbox.x += amount;
+            break;
     }
 
     calculatePlayersHitboxes(player);
