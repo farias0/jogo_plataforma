@@ -26,8 +26,6 @@ void resetGameState(GameState *state) {
     ENTITIES = PLAYER;
     CAMERA = InitializeCamera(ENTITIES);
     InitializeLevel(ENTITIES);
-
-    SetEntityPosition(PLAYER, SCREEN_WIDTH/5, 100);
 }
 
 void updateWindowTitle() {
@@ -83,7 +81,7 @@ int main(int argc, char **argv)
             if (IsKeyDown(KEY_Z)) state.playerMovementType = PLAYER_MOVEMENT_RUNNING;
             else state.playerMovementType = PLAYER_MOVEMENT_DEFAULT;
 
-            if (IsKeyDown(KEY_RIGHT) && (PLAYER->hitbox.x + PLAYER->hitbox.width) < SCREEN_WIDTH)
+            if (IsKeyDown(KEY_RIGHT))
                 MovePlayer(PLAYER, state.playerMovementType, PLAYER_MOVEMENT_RIGHT);
             if (IsKeyDown(KEY_LEFT) && PLAYER->hitbox.x > 0)
                 MovePlayer(PLAYER, state.playerMovementType, PLAYER_MOVEMENT_LEFT);

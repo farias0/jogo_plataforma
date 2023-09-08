@@ -69,11 +69,17 @@ void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection
     switch (direction) {
         case PLAYER_MOVEMENT_LEFT:
             player->hitbox.x -= amount;
-            CAMERA->hitbox.x -= amount;
+
+            if (CAMERA->hitbox.x > amount && ((player->hitbox.x - CAMERA->hitbox.x) < SCREEN_WIDTH/3))
+                CAMERA->hitbox.x -= amount;
+
             break;
         case PLAYER_MOVEMENT_RIGHT:
             player->hitbox.x += amount;
-            CAMERA->hitbox.x += amount;
+
+            if (player->hitbox.x > amount + SCREEN_WIDTH/2)
+                CAMERA->hitbox.x += amount;
+
             break;
     }
 

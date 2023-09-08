@@ -61,5 +61,8 @@ Entity *InitializeLevel(Entity *entitiesItem) {
                                         block3->hitbox.x + (block3->hitbox.width / 2),
                                         block3->hitbox.y);
 
+
+    SetEntityPosition(PLAYER, SCREEN_WIDTH/5, 100);
+
     return enemy2;
 }
