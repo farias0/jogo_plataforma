@@ -107,10 +107,10 @@ void PlayerTick(Entity *player) {
         if (newPlayerY > jumpStartPlayerY) {
         //if (isPlayerDescending && abs((player->hitbox.y + player->hitbox.height) - FLOOR_HEIGHT) < PLAYER_END_JUMP_DISTANCE_GROUND) { 
             // End jump
+            player->hitbox.y = jumpStartPlayerY - player->hitbox.height;
             jumpStartTimestamp = -1;
             jumpStartPlayerY = -1;
             isPlayerDescending = false;
-            player->hitbox.y = FLOOR_HEIGHT - player->hitbox.height;
             return;
         }
     }
