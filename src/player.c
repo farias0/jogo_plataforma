@@ -23,13 +23,15 @@
 #define PLAYER_JUMP_HEIGHT PLAYER_HEIGHT * 1.0
 #define PLAYER_END_JUMP_DISTANCE_GROUND 1 // Distance from the ground to end the jump when descending 
 
-#define PLAYER_FALL_SPEED 8.0f
+#define JUMP_START_VELOCITY 10.0f
+#define JUMP_ACCELERATION 0.4f
+#define Y_VELOCITY_TARGET_TOLERANCE 1
+
 
 Rectangle playersUpperbody, playersLowebody;
 
-double jumpStartTimestamp = -1; // Second in which current jump started; -1 means not jumping
-float jumpStartPlayerY = -1; // Player's Y when the current jump started
-bool isPlayerDescending = false; // If the player is currently descending from a jump
+float yVelocity = 0;
+float yVelocityTarget = 0;
 
 
 void calculatePlayersHitboxes(Entity *player) {
@@ -87,36 +89,47 @@ void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection
 }
 
 void PlayerStartJump(Entity *player) {
-    if (jumpStartTimestamp == -1 && IsOnTheGround(player)) {
-        jumpStartTimestamp = GetTime();
-        jumpStartPlayerY = player->hitbox.y;
+
+    if (IsOnTheGround(player)) {
+        yVelocity = JUMP_START_VELOCITY;
+        yVelocityTarget = 0.0f;
+
+        player->hitbox.y -= 1 * yVelocity; // Take player off ground. TODO shouldn't need to happen; jarring
     }
 }
 
 void PlayerTick(Entity *player) {
 
-    if (jumpStartTimestamp != -1) {     // Player jumping
+    // debug
+    char ySpeedTxt[27];
+    sprintf(ySpeedTxt, "yVelocity: %f", yVelocity);
+    DrawText(ySpeedTxt, 10, 40, 20, WHITE);
 
-        double jumpTimeDelta = GetTime() - jumpStartTimestamp;
-        double jumpCurrentFactor = (jumpTimeDelta/PLAYER_JUMP_DURATION) * M_PI;
-        double jumpCurrentDelta = sin(jumpCurrentFactor) * PLAYER_JUMP_HEIGHT;
-        float newPlayerY = jumpStartPlayerY - jumpCurrentDelta;
-        if (newPlayerY > player->hitbox.y) isPlayerDescending = true;
-        player->hitbox.y = newPlayerY;
+    bool yVelocityWithinTarget = abs(yVelocity - yVelocityTarget) < Y_VELOCITY_TARGET_TOLERANCE;
 
-        if (newPlayerY > jumpStartPlayerY) {
-        //if (isPlayerDescending && abs((player->hitbox.y + player->hitbox.height) - FLOOR_HEIGHT) < PLAYER_END_JUMP_DISTANCE_GROUND) { 
-            // End jump
-            player->hitbox.y = jumpStartPlayerY - player->hitbox.height;
-            jumpStartTimestamp = -1;
-            jumpStartPlayerY = -1;
-            isPlayerDescending = false;
-            return;
+    if (IsOnTheGround(player)) {
+
+        DrawText("On the ground!", 10, 60, 20, WHITE); // debug
+
+        if (yVelocityWithinTarget) { // Clean up state
+            yVelocity = 0;
+            yVelocityTarget = 0;
+        }
+    } else {
+
+        player->hitbox.y -= yVelocity;
+
+        if (yVelocityWithinTarget) {
+            // Starts falling down
+            yVelocityTarget = -JUMP_START_VELOCITY;
         }
     }
 
-    else if (!IsOnTheGround(player)) {
-        player->hitbox.y += PLAYER_FALL_SPEED;
+    // Accelerates jump's vertical movement
+    if (yVelocity > yVelocityTarget) {
+        yVelocity -= JUMP_ACCELERATION; // Upwards
+    } else if (yVelocity < yVelocityTarget) {
+        yVelocity += JUMP_ACCELERATION; // Downwards
     }
 
     calculatePlayersHitboxes(player);

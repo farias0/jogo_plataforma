@@ -84,7 +84,7 @@ Entity *InitializeLevel(Entity *entitiesItem) {
 
     freeLoadedLevelData(data);
 
-    SetEntityPosition(PLAYER, SCREEN_WIDTH/5, 100);
+    SetEntityPosition(PLAYER, SCREEN_WIDTH/5, FLOOR_HEIGHT-PLAYER->hitbox.height);
 
     return entitiesItem;
 }
