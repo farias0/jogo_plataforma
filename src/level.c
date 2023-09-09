@@ -7,62 +7,86 @@
 
 #define FLOOR_TILE_SIZE 32
 
+typedef struct LevelEnemy {
+    Vector2 pos;
+} LevelEnemy;
+
+typedef struct LevelBlock {
+    Rectangle rect;
+} LevelBlock;
+
+typedef struct LevelData {
+
+    int enemyCount;
+    LevelEnemy *enemies;
+
+    int blockCount;
+    LevelBlock *blocks;
+
+} LevelData;
+
+
 Texture2D floorTileTexture;
 
-Entity *InitializeLevel(Entity *entitiesItem) {
-    
-    floorTileTexture = LoadTexture("../assets/floor_tile_1.png");
+
+LevelData loadLevelData() {
+
+    LevelData data;
+    data.enemyCount = 2;
+    data.blockCount = 3;
+
+    data.enemies = MemAlloc(sizeof(LevelEnemy) * data.enemyCount);
+    data.blocks = MemAlloc(sizeof(LevelBlock) * data.blockCount);
+
 
     int width = FLOOR_TILE_SIZE * 10;
     int x_spacing = width + (FLOOR_TILE_SIZE * 5);
 
 
-    Entity *block1 = MemAlloc(sizeof(Entity));
-    block1->components = HasPosition +
-                            HasSprite +
-                            IsLevelElement;
-    block1->hitbox.x       = 0;
-    block1->hitbox.y       = FLOOR_HEIGHT;
-    block1->hitbox.width   = width;
-    block1->hitbox.height  = FLOOR_TILE_SIZE * 10;
-    block1->sprite = floorTileTexture;
-    block1->spriteScale = FLOOR_TILE_SIZE;
-    AddToEntityList(entitiesItem, block1);
+    data.blocks[0].rect = (Rectangle){ 0,           FLOOR_HEIGHT, width, FLOOR_TILE_SIZE*10 };
+    data.blocks[1].rect = (Rectangle){ x_spacing,   FLOOR_HEIGHT, width, FLOOR_TILE_SIZE*10 };
+    data.blocks[2].rect = (Rectangle){ x_spacing*2, FLOOR_HEIGHT, width, FLOOR_TILE_SIZE*10 };
 
-    Entity *block2 = MemAlloc(sizeof(Entity));
-    block2->components = HasPosition +
-                            HasSprite +
-                            IsLevelElement;
-    block2->hitbox.x       = x_spacing;
-    block2->hitbox.y       = FLOOR_HEIGHT;
-    block2->hitbox.width   = width;
-    block2->hitbox.height  = FLOOR_TILE_SIZE * 10;
-    block2->sprite = floorTileTexture;
-    block2->spriteScale = FLOOR_TILE_SIZE;
-    AddToEntityList(block1, block2);
+    data.enemies[0].pos = (Vector2){ data.blocks[1].rect.x + (data.blocks[1].rect.width / 2),
+                                        data.blocks[1].rect.y };
+    data.enemies[1].pos = (Vector2){ data.blocks[2].rect.x + (data.blocks[2].rect.width / 2),
+                                        data.blocks[2].rect.y };
 
-    Entity *enemy1 = InitializeEnemy(block2,
-                                        block2->hitbox.x + (block2->hitbox.width / 2),
-                                        block2->hitbox.y);
+    return data;
+}
 
-    Entity *block3 = MemAlloc(sizeof(Entity));
-    block3->components = HasPosition +
-                            HasSprite +
-                            IsLevelElement;
-    block3->hitbox.x       = x_spacing * 2;
-    block3->hitbox.y       = FLOOR_HEIGHT;
-    block3->hitbox.width   = width;
-    block3->hitbox.height  = FLOOR_TILE_SIZE * 10;
-    block3->sprite = floorTileTexture;
-    block3->spriteScale = FLOOR_TILE_SIZE;
-    AddToEntityList(enemy1, block3);
+void freeLoadedLevelData(LevelData data) {
 
-    Entity *enemy2 = InitializeEnemy(block3,
-                                        block3->hitbox.x + (block3->hitbox.width / 2),
-                                        block3->hitbox.y);
+    MemFree(data.blocks);
+    MemFree(data.enemies);
+} 
 
+Entity *InitializeLevel(Entity *entitiesItem) {
+    
+    floorTileTexture = LoadTexture("../assets/floor_tile_1.png");
+
+    LevelData data = loadLevelData();
+
+    LevelBlock *block = data.blocks;
+    for (int idx = 0; idx < data.blockCount; idx++) {
+        Entity *entity = MemAlloc(sizeof(Entity));
+        entity->components = HasPosition +
+                                HasSprite +
+                                IsLevelElement;
+        entity->hitbox         = block[idx].rect;
+        entity->sprite = floorTileTexture;
+        entity->spriteScale = FLOOR_TILE_SIZE;
+        AddToEntityList(entitiesItem, entity);
+    }
+
+    LevelEnemy *enemy = data.enemies;
+    for (int idx = 0; idx < data.enemyCount; idx++) {
+        entitiesItem = InitializeEnemy(entitiesItem, enemy[idx].pos.x, enemy[idx].pos.y);
+    }
+
+    freeLoadedLevelData(data);
 
     SetEntityPosition(PLAYER, SCREEN_WIDTH/5, 100);
 
-    return enemy2;
+    return entitiesItem;
 }
