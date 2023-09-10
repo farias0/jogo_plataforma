@@ -40,9 +40,15 @@ void calculatePlayersHitboxes(Entity *player) {
         player->hitbox.width,   player->hitbox.height * PLAYERS_UPPERBODY_PROPORTION
     };
 
+    /*
+        playersLowebody has one extra pixel in its sides and below it.
+        This has game feel implications, but it was included so the collision check would work more consistently
+        (this seems to be related with the use of raylib's CheckCollisionRecs for player-enemy collision).
+        This is something that should not be needed in a more robust implementation.
+    */
     playersLowebody = (Rectangle){
-        player->hitbox.x,       player->hitbox.y + playersUpperbody.height,
-        player->hitbox.width,   player->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION)
+        player->hitbox.x - 1,       player->hitbox.y + playersUpperbody.height,
+        player->hitbox.width + 2,   player->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
     };
 }
 
@@ -109,7 +115,8 @@ void PlayerTick(Entity *player) {
 
     if (IsOnTheGround(player)) {
 
-        DrawText("On the ground!", 10, 60, 20, WHITE); // debug
+        // debug
+        DrawText("On the ground!", 10, 60, 20, WHITE);
 
         if (yVelocityWithinTarget) { // Clean up state
             yVelocity = 0;

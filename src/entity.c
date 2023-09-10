@@ -106,7 +106,7 @@ bool IsOnTheGround(Entity *entity) {
 
         if (possibleGround->components & IsLevelElement &&
 
-            // If x is above the possible ground
+            // If x is within the possible ground
             possibleGround->hitbox.x < (entity->hitbox.x + (entity->hitbox.width/2)) &&
             entity->hitbox.x + (entity->hitbox.width/2) < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&
 
