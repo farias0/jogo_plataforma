@@ -88,6 +88,11 @@ int main(int argc, char **argv)
 
             if (IsKeyPressed(KEY_X)) PlayerStartJump(PLAYER);
 
+            // Editor
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                Vector2 mousePos = GetMousePosition();
+                AddBlockToLevel(ENTITIES, mousePos);
+            }
 
             // Camera (debug)
             float cameraSpeed = 8.0f;
@@ -95,6 +100,8 @@ int main(int argc, char **argv)
             if (IsKeyDown(KEY_D)) CAMERA->hitbox.x += cameraSpeed;
             if (IsKeyDown(KEY_W)) CAMERA->hitbox.y -= cameraSpeed;
             if (IsKeyDown(KEY_S)) CAMERA->hitbox.y += cameraSpeed;
+
+
 
 
             {   // Collision

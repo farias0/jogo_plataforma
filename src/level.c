@@ -61,6 +61,19 @@ void freeLoadedLevelData(LevelData data) {
     MemFree(data.enemies);
 } 
 
+void addBlockToLevel(Entity *entitiesItem, LevelBlock block) {
+    Entity *entity = MemAlloc(sizeof(Entity));
+
+    entity->components = HasPosition +
+                            HasSprite +
+                            IsLevelElement;
+    entity->hitbox = block.rect;
+    entity->sprite = floorTileTexture;
+    entity->spriteScale = FLOOR_TILE_SIZE;
+
+    AddToEntityList(entitiesItem, entity);
+}
+
 Entity *InitializeLevel(Entity *entitiesItem) {
     
     floorTileTexture = LoadTexture("../assets/floor_tile_1.png");
@@ -69,14 +82,7 @@ Entity *InitializeLevel(Entity *entitiesItem) {
 
     LevelBlock *block = data.blocks;
     for (int idx = 0; idx < data.blockCount; idx++) {
-        Entity *entity = MemAlloc(sizeof(Entity));
-        entity->components = HasPosition +
-                                HasSprite +
-                                IsLevelElement;
-        entity->hitbox         = block[idx].rect;
-        entity->sprite = floorTileTexture;
-        entity->spriteScale = FLOOR_TILE_SIZE;
-        AddToEntityList(entitiesItem, entity);
+        addBlockToLevel(entitiesItem, block[idx]);
     }
 
     LevelEnemy *enemy = data.enemies;
@@ -89,4 +95,12 @@ Entity *InitializeLevel(Entity *entitiesItem) {
     SetEntityPosition(PLAYER, SCREEN_WIDTH/5, FLOOR_HEIGHT-PLAYER->hitbox.height);
 
     return entitiesItem;
+}
+
+void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
+    LevelBlock block = {
+        { pos.x, pos.y, FLOOR_TILE_SIZE, FLOOR_TILE_SIZE }
+    };
+
+    addBlockToLevel(entitiesItem, block);
 }
