@@ -30,14 +30,16 @@
 
 Rectangle playersUpperbody, playersLowebody;
 
+// If the player is on the ascension phase of the jump
+bool isJumping = false;
 float yVelocity = 0;
 float yVelocityTarget = 0;
 
 
 void calculatePlayersHitboxes(Entity *player) {
     playersUpperbody = (Rectangle){
-        player->hitbox.x,       player->hitbox.y,
-        player->hitbox.width,   player->hitbox.height * PLAYERS_UPPERBODY_PROPORTION
+        player->hitbox.x + 1,       player->hitbox.y - 1,
+        player->hitbox.width + 2,   player->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
     };
 
     /*
@@ -97,6 +99,7 @@ void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection
 void PlayerStartJump(Entity *player) {
 
     if (IsOnTheGround(player) >= 0) {
+        isJumping = true;
         yVelocity = JUMP_START_VELOCITY;
         yVelocityTarget = 0.0f;
 
@@ -112,25 +115,26 @@ void PlayerTick(Entity *player) {
     DrawText(ySpeedTxt, 10, 40, 20, WHITE);
 
     bool yVelocityWithinTarget = abs(yVelocity - yVelocityTarget) < Y_VELOCITY_TARGET_TOLERANCE;
-
     float groundY = IsOnTheGround(player); 
-    if (groundY >= 0) {
+    if (groundY >= 0 && !isJumping) {
 
         // debug
         DrawText("On the ground!", 10, 60, 20, WHITE);
 
         if (yVelocityWithinTarget) {
+            // Land on the ground
             player->hitbox.y = groundY - player->hitbox.height;
             yVelocity = 0;
             yVelocityTarget = 0;
         }
-    } else {
+    } else if (groundY = -1) {
 
         player->hitbox.y -= yVelocity;
 
         if (yVelocityWithinTarget) {
             // Starts falling down
             yVelocityTarget = -JUMP_START_VELOCITY;
+            isJumping = false;
         }
     }
 

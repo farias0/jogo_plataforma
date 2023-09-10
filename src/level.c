@@ -33,7 +33,7 @@ LevelData loadLevelData() {
 
     LevelData data;
     data.enemyCount = 2;
-    data.blockCount = 5;
+    data.blockCount = 6;
 
     data.enemies = MemAlloc(sizeof(LevelEnemy) * data.enemyCount);
     data.blocks = MemAlloc(sizeof(LevelBlock) * data.blockCount);
