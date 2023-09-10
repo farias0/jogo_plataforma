@@ -97,7 +97,7 @@ int CountEntities(Entity *listItem) {
     return counter;
 }
 
-bool IsOnTheGround(Entity *entity) {
+float IsOnTheGround(Entity *entity) {
 
     int entitysFoot = entity->hitbox.y + entity->hitbox.height;
     Entity *possibleGround = entity->next;
@@ -113,11 +113,11 @@ bool IsOnTheGround(Entity *entity) {
             // If y is RIGHT above the possible ground
             abs(possibleGround->hitbox.y - entitysFoot) <= ON_THE_GROUND_Y_TOLERANCE) {
                 
-                return true;
+                return possibleGround->hitbox.y;
             } 
 
         possibleGround = possibleGround->next;
     }
 
-    return false;    
+    return -1;    
 }

@@ -96,7 +96,7 @@ void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection
 
 void PlayerStartJump(Entity *player) {
 
-    if (IsOnTheGround(player)) {
+    if (IsOnTheGround(player) >= 0) {
         yVelocity = JUMP_START_VELOCITY;
         yVelocityTarget = 0.0f;
 
@@ -107,18 +107,20 @@ void PlayerStartJump(Entity *player) {
 void PlayerTick(Entity *player) {
 
     // debug
-    char ySpeedTxt[27];
-    sprintf(ySpeedTxt, "yVelocity: %f", yVelocity);
+    char ySpeedTxt[100];
+    sprintf(ySpeedTxt, "yVelocity: %f   y: %f", yVelocity, player->hitbox.y);
     DrawText(ySpeedTxt, 10, 40, 20, WHITE);
 
     bool yVelocityWithinTarget = abs(yVelocity - yVelocityTarget) < Y_VELOCITY_TARGET_TOLERANCE;
 
-    if (IsOnTheGround(player)) {
+    float groundY = IsOnTheGround(player); 
+    if (groundY >= 0) {
 
         // debug
         DrawText("On the ground!", 10, 60, 20, WHITE);
 
-        if (yVelocityWithinTarget) { // Clean up state
+        if (yVelocityWithinTarget) {
+            player->hitbox.y = groundY - player->hitbox.height;
             yVelocity = 0;
             yVelocityTarget = 0;
         }

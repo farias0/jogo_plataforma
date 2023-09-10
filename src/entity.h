@@ -40,6 +40,7 @@ void TickAllEntities(Entity *entity, Entity *player);
 Entity *DestroyEntity(Entity *entity);
 void DestroyAllEntities(Entity *listItem);
 int CountEntities(Entity *listItem);
-bool IsOnTheGround(Entity *entity); // If the entity has a level tile immediately bellow it (is "on the ground")
+// The y on the ground the player is above, or -1 if not on the ground
+float IsOnTheGround(Entity *entity);
 
 #endif // _ENTITY_H_INCLUDED_
