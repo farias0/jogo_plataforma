@@ -102,8 +102,6 @@ void PlayerStartJump(Entity *player) {
         isJumping = true;
         yVelocity = JUMP_START_VELOCITY;
         yVelocityTarget = 0.0f;
-
-        player->hitbox.y -= 1 * yVelocity; // Take player off ground. TODO shouldn't need to happen; jarring
     }
 }
 
@@ -116,20 +114,18 @@ void PlayerTick(Entity *player) {
 
     bool yVelocityWithinTarget = abs(yVelocity - yVelocityTarget) < Y_VELOCITY_TARGET_TOLERANCE;
     float groundY = IsOnTheGround(player); 
-    if (groundY >= 0 && !isJumping) {
+    if (groundY >= 0) {
 
         // debug
         DrawText("On the ground!", 10, 60, 20, WHITE);
 
-        if (yVelocityWithinTarget) {
+        if (!isJumping) {
             // Land on the ground
             player->hitbox.y = groundY - player->hitbox.height;
             yVelocity = 0;
             yVelocityTarget = 0;
         }
-    } else if (groundY = -1) {
-
-        player->hitbox.y -= yVelocity;
+    } else {
 
         if (yVelocityWithinTarget) {
             // Starts falling down
@@ -137,6 +133,8 @@ void PlayerTick(Entity *player) {
             isJumping = false;
         }
     }
+
+    player->hitbox.y -= yVelocity;
 
     // Accelerates jump's vertical movement
     if (yVelocity > yVelocityTarget) {
