@@ -33,26 +33,24 @@ LevelData loadLevelData() {
 
     LevelData data;
     data.enemyCount = 2;
-    data.blockCount = 6;
+    data.blockCount = 5;
 
     data.enemies = MemAlloc(sizeof(LevelEnemy) * data.enemyCount);
     data.blocks = MemAlloc(sizeof(LevelBlock) * data.blockCount);
 
-    data.blocks[0].rect = (Rectangle){ 0,                   FLOOR_HEIGHT,       FLOOR_TILE_SIZE*15, FLOOR_TILE_SIZE*5 };
+    data.blocks[0].rect = (Rectangle){ 0,                   FLOOR_HEIGHT,       FLOOR_TILE_SIZE*25, FLOOR_TILE_SIZE*5 };
+    data.enemies[0].pos = (Vector2){ data.blocks[0].rect.x + (data.blocks[0].rect.width / 2),
+                                        data.blocks[0].rect.y };
 
-    data.blocks[1].rect = (Rectangle){ FLOOR_TILE_SIZE*15,  FLOOR_HEIGHT,       FLOOR_TILE_SIZE*10, FLOOR_TILE_SIZE*5 };
-    data.enemies[0].pos = (Vector2){ data.blocks[1].rect.x + (data.blocks[1].rect.width / 2),
+    data.blocks[1].rect = (Rectangle){ FLOOR_TILE_SIZE*30,  FLOOR_HEIGHT,       FLOOR_TILE_SIZE*10, FLOOR_TILE_SIZE*5 };
+    data.enemies[1].pos = (Vector2){ data.blocks[1].rect.x + (data.blocks[1].rect.width / 2),
                                         data.blocks[1].rect.y };
 
-    data.blocks[2].rect = (Rectangle){ FLOOR_TILE_SIZE*30,  FLOOR_HEIGHT,       FLOOR_TILE_SIZE*10, FLOOR_TILE_SIZE*5 };
-    data.enemies[1].pos = (Vector2){ data.blocks[2].rect.x + (data.blocks[2].rect.width / 2),
-                                        data.blocks[2].rect.y };
+    data.blocks[2].rect = (Rectangle){ FLOOR_TILE_SIZE*45,  FLOOR_HEIGHT-80,    FLOOR_TILE_SIZE*10, FLOOR_TILE_SIZE*2 };
 
-    data.blocks[3].rect = (Rectangle){ FLOOR_TILE_SIZE*45,  FLOOR_HEIGHT-80,    FLOOR_TILE_SIZE*10, FLOOR_TILE_SIZE*2 };
+    data.blocks[3].rect = (Rectangle){ FLOOR_TILE_SIZE*40,  FLOOR_HEIGHT-200,   FLOOR_TILE_SIZE*5,  FLOOR_TILE_SIZE*1 };
 
-    data.blocks[4].rect = (Rectangle){ FLOOR_TILE_SIZE*40,  FLOOR_HEIGHT-200,   FLOOR_TILE_SIZE*5,  FLOOR_TILE_SIZE*1 };
-    
-    data.blocks[5].rect = (Rectangle){ FLOOR_TILE_SIZE*45,  FLOOR_HEIGHT-320,   FLOOR_TILE_SIZE*5,  FLOOR_TILE_SIZE*1 };
+    data.blocks[4].rect = (Rectangle){ FLOOR_TILE_SIZE*45,  FLOOR_HEIGHT-320,   FLOOR_TILE_SIZE*5,  FLOOR_TILE_SIZE*1 };
 
     return data;
 }
