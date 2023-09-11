@@ -97,7 +97,7 @@ int CountEntities(Entity *listItem) {
     return counter;
 }
 
-float IsOnTheGround(Entity *entity) {
+float GetEntitiesGroundBeneath(Entity *entity) {
 
     int entitysFoot = entity->hitbox.y + entity->hitbox.height;
     Entity *possibleGround = entity->next;

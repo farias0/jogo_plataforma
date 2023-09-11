@@ -39,7 +39,7 @@ void EnemyTick(Entity *enemy, Entity *player) {
     if (enemy->isFacingRight) enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
     else enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
     
-    if (IsOnTheGround(enemy) == -1) {
+    if (GetEntitiesGroundBeneath(enemy) == -1) {
         enemy->hitbox.x = x_back;
         enemy->isFacingRight = !(enemy->isFacingRight);
     }
