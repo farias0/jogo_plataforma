@@ -106,6 +106,17 @@ void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
     pos.x -= (abs(pos.x) % FLOOR_TILE_SIZE);
     pos.y -= (abs(pos.y) % FLOOR_TILE_SIZE);
 
+    // Check if there's a block there already (currently only works for 1x1 blocks)
+    for (Entity *possibleBlock = entitiesItem->next; possibleBlock != entitiesItem; possibleBlock = possibleBlock->next) {
+        
+        if (possibleBlock->components & IsLevelElement &&
+                possibleBlock->hitbox.x == pos.x &&
+                possibleBlock->hitbox.y == pos.y) {
+
+            return;
+        }
+    }
+
     LevelBlock block = {
         { pos.x, pos.y, FLOOR_TILE_SIZE, FLOOR_TILE_SIZE }
     };

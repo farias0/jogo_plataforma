@@ -89,7 +89,9 @@ int main(int argc, char **argv)
             if (IsKeyPressed(KEY_X)) PlayerStartJump(PLAYER);
 
             // Editor
-            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+                // TODO use a timer to not keep checking it every frame
+
                 Vector2 mousePos = GetMousePosition();
                 Vector2 blockPos = {
                     mousePos.x + CAMERA->hitbox.x,
