@@ -91,7 +91,11 @@ int main(int argc, char **argv)
             // Editor
             if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                 Vector2 mousePos = GetMousePosition();
-                AddBlockToLevel(ENTITIES, mousePos);
+                Vector2 blockPos = {
+                    mousePos.x + CAMERA->hitbox.x,
+                    mousePos.y + CAMERA->hitbox.y
+                };
+                AddBlockToLevel(ENTITIES, blockPos);
             }
 
             // Camera (debug)

@@ -1,4 +1,7 @@
 #include <raylib.h>
+#include "stdlib.h"
+
+#include <stdio.h>
 
 #include "level.h"
 #include "global.h"
@@ -98,6 +101,11 @@ Entity *InitializeLevel(Entity *entitiesItem) {
 }
 
 void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
+
+    // Snap the block into a grid
+    pos.x -= (abs(pos.x) % FLOOR_TILE_SIZE);
+    pos.y -= (abs(pos.y) % FLOOR_TILE_SIZE);
+
     LevelBlock block = {
         { pos.x, pos.y, FLOOR_TILE_SIZE, FLOOR_TILE_SIZE }
     };
