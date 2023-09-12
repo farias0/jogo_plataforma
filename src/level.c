@@ -77,15 +77,6 @@ void addBlockToLevel(Entity *entitiesItem, LevelBlock block) {
     AddToEntityList(entitiesItem, entity);
 }
 
-/*
-    Returns the value of a x or y coordinate snapped to the grid.
-
-    This helps dividing the game scene in squares.
-*/ 
-float snapToGrid(float pos) {
-    return pos - abs(pos) % FLOOR_TILE_SIZE;
-}
-
 Entity *InitializeLevel(Entity *entitiesItem) {
     
     floorTileTexture = LoadTexture("../assets/floor_tile_1.png");
@@ -111,12 +102,16 @@ Entity *InitializeLevel(Entity *entitiesItem) {
 
 void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
 
+    // Snap the block into a grid
+    pos.x -= (abs(pos.x) % FLOOR_TILE_SIZE);
+    pos.y -= (abs(pos.y) % FLOOR_TILE_SIZE);
+
     // Check if there's a block there already (currently only works for 1x1 blocks)
     for (Entity *possibleBlock = entitiesItem->next; possibleBlock != entitiesItem; possibleBlock = possibleBlock->next) {
         
         if (possibleBlock->components & IsLevelElement &&
-                possibleBlock->hitbox.x == snapToGrid(pos.x) &&
-                possibleBlock->hitbox.y == snapToGrid(pos.y)) {
+                possibleBlock->hitbox.x == pos.x &&
+                possibleBlock->hitbox.y == pos.y) {
 
             return;
         }
@@ -127,14 +122,4 @@ void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
     };
 
     addBlockToLevel(entitiesItem, block);
-}
-
-bool IsLevelElementInPos(Entity *entitiesItem, Vector2 pos) {
-
-    for (Entity *currentItem = entitiesItem->next; currentItem != entitiesItem; currentItem = currentItem->next) {
-        if (currentItem->components & IsLevelElement &&
-            CheckCollisionPointRec(pos, currentItem->hitbox)) return true;
-    }
-
-    return false;
 }
