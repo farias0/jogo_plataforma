@@ -7,6 +7,7 @@
 
 Entity *InitializeLevel(Entity *entitiesItem);
 void AddBlockToLevel(Entity *entitiesItem, Vector2 pos);
-
+// Checks collision of a point will all the level elements
+bool IsLevelElementInPos(Entity *entitiesItem, Vector2 pos);
 
 #endif // _LEVEL_H_INCLUDED_

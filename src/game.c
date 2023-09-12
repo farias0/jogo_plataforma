@@ -99,6 +99,16 @@ int main(int argc, char **argv)
                 };
                 AddBlockToLevel(ENTITIES, blockPos);
             }
+            if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
+                // TODO use a timer to not keep checking it every frame
+
+                Vector2 mousePos = GetMousePosition();
+                Vector2 enemyPos = {
+                    mousePos.x + CAMERA->hitbox.x,
+                    mousePos.y + CAMERA->hitbox.y
+                };
+                bool didPosition = AddEnemyToLevel(ENTITIES, enemyPos);
+            }
 
             // Camera (debug)
             float cameraSpeed = 8.0f;

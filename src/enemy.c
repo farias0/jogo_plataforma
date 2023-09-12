@@ -3,6 +3,7 @@
 #include "enemy.h"
 #include "entity.h"
 #include "global.h"
+#include "level.h"
 
 
 #define ENEMY_SPRITE_SCALE 2
@@ -43,4 +44,15 @@ void EnemyTick(Entity *enemy, Entity *player) {
         enemy->hitbox.x = x_back;
         enemy->isFacingRight = !(enemy->isFacingRight);
     }
+}
+
+bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
+    for (Entity *currentItem = listItem->next; currentItem != listItem; currentItem = currentItem->next) {
+        if ((currentItem->components & IsLevelElement ||
+                currentItem->components & IsEnemy) &&
+            CheckCollisionPointRec(pos, currentItem->hitbox)) return true;
+    }
+
+    InitializeEnemy(listItem, pos.x, pos.y);
+    return true;
 }
