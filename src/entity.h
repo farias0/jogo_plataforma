@@ -24,6 +24,7 @@ typedef struct Entity {
     float spriteScale;  // TODO wrap spriteScale together with sprite in some kind of "Sprite" struct 
 
     bool isFacingRight;
+    bool isFallingDown;
 } Entity;
 
 /*

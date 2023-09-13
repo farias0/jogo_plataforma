@@ -13,6 +13,7 @@
 #define ENEMY_HEIGHT (float)(ENEMY_SPRITE_SCALE * 32)
 
 #define ENEMY_SPEED_DEFAULT 4.0f
+#define ENEMY_FALL_RATE 7.0f
 
 
 Entity *InitializeEnemy(Entity *listItem, int x, int y) { 
@@ -28,6 +29,7 @@ Entity *InitializeEnemy(Entity *listItem, int x, int y) {
     newEnemy->sprite = LoadTexture("../assets/enemy_default_1.png");
     newEnemy->spriteScale = ENEMY_SPRITE_SCALE;
     newEnemy->isFacingRight = false;
+    newEnemy->isFallingDown = true;
 
     AddToEntityList(listItem, newEnemy);
 
@@ -36,18 +38,36 @@ Entity *InitializeEnemy(Entity *listItem, int x, int y) {
 
 void EnemyTick(Entity *enemy, Entity *player) {
     int x_back = enemy->hitbox.x;
-    
+    float yGroundBeneath = GetEntitiesGroundBeneath(enemy);
+
+    if (enemy->isFallingDown) {
+        
+        if (yGroundBeneath >= 0 && enemy->hitbox.y + ENEMY_FALL_RATE + ENEMY_HEIGHT >= yGroundBeneath) {
+
+            // Land
+            enemy->hitbox.y = yGroundBeneath - ENEMY_HEIGHT;
+            enemy->isFallingDown = false;
+        }
+
+        else {
+
+            // Fall
+            enemy->hitbox.y += ENEMY_FALL_RATE;
+        }
+
+        return;
+    }
+
+
     if (enemy->isFacingRight) enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
     else enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
     
+    // TODO use yGroundBeneath -- currently it breaks the AI
     if (GetEntitiesGroundBeneath(enemy) == -1) {
         
-        // Keep walking
+        // Turn around
         enemy->hitbox.x = x_back;
         enemy->isFacingRight = !(enemy->isFacingRight);
-    } else {
-
-        // Fall
     }
 }
 
@@ -83,8 +103,8 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
         InitializeEnemy places the enemy _above_ this point,
         so we bring the y down to the feet of the sprite.
         
-        TODO: Clarify this through different functions,
-        like InitializeEnemyAbove() 
+        TODO: Make InitializeAbove receive normal x and y.
+        The level positions the enemy to fall to the floor.
     */
     float feet = pos.y + (ENEMY_HEIGHT / 2);
 

@@ -99,8 +99,7 @@ int main(int argc, char **argv)
                 };
                 AddBlockToLevel(ENTITIES, blockPos);
             }
-            if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
-                // TODO use a timer to not keep checking it every frame
+            if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
 
                 Vector2 mousePos = GetMousePosition();
                 Vector2 enemyPos = {
