@@ -8,5 +8,4 @@
 Entity *InitializeLevel(Entity *entitiesItem);
 void AddBlockToLevel(Entity *entitiesItem, Vector2 pos);
 
-
 #endif // _LEVEL_H_INCLUDED_
