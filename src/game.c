@@ -181,7 +181,8 @@ render:
                     float inSceneX = currentItem->hitbox.x - CAMERA->hitbox.x;
                     float inSceneY = currentItem->hitbox.y - CAMERA->hitbox.y;
 
-                    if (currentItem->components & IsPlayer)
+                    if (currentItem->components & IsPlayer ||
+                        currentItem->components & IsEnemy)
                         if (currentItem->isFacingRight)
                             DrawTextureEx(currentItem->sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->spriteScale, WHITE);
                         else {
@@ -199,10 +200,6 @@ render:
                             };
                             DrawTexturePro(currentItem->sprite, source, destination, (Vector2){ 0, 0 }, 0, WHITE);
                         }
-
-
-                    else if (currentItem->components & IsEnemy)
-                        DrawTextureEx(currentItem->sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->spriteScale, WHITE);
 
                     else if (currentItem->components & IsLevelElement) {
                         
