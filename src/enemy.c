@@ -41,8 +41,13 @@ void EnemyTick(Entity *enemy, Entity *player) {
     else enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
     
     if (GetEntitiesGroundBeneath(enemy) == -1) {
+        
+        // Keep walking
         enemy->hitbox.x = x_back;
         enemy->isFacingRight = !(enemy->isFacingRight);
+    } else {
+
+        // Fall
     }
 }
 
@@ -58,6 +63,17 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
         
         if ((currentItem->components & IsLevelElement || currentItem->components & IsEnemy) &&
                 CheckCollisionRecs(hitbox, currentItem->hitbox)) {
+
+                /*
+                    TODO: Click closer to the ground and still place the enemy.
+                    
+                        If the collision is with a block (create a block component btw),
+                        but the y of the block is below the mouse, change the hitbox
+                        to be right above the ground.
+
+                        It will need to check for collisions again, and be careful about
+                        not entering infinite loops.
+                */
 
                 return false;
             }
