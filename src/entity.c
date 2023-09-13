@@ -72,6 +72,8 @@ Entity *DestroyEntity(Entity *entity) {
     entity->next->previous = entity->previous;
     entity->previous->next = entity->next;
 
+    UnloadTexture(entity->sprite);
+
     MemFree(entity);
 
     return listReference;

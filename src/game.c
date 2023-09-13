@@ -182,7 +182,24 @@ render:
                     float inSceneY = currentItem->hitbox.y - CAMERA->hitbox.y;
 
                     if (currentItem->components & IsPlayer)
-                        DrawTextureEx(currentItem->sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->spriteScale, WHITE);
+                        if (currentItem->isFacingRight)
+                            DrawTextureEx(currentItem->sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->spriteScale, WHITE);
+                        else {
+                            Rectangle source = (Rectangle){
+                                0,
+                                0,
+                                -currentItem->sprite.width,
+                                currentItem->sprite.height
+                            };
+                            Rectangle destination = (Rectangle){
+                                inSceneX,
+                                inSceneY,
+                                currentItem->sprite.width * currentItem->spriteScale,
+                                currentItem->sprite.height * currentItem->spriteScale
+                            };
+                            DrawTexturePro(currentItem->sprite, source, destination, (Vector2){ 0, 0 }, 0, WHITE);
+                        }
+
 
                     else if (currentItem->components & IsEnemy)
                         DrawTextureEx(currentItem->sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->spriteScale, WHITE);
