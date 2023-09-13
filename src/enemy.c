@@ -23,7 +23,7 @@ Entity *InitializeEnemy(Entity *listItem, int x, int y) {
                             DoesTick +
                             IsEnemy +
                             IsLevelElement;
-    newEnemy->hitbox = (Rectangle){ x - (ENEMY_WIDTH/2), y - ENEMY_HEIGHT, ENEMY_WIDTH, ENEMY_HEIGHT };
+    newEnemy->hitbox = (Rectangle){ x - (ENEMY_WIDTH/2), y - ENEMY_HEIGHT + 1, ENEMY_WIDTH, ENEMY_HEIGHT };
     // TODO load assets only once reference them from the sprite property. An asset manager, basically.
     newEnemy->sprite = LoadTexture("../assets/enemy_default_1.png");
     newEnemy->spriteScale = ENEMY_SPRITE_SCALE;
@@ -46,13 +46,32 @@ void EnemyTick(Entity *enemy, Entity *player) {
     }
 }
 
-bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
+bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {    
+
+    Rectangle hitbox = {
+        // Considering the player is clicking in the middle of the sprite
+        pos.x - (ENEMY_WIDTH / 2), pos.y - (ENEMY_HEIGHT / 2),
+        ENEMY_WIDTH, ENEMY_HEIGHT
+    };
+
     for (Entity *currentItem = listItem->next; currentItem != listItem; currentItem = currentItem->next) {
-        if ((currentItem->components & IsLevelElement ||
-                currentItem->components & IsEnemy) &&
-            CheckCollisionPointRec(pos, currentItem->hitbox)) return true;
+        
+        if ((currentItem->components & IsLevelElement || currentItem->components & IsEnemy) &&
+                CheckCollisionRecs(hitbox, currentItem->hitbox)) {
+
+                return false;
+            }
     }
 
-    InitializeEnemy(listItem, pos.x, pos.y);
+    /*
+        InitializeEnemy places the enemy _above_ this point,
+        so we bring the y down to the feet of the sprite.
+        
+        TODO: Clarify this through different functions,
+        like InitializeEnemyAbove() 
+    */
+    float feet = pos.y + (ENEMY_HEIGHT / 2);
+
+    InitializeEnemy(listItem, pos.x, feet);
     return true;
 }
