@@ -64,6 +64,7 @@ Entity *InitializePlayer(Entity *listItem) {
     newPlayer->hitbox = (Rectangle){ 0.0f, 0.0f, PLAYER_WIDTH, PLAYER_HEIGHT };
     newPlayer->sprite = LoadTexture("../assets/player_default_1.png");
     newPlayer->spriteScale = PLAYER_SPRITE_SCALE;
+    newPlayer->isFacingRight = true;
 
     calculatePlayersHitboxes(newPlayer);
 
