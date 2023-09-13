@@ -2,11 +2,11 @@
 
 #include "input.h"
 #include "global.h"
-#include "entity.h"
+#include "level.h"
+#include "enemy.h"
 
 
 #define CAMERA_SPEED 8.0f;
-
 
 void handlePlayerInput() {
 
