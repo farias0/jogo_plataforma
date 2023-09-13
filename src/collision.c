@@ -1,7 +1,7 @@
 #include "raylib.h"
 
 #include "collision.h"
-#include "entity.h"
+#include "entities/entity.h"
 #include "global.h"
 
 

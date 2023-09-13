@@ -1,7 +1,7 @@
 #include "global.h"
-#include "entity.h"
-#include "camera.h"
-#include "level.h"
+#include "entities/entity.h"
+#include "entities/camera.h"
+#include "entities/level.h"
 
 GameState *STATE;
 Entity *ENTITIES;

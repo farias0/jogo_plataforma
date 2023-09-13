@@ -5,7 +5,7 @@
 
 #include "player.h"
 #include "entity.h"
-#include "global.h"
+#include "../global.h"
 
 
 #define PLAYER_SPRITE_SCALE 2

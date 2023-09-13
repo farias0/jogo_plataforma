@@ -2,8 +2,8 @@
 #define _GLOBAL_H_INCLUDED_
 
 
-#include "entity.h"
-#include "player.h"
+#include "entities/entity.h"
+#include "entities/player.h"
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720

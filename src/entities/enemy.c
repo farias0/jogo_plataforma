@@ -2,7 +2,7 @@
 
 #include "enemy.h"
 #include "entity.h"
-#include "global.h"
+#include "../global.h"
 #include "level.h"
 
 

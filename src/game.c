@@ -2,11 +2,11 @@
 #include <stdio.h>
 
 #include "global.h"
-#include "entity.h"
-#include "player.h"
-#include "enemy.h"
-#include "level.h"
-#include "camera.h"
+#include "entities/entity.h"
+#include "entities/player.h"
+#include "entities/enemy.h"
+#include "entities/level.h"
+#include "entities/camera.h"
 #include "render.h"
 #include "input.h"
 #include "collision.h"

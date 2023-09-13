@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "level.h"
-#include "global.h"
+#include "../global.h"
 #include "entity.h"
 #include "enemy.h"
 

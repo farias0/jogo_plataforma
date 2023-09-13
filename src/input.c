@@ -2,8 +2,8 @@
 
 #include "input.h"
 #include "global.h"
-#include "level.h"
-#include "enemy.h"
+#include "entities/level.h"
+#include "entities/enemy.h"
 
 
 #define CAMERA_SPEED 8.0f;

@@ -1,6 +1,7 @@
 #include <raylib.h>
+#include <stdio.h>
 
-#include "entity.h"
+#include "entities/entity.h"
 #include "global.h"
 
 

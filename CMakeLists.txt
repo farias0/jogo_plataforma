@@ -9,7 +9,8 @@ find_package(raylib 4.5 REQUIRED)
 
 set(CMAKE_C_STANDARD 11) # required by raylib
 
-add_executable(${PROJECT_NAME} src/game.c src/player.c src/entity.c src/enemy.c src/level.c src/camera.c src/global.c src/render.c src/input.c src/collision.c)
+add_executable(${PROJECT_NAME} src/game.c src/entities/player.c src/entities/entity.c src/entities/enemy.c
+    src/entities/level.c src/entities/camera.c src/global.c src/render.c src/input.c src/collision.c)
 
 set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib m)
