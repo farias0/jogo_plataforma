@@ -8,6 +8,21 @@
 
 #define CAMERA_SPEED 8.0f;
 
+void handleGeneralInput() {
+    if (STATE->isPaused) {
+        if (IsKeyPressed(KEY_ENTER)) {
+            if (STATE->isPlayerDead) {
+                ResetGameState();
+            } else {
+                STATE->isPaused = false;
+            }
+        }
+    }
+    else if (IsKeyPressed(KEY_ENTER)) {
+        STATE->isPaused = true;
+    }
+}
+
 void handlePlayerInput() {
 
     Vector2 playerDelta = { 0.0f, 0.0f };
@@ -57,6 +72,7 @@ void handleCameraInput() {
 
 void HandleInput() {
 
+    handleGeneralInput();
     handlePlayerInput();
     handleEditorInput();
     handleCameraInput(); // debug

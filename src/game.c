@@ -30,40 +30,23 @@ int main(int argc, char **argv)
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Jogo de plataforma");
     SetTargetFPS(60);
 
-    { // Initialization
-        ResetGameState();
-    }
+    ResetGameState();
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         { // Game Update
 
-            // Game State
-            if (STATE->isPaused) {
-                if (IsKeyPressed(KEY_ENTER)) {
-                    if (STATE->isPlayerDead) {
-                        ResetGameState();
-                    } else {
-                        STATE->isPaused = false;
-                    }
-                }
-                else goto render;
-            }
-            else if (IsKeyPressed(KEY_ENTER)) {
-                STATE->isPaused = true;
-            }
-
-
             if (IsKeyDown(KEY_BACKSPACE)) {
-                int __dummy; __dummy++; // DEBUG: Put breakpoint here
+                int __dummy; __dummy++; // DEBUG: Put breakpoint in here
             }
-
 
 
             HandleInput();
+            if (STATE->isPaused) goto render;
 
             CheckForCollisions();
-            
+            if (STATE->isPaused) goto render;
+
             TickAllEntities(ENTITIES, PLAYER);
 
             updateWindowTitle();
