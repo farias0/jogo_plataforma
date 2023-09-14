@@ -9,6 +9,7 @@ void CheckForCollisions() {
     if (PLAYER->hitbox.y > FLOOR_DEATH_HEIGHT) {
         STATE->isPlayerDead = true;
         STATE->isPaused = true;
+        return;
     }
 
     Entity *enemy = ENTITIES;

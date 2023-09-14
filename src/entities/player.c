@@ -14,9 +14,9 @@
 #define PLAYER_WIDTH (float)(PLAYER_SPRITE_SCALE * 32)
 #define PLAYER_HEIGHT (float)(PLAYER_SPRITE_SCALE * 64)
 
-#define PLAYERS_UPPERBODY_PROPORTION 0.95f // What % of the player's height is upperbody, for hitboxes
+#define PLAYERS_UPPERBODY_PROPORTION 0.90f // What % of the player's height is upperbody, for hitboxes
 
-#define PLAYER_SPEED_DEFAULT 5.0f
+#define PLAYER_SPEED_DEFAULT 5.5f
 #define PLAYER_SPEED_FAST 8.0f
 
 #define PLAYER_JUMP_DURATION 0.75f // In seconds

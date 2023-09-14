@@ -73,6 +73,8 @@ void handleCameraInput() {
 void HandleInput() {
 
     handleGeneralInput();
+    if (STATE->isPaused) return;
+    
     handlePlayerInput();
     handleEditorInput();
     handleCameraInput(); // debug
