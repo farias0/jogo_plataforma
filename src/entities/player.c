@@ -105,6 +105,16 @@ void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection
 
 void PlayerStartJump(Entity *player) {
 
+    /*
+        TODO: Instead of checking if there is ground beneath, check if the last time
+        there was is within a LAST_GROUND_BENEATH_TOLERANCE.
+        
+        It will need to check and update a "lastGroundBeneath" timestamp every frame.
+        
+        This will allow the player to jump even if the jump button was
+        pressed a few milliseconds before.
+    */
+
     if (GetEntitiesGroundBeneath(player) >= 0) {
         isJumping = true;
         yVelocity = JUMP_START_VELOCITY;
