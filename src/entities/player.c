@@ -154,3 +154,7 @@ void PlayerTick(Entity *player) {
 
     calculatePlayersHitboxes(player);
 }
+
+bool IsPlayerJumping() {
+    return isJumping;
+}

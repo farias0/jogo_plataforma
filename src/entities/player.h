@@ -27,5 +27,12 @@ void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection
 void PlayerStartJump(Entity *player);
 void PlayerTick(Entity *player);
 
+/*
+    I didn't want to make this a part of the Entity struct, but it's not a good
+    idea to be doing getters.
+    TODO: Consider using a PlayerState.
+*/
+bool IsPlayerJumping();
+
 
 #endif // _PLAYER_H_INCLUDED_

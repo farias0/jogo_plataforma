@@ -35,7 +35,7 @@ void handlePlayerInput() {
     if (IsKeyDown(KEY_LEFT) && PLAYER->hitbox.x > 0)
         MovePlayer(PLAYER, STATE->playerMovementType, PLAYER_MOVEMENT_LEFT);
 
-    if (IsKeyPressed(KEY_X)) PlayerStartJump(PLAYER);
+    if (IsKeyDown(KEY_X) && !IsPlayerJumping()) PlayerStartJump(PLAYER);
 }
 
 void handleEditorInput() {

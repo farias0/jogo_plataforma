@@ -13,7 +13,7 @@
 #define ENEMY_HEIGHT (float)(ENEMY_SPRITE_SCALE * 32)
 
 #define ENEMY_SPEED_DEFAULT 4.0f
-#define ENEMY_FALL_RATE 7.0f
+#define ENEMY_FALL_RATE 5.0f
 
 
 Entity *InitializeEnemy(Entity *listItem, int x, int y) { 
