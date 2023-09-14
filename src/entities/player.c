@@ -163,4 +163,36 @@ void PlayerTick(Entity *player) {
     }
 
     calculatePlayersHitboxes(player);
+
+
+    // Collision checking
+    {
+        if (PLAYER->hitbox.y > FLOOR_DEATH_HEIGHT) {
+            STATE->isPlayerDead = true;
+            STATE->isPaused = true;
+            return;
+        }
+
+        Entity *enemy = ENTITIES;
+        do {
+
+            if (enemy->components & IsEnemy) {
+
+                // Enemy hit player
+                if (CheckCollisionRecs(enemy->hitbox, playersUpperbody)) {
+                    STATE->isPlayerDead = true;
+                    STATE->isPaused = true;
+                    break;
+                }
+
+                // Player hit enemy
+                if (CheckCollisionRecs(enemy->hitbox, playersLowebody)) {
+                    ENTITIES = DestroyEntity(enemy); // TODO: How does this break the loop?
+                    break;
+                }
+            }
+
+            enemy = enemy->next;
+        } while (enemy != ENTITIES);
+    }
 }

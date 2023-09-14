@@ -69,6 +69,27 @@ void EnemyTick(Entity *enemy, Entity *player) {
         enemy->hitbox.x = x_back;
         enemy->isFacingRight = !(enemy->isFacingRight);
     }
+
+
+    // Collision checking
+    {
+        Entity *enemy = ENTITIES;
+        do {
+
+            if (enemy->components & IsEnemy) {
+
+                // Enemy offscreen
+                if  (enemy->hitbox.x + enemy->hitbox.width < 0 ||
+                        enemy->hitbox.y > FLOOR_DEATH_HEIGHT) {
+                            
+                    ENTITIES = DestroyEntity(enemy); // TODO: How does this break the loop?
+                    break;
+                }
+            }
+
+            enemy = enemy->next;
+        } while (enemy != ENTITIES);
+    }
 }
 
 bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {    

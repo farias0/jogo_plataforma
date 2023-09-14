@@ -57,8 +57,10 @@ void TickAllEntities(Entity *listItem, Entity *player) {
     Entity *currentItem = listItem;
 
     do {
-        if (currentItem->components & IsPlayer) PlayerTick(currentItem);
-        else if (currentItem->components & IsEnemy) EnemyTick(currentItem, player);
+        // IMPORTANT: Enemy must tick before player or collision check between
+        // the two _might_ break
+        if (currentItem->components & IsEnemy) EnemyTick(currentItem, player);
+        else if (currentItem->components & IsPlayer) PlayerTick(currentItem);
 
         currentItem = currentItem->next;
     } while (currentItem != listItem);

@@ -9,7 +9,6 @@
 #include "entities/camera.h"
 #include "render.h"
 #include "input.h"
-#include "collision.h"
 
 void updateWindowTitle() {
     char title[50];
@@ -41,13 +40,16 @@ int main(int argc, char **argv)
             }
 
 
+            /*
+                IMPORTANT: Input handling must be done before ticking -- otheriwise
+                collision checking, which is done in the tick functions, might break. 
+            */
+
             HandleInput();
             if (STATE->isPaused) goto render;
 
-            CheckForCollisions();
-            if (STATE->isPaused) goto render;
-
             TickAllEntities(ENTITIES, PLAYER);
+            if (STATE->isPaused) goto render;
 
             updateWindowTitle();
         }
