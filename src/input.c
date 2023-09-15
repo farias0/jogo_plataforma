@@ -66,6 +66,7 @@ void handleEditorInput() {
 
 void handleCameraInput() {
 
+    // TODO move camera code to camera.c
     if (IsKeyDown(KEY_A)) CAMERA->hitbox.x -= CAMERA_SPEED;
     if (IsKeyDown(KEY_D)) CAMERA->hitbox.x += CAMERA_SPEED;
     if (IsKeyDown(KEY_W)) CAMERA->hitbox.y -= CAMERA_SPEED;

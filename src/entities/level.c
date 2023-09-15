@@ -65,6 +65,10 @@ void freeLoadedLevelData(LevelData data) {
 void addBlockToLevel(Entity *entitiesItem, LevelBlock block) {
     Entity *entity = MemAlloc(sizeof(Entity));
 
+    // Snap the block into a grid
+    block.rect.x -= (abs(block.rect.x) % FLOOR_TILE_SIZE);
+    block.rect.y -= (abs(block.rect.y) % FLOOR_TILE_SIZE);
+
     entity->components = HasPosition +
                             HasSprite +
                             IsLevelElement;
@@ -93,16 +97,12 @@ Entity *InitializeLevel(Entity *entitiesItem) {
 
     freeLoadedLevelData(data);
 
-    SetEntityPosition(PLAYER, SCREEN_WIDTH/5, FLOOR_HEIGHT-PLAYER->hitbox.height);
+    SetEntityPosition(PLAYER, SCREEN_WIDTH/5, 300);
 
     return entitiesItem;
 }
 
 void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
-
-    // Snap the block into a grid
-    pos.x -= (abs(pos.x) % FLOOR_TILE_SIZE);
-    pos.y -= (abs(pos.y) % FLOOR_TILE_SIZE);
 
     // Check if there's a block there already (currently only works for 1x1 blocks)
     for (Entity *possibleBlock = entitiesItem->next; possibleBlock != entitiesItem; possibleBlock = possibleBlock->next) {
