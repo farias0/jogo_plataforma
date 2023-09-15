@@ -17,7 +17,7 @@
 #define PLAYERS_UPPERBODY_PROPORTION 0.90f // What % of the player's height is upperbody, for hitboxes
 
 #define PLAYER_SPEED_DEFAULT 5.5f
-#define PLAYER_SPEED_FAST 8.0f
+#define PLAYER_SPEED_FAST 9.0f
 
 #define PLAYER_JUMP_DURATION 0.75f // In seconds
 #define PLAYER_JUMP_HEIGHT PLAYER_HEIGHT * 1.0
@@ -183,12 +183,18 @@ void PlayerTick(Entity *player) {
 
                 if (CheckCollisionRecs(entity->hitbox, player->hitbox)) {
 
+                    // Player hit ceiling
                     if (player->hitbox.y > entity->hitbox.y && player->hitbox.y < entity->hitbox.y + entity->hitbox.height) {
-                        // TODO Player hit ceiling
-                        yVelocity = yVelocityTarget;
+                        isJumping = false;
+                        yVelocity = -2.0f;
+                        yVelocityTarget = -JUMP_START_VELOCITY;
                     }
-                    else {
-                        // Player hit wall
+
+                    // Player hit wall
+                    if ((player->hitbox.x > entity->hitbox.x && player->hitbox.x < entity->hitbox.x + entity->hitbox.width) ||
+                            (player->hitbox.x + player->hitbox.width > entity->hitbox.x &&
+                            player->hitbox.x + player->hitbox.width < entity->hitbox.x + entity->hitbox.width)) {
+                                
                         player->hitbox.x -= xVelocity;
                     }
 
