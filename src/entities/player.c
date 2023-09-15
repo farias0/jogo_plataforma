@@ -30,6 +30,7 @@
 
 Rectangle playersUpperbody, playersLowebody;
 
+// TODO PlayerState
 // If the player is on the ascension phase of the jump
 bool isJumping = false;
 float yVelocity = 0;
@@ -73,34 +74,30 @@ Entity *InitializePlayer(Entity *listItem) {
     return newPlayer;
 }
 
-void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection direction) {
+void MovePlayer(PlayerMovementDirection direction) {
     float amount = PLAYER_SPEED_DEFAULT;
-    if (type == PLAYER_MOVEMENT_RUNNING) amount = PLAYER_SPEED_FAST;
+    if (STATE->playerMovementType == PLAYER_MOVEMENT_RUNNING) amount = PLAYER_SPEED_FAST;
 
-    switch (direction) {
+    if (direction == PLAYER_MOVEMENT_LEFT) {
+        PLAYER->isFacingRight = false;
 
-        case PLAYER_MOVEMENT_LEFT:
+        PLAYER->hitbox.x -= amount;
 
-            player->isFacingRight = false;
+        // TODO move camera code to camera.c
+        if (CAMERA->hitbox.x > amount && ((PLAYER->hitbox.x - CAMERA->hitbox.x) < SCREEN_WIDTH/3))
+            CAMERA->hitbox.x -= amount;
 
-            player->hitbox.x -= amount;
-            if (CAMERA->hitbox.x > amount && ((player->hitbox.x - CAMERA->hitbox.x) < SCREEN_WIDTH/3))
-                CAMERA->hitbox.x -= amount;
+    } else {
+        PLAYER->isFacingRight = true;
 
-            break;
+        PLAYER->hitbox.x += amount;
 
-        case PLAYER_MOVEMENT_RIGHT:
-
-            player->isFacingRight = true;
-
-            player->hitbox.x += amount;
-            if (player->hitbox.x > amount + SCREEN_WIDTH/2)
-                CAMERA->hitbox.x += amount;
-
-            break;
+        // TODO move camera code to camera.c
+        if (PLAYER->hitbox.x > amount + SCREEN_WIDTH/2)
+            CAMERA->hitbox.x += amount;
     }
 
-    calculatePlayersHitboxes(player);
+    calculatePlayersHitboxes(PLAYER);
 }
 
 void PlayerStartJump(Entity *player) {

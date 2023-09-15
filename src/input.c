@@ -31,9 +31,9 @@ void handlePlayerInput() {
     else STATE->playerMovementType = PLAYER_MOVEMENT_DEFAULT;
 
     if (IsKeyDown(KEY_RIGHT))
-        MovePlayer(PLAYER, STATE->playerMovementType, PLAYER_MOVEMENT_RIGHT);
-    else if (IsKeyDown(KEY_LEFT) && PLAYER->hitbox.x > 0)
-        MovePlayer(PLAYER, STATE->playerMovementType, PLAYER_MOVEMENT_LEFT);
+        MovePlayer(PLAYER_MOVEMENT_RIGHT);
+    else if (IsKeyDown(KEY_LEFT))
+        MovePlayer(PLAYER_MOVEMENT_LEFT);
 
     if (IsKeyPressed(KEY_X)) PlayerStartJump(PLAYER);
 }

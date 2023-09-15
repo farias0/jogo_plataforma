@@ -23,7 +23,7 @@ typedef enum PlayerMovementDirection {
 extern Rectangle playersUpperbody, playersLowebody;
 
 Entity *InitializePlayer(Entity *listItem);
-void MovePlayer(Entity *player, PlayerMovementType type, PlayerMovementDirection direction);
+void MovePlayer(PlayerMovementDirection direction);
 void PlayerStartJump(Entity *player);
 void PlayerTick(Entity *player);
 
