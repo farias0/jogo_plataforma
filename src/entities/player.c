@@ -35,6 +35,7 @@ Rectangle playersUpperbody, playersLowebody;
 bool isJumping = false;
 float yVelocity = 0;
 float yVelocityTarget = 0;
+float xVelocity = 0;
 
 
 void calculatePlayersHitboxes(Entity *player) {
@@ -74,27 +75,31 @@ Entity *InitializePlayer(Entity *listItem) {
     return newPlayer;
 }
 
-void MovePlayer(PlayerMovementDirection direction) {
+void UpdatePlayerHorizontalMovement(PlayerHorizontalMovementType direction) {
     float amount = PLAYER_SPEED_DEFAULT;
-    if (STATE->playerMovementType == PLAYER_MOVEMENT_RUNNING) amount = PLAYER_SPEED_FAST;
+    if (STATE->playerMovementSpeed == PLAYER_MOVEMENT_RUNNING) amount = PLAYER_SPEED_FAST;
 
     if (direction == PLAYER_MOVEMENT_LEFT) {
         PLAYER->isFacingRight = false;
 
-        PLAYER->hitbox.x -= amount;
+        xVelocity = -amount;
 
         // TODO move camera code to camera.c
         if (CAMERA->hitbox.x > amount && ((PLAYER->hitbox.x - CAMERA->hitbox.x) < SCREEN_WIDTH/3))
             CAMERA->hitbox.x -= amount;
 
-    } else {
+    }
+    else if (direction == PLAYER_MOVEMENT_RIGHT) {
         PLAYER->isFacingRight = true;
 
-        PLAYER->hitbox.x += amount;
+        xVelocity = amount;
 
         // TODO move camera code to camera.c
         if (PLAYER->hitbox.x > amount + SCREEN_WIDTH/2)
             CAMERA->hitbox.x += amount;
+    }
+    else {
+        xVelocity = 0;
     }
 
     calculatePlayersHitboxes(PLAYER);
@@ -151,6 +156,7 @@ void PlayerTick(Entity *player) {
     }
 
     player->hitbox.y -= yVelocity;
+    player->hitbox.x += xVelocity;
 
     // Accelerates jump's vertical movement
     if (yVelocity > yVelocityTarget) {

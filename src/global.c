@@ -13,7 +13,7 @@ void ResetGameState() {
     STATE->isPaused = false;
     STATE->isPlayerDead = false;
 
-    STATE->playerMovementType = PLAYER_MOVEMENT_DEFAULT;
+    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
 
     DestroyAllEntities(ENTITIES);
     PLAYER = InitializePlayer(0);

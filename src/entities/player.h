@@ -6,15 +6,16 @@
 
 #include "entity.h"
 
-typedef enum PlayerMovementType {
+typedef enum PlayerMovementSpeed {
     PLAYER_MOVEMENT_DEFAULT,
     PLAYER_MOVEMENT_RUNNING
-} PlayerMovementType;
+} PlayerMovementSpeed;
 
-typedef enum PlayerMovementDirection {
+typedef enum PlayerHorizontalMovementType {
+    PLAYER_MOVEMENT_STOP,
     PLAYER_MOVEMENT_LEFT,
     PLAYER_MOVEMENT_RIGHT
-} PlayerMovementDirection;
+} PlayerHorizontalMovementType;
 
 /*
     TODO: Currently only the player has more than one hitbox,
@@ -23,7 +24,7 @@ typedef enum PlayerMovementDirection {
 extern Rectangle playersUpperbody, playersLowebody;
 
 Entity *InitializePlayer(Entity *listItem);
-void MovePlayer(PlayerMovementDirection direction);
+void UpdatePlayerHorizontalMovement(PlayerHorizontalMovementType direction);
 void PlayerStartJump(Entity *player);
 void PlayerTick(Entity *player);
 

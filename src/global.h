@@ -16,7 +16,7 @@ typedef struct GameState {
     bool isPaused;
     bool isPlayerDead;
 
-    PlayerMovementType playerMovementType;
+    PlayerMovementSpeed playerMovementSpeed;
 
     // debug
     int gamepadIdx;

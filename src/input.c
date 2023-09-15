@@ -27,13 +27,15 @@ void handlePlayerInput() {
 
     Vector2 playerDelta = { 0.0f, 0.0f };
 
-    if (IsKeyDown(KEY_Z)) STATE->playerMovementType = PLAYER_MOVEMENT_RUNNING;
-    else STATE->playerMovementType = PLAYER_MOVEMENT_DEFAULT;
+    if (IsKeyDown(KEY_Z)) STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
+    else STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
 
     if (IsKeyDown(KEY_RIGHT))
-        MovePlayer(PLAYER_MOVEMENT_RIGHT);
+        UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_RIGHT);
     else if (IsKeyDown(KEY_LEFT))
-        MovePlayer(PLAYER_MOVEMENT_LEFT);
+        UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_LEFT);
+    else
+        UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_STOP);
 
     if (IsKeyPressed(KEY_X)) PlayerStartJump(PLAYER);
 }
