@@ -5,6 +5,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "level.h"
+#include "camera.h"
 
 #define ON_THE_GROUND_Y_TOLERANCE 5 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 
@@ -61,6 +62,7 @@ void TickAllEntities(Entity *listItem, Entity *player) {
         // the two _might_ break
         if (currentItem->components & IsEnemy) EnemyTick(currentItem, player);
         else if (currentItem->components & IsPlayer) PlayerTick(currentItem);
+        else if (currentItem->components & IsCamera) CameraTick();
 
         currentItem = currentItem->next;
     } while (currentItem != listItem);

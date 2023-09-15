@@ -83,20 +83,11 @@ void UpdatePlayerHorizontalMovement(PlayerHorizontalMovementType direction) {
         PLAYER->isFacingRight = false;
 
         xVelocity = -amount;
-
-        // TODO move camera code to camera.c
-        if (CAMERA->hitbox.x > amount && ((PLAYER->hitbox.x - CAMERA->hitbox.x) < SCREEN_WIDTH/3))
-            CAMERA->hitbox.x -= amount;
-
     }
     else if (direction == PLAYER_MOVEMENT_RIGHT) {
         PLAYER->isFacingRight = true;
 
         xVelocity = amount;
-
-        // TODO move camera code to camera.c
-        if (PLAYER->hitbox.x > amount + SCREEN_WIDTH/2)
-            CAMERA->hitbox.x += amount;
     }
     else {
         xVelocity = 0;
@@ -176,26 +167,41 @@ void PlayerTick(Entity *player) {
             return;
         }
 
-        Entity *enemy = ENTITIES;
+        Entity *entity = ENTITIES;
         do {
 
-            if (enemy->components & IsEnemy) {
+            if (entity->components & IsEnemy) {
 
                 // Enemy hit player
-                if (CheckCollisionRecs(enemy->hitbox, playersUpperbody)) {
+                if (CheckCollisionRecs(entity->hitbox, playersUpperbody)) {
                     STATE->isPlayerDead = true;
                     STATE->isPaused = true;
                     break;
                 }
 
                 // Player hit enemy
-                if (CheckCollisionRecs(enemy->hitbox, playersLowebody)) {
-                    ENTITIES = DestroyEntity(enemy); // TODO: How does this break the loop?
+                if (CheckCollisionRecs(entity->hitbox, playersLowebody)) {
+                    ENTITIES = DestroyEntity(entity); // TODO: How does this break the loop?
                     break;
                 }
             }
 
-            enemy = enemy->next;
-        } while (enemy != ENTITIES);
+            else if (entity->components & IsLevelElement) {
+
+                // Player hit wall
+                if (CheckCollisionRecs(entity->hitbox, player->hitbox)) {
+                    if (player->hitbox.x < entity->hitbox.x) player->hitbox.x -= xVelocity;
+                    else player->hitbox.x += xVelocity;
+
+                    // TODO Update camera
+                }
+
+
+                // TODO player hit ceiling
+                // TODO maybe ground check should be here as well
+            }
+
+            entity = entity->next;
+        } while (entity != ENTITIES);
     }
 }

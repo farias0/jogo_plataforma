@@ -10,7 +10,8 @@ enum Components {
     HasSprite       = 4,
     DoesTick        = 8,
     IsEnemy         = 16,
-    IsLevelElement  = 32
+    IsLevelElement  = 32,
+    IsCamera        = 64
 };
 
 typedef struct Entity {

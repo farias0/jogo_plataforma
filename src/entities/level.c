@@ -45,7 +45,7 @@ LevelData loadLevelData() {
 
     data.blocks[1].rect = (Rectangle){ FLOOR_TILE_SIZE*30,  FLOOR_HEIGHT,       FLOOR_TILE_SIZE*10, FLOOR_TILE_SIZE*5 };
     data.enemies[0].pos = (Vector2){ data.blocks[1].rect.x + (data.blocks[1].rect.width / 2),
-                                        data.blocks[1].rect.y };
+                                        200 };
 
     data.blocks[2].rect = (Rectangle){ FLOOR_TILE_SIZE*45,  FLOOR_HEIGHT-80,    FLOOR_TILE_SIZE*10, FLOOR_TILE_SIZE*2 };
 

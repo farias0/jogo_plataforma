@@ -7,6 +7,7 @@
 #include "entity.h"
 
 Entity *InitializeCamera(Entity *listItem);
+void CameraTick();
 
 
 #endif // _CAMERA_H_INCLUDED_
