@@ -62,12 +62,18 @@ void freeLoadedLevelData(LevelData data) {
     MemFree(data.enemies);
 } 
 
+/*
+    Snaps a coordinate (x or y) into the grid of FLOOR_TILE_SIZE-side squares.
+*/
+float snapToGrid(float v) {
+    return v - (abs(v) % FLOOR_TILE_SIZE);
+}
+
 void addBlockToLevel(Entity *entitiesItem, LevelBlock block) {
     Entity *entity = MemAlloc(sizeof(Entity));
 
-    // Snap the block into a grid
-    block.rect.x -= (abs(block.rect.x) % FLOOR_TILE_SIZE);
-    block.rect.y -= (abs(block.rect.y) % FLOOR_TILE_SIZE);
+    block.rect.x = snapToGrid(block.rect.x);
+    block.rect.y = snapToGrid(block.rect.y);
 
     entity->components = HasPosition +
                             HasSprite +
@@ -108,8 +114,8 @@ void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
     for (Entity *possibleBlock = entitiesItem->next; possibleBlock != entitiesItem; possibleBlock = possibleBlock->next) {
         
         if (possibleBlock->components & IsLevelElement &&
-                possibleBlock->hitbox.x == pos.x &&
-                possibleBlock->hitbox.y == pos.y) {
+                possibleBlock->hitbox.x == snapToGrid(pos.x) &&
+                possibleBlock->hitbox.y == snapToGrid(pos.y)) {
 
             return;
         }
