@@ -22,6 +22,9 @@ Entity *InitializeCamera(Entity *listItem) {
 
 void CameraTick() {
     
+    // TODO camera only ticks if player isn't moving
+    // A way to do this might be to check player's velocity in a PLAYER_STATE global
+
     if (PLAYER->hitbox.x < CAMERA->hitbox.x + CAMERA_FOLLOW_LEFT_X) {
         CAMERA->hitbox.x = PLAYER->hitbox.x - CAMERA_FOLLOW_LEFT_X;
     }

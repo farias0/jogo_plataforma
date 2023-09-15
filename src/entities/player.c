@@ -149,13 +149,6 @@ void PlayerTick(Entity *player) {
     player->hitbox.y -= yVelocity;
     player->hitbox.x += xVelocity;
 
-    // Accelerates jump's vertical movement
-    if (yVelocity > yVelocityTarget) {
-        yVelocity -= JUMP_ACCELERATION; // Upwards
-    } else if (yVelocity < yVelocityTarget) {
-        yVelocity += JUMP_ACCELERATION; // Downwards
-    }
-
     calculatePlayersHitboxes(player);
 
 
@@ -188,20 +181,30 @@ void PlayerTick(Entity *player) {
 
             else if (entity->components & IsLevelElement) {
 
-                // Player hit wall
                 if (CheckCollisionRecs(entity->hitbox, player->hitbox)) {
-                    if (player->hitbox.x < entity->hitbox.x) player->hitbox.x -= xVelocity;
-                    else player->hitbox.x += xVelocity;
 
-                    // TODO Update camera
+                    if (player->hitbox.y > entity->hitbox.y && player->hitbox.y < entity->hitbox.y + entity->hitbox.height) {
+                        // TODO Player hit ceiling
+                        yVelocity = yVelocityTarget;
+                    }
+                    else {
+                        // Player hit wall
+                        player->hitbox.x -= xVelocity;
+                    }
+
+                    // TODO maybe ground check should be here as well
                 }
-
-
-                // TODO player hit ceiling
-                // TODO maybe ground check should be here as well
             }
 
             entity = entity->next;
         } while (entity != ENTITIES);
+    }
+
+
+    // Accelerates jump's vertical movement
+    if (yVelocity > yVelocityTarget) {
+        yVelocity -= JUMP_ACCELERATION; // Upwards
+    } else if (yVelocity < yVelocityTarget) {
+        yVelocity += JUMP_ACCELERATION; // Downwards
     }
 }
