@@ -6,8 +6,8 @@
 
 void RenderBackground() {
     float floor = 530;
-    DrawRectangle(0, 0, SCREEN_WIDTH, floor, GRAY); //(Color){ 0x32, 0x29, 0x47, 0xFF }); //(Color){ 0xEB, 0x56, 0x4B, 0xFF });
-    DrawRectangle(0, floor, SCREEN_WIDTH, SCREEN_HEIGHT - floor, (Color){ 0x32, 0x29, 0x47, 0xFF }); 
+    // DrawRectangle(0, 0, SCREEN_WIDTH, floor, GRAY); //(Color){ 0x32, 0x29, 0x47, 0xFF }); //(Color){ 0xEB, 0x56, 0x4B, 0xFF });
+    // DrawRectangle(0, floor, SCREEN_WIDTH, SCREEN_HEIGHT - floor, (Color){ 0x32, 0x29, 0x47, 0xFF }); 
 }
 
 void RenderAllEntities() {
