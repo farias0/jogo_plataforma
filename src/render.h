@@ -3,6 +3,7 @@
 
 #include "entities/entity.h"
 
+void RenderBackground();
 void RenderAllEntities();
 void RenderHUD();
 

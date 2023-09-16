@@ -60,6 +60,8 @@ render:
 
             ClearBackground(BLACK);
 
+            RenderBackground();
+
             RenderAllEntities();
 
             RenderHUD();
