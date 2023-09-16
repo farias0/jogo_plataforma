@@ -183,19 +183,25 @@ void PlayerTick(Entity *player) {
 
                 if (CheckCollisionRecs(entity->hitbox, player->hitbox)) {
 
-                    // Player hit ceiling
-                    if (player->hitbox.y > entity->hitbox.y && player->hitbox.y < entity->hitbox.y + entity->hitbox.height) {
-                        isJumping = false;
-                        yVelocity = -2.0f;
-                        yVelocityTarget = -JUMP_START_VELOCITY;
+                    // Player hit wall
+                    if ((abs(player->hitbox.x - entity->hitbox.x - entity->hitbox.width) < 4.0f) ||
+                            (abs(player->hitbox.x + player->hitbox.width - entity->hitbox.x) < 4.0f)) {
+
+                        // debug
+                        DrawText("Hit wall", 10, 80, 20, WHITE);
+
+                        player->hitbox.x -= xVelocity;
                     }
 
-                    // Player hit wall
-                    if ((player->hitbox.x > entity->hitbox.x && player->hitbox.x < entity->hitbox.x + entity->hitbox.width) ||
-                            (player->hitbox.x + player->hitbox.width > entity->hitbox.x &&
-                            player->hitbox.x + player->hitbox.width < entity->hitbox.x + entity->hitbox.width)) {
-                                
-                        player->hitbox.x -= xVelocity;
+                    // Player hit ceiling
+                    if ((abs(player->hitbox.y - (entity->hitbox.y + entity->hitbox.height)) < 10.0f) && isJumping) {
+
+                        // debug
+                        DrawText("Hit ceiling", 10, 100, 20, WHITE);
+
+                        isJumping = false;
+                        yVelocity = -(1/yVelocity);
+                        yVelocityTarget = -JUMP_START_VELOCITY;
                     }
 
                     // TODO maybe ground check should be here as well
