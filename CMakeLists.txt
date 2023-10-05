@@ -13,7 +13,8 @@ add_executable(${PROJECT_NAME} src/game.c src/entities/player.c src/entities/ent
     src/entities/level.c src/entities/camera.c src/global.c src/render.c src/input.c )
 
 set(raylib_VERBOSE 1)
-target_link_libraries(${PROJECT_NAME} raylib m)
+#add_subdirectory(raygui/projects/CMake build/raygui)
+target_link_libraries(${PROJECT_NAME} raylib m) # 'm' is libm
 
 # required by raylib
 if (APPLE)

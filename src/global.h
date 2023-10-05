@@ -5,8 +5,12 @@
 #include "entities/entity.h"
 #include "entities/player.h"
 
+// Currently this represents the play space (not including editor)
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
+
+#define EDITOR_BAR_WIDTH    200
+#define SCREEN_WIDTH_FULL   SCREEN_WIDTH + EDITOR_BAR_WIDTH // TODO rename this constant
 
 #define FLOOR_HEIGHT 600
 #define FLOOR_DEATH_HEIGHT 800 // Below this y the player dies

@@ -10,6 +10,11 @@
 #include "render.h"
 #include "input.h"
 
+
+#define RAYGUI_IMPLEMENTATION
+#include "../include/raygui.h"
+
+
 void updateWindowTitle() {
     char title[50];
     sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());
@@ -26,7 +31,7 @@ int main(int argc, char **argv)
     // debug
     STATE->gamepadIdx = 0;
 
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Jogo de plataforma");
+    InitWindow(SCREEN_WIDTH_FULL, SCREEN_HEIGHT, "Jogo de plataforma");
     SetTargetFPS(60);
 
     ResetGameState();
@@ -57,6 +62,8 @@ int main(int argc, char **argv)
 render:
         { // Game Render
             BeginDrawing();
+
+            GuiWindowBox((Rectangle){ SCREEN_WIDTH, 0, EDITOR_BAR_WIDTH, SCREEN_HEIGHT }, "Editor");
 
             ClearBackground(BLACK);
 
