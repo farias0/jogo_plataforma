@@ -4,6 +4,10 @@
 #include "entities/entity.h"
 #include "global.h"
 
+#define RAYGUI_IMPLEMENTATION
+#include "../include/raygui.h"
+
+
 void RenderBackground() {
     float floor = 530;
     // DrawRectangle(0, 0, SCREEN_WIDTH, floor, GRAY); //(Color){ 0x32, 0x29, 0x47, 0xFF }); //(Color){ 0xEB, 0x56, 0x4B, 0xFF });
@@ -83,4 +87,31 @@ void RenderHUD() {
         DrawText(GetGamepadName(STATE->gamepadIdx), 10, 920, 20, WHITE);
     }
 
+}
+
+void RenderEditor() {
+
+    Rectangle editorWindow = { SCREEN_WIDTH, 5, EDITOR_BAR_WIDTH, SCREEN_HEIGHT };
+
+    // Currently the color is transparent because it's fun,
+    // but in the future for game design reasons it will have to be solid.
+    Color backgroundColor = (Color){ 150, 150, 150, 40 };
+
+    float buttonSize = 80;
+    float buttonSpacing = 10;
+    float buttonWallSpacing = (EDITOR_BAR_WIDTH - (buttonSize * 2) - buttonSpacing) / 2;
+
+
+    DrawRectangle( editorWindow.x, editorWindow.y, editorWindow.width, editorWindow.height, backgroundColor );
+
+    GuiGroupBox(editorWindow, "Editor");
+
+    int item1 = GuiButton((Rectangle){ editorWindow.x + buttonWallSpacing,
+                                        editorWindow.y + buttonWallSpacing,
+                                        buttonSize,
+                                        buttonSize }, "Item 1");
+    int item2 = GuiButton((Rectangle){ editorWindow.x + buttonWallSpacing + buttonSize + buttonSpacing,
+                                        editorWindow.y + buttonWallSpacing,
+                                        buttonSize,
+                                        buttonSize }, "Item 2");
 }
