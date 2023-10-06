@@ -11,10 +11,6 @@
 #include "input.h"
 
 
-#define RAYGUI_IMPLEMENTATION
-#include "../include/raygui.h"
-
-
 void updateWindowTitle() {
     char title[50];
     sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());
@@ -71,9 +67,7 @@ render:
 
             RenderHUD();
 
-            { // Editor
-                GuiWindowBox((Rectangle){ SCREEN_WIDTH, 0, EDITOR_BAR_WIDTH, SCREEN_HEIGHT }, "Editor");
-            }
+            RenderEditor();
 
             EndDrawing();
         }
