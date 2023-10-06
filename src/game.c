@@ -63,8 +63,6 @@ render:
         { // Game Render
             BeginDrawing();
 
-            GuiWindowBox((Rectangle){ SCREEN_WIDTH, 0, EDITOR_BAR_WIDTH, SCREEN_HEIGHT }, "Editor");
-
             ClearBackground(BLACK);
 
             RenderBackground();
@@ -72,6 +70,10 @@ render:
             RenderAllEntities();
 
             RenderHUD();
+
+            { // Editor
+                GuiWindowBox((Rectangle){ SCREEN_WIDTH, 0, EDITOR_BAR_WIDTH, SCREEN_HEIGHT }, "Editor");
+            }
 
             EndDrawing();
         }

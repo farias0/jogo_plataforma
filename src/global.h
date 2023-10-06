@@ -41,4 +41,6 @@ extern Entity *CAMERA;
 
 void ResetGameState();
 
+bool IsInPlayArea(Vector2 pos);
+
 #endif // _GLOBAL_H_INCLUDED_
