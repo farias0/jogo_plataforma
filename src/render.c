@@ -98,7 +98,7 @@ void RenderEditor() {
     Color backgroundColor = (Color){ 150, 150, 150, 40 };
 
     float buttonSize = 80;
-    float buttonSpacing = 10;
+    float buttonSpacing = 12;
     float buttonWallSpacing = (EDITOR_BAR_WIDTH - (buttonSize * 2) - buttonSpacing) / 2;
 
 
