@@ -113,13 +113,13 @@ void RenderEditor() {
     GuiToggle((Rectangle){ editorWindow.x + buttonWallSpacing,
                                         editorWindow.y + buttonWallSpacing,
                                         buttonSize,
-                                        buttonSize }, "Block", &isItemSelected);
+                                        buttonSize }, "Bloco", &isItemSelected);
     EditorSetSelectedItem(Block, isItemSelected);
 
     isItemSelected = STATE->editorSelectedItem == Enemy;
     GuiToggle((Rectangle){ editorWindow.x + buttonWallSpacing + buttonSize + buttonSpacing,
                                         editorWindow.y + buttonWallSpacing,
                                         buttonSize,
-                                        buttonSize }, "Enemy", &isItemSelected);
+                                        buttonSize }, "Inimigo", &isItemSelected);
     EditorSetSelectedItem(Enemy, isItemSelected);
 }
