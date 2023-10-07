@@ -109,20 +109,26 @@ void RenderEditor() {
 
 
     bool isItemSelected = false;
+    float itemX;
+    float itemY;
 
     isItemSelected = STATE->editorSelectedItem == Block;
-    GuiToggle((Rectangle){ editorWindow.x + buttonWallSpacing,
-                                        editorWindow.y + buttonWallSpacing,
-                                        buttonSize,
-                                        buttonSize }, "Bloco", &isItemSelected);
+    itemX = editorWindow.x + buttonWallSpacing;
+    itemY = editorWindow.y + buttonWallSpacing;
+    //GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, BlockSprite, (Vector2){itemX + 5, itemY + 5}, &isItemSelected);
+    GuiToggle((Rectangle){ itemX, itemY, buttonSize, buttonSize }, "Bloco", &isItemSelected);
     EditorSetSelectedItem(Block, isItemSelected);
 
     isItemSelected = STATE->editorSelectedItem == Enemy;
-    float x = editorWindow.x + buttonWallSpacing + buttonSize + buttonSpacing;
-    float y = editorWindow.y + buttonWallSpacing;
-    GuiToggleSprite((Rectangle){ x,
-                                    y,
-                                    buttonSize,
-                                    buttonSize }, EnemySprite, (Vector2){x + 5, y + 5}, &isItemSelected);
+    itemX = editorWindow.x + buttonWallSpacing + buttonSize + buttonSpacing;
+    itemY = editorWindow.y + buttonWallSpacing;
+    GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, EnemySprite, (Vector2){itemX + 5, itemY + 5}, &isItemSelected);
     EditorSetSelectedItem(Enemy, isItemSelected);
+
+    isItemSelected = STATE->editorSelectedItem == Eraser;
+    itemX = editorWindow.x + buttonWallSpacing;
+    itemY = editorWindow.y + buttonWallSpacing + buttonSize + buttonSpacing;
+    //GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, BlockSprite, (Vector2){itemX + 5, itemY + 5}, &isItemSelected);
+    GuiToggle((Rectangle){ itemX, itemY, buttonSize, buttonSize }, "Borracha", &isItemSelected);
+    EditorSetSelectedItem(Eraser, isItemSelected);
 }
