@@ -79,6 +79,13 @@ void RenderHUD() {
     sprintf(entity_count, "%d entities", CountEntities(ENTITIES));
     DrawText(entity_count, 10, 20, 20, WHITE);
 
+    // Debug
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        Vector2 mousePos = GetMousePosition();
+        char mousePosTxt[50];
+        sprintf(mousePosTxt, "Left click: x=%.0f, y=%.0f", mousePos.x, mousePos.y);
+        DrawText(mousePosTxt, 600, 20, 20, WHITE);
+    }
 
     // Gamepad debug
     if (IsGamepadAvailable(STATE->gamepadIdx)) {
@@ -112,20 +119,20 @@ void RenderEditor() {
     isItemSelected = STATE->editorSelectedItem == Block;
     itemX = editorWindow.x + buttonWallSpacing;
     itemY = editorWindow.y + buttonWallSpacing;
-    GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, BlockSprite, (Vector2){itemX + 5, itemY + 5}, &isItemSelected);
+    GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, BlockSprite, (Vector2){itemX, itemY}, &isItemSelected);
     //GuiToggle((Rectangle){ itemX, itemY, buttonSize, buttonSize }, "Bloco", &isItemSelected);
     EditorSetSelectedItem(Block, isItemSelected);
 
     isItemSelected = STATE->editorSelectedItem == Enemy;
     itemX = editorWindow.x + buttonWallSpacing + buttonSize + buttonSpacing;
     itemY = editorWindow.y + buttonWallSpacing;
-    GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, EnemySprite, (Vector2){itemX + 5, itemY + 5}, &isItemSelected);
+    GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, EnemySprite, (Vector2){itemX, itemY}, &isItemSelected);
     EditorSetSelectedItem(Enemy, isItemSelected);
 
     isItemSelected = STATE->editorSelectedItem == Eraser;
     itemX = editorWindow.x + buttonWallSpacing;
     itemY = editorWindow.y + buttonWallSpacing + buttonSize + buttonSpacing;
-    //GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, BlockSprite, (Vector2){itemX + 5, itemY + 5}, &isItemSelected);
+    //GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, BlockSprite, (Vector2){itemX, itemY}, &isItemSelected);
     GuiToggle((Rectangle){ itemX, itemY, buttonSize, buttonSize }, "Borracha", &isItemSelected);
     EditorSetSelectedItem(Eraser, isItemSelected);
 }

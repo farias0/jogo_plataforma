@@ -2112,6 +2112,10 @@ int GuiToggleSprite(Rectangle bounds, Sprite sprite, Vector2 pos, bool *active)
         GuiDrawRectangle(bounds, GuiGetStyle(TOGGLE, BORDER_WIDTH), GetColor(GuiGetStyle(TOGGLE, BORDER + state*3)), GetColor(GuiGetStyle(TOGGLE, BASE + state*3)));
         //GuiDrawText(text, GetTextBounds(TOGGLE, bounds), GuiGetStyle(TOGGLE, TEXT_ALIGNMENT), GetColor(GuiGetStyle(TOGGLE, TEXT + state*3)));
     }
+
+    // Centralizes the sprite inside the button
+    pos.x += (bounds.width - (sprite.sprite.width * sprite.scale)) / 2;
+    pos.y += (bounds.height - (sprite.sprite.height * sprite.scale)) / 2;
     DrawTextureEx(sprite.sprite, pos, 0, sprite.scale, WHITE);
 
     if (state == STATE_FOCUSED) GuiTooltip(bounds);
