@@ -9,6 +9,7 @@ typedef enum {
     Eraser
 } EditorItem;
 
+// Set item as selected only if 'set' is true
 void EditorSetSelectedItem(EditorItem item, bool set);
 
 

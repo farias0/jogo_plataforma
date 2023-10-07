@@ -4,7 +4,7 @@
 
 #define PLAYER_SPRITE_SCALE 2
 #define ENEMY_SPRITE_SCALE 2
-#define FLOOR_TILE_SIZE 32
+#define FLOOR_TILE_SIZE 2
 
 /*
     TODO use hash map

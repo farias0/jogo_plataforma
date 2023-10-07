@@ -48,15 +48,15 @@ void RenderAllEntities() {
             // Currently the only level element is a floor area to be tiled with a sprite
 
             // How many tiles to be drawn in each axis
-            int xTilesCount = currentItem->hitbox.width / currentItem->sprite.scale;
-            int yTilesCount = currentItem->hitbox.height / currentItem->sprite.scale;
+            int xTilesCount = currentItem->hitbox.width / currentItem->sprite.sprite.width;
+            int yTilesCount = currentItem->hitbox.height / currentItem->sprite.sprite.width;
 
             for (int xCurrent = 0; xCurrent < xTilesCount; xCurrent++) {
                 for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
                     DrawTextureEx(
                                     currentItem->sprite.sprite,
-                                    (Vector2){inSceneX + (xCurrent * currentItem->sprite.scale),
-                                                inSceneY + (yCurrent * currentItem->sprite.scale)},
+                                    (Vector2){inSceneX + (xCurrent * currentItem->sprite.sprite.width),
+                                                inSceneY + (yCurrent * currentItem->sprite.sprite.height)},
                                     0,
                                     1,
                                     WHITE
@@ -93,20 +93,17 @@ void RenderHUD() {
 void RenderEditor() {
 
     Rectangle editorWindow = { SCREEN_WIDTH, 5, EDITOR_BAR_WIDTH, SCREEN_HEIGHT };
-
     // Currently the color is transparent because it's fun,
     // but in the future for game design reasons it will have to be solid.
     Color backgroundColor = (Color){ 150, 150, 150, 40 };
 
+    DrawRectangle( editorWindow.x, editorWindow.y, editorWindow.width, editorWindow.height, backgroundColor );
+    GuiGroupBox(editorWindow, "Editor");
+
+
     float buttonSize = 80;
     float buttonSpacing = 12;
     float buttonWallSpacing = (EDITOR_BAR_WIDTH - (buttonSize * 2) - buttonSpacing) / 2;
-
-
-    DrawRectangle( editorWindow.x, editorWindow.y, editorWindow.width, editorWindow.height, backgroundColor );
-
-    GuiGroupBox(editorWindow, "Editor");
-
 
     bool isItemSelected = false;
     float itemX;
@@ -115,8 +112,8 @@ void RenderEditor() {
     isItemSelected = STATE->editorSelectedItem == Block;
     itemX = editorWindow.x + buttonWallSpacing;
     itemY = editorWindow.y + buttonWallSpacing;
-    //GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, BlockSprite, (Vector2){itemX + 5, itemY + 5}, &isItemSelected);
-    GuiToggle((Rectangle){ itemX, itemY, buttonSize, buttonSize }, "Bloco", &isItemSelected);
+    GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, BlockSprite, (Vector2){itemX + 5, itemY + 5}, &isItemSelected);
+    //GuiToggle((Rectangle){ itemX, itemY, buttonSize, buttonSize }, "Bloco", &isItemSelected);
     EditorSetSelectedItem(Block, isItemSelected);
 
     isItemSelected = STATE->editorSelectedItem == Enemy;
