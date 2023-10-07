@@ -6,13 +6,8 @@
 #include "player.h"
 #include "entity.h"
 #include "../global.h"
+#include "../assets.h"
 
-
-#define PLAYER_SPRITE_SCALE 2
-
-// sprite is 32x64 pixels
-#define PLAYER_WIDTH (float)(PLAYER_SPRITE_SCALE * 32)
-#define PLAYER_HEIGHT (float)(PLAYER_SPRITE_SCALE * 64)
 
 #define PLAYERS_UPPERBODY_PROPORTION 0.90f // What % of the player's height is upperbody, for hitboxes
 
@@ -20,7 +15,7 @@
 #define PLAYER_SPEED_FAST 9.0f
 
 #define PLAYER_JUMP_DURATION 0.75f // In seconds
-#define PLAYER_JUMP_HEIGHT PLAYER_HEIGHT * 1.0
+#define PLAYER_JUMP_HEIGHT 64.0f
 #define PLAYER_END_JUMP_DISTANCE_GROUND 1 // Distance from the ground to end the jump when descending 
 
 #define JUMP_START_VELOCITY 10.0f
@@ -63,9 +58,8 @@ Entity *InitializePlayer(Entity *listItem) {
                             IsPlayer +
                             HasSprite +
                             DoesTick;
-    newPlayer->hitbox = (Rectangle){ 0.0f, 0.0f, PLAYER_WIDTH, PLAYER_HEIGHT };
-    newPlayer->sprite = LoadTexture("../assets/player_default_1.png");
-    newPlayer->spriteScale = PLAYER_SPRITE_SCALE;
+    newPlayer->hitbox = (Rectangle){ 0.0f, 0.0f, PlayerSprite.sprite.width, PlayerSprite.sprite.height };
+    newPlayer->sprite = PlayerSprite;
     newPlayer->isFacingRight = true;
 
     calculatePlayersHitboxes(newPlayer);

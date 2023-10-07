@@ -7,8 +7,8 @@
 #include "../global.h"
 #include "entity.h"
 #include "enemy.h"
+#include "../assets.h"
 
-#define FLOOR_TILE_SIZE 32
 
 typedef struct LevelEnemy {
     Vector2 pos;
@@ -41,17 +41,17 @@ LevelData loadLevelData() {
     data.enemies = MemAlloc(sizeof(LevelEnemy) * data.enemyCount);
     data.blocks = MemAlloc(sizeof(LevelBlock) * data.blockCount);
 
-    data.blocks[0].rect = (Rectangle){ 0,                   FLOOR_HEIGHT,       FLOOR_TILE_SIZE*25, FLOOR_TILE_SIZE*5 };
+    data.blocks[0].rect = (Rectangle){ 0,                           FLOOR_HEIGHT,       BlockSprite.sprite.width*25, BlockSprite.sprite.height*5 };
 
-    data.blocks[1].rect = (Rectangle){ FLOOR_TILE_SIZE*30,  FLOOR_HEIGHT,       FLOOR_TILE_SIZE*10, FLOOR_TILE_SIZE*5 };
+    data.blocks[1].rect = (Rectangle){ BlockSprite.sprite.width*30,  FLOOR_HEIGHT,       BlockSprite.sprite.width*10, BlockSprite.sprite.height*5 };
     data.enemies[0].pos = (Vector2){ data.blocks[1].rect.x + (data.blocks[1].rect.width / 2),
                                         200 };
 
-    data.blocks[2].rect = (Rectangle){ FLOOR_TILE_SIZE*45,  FLOOR_HEIGHT-80,    FLOOR_TILE_SIZE*10, FLOOR_TILE_SIZE*2 };
+    data.blocks[2].rect = (Rectangle){ BlockSprite.sprite.width*45,  FLOOR_HEIGHT-80,    BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 };
 
-    data.blocks[3].rect = (Rectangle){ FLOOR_TILE_SIZE*40,  FLOOR_HEIGHT-200,   FLOOR_TILE_SIZE*5,  FLOOR_TILE_SIZE*1 };
+    data.blocks[3].rect = (Rectangle){ BlockSprite.sprite.width*40,  FLOOR_HEIGHT-200,   BlockSprite.sprite.width*5,  BlockSprite.sprite.height*1 };
 
-    data.blocks[4].rect = (Rectangle){ FLOOR_TILE_SIZE*45,  FLOOR_HEIGHT-320,   FLOOR_TILE_SIZE*5,  FLOOR_TILE_SIZE*1 };
+    data.blocks[4].rect = (Rectangle){ BlockSprite.sprite.width*45,  FLOOR_HEIGHT-320,   BlockSprite.sprite.width*5,  BlockSprite.sprite.height*1 };
 
     return data;
 }
@@ -63,10 +63,10 @@ void freeLoadedLevelData(LevelData data) {
 } 
 
 /*
-    Snaps a coordinate (x or y) into the grid of FLOOR_TILE_SIZE-side squares.
+    Snaps a coordinate (x or y) into the grid BlockSprites.
 */
 float snapToGrid(float v) {
-    return v - (abs(v) % FLOOR_TILE_SIZE);
+    return v - (abs(v) % (int) BlockSprite.sprite.width); // BlockSprite is square, so same for x and y.
 }
 
 void addBlockToLevel(Entity *entitiesItem, LevelBlock block) {
@@ -79,8 +79,7 @@ void addBlockToLevel(Entity *entitiesItem, LevelBlock block) {
                             HasSprite +
                             IsLevelElement;
     entity->hitbox = block.rect;
-    entity->sprite = floorTileTexture;
-    entity->spriteScale = FLOOR_TILE_SIZE;
+    entity->sprite = BlockSprite;
 
     AddToEntityList(entitiesItem, entity);
 }
@@ -122,7 +121,7 @@ void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
     }
 
     LevelBlock block = {
-        { pos.x, pos.y, FLOOR_TILE_SIZE, FLOOR_TILE_SIZE }
+        { pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height }
     };
 
     addBlockToLevel(entitiesItem, block);

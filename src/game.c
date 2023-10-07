@@ -9,6 +9,7 @@
 #include "entities/camera.h"
 #include "render.h"
 #include "input.h"
+#include "assets.h"
 
 
 void updateWindowTitle() {
@@ -29,6 +30,8 @@ int main(int argc, char **argv)
 
     InitWindow(SCREEN_WIDTH_FULL, SCREEN_HEIGHT, "Jogo de plataforma");
     SetTargetFPS(60);
+
+    InitializeAssets();
 
     ResetGameState();
 

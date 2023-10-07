@@ -4,13 +4,8 @@
 #include "entity.h"
 #include "../global.h"
 #include "level.h"
-
-
-#define ENEMY_SPRITE_SCALE 2
-
-// sprite is 32x32 pixels
-#define ENEMY_WIDTH (float)(ENEMY_SPRITE_SCALE * 32)
-#define ENEMY_HEIGHT (float)(ENEMY_SPRITE_SCALE * 32)
+#include "../render.h"
+#include "../assets.h"
 
 #define ENEMY_SPEED_DEFAULT 4.0f
 #define ENEMY_FALL_RATE 7.0f
@@ -24,10 +19,8 @@ Entity *InitializeEnemy(Entity *listItem, int x, int y) {
                             DoesTick +
                             IsEnemy +
                             IsLevelElement;
-    newEnemy->hitbox = (Rectangle){ x - (ENEMY_WIDTH/2), y - ENEMY_HEIGHT + 1, ENEMY_WIDTH, ENEMY_HEIGHT };
-    // TODO load assets only once reference them from the sprite property. An asset manager, basically.
-    newEnemy->sprite = LoadTexture("../assets/enemy_default_1.png");
-    newEnemy->spriteScale = ENEMY_SPRITE_SCALE;
+    newEnemy->hitbox = (Rectangle){ x - (EnemySprite.sprite.width/2), y - EnemySprite.sprite.height + 1, EnemySprite.sprite.width, EnemySprite.sprite.height };
+    newEnemy->sprite = EnemySprite;
     newEnemy->isFacingRight = false;
     newEnemy->isFallingDown = true;
 
@@ -42,10 +35,10 @@ void EnemyTick(Entity *enemy, Entity *player) {
 
     if (enemy->isFallingDown) {
         
-        if (yGroundBeneath >= 0 && enemy->hitbox.y + ENEMY_FALL_RATE + ENEMY_HEIGHT >= yGroundBeneath) {
+        if (yGroundBeneath >= 0 && enemy->hitbox.y + ENEMY_FALL_RATE + EnemySprite.sprite.height >= yGroundBeneath) {
 
             // Land
-            enemy->hitbox.y = yGroundBeneath - ENEMY_HEIGHT;
+            enemy->hitbox.y = yGroundBeneath - EnemySprite.sprite.height;
             enemy->isFallingDown = false;
         }
 
@@ -96,8 +89,8 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
 
     Rectangle hitbox = {
         // Considering the player is clicking in the middle of the sprite
-        pos.x - (ENEMY_WIDTH / 2), pos.y - (ENEMY_HEIGHT / 2),
-        ENEMY_WIDTH, ENEMY_HEIGHT
+        pos.x - (EnemySprite.sprite.width / 2), pos.y - (EnemySprite.sprite.height / 2),
+        EnemySprite.sprite.width, EnemySprite.sprite.height
     };
 
     for (Entity *currentItem = listItem->next; currentItem != listItem; currentItem = currentItem->next) {
@@ -127,7 +120,7 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
         TODO: Make InitializeAbove receive normal x and y.
         The level positions the enemy to fall to the floor.
     */
-    float feet = pos.y + (ENEMY_HEIGHT / 2);
+    float feet = pos.y + (EnemySprite.sprite.height / 2);
 
     InitializeEnemy(listItem, pos.x, feet);
     return true;

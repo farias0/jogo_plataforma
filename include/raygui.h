@@ -1033,6 +1033,9 @@ typedef enum {
 #include <stdarg.h>             // Required for: va_list, va_start(), vfprintf(), va_end() [TextFormat()]
 #include <math.h>               // Required for: roundf() [GuiColorPicker()]
 
+// jogo_plataforma's
+#include "../src/render.h"
+
 #ifdef __cplusplus
     #define RAYGUI_CLITERAL(name) name
 #else
@@ -2061,6 +2064,55 @@ int GuiToggle(Rectangle bounds, const char *text, bool *active)
         GuiDrawRectangle(bounds, GuiGetStyle(TOGGLE, BORDER_WIDTH), GetColor(GuiGetStyle(TOGGLE, BORDER + state*3)), GetColor(GuiGetStyle(TOGGLE, BASE + state*3)));
         GuiDrawText(text, GetTextBounds(TOGGLE, bounds), GuiGetStyle(TOGGLE, TEXT_ALIGNMENT), GetColor(GuiGetStyle(TOGGLE, TEXT + state*3)));
     }
+
+    if (state == STATE_FOCUSED) GuiTooltip(bounds);
+    //--------------------------------------------------------------------
+
+    return result;
+}
+
+// GuiToggle customized to display a sprite
+int GuiToggleSprite(Rectangle bounds, Sprite sprite, Vector2 pos, bool *active)
+{
+    int result = 0;
+    GuiState state = guiState;
+
+    bool temp = false;
+    if (active == NULL) active = &temp;
+
+    // Update control
+    //--------------------------------------------------------------------
+    if ((state != STATE_DISABLED) && !guiLocked && !guiSliderDragging)
+    {
+        Vector2 mousePoint = GetMousePosition();
+
+        // Check toggle button state
+        if (CheckCollisionPointRec(mousePoint, bounds))
+        {
+            if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) state = STATE_PRESSED;
+            else if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
+            {
+                state = STATE_NORMAL;
+                *active = !(*active);
+            }
+            else state = STATE_FOCUSED;
+        }
+    }
+    //--------------------------------------------------------------------
+
+    // Draw control
+    //--------------------------------------------------------------------
+    if (state == STATE_NORMAL)
+    {
+        GuiDrawRectangle(bounds, GuiGetStyle(TOGGLE, BORDER_WIDTH), GetColor(GuiGetStyle(TOGGLE, ((*active)? BORDER_COLOR_PRESSED : (BORDER + state*3)))), GetColor(GuiGetStyle(TOGGLE, ((*active)? BASE_COLOR_PRESSED : (BASE + state*3)))));
+        //GuiDrawText(text, GetTextBounds(TOGGLE, bounds), GuiGetStyle(TOGGLE, TEXT_ALIGNMENT), GetColor(GuiGetStyle(TOGGLE, ((*active)? TEXT_COLOR_PRESSED : (TEXT + state*3)))));
+    }
+    else
+    {
+        GuiDrawRectangle(bounds, GuiGetStyle(TOGGLE, BORDER_WIDTH), GetColor(GuiGetStyle(TOGGLE, BORDER + state*3)), GetColor(GuiGetStyle(TOGGLE, BASE + state*3)));
+        //GuiDrawText(text, GetTextBounds(TOGGLE, bounds), GuiGetStyle(TOGGLE, TEXT_ALIGNMENT), GetColor(GuiGetStyle(TOGGLE, TEXT + state*3)));
+    }
+    DrawTextureEx(sprite.sprite, pos, 0, sprite.scale, WHITE);
 
     if (state == STATE_FOCUSED) GuiTooltip(bounds);
     //--------------------------------------------------------------------

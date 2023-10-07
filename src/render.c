@@ -3,6 +3,7 @@
 
 #include "entities/entity.h"
 #include "global.h"
+#include "assets.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
@@ -25,21 +26,21 @@ void RenderAllEntities() {
         if (currentItem->components & IsPlayer ||
             currentItem->components & IsEnemy)
             if (currentItem->isFacingRight)
-                DrawTextureEx(currentItem->sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->spriteScale, WHITE);
+                DrawTextureEx(currentItem->sprite.sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->sprite.scale, WHITE);
             else {
                 Rectangle source = (Rectangle){
                     0,
                     0,
-                    -currentItem->sprite.width,
-                    currentItem->sprite.height
+                    -currentItem->sprite.sprite.width,
+                    currentItem->sprite.sprite.height
                 };
                 Rectangle destination = (Rectangle){
                     inSceneX,
                     inSceneY,
-                    currentItem->sprite.width * currentItem->spriteScale,
-                    currentItem->sprite.height * currentItem->spriteScale
+                    currentItem->sprite.sprite.width * currentItem->sprite.scale,
+                    currentItem->sprite.sprite.height * currentItem->sprite.scale
                 };
-                DrawTexturePro(currentItem->sprite, source, destination, (Vector2){ 0, 0 }, 0, WHITE);
+                DrawTexturePro(currentItem->sprite.sprite, source, destination, (Vector2){ 0, 0 }, 0, WHITE);
             }
 
         else if (currentItem->components & IsLevelElement) {
@@ -47,15 +48,15 @@ void RenderAllEntities() {
             // Currently the only level element is a floor area to be tiled with a sprite
 
             // How many tiles to be drawn in each axis
-            int xTilesCount = currentItem->hitbox.width / currentItem->spriteScale;
-            int yTilesCount = currentItem->hitbox.height / currentItem->spriteScale;
+            int xTilesCount = currentItem->hitbox.width / currentItem->sprite.scale;
+            int yTilesCount = currentItem->hitbox.height / currentItem->sprite.scale;
 
             for (int xCurrent = 0; xCurrent < xTilesCount; xCurrent++) {
                 for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
                     DrawTextureEx(
-                                    currentItem->sprite,
-                                    (Vector2){inSceneX + (xCurrent * currentItem->spriteScale),
-                                                inSceneY + (yCurrent * currentItem->spriteScale)},
+                                    currentItem->sprite.sprite,
+                                    (Vector2){inSceneX + (xCurrent * currentItem->sprite.scale),
+                                                inSceneY + (yCurrent * currentItem->sprite.scale)},
                                     0,
                                     1,
                                     WHITE
@@ -117,9 +118,11 @@ void RenderEditor() {
     EditorSetSelectedItem(Block, isItemSelected);
 
     isItemSelected = STATE->editorSelectedItem == Enemy;
-    GuiToggle((Rectangle){ editorWindow.x + buttonWallSpacing + buttonSize + buttonSpacing,
-                                        editorWindow.y + buttonWallSpacing,
-                                        buttonSize,
-                                        buttonSize }, "Inimigo", &isItemSelected);
+    float x = editorWindow.x + buttonWallSpacing + buttonSize + buttonSpacing;
+    float y = editorWindow.y + buttonWallSpacing;
+    GuiToggleSprite((Rectangle){ x,
+                                    y,
+                                    buttonSize,
+                                    buttonSize }, EnemySprite, (Vector2){x + 5, y + 5}, &isItemSelected);
     EditorSetSelectedItem(Enemy, isItemSelected);
 }
