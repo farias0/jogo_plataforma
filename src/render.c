@@ -106,12 +106,20 @@ void RenderEditor() {
 
     GuiGroupBox(editorWindow, "Editor");
 
-    int item1 = GuiButton((Rectangle){ editorWindow.x + buttonWallSpacing,
+
+    bool isItemSelected = false;
+
+    isItemSelected = STATE->editorSelectedItem == Block;
+    GuiToggle((Rectangle){ editorWindow.x + buttonWallSpacing,
                                         editorWindow.y + buttonWallSpacing,
                                         buttonSize,
-                                        buttonSize }, "Item 1");
-    int item2 = GuiButton((Rectangle){ editorWindow.x + buttonWallSpacing + buttonSize + buttonSpacing,
+                                        buttonSize }, "Block", &isItemSelected);
+    EditorSetSelectedItem(Block, isItemSelected);
+
+    isItemSelected = STATE->editorSelectedItem == Enemy;
+    GuiToggle((Rectangle){ editorWindow.x + buttonWallSpacing + buttonSize + buttonSpacing,
                                         editorWindow.y + buttonWallSpacing,
                                         buttonSize,
-                                        buttonSize }, "Item 2");
+                                        buttonSize }, "Enemy", &isItemSelected);
+    EditorSetSelectedItem(Enemy, isItemSelected);
 }

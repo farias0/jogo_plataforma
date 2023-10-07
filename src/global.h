@@ -4,6 +4,7 @@
 
 #include "entities/entity.h"
 #include "entities/player.h"
+#include "editor.h"
 
 // Currently this represents the play space (not including editor)
 #define SCREEN_WIDTH 1280
@@ -24,6 +25,8 @@ typedef struct GameState {
 
     // debug
     int gamepadIdx;
+
+    EditorItem editorSelectedItem;
 } GameState;
 
 
