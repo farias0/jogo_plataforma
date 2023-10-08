@@ -91,6 +91,7 @@ Entity *DestroyEntityOn(Entity *listItem, Vector2 pos) {
     for (Entity *currentItem = listItem->next; currentItem != listItem; currentItem = currentItem->next) {
         
         if (currentItem->components & HasPosition &&
+            !(currentItem->components & IsPlayer) &&
             CheckCollisionPointRec(pos, currentItem->hitbox)) {
                 return DestroyEntity(currentItem);
             }
