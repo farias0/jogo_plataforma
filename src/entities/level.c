@@ -110,7 +110,8 @@ Entity *InitializeLevel(Entity *entitiesItem) {
 void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
 
     // Check if there's a block there already (currently only works for 1x1 blocks)
-    for (Entity *possibleBlock = entitiesItem->next; possibleBlock != entitiesItem; possibleBlock = possibleBlock->next) {
+    Entity *possibleBlock = entitiesItem;
+    do {
         
         if (possibleBlock->components & IsLevelElement &&
                 possibleBlock->hitbox.x == snapToGrid(pos.x) &&
@@ -118,7 +119,10 @@ void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
 
             return;
         }
-    }
+
+        possibleBlock = possibleBlock->next;
+
+    } while (possibleBlock != entitiesItem);
 
     LevelBlock block = {
         { pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height }

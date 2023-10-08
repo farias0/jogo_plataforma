@@ -99,8 +99,9 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
         (EnemySprite.sprite.height * EnemySprite.scale)
     };
 
-    for (Entity *currentItem = listItem->next; currentItem != listItem; currentItem = currentItem->next) {
-        
+    Entity *currentItem = listItem;
+    do {
+    
         if ((currentItem->components & IsLevelElement || currentItem->components & IsEnemy) &&
                 CheckCollisionRecs(hitbox, currentItem->hitbox)) {
 
@@ -117,7 +118,10 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
 
                 return false;
             }
-    }
+
+        currentItem = currentItem->next;
+
+    } while (currentItem != listItem);
 
     /*
         InitializeEnemy places the enemy _above_ this point,
