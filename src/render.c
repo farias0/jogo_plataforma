@@ -9,6 +9,15 @@
 #include "../include/raygui.h"
 
 
+#define EDITOR_BUTTON_SIZE 80
+#define EDITOR_BUTTON_SPACING 12
+#define EDITOR_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (EDITOR_BUTTON_SIZE * 2) - EDITOR_BUTTON_SPACING) / 2
+
+
+// How many editor buttons were rendered this frame.
+int editorButtonsRendered = 0;
+
+
 void RenderBackground() {
     float floor = 530;
     // DrawRectangle(0, 0, SCREEN_WIDTH, floor, GRAY); //(Color){ 0x32, 0x29, 0x47, 0xFF }); //(Color){ 0xEB, 0x56, 0x4B, 0xFF });
@@ -97,6 +106,21 @@ void RenderHUD() {
 
 }
 
+void renderButton(Rectangle editorWindow, EditorItem item, Sprite sprite) {
+    
+    float itemX = editorWindow.x + EDITOR_BUTTON_WALL_SPACING;
+    if (editorButtonsRendered % 2) itemX += EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING;
+
+    float itemY = editorWindow.y + EDITOR_BUTTON_WALL_SPACING;
+    itemY += (EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING) * (editorButtonsRendered / 2);
+    
+    bool isItemSelected = STATE->editorSelectedItem == item;
+    GuiToggleSprite((Rectangle){ itemX, itemY, EDITOR_BUTTON_SIZE, EDITOR_BUTTON_SIZE }, sprite, (Vector2){itemX, itemY}, &isItemSelected);
+    EditorSetSelectedItem(item, isItemSelected);
+
+    editorButtonsRendered++;
+}
+
 void RenderEditor() {
 
     Rectangle editorWindow = { SCREEN_WIDTH, 5, EDITOR_BAR_WIDTH, SCREEN_HEIGHT };
@@ -107,32 +131,7 @@ void RenderEditor() {
     DrawRectangle( editorWindow.x, editorWindow.y, editorWindow.width, editorWindow.height, backgroundColor );
     GuiGroupBox(editorWindow, "Editor");
 
-
-    float buttonSize = 80;
-    float buttonSpacing = 12;
-    float buttonWallSpacing = (EDITOR_BAR_WIDTH - (buttonSize * 2) - buttonSpacing) / 2;
-
-    bool isItemSelected = false;
-    float itemX;
-    float itemY;
-
-    isItemSelected = STATE->editorSelectedItem == Block;
-    itemX = editorWindow.x + buttonWallSpacing;
-    itemY = editorWindow.y + buttonWallSpacing;
-    GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, BlockSprite, (Vector2){itemX, itemY}, &isItemSelected);
-    //GuiToggle((Rectangle){ itemX, itemY, buttonSize, buttonSize }, "Bloco", &isItemSelected);
-    EditorSetSelectedItem(Block, isItemSelected);
-
-    isItemSelected = STATE->editorSelectedItem == Enemy;
-    itemX = editorWindow.x + buttonWallSpacing + buttonSize + buttonSpacing;
-    itemY = editorWindow.y + buttonWallSpacing;
-    GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, EnemySprite, (Vector2){itemX, itemY}, &isItemSelected);
-    EditorSetSelectedItem(Enemy, isItemSelected);
-
-    isItemSelected = STATE->editorSelectedItem == Eraser;
-    itemX = editorWindow.x + buttonWallSpacing;
-    itemY = editorWindow.y + buttonWallSpacing + buttonSize + buttonSpacing;
-    //GuiToggleSprite((Rectangle){ itemX, itemY, buttonSize, buttonSize }, BlockSprite, (Vector2){itemX, itemY}, &isItemSelected);
-    GuiToggle((Rectangle){ itemX, itemY, buttonSize, buttonSize }, "Borracha", &isItemSelected);
-    EditorSetSelectedItem(Eraser, isItemSelected);
+    editorButtonsRendered = 0;
+    renderButton(editorWindow, Block, BlockSprite);
+    renderButton(editorWindow, Enemy, EnemySprite);
 }
