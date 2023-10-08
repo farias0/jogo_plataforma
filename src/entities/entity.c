@@ -87,6 +87,16 @@ void DestroyAllEntities(Entity *listItem) {
     }
 }
 
+Entity *DestroyEntityOn(Entity *listItem, Vector2 pos) {
+    for (Entity *currentItem = listItem->next; currentItem != listItem; currentItem = currentItem->next) {
+        
+        if (currentItem->components & HasPosition &&
+            CheckCollisionPointRec(pos, currentItem->hitbox)) {
+                return DestroyEntity(currentItem);
+            }
+    }
+}
+
 int CountEntities(Entity *listItem) {
     if (listItem == 0) return 0;
 
