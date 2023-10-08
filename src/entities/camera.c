@@ -4,8 +4,8 @@
 #include "entity.h"
 #include "../global.h"
 
-#define CAMERA_FOLLOW_LEFT_X SCREEN_WIDTH/6
-#define CAMERA_FOLLOW_RIGHT_X SCREEN_WIDTH/2
+#define CAMERA_FOLLOW_LEFT_X SCREEN_WIDTH/4
+#define CAMERA_FOLLOW_RIGHT_X (3*SCREEN_WIDTH)/5
 
 
 Entity *InitializeCamera(Entity *listItem) {
@@ -29,7 +29,7 @@ void CameraTick() {
         CAMERA->hitbox.x = PLAYER->hitbox.x - CAMERA_FOLLOW_LEFT_X;
     }
     else if (PLAYER->hitbox.x + PLAYER->hitbox.width > CAMERA->hitbox.x + CAMERA_FOLLOW_RIGHT_X) {
-        CAMERA->hitbox.x = PLAYER->hitbox.x + PLAYER->hitbox.width + CAMERA_FOLLOW_RIGHT_X - SCREEN_WIDTH;
+        CAMERA->hitbox.x = PLAYER->hitbox.x + PLAYER->hitbox.width - CAMERA_FOLLOW_RIGHT_X;
     }
 
     if (PLAYER->hitbox.y) {
