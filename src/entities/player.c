@@ -181,8 +181,8 @@ void PlayerTick(Entity *player) {
                 if (CheckCollisionRecs(entity->hitbox, player->hitbox)) {
 
                     // Player hit wall
-                    if ((abs(player->hitbox.x - entity->hitbox.x - entity->hitbox.width) < 4.0f) ||
-                            (abs(player->hitbox.x + player->hitbox.width - entity->hitbox.x) < 4.0f)) {
+                    if ((abs(player->hitbox.x - entity->hitbox.x - entity->hitbox.width) < 10.0f) ||
+                            (abs(player->hitbox.x + player->hitbox.width - entity->hitbox.x) < 10.0f)) {
 
                         // debug
                         DrawText("Hit wall", 10, 80, 20, WHITE);
