@@ -2,6 +2,7 @@
 #include <raylib.h>
 #include "string.h"
 
+#define DEFAULT_SPRITE_SCALE 2
 #define PLAYER_SPRITE_SCALE 2
 #define ENEMY_SPRITE_SCALE 2
 #define FLOOR_TILE_SIZE 1
@@ -13,6 +14,7 @@
 Sprite PlayerSprite;
 Sprite EnemySprite;
 Sprite BlockSprite;
+Sprite EraserSprite;
 
 void InitializeAssets() {
     PlayerSprite = (Sprite){
@@ -26,5 +28,9 @@ void InitializeAssets() {
     BlockSprite = (Sprite){
         LoadTexture("../assets/floor_tile_1.png"),
         FLOOR_TILE_SIZE
+    };
+    EraserSprite = (Sprite){
+        LoadTexture("../assets/eraser_1.png"),
+        DEFAULT_SPRITE_SCALE
     };
 }

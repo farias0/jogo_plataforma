@@ -14,6 +14,7 @@ typedef struct Sprite {
 extern Sprite PlayerSprite;
 extern Sprite EnemySprite;
 extern Sprite BlockSprite;
+extern Sprite EraserSprite;
 
 void InitializeAssets();
 

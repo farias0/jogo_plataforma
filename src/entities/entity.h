@@ -42,6 +42,8 @@ void ClearEntityList(Entity *head);
 void SetEntityPosition(Entity *entity, float x, float y); // Sets the position of the hitbox
 void TickAllEntities(Entity *entity, Entity *player);
 Entity *DestroyEntity(Entity *entity);
+// Destroys an entity whose hitbox contains pos
+Entity *DestroyEntityOn(Entity *listItem, Vector2 pos);
 void DestroyAllEntities(Entity *listItem);
 int CountEntities(Entity *listItem);
 // The y on the ground the player is above, or -1 if not on the ground
