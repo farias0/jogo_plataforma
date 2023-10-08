@@ -4,6 +4,9 @@
 
 #include <raylib.h>
 
+#include "../assets.h"
+
+
 enum Components {
     HasPosition     = 1,
     IsPlayer        = 2,
@@ -21,8 +24,7 @@ typedef struct Entity {
     unsigned long int components;
     
     Rectangle hitbox;
-    Texture2D sprite;   // TODO be a pointer
-    float spriteScale;  // TODO wrap spriteScale together with sprite in some kind of "Sprite" struct 
+    Sprite sprite;
 
     bool isFacingRight;
     bool isFallingDown;

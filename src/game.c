@@ -9,6 +9,8 @@
 #include "entities/camera.h"
 #include "render.h"
 #include "input.h"
+#include "assets.h"
+
 
 void updateWindowTitle() {
     char title[50];
@@ -26,8 +28,10 @@ int main(int argc, char **argv)
     // debug
     STATE->gamepadIdx = 0;
 
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Jogo de plataforma");
+    InitWindow(SCREEN_WIDTH_FULL, SCREEN_HEIGHT, "Jogo de plataforma");
     SetTargetFPS(60);
+
+    InitializeAssets();
 
     ResetGameState();
 
@@ -65,6 +69,8 @@ render:
             RenderAllEntities();
 
             RenderHUD();
+
+            RenderEditor();
 
             EndDrawing();
         }

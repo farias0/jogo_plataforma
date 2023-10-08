@@ -42,25 +42,33 @@ void handlePlayerInput() {
 
 void handleEditorInput() {
 
-    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-        // TODO use a timer to not keep checking it every frame
+    Vector2 mousePosAbsolute = GetMousePosition();
+    if (IsInPlayArea(mousePosAbsolute)) {
 
-        Vector2 mousePos = GetMousePosition();
-        Vector2 blockPos = {
-            mousePos.x + CAMERA->hitbox.x,
-            mousePos.y + CAMERA->hitbox.y
-        };
-        AddBlockToLevel(ENTITIES, blockPos);
-    }
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            // TODO use a timer to not keep checking it every frame
 
-    if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+            Vector2 mousePos = {
+                    mousePosAbsolute.x + CAMERA->hitbox.x,
+                    mousePosAbsolute.y + CAMERA->hitbox.y
+                };
 
-        Vector2 mousePos = GetMousePosition();
-        Vector2 enemyPos = {
-            mousePos.x + CAMERA->hitbox.x,
-            mousePos.y + CAMERA->hitbox.y
-        };
-        bool didPosition = AddEnemyToLevel(ENTITIES, enemyPos);
+            switch (STATE->editorSelectedItem)  {
+
+            case Block:
+                AddBlockToLevel(ENTITIES, mousePos);
+                break;
+
+            case Enemy:
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) { // so holding doesn't keep placing
+                    bool didPosition = AddEnemyToLevel(ENTITIES, mousePos);
+                }
+
+            default:
+                // TODO log error
+                break;
+            }
+        }
     }
 }
 

@@ -21,3 +21,13 @@ void ResetGameState() {
     CAMERA = InitializeCamera(ENTITIES);
     InitializeLevel(ENTITIES);
 }
+
+bool IsInPlayArea(Vector2 pos) {
+    if (pos.x >= 0 && pos.x <= SCREEN_WIDTH &&
+        pos.y >= 0 && pos.y <= SCREEN_HEIGHT) {
+
+            return true;
+        }
+
+    return false;
+}

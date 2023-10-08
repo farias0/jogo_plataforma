@@ -6,6 +6,7 @@
 void RenderBackground();
 void RenderAllEntities();
 void RenderHUD();
+void RenderEditor();
 
 
 #endif // _RENDER_H_INCLUDED_
