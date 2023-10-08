@@ -78,6 +78,7 @@ void RenderAllEntities() {
     } while (currentItem != ENTITIES);
 }
 
+
 void RenderHUD() {
     if (STATE->isPaused && !STATE->isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
     if (STATE->isPlayerDead) DrawText("YOU DIED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 60, RAYWHITE);
@@ -134,4 +135,5 @@ void RenderEditor() {
     editorButtonsRendered = 0;
     renderButton(editorWindow, Block, BlockSprite);
     renderButton(editorWindow, Enemy, EnemySprite);
+    renderButton(editorWindow, Eraser, EraserSprite);
 }
