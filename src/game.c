@@ -39,11 +39,6 @@ int main(int argc, char **argv)
     {
         { // Game Update
 
-            if (IsKeyDown(KEY_BACKSPACE)) {
-                int __dummy; __dummy++; // DEBUG: Put breakpoint in here
-            }
-
-
             /*
                 IMPORTANT: Input handling must be done before ticking -- otheriwise
                 collision checking, which is done in the tick functions, might break. 
@@ -68,9 +63,9 @@ render:
 
             RenderAllEntities();
 
-            RenderHUD();
-
             RenderEditor();
+
+            RenderHUD();
 
             EndDrawing();
         }
