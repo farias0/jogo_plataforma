@@ -151,7 +151,7 @@ void PlayerTick(Entity *player) {
 
     // Collision checking
     {
-        if (PLAYER->hitbox.y > FLOOR_DEATH_HEIGHT) {
+        if (player->hitbox.y > FLOOR_DEATH_HEIGHT) {
             STATE->isPlayerDead = true;
             STATE->isPaused = true;
             return;
@@ -191,7 +191,7 @@ void PlayerTick(Entity *player) {
                     }
 
                     // Player hit ceiling
-                    if ((abs(player->hitbox.y - (entity->hitbox.y + entity->hitbox.height)) < 10.0f) && isJumping) {
+                    if ((abs(player->hitbox.y - (entity->hitbox.y + entity->hitbox.height)) < 15.0f) && isJumping) {
 
                         // debug
                         DrawText("Hit ceiling", 10, 100, 20, WHITE);
