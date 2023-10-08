@@ -19,7 +19,10 @@ Entity *InitializeEnemy(Entity *listItem, int x, int y) {
                             DoesTick +
                             IsEnemy +
                             IsLevelElement;
-    newEnemy->hitbox = (Rectangle){ x - (EnemySprite.sprite.width/2), y - EnemySprite.sprite.height + 1, EnemySprite.sprite.width, EnemySprite.sprite.height };
+    newEnemy->hitbox = (Rectangle){ x - ((EnemySprite.sprite.width * EnemySprite.scale) / 2),
+                                    y - (EnemySprite.sprite.height * EnemySprite.scale) + 1,
+                                    EnemySprite.sprite.width * EnemySprite.scale,
+                                    EnemySprite.sprite.height * EnemySprite.scale };
     newEnemy->sprite = EnemySprite;
     newEnemy->isFacingRight = false;
     newEnemy->isFallingDown = true;
@@ -35,10 +38,11 @@ void EnemyTick(Entity *enemy, Entity *player) {
 
     if (enemy->isFallingDown) {
         
-        if (yGroundBeneath >= 0 && enemy->hitbox.y + ENEMY_FALL_RATE + EnemySprite.sprite.height >= yGroundBeneath) {
+        if (yGroundBeneath >= 0 &&
+            enemy->hitbox.y + enemy->hitbox.height + ENEMY_FALL_RATE >= yGroundBeneath) {
 
             // Land
-            enemy->hitbox.y = yGroundBeneath - EnemySprite.sprite.height;
+            enemy->hitbox.y = yGroundBeneath - enemy->hitbox.height;
             enemy->isFallingDown = false;
         }
 
@@ -89,8 +93,10 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
 
     Rectangle hitbox = {
         // Considering the player is clicking in the middle of the sprite
-        pos.x - (EnemySprite.sprite.width / 2), pos.y - (EnemySprite.sprite.height / 2),
-        EnemySprite.sprite.width, EnemySprite.sprite.height
+        pos.x - ((EnemySprite.sprite.width * EnemySprite.scale) / 2),
+        pos.y - ((EnemySprite.sprite.height * EnemySprite.scale) / 2),
+        (EnemySprite.sprite.width * EnemySprite.scale),
+        (EnemySprite.sprite.height * EnemySprite.scale)
     };
 
     for (Entity *currentItem = listItem->next; currentItem != listItem; currentItem = currentItem->next) {
@@ -120,7 +126,7 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
         TODO: Make InitializeAbove receive normal x and y.
         The level positions the enemy to fall to the floor.
     */
-    float feet = pos.y + (EnemySprite.sprite.height / 2);
+    float feet = pos.y + ((EnemySprite.sprite.height * EnemySprite.scale) / 2);
 
     InitializeEnemy(listItem, pos.x, feet);
     return true;

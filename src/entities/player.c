@@ -58,7 +58,10 @@ Entity *InitializePlayer(Entity *listItem) {
                             IsPlayer +
                             HasSprite +
                             DoesTick;
-    newPlayer->hitbox = (Rectangle){ 0.0f, 0.0f, PlayerSprite.sprite.width, PlayerSprite.sprite.height };
+    newPlayer->hitbox = (Rectangle){ 0.0f,
+                                        0.0f,
+                                        PlayerSprite.sprite.width * PlayerSprite.scale,
+                                        PlayerSprite.sprite.height * PlayerSprite.scale};
     newPlayer->sprite = PlayerSprite;
     newPlayer->isFacingRight = true;
 
