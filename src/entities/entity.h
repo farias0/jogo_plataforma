@@ -46,7 +46,7 @@ Entity *DestroyEntity(Entity *entity);
 Entity *DestroyEntityOn(Entity *listItem, Vector2 pos);
 void DestroyAllEntities(Entity *listItem);
 int CountEntities(Entity *listItem);
-// The y on the ground the player is above, or -1 if not on the ground
-float GetEntitiesGroundBeneath(Entity *entity);
+// The ground beneath the entity, or 0 if not on the ground
+Entity *GetGroundBeneath(Entity *entity);
 
 #endif // _ENTITY_H_INCLUDED_

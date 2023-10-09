@@ -34,15 +34,15 @@ Entity *InitializeEnemy(Entity *listItem, int x, int y) {
 
 void EnemyTick(Entity *enemy, Entity *player) {
     int x_back = enemy->hitbox.x;
-    float yGroundBeneath = GetEntitiesGroundBeneath(enemy);
+    Entity *groundBeneath = GetGroundBeneath(enemy);
 
     if (enemy->isFallingDown) {
         
-        if (yGroundBeneath >= 0 &&
-            enemy->hitbox.y + enemy->hitbox.height + ENEMY_FALL_RATE >= yGroundBeneath) {
+        if (groundBeneath &&
+            enemy->hitbox.y + enemy->hitbox.height + ENEMY_FALL_RATE >= groundBeneath->hitbox.y) {
 
             // Land
-            enemy->hitbox.y = yGroundBeneath - enemy->hitbox.height;
+            enemy->hitbox.y = groundBeneath->hitbox.y - enemy->hitbox.height;
             enemy->isFallingDown = false;
         }
 
@@ -59,8 +59,8 @@ void EnemyTick(Entity *enemy, Entity *player) {
     if (enemy->isFacingRight) enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
     else enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
     
-    // TODO use yGroundBeneath -- currently it breaks the AI
-    if (GetEntitiesGroundBeneath(enemy) == -1) {
+    // TODO use yGroundBeneath -- currently it breaks the AI when it goes to the edge of the ground
+    if (!GetGroundBeneath(enemy)) {
         
         // Turn around
         enemy->hitbox.x = x_back;

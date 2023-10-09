@@ -105,7 +105,7 @@ void PlayerStartJump(Entity *player) {
         pressed a few milliseconds before.
     */
 
-    if (GetEntitiesGroundBeneath(player) >= 0) {
+    if (GetGroundBeneath(player)) {
         isJumping = true;
         yVelocity = JUMP_START_VELOCITY;
         yVelocityTarget = 0.0f;
@@ -119,15 +119,15 @@ void PlayerTick(Entity *player) {
     sprintf(ySpeedTxt, "yVelocity: %f   y: %f", yVelocity, player->hitbox.y);
     DrawText(ySpeedTxt, 10, 40, 20, WHITE);
 
-    float yGroundBeneath = GetEntitiesGroundBeneath(player); 
-    if (yGroundBeneath >= 0) {
+    Entity *groundBeneath = GetGroundBeneath(player); 
+    if (groundBeneath) {
 
         // debug
         DrawText("On the ground!", 10, 60, 20, WHITE);
 
         if (!isJumping) {
             // Landing on the ground
-            player->hitbox.y = yGroundBeneath - player->hitbox.height;
+            player->hitbox.y = groundBeneath->hitbox.y - player->hitbox.height;
             yVelocity = 0;
             yVelocityTarget = 0;
         }
@@ -137,7 +137,7 @@ void PlayerTick(Entity *player) {
     if (yVelocityWithinTarget) {
         isJumping = false;
 
-        if (yGroundBeneath == -1) {
+        if (!groundBeneath) {
             // Starts falling down
             yVelocityTarget = -JUMP_START_VELOCITY;
         }
