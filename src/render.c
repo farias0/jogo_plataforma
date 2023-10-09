@@ -133,7 +133,7 @@ void RenderEditor() {
     GuiGroupBox(editorWindow, "Editor");
 
     editorButtonsRendered = 0;
+    renderButton(editorWindow, Eraser, EraserSprite);
     renderButton(editorWindow, Block, BlockSprite);
     renderButton(editorWindow, Enemy, EnemySprite);
-    renderButton(editorWindow, Eraser, EraserSprite);
 }
