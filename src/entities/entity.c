@@ -133,9 +133,9 @@ Entity *GetGroundBeneath(Entity *entity) {
 
             // TODO increase x tolerance
 
-            // If x is within the possible ground, with a fraction of the player's hitbox as "coyote time"
-            possibleGround->hitbox.x < (entity->hitbox.x + ((4*entity->hitbox.width)/5)) &&
-            entity->hitbox.x + (entity->hitbox.width/5) < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&
+            // If x is within the possible ground
+            possibleGround->hitbox.x < (entity->hitbox.x + entity->hitbox.width) &&
+            entity->hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&
 
             // If y is RIGHT above the possible ground
             abs(possibleGround->hitbox.y - entitysFoot) <= ON_THE_GROUND_Y_TOLERANCE) {
