@@ -87,7 +87,7 @@ void EnemyTick(Entity *enemy, Entity *player) {
     }
 }
 
-bool AddEnemyToLevel(Entity *head, Vector2 pos) {    
+Entity *AddEnemyToLevel(Entity *head, Vector2 pos) {    
 
     Rectangle hitbox = {
         // Considering the player is clicking in the middle of the sprite
@@ -130,7 +130,6 @@ bool AddEnemyToLevel(Entity *head, Vector2 pos) {
     */
     float feet = pos.y + ((EnemySprite.sprite.height * EnemySprite.scale) / 2);
 
-    // ATTENTION: List's head discarded. Presumes the level is already initialized.
-    InitializeEnemy(head, pos.x, feet);
-    return true;
+
+    return InitializeEnemy(head, pos.x, feet);
 }

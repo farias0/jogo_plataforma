@@ -9,7 +9,6 @@
 // X and Y above which the enemy will be spawn. Initializes an enemy and returns the list's head.
 Entity *InitializeEnemy(Entity *head, int x, int y);
 void EnemyTick(Entity *enemy, Entity *player);
-// InitializeEnemy wrapped. # TODO stardardize this operation
-bool AddEnemyToLevel(Entity *head, Vector2 pos);
+Entity *AddEnemyToLevel(Entity *head, Vector2 pos);
 
 #endif // _ENEMY_H_INCLUDED_

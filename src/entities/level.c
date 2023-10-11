@@ -18,18 +18,18 @@ float snapToGrid(float v) {
 }
 
 Entity *addBlockToLevel(Entity *head, Rectangle hitbox) {
-    Entity *entity = MemAlloc(sizeof(Entity));
+    Entity *newBlock = MemAlloc(sizeof(Entity));
 
     hitbox.x = snapToGrid(hitbox.x);
     hitbox.y = snapToGrid(hitbox.y);
 
-    entity->components = HasPosition +
+    newBlock->components = HasPosition +
                             HasSprite +
                             IsLevelElement;
-    entity->hitbox = hitbox;
-    entity->sprite = BlockSprite;
+    newBlock->hitbox = hitbox;
+    newBlock->sprite = BlockSprite;
 
-    return AddToEntityList(head, entity);
+    return AddToEntityList(head, newBlock);
 }
 
 Entity *InitializeLevel(Entity *head) {
@@ -50,7 +50,7 @@ Entity *InitializeLevel(Entity *head) {
     return head;
 }
 
-void AddBlockToLevel(Entity *head, Vector2 pos) {
+Entity *AddBlockToLevel(Entity *head, Vector2 pos) {
 
     Entity *possibleBlock = head;
 
@@ -61,12 +61,12 @@ void AddBlockToLevel(Entity *head, Vector2 pos) {
                 possibleBlock->hitbox.x == snapToGrid(pos.x) &&
                 possibleBlock->hitbox.y == snapToGrid(pos.y)) {
 
-            return;
+            return head;
         }
 
         possibleBlock = possibleBlock->next;
 
     }
 
-    addBlockToLevel(head, (Rectangle){ pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height });
+    return addBlockToLevel(head, (Rectangle){ pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height });
 }

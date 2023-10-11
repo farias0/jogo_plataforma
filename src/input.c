@@ -56,12 +56,12 @@ void handleEditorInput() {
             switch (STATE->editorSelectedItem)  {
 
             case Block:
-                AddBlockToLevel(ENTITIES_HEAD, mousePosInScene);
+                ENTITIES_HEAD = AddBlockToLevel(ENTITIES_HEAD, mousePosInScene);
                 break;
 
             case Enemy:
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) { // so holding doesn't keep placing
-                    AddEnemyToLevel(ENTITIES_HEAD, mousePosInScene);
+                    ENTITIES_HEAD = AddEnemyToLevel(ENTITIES_HEAD, mousePosInScene);
                 }
                 break;
 

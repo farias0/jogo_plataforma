@@ -6,6 +6,6 @@
 #include "entity.h"
 
 Entity *InitializeLevel(Entity *head);
-void AddBlockToLevel(Entity *head, Vector2 pos);
+Entity *AddBlockToLevel(Entity *head, Vector2 pos);
 
 #endif // _LEVEL_H_INCLUDED_
