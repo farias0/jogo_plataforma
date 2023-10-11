@@ -26,7 +26,7 @@ void renderBackground() {
 
 void renderAllEntities() {
 
-    Entity *currentItem = ENTITIES;
+    Entity *currentItem = ENTITIES_HEAD;
 
     while (currentItem != 0) {
         float inSceneX = currentItem->hitbox.x - CAMERA->hitbox.x;
@@ -86,7 +86,7 @@ void renderHUD() {
 
     // Debug
     char entity_count[50];
-    sprintf(entity_count, "%d entities", CountEntities(ENTITIES));
+    sprintf(entity_count, "%d entities", CountEntities(ENTITIES_HEAD));
     DrawText(entity_count, 10, 20, 20, WHITE);
 
     // Debug

@@ -32,8 +32,8 @@ typedef struct GameState {
 
 extern GameState *STATE;
 
-// An unspecified node in the linked list of all the entities
-extern Entity *ENTITIES;
+// The head of the linked list of all the entities
+extern Entity *ENTITIES_HEAD;
 
 // The entity "player" in the linked list of all the entities
 extern Entity *PLAYER;
@@ -45,5 +45,6 @@ extern Entity *CAMERA;
 void ResetGameState();
 
 bool IsInPlayArea(Vector2 pos);
+
 
 #endif // _GLOBAL_H_INCLUDED_

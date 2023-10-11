@@ -4,7 +4,7 @@
 #include "entities/level.h"
 
 GameState *STATE;
-Entity *ENTITIES;
+Entity *ENTITIES_HEAD;
 Entity *PLAYER;
 Entity *CAMERA;
 
@@ -14,10 +14,10 @@ void ResetGameState() {
     STATE->isPlayerDead = false;
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
 
-    DestroyAllEntities(ENTITIES);
-    ENTITIES = InitializePlayer(0, &PLAYER);
-    ENTITIES = InitializeCamera(ENTITIES, &CAMERA);
-    ENTITIES = InitializeLevel(ENTITIES);
+    DestroyAllEntities(ENTITIES_HEAD);
+    ENTITIES_HEAD = InitializePlayer(0, &PLAYER);
+    ENTITIES_HEAD = InitializeCamera(ENTITIES_HEAD, &CAMERA);
+    ENTITIES_HEAD = InitializeLevel(ENTITIES_HEAD);
 }
 
 bool IsInPlayArea(Vector2 pos) {

@@ -56,10 +56,10 @@ void TickAllEntities(Entity *listItem, Entity *player) {
 }
 
 Entity *DestroyEntity(Entity *entity) {
-    Entity *listHead = ENTITIES; 
-    if (entity == ENTITIES) {
+    Entity *listHead = ENTITIES_HEAD; 
+    if (entity == ENTITIES_HEAD) {
         listHead = entity->next;
-        ENTITIES = listHead;
+        ENTITIES_HEAD = listHead;
     }
 
     if (entity->next) entity->next->previous = entity->previous;
@@ -116,7 +116,7 @@ int CountEntities(Entity *listItem) {
 Entity *GetGroundBeneath(Entity *entity) {
 
     int entitysFoot = entity->hitbox.y + entity->hitbox.height;
-    Entity *possibleGround = ENTITIES;
+    Entity *possibleGround = ENTITIES_HEAD;
 
     while (possibleGround != 0) {
 

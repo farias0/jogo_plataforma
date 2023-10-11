@@ -21,7 +21,7 @@ void updateWindowTitle() {
 int main(int argc, char **argv)
 {
     STATE = MemAlloc(sizeof(GameState));
-    ENTITIES = 0;
+    ENTITIES_HEAD = 0;
     PLAYER = 0;
     CAMERA = 0;
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
             HandleInput();
             if (STATE->isPaused) goto render;
 
-            TickAllEntities(ENTITIES, PLAYER);
+            TickAllEntities(ENTITIES_HEAD, PLAYER);
             if (STATE->isPaused) goto render;
 
             updateWindowTitle();

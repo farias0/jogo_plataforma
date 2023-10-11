@@ -68,7 +68,7 @@ void EnemyTick(Entity *enemy, Entity *player) {
 
     // Collision checking
     {
-        Entity *enemy = ENTITIES;
+        Entity *enemy = ENTITIES_HEAD;
         while (enemy != 0) {
 
             if (enemy->components & IsEnemy) {
@@ -77,7 +77,7 @@ void EnemyTick(Entity *enemy, Entity *player) {
                 if  (enemy->hitbox.x + enemy->hitbox.width < 0 ||
                         enemy->hitbox.y > FLOOR_DEATH_HEIGHT) {
                             
-                    ENTITIES = DestroyEntity(enemy); // TODO: How does this break the loop?
+                    ENTITIES_HEAD = DestroyEntity(enemy); // TODO: How does this break the loop?
                     break;
                 }
             }

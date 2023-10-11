@@ -155,7 +155,7 @@ void PlayerTick(Entity *player) {
             return;
         }
 
-        Entity *entity = ENTITIES;
+        Entity *entity = ENTITIES_HEAD;
         while (entity != 0) {
 
             if (entity->components & IsEnemy) {
@@ -169,7 +169,7 @@ void PlayerTick(Entity *player) {
 
                 // Player hit enemy
                 if (CheckCollisionRecs(entity->hitbox, playersLowebody)) {
-                    ENTITIES = DestroyEntity(entity); // TODO: How does this break the loop?
+                    ENTITIES_HEAD = DestroyEntity(entity); // TODO: How does this break the loop?
                     break;
                 }
             }
