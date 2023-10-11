@@ -23,9 +23,6 @@ typedef struct GameState {
 
     PlayerMovementSpeed playerMovementSpeed;
 
-    // debug
-    int gamepadIdx;
-
     EditorItem editorSelectedItem;
 } GameState;
 

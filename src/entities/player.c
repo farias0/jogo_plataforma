@@ -51,6 +51,14 @@ void calculatePlayersHitboxes(Entity *player) {
     };
 }
 
+void die() {
+    STATE->isPlayerDead = true;
+    STATE->isPaused = true;
+
+    TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isJumping=%d",
+                PLAYER->hitbox.x, PLAYER->hitbox.y, isJumping);
+}
+
 Entity *InitializePlayer(Entity *head, Entity **newPlayer) {
     *newPlayer = MemAlloc(sizeof(Entity));
 
@@ -150,8 +158,7 @@ void PlayerTick(Entity *player) {
     // Collision checking
     {
         if (player->hitbox.y > FLOOR_DEATH_HEIGHT) {
-            STATE->isPlayerDead = true;
-            STATE->isPaused = true;
+            die();
             return;
         }
 
@@ -162,8 +169,7 @@ void PlayerTick(Entity *player) {
 
                 // Enemy hit player
                 if (CheckCollisionRecs(entity->hitbox, playersUpperbody)) {
-                    STATE->isPlayerDead = true;
-                    STATE->isPaused = true;
+                    die();
                     break;
                 }
 

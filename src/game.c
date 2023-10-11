@@ -25,8 +25,12 @@ int main(int argc, char **argv)
     PLAYER = 0;
     CAMERA = 0;
 
+
     // debug
-    STATE->gamepadIdx = 0;
+    int gamepadIdx = 0;
+    if (IsGamepadAvailable(gamepadIdx))
+        TraceLog(LOG_DEBUG, "Gamepad detected. Index=%i.", gamepadIdx);
+
 
     SetTraceLogLevel(LOG_DEBUG);
     InitWindow(SCREEN_WIDTH_FULL, SCREEN_HEIGHT, "Jogo de plataforma");

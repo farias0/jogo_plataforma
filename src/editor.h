@@ -4,9 +4,9 @@
 #include <raylib.h>
 
 typedef enum { 
+    Eraser,
     Block,
     Enemy,
-    Eraser
 } EditorItem;
 
 // Set item as selected only if 'set' is true

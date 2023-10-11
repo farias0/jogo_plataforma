@@ -96,15 +96,6 @@ void renderHUD() {
         sprintf(mousePosTxt, "Left click: x=%.0f, y=%.0f", mousePos.x, mousePos.y);
         DrawText(mousePosTxt, 600, 20, 20, WHITE);
     }
-
-    // Gamepad debug
-    if (IsGamepadAvailable(STATE->gamepadIdx)) {
-        char gpad[27];
-        sprintf(gpad, "Gamepad index: %i", STATE->gamepadIdx);
-        DrawText(gpad, 10, 900, 20, WHITE);
-        DrawText(GetGamepadName(STATE->gamepadIdx), 10, 920, 20, WHITE);
-    }
-
 }
 
 void renderButton(Rectangle editorWindow, EditorItem item, Sprite sprite) {

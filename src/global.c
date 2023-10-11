@@ -18,6 +18,8 @@ void ResetGameState() {
     ENTITIES_HEAD = InitializePlayer(0, &PLAYER);
     ENTITIES_HEAD = InitializeCamera(ENTITIES_HEAD, &CAMERA);
     ENTITIES_HEAD = InitializeLevel(ENTITIES_HEAD);
+
+    TraceLog(LOG_DEBUG, "Game state reset.");
 }
 
 bool IsInPlayArea(Vector2 pos) {

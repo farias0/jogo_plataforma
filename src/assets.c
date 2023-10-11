@@ -33,4 +33,6 @@ void InitializeAssets() {
         LoadTexture("../assets/eraser_1.png"),
         DEFAULT_SPRITE_SCALE
     };
+
+    TraceLog(LOG_DEBUG, "Assets initialized.");
 }

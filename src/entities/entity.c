@@ -113,6 +113,11 @@ int CountEntities(Entity *listItem) {
         currentItem = currentItem->next;
     }
 
+    // At least Camera and Player must be present
+    if (counter < 2) {
+        TraceLog(LOG_ERROR, "Entity counter at %d!", counter);
+    }
+
     return counter;
 }
 
