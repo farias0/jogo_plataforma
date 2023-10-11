@@ -11,7 +11,7 @@
 #define ENEMY_FALL_RATE 7.0f
 
 
-Entity *InitializeEnemy(Entity *listItem, int x, int y) { 
+Entity *InitializeEnemy(Entity *head, int x, int y) { 
     Entity *newEnemy = MemAlloc(sizeof(Entity));
 
     newEnemy->components = HasPosition +
@@ -27,9 +27,7 @@ Entity *InitializeEnemy(Entity *listItem, int x, int y) {
     newEnemy->isFacingRight = false;
     newEnemy->isFallingDown = true;
 
-    AddToEntityList(listItem, newEnemy);
-
-    return newEnemy;
+    return AddToEntityList(head, newEnemy);
 }
 
 void EnemyTick(Entity *enemy, Entity *player) {
@@ -85,11 +83,11 @@ void EnemyTick(Entity *enemy, Entity *player) {
             }
 
             enemy = enemy->next;
-        } while (enemy != ENTITIES);
+        } while (enemy != 0);
     }
 }
 
-bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {    
+bool AddEnemyToLevel(Entity *head, Vector2 pos) {    
 
     Rectangle hitbox = {
         // Considering the player is clicking in the middle of the sprite
@@ -99,8 +97,8 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
         (EnemySprite.sprite.height * EnemySprite.scale)
     };
 
-    Entity *currentItem = listItem;
-    do {
+    Entity *currentItem = head;
+    while (currentItem != 0) {
     
         if ((currentItem->components & IsLevelElement || currentItem->components & IsEnemy) &&
                 CheckCollisionRecs(hitbox, currentItem->hitbox)) {
@@ -121,7 +119,7 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
 
         currentItem = currentItem->next;
 
-    } while (currentItem != listItem);
+    }
 
     /*
         InitializeEnemy places the enemy _above_ this point,
@@ -132,6 +130,7 @@ bool AddEnemyToLevel(Entity *listItem, Vector2 pos) {
     */
     float feet = pos.y + ((EnemySprite.sprite.height * EnemySprite.scale) / 2);
 
-    InitializeEnemy(listItem, pos.x, feet);
+    // ATTENTION: List's head discarded. Presumes the level is already initialized.
+    InitializeEnemy(head, pos.x, feet);
     return true;
 }

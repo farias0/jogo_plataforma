@@ -30,23 +30,32 @@ typedef struct Entity {
     bool isFallingDown;
 } Entity;
 
+
 /*
     TODO: Entity system implemented as a linked list.
     Should reimplement it as a data structure that uses contiguous memory.
 */
-void AddToEntityList(Entity *listItem, Entity *toBeAdded);
-int RemoveFromEntityList(Entity *head, Entity *toBeRemoved);
-void ClearEntityList(Entity *head);
 
-// Common operations
+
+// Adds an Entity to the end of the list and returns the head
+Entity *AddToEntityList(Entity *head, Entity *toBeAdded);
+
 void SetEntityPosition(Entity *entity, float x, float y); // Sets the position of the hitbox
+
 void TickAllEntities(Entity *entity, Entity *player);
+
+// Remove entity from linked list, destroy it and returns the list's head
 Entity *DestroyEntity(Entity *entity);
-// Destroys an entity whose hitbox contains pos
-Entity *DestroyEntityOn(Entity *listItem, Vector2 pos);
-void DestroyAllEntities(Entity *listItem);
+
+// Destroys an entity whose hitbox contains pos and returns the list's head
+Entity *DestroyEntityOn(Entity *head, Vector2 pos);
+
+void DestroyAllEntities(Entity *head);
+
 int CountEntities(Entity *listItem);
+
 // The ground beneath the entity, or 0 if not on the ground
 Entity *GetGroundBeneath(Entity *entity);
+
 
 #endif // _ENTITY_H_INCLUDED_

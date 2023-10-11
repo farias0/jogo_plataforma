@@ -23,7 +23,8 @@ typedef enum PlayerHorizontalMovementType {
 */
 extern Rectangle playersUpperbody, playersLowebody;
 
-Entity *InitializePlayer(Entity *listItem);
+// Initializes a player and returns the list's head.
+Entity *InitializePlayer(Entity *head, Entity **newPlayer);
 void UpdatePlayerHorizontalMovement(PlayerHorizontalMovementType direction);
 void PlayerStartJump(Entity *player);
 void PlayerTick(Entity *player);
