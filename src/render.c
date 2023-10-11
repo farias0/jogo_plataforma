@@ -18,13 +18,13 @@
 int editorButtonsRendered = 0;
 
 
-void RenderBackground() {
+void renderBackground() {
     float floor = 530;
     // DrawRectangle(0, 0, SCREEN_WIDTH, floor, GRAY); //(Color){ 0x32, 0x29, 0x47, 0xFF }); //(Color){ 0xEB, 0x56, 0x4B, 0xFF });
     // DrawRectangle(0, floor, SCREEN_WIDTH, SCREEN_HEIGHT - floor, (Color){ 0x32, 0x29, 0x47, 0xFF }); 
 }
 
-void RenderAllEntities() {
+void renderAllEntities() {
 
     Entity *currentItem = ENTITIES;
 
@@ -79,7 +79,7 @@ void RenderAllEntities() {
 }
 
 
-void RenderHUD() {
+void renderHUD() {
     if (STATE->isPaused && !STATE->isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
     if (STATE->isPlayerDead) DrawText("YOU DIED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 60, RAYWHITE);
 
@@ -122,7 +122,7 @@ void renderButton(Rectangle editorWindow, EditorItem item, Sprite sprite) {
     editorButtonsRendered++;
 }
 
-void RenderEditor() {
+void renderEditor() {
 
     Rectangle editorWindow = { SCREEN_WIDTH, 5, EDITOR_BAR_WIDTH, SCREEN_HEIGHT };
     // Currently the color is transparent because it's fun,
@@ -136,4 +136,16 @@ void RenderEditor() {
     renderButton(editorWindow, Eraser, EraserSprite);
     renderButton(editorWindow, Block, BlockSprite);
     renderButton(editorWindow, Enemy, EnemySprite);
+}
+
+void Render() {
+    ClearBackground(BLACK);
+
+    renderBackground();
+
+    renderAllEntities();
+
+    renderEditor();
+
+    renderHUD();
 }

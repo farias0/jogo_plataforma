@@ -12,7 +12,6 @@ Entity *CAMERA;
 void ResetGameState() {
     STATE->isPaused = false;
     STATE->isPlayerDead = false;
-
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
 
     DestroyAllEntities(ENTITIES);

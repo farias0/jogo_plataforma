@@ -55,18 +55,10 @@ int main(int argc, char **argv)
         }
 
 render:
-        { // Game Render
+        {
             BeginDrawing();
 
-            ClearBackground(BLACK);
-
-            RenderBackground();
-
-            RenderAllEntities();
-
-            RenderEditor();
-
-            RenderHUD();
+            Render();
 
             EndDrawing();
         }

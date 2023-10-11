@@ -3,10 +3,7 @@
 
 #include "entities/entity.h"
 
-void RenderBackground();
-void RenderAllEntities();
-void RenderHUD();
-void RenderEditor();
+void Render();
 
 
 #endif // _RENDER_H_INCLUDED_
