@@ -53,13 +53,11 @@ Entity *InitializeLevel(Entity *head) {
 Entity *AddBlockToLevel(Entity *head, Vector2 pos) {
 
     Entity *possibleBlock = head;
-
-    // Check if there's a block there already (currently only works for 1x1 blocks)
+    
     while (possibleBlock != 0) {
         
         if (possibleBlock->components & IsLevelElement &&
-                possibleBlock->hitbox.x == snapToGrid(pos.x) &&
-                possibleBlock->hitbox.y == snapToGrid(pos.y)) {
+                CheckCollisionPointRec(pos, possibleBlock->hitbox)) {
 
             return head;
         }
