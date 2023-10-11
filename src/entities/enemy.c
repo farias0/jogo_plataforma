@@ -69,7 +69,7 @@ void EnemyTick(Entity *enemy, Entity *player) {
     // Collision checking
     {
         Entity *enemy = ENTITIES;
-        do {
+        while (enemy != 0) {
 
             if (enemy->components & IsEnemy) {
 
@@ -83,7 +83,7 @@ void EnemyTick(Entity *enemy, Entity *player) {
             }
 
             enemy = enemy->next;
-        } while (enemy != 0);
+        }
     }
 }
 
