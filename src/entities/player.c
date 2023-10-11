@@ -176,35 +176,38 @@ void PlayerTick(Entity *player) {
                 }
             }
 
-            else if (entity->components & IsLevelElement) {
+            else if (entity->components & IsLevelElement &&
+                        CheckCollisionRecs(entity->hitbox, player->hitbox)) {
 
-                if (CheckCollisionRecs(entity->hitbox, player->hitbox)) {
+                // Player hit wall
+                if ((abs(player->hitbox.x - entity->hitbox.x - entity->hitbox.width) < 10.0f) ||
+                        (abs(player->hitbox.x + player->hitbox.width - entity->hitbox.x) < 10.0f)) {
 
-                    // Player hit wall
-                    if ((abs(player->hitbox.x - entity->hitbox.x - entity->hitbox.width) < 10.0f) ||
-                            (abs(player->hitbox.x + player->hitbox.width - entity->hitbox.x) < 10.0f)) {
+                    // debug
+                    DrawText("Hit wall", 10, 80, 20, WHITE);
 
-                        // debug
-                        DrawText("Hit wall", 10, 80, 20, WHITE);
+                    player->hitbox.x -= xVelocity;
 
-                        player->hitbox.x -= xVelocity;
-                    }
-
-                    // Player hit ceiling
-                    if ((abs(player->hitbox.y - (entity->hitbox.y + entity->hitbox.height)) < 15.0f) && isJumping) {
-
-                        // debug
-                        DrawText("Hit ceiling", 10, 100, 20, WHITE);
-
-                        isJumping = false;
-                        yVelocity = -(1/yVelocity);
-                        yVelocityTarget = -JUMP_START_VELOCITY;
-                    }
-
-                    // TODO maybe ground check should be here as well
+                    goto next_entity;
                 }
+
+                // Player hit ceiling
+                if ((abs(player->hitbox.y - (entity->hitbox.y + entity->hitbox.height)) < 15.0f) && isJumping) {
+
+                    // debug
+                    DrawText("Hit ceiling", 10, 100, 20, WHITE);
+
+                    isJumping = false;
+                    yVelocity = -(1/yVelocity);
+                    yVelocityTarget = -JUMP_START_VELOCITY;
+
+                    goto next_entity;
+                }
+
+                // TODO maybe ground check should be here as well
             }
 
+next_entity:
             entity = entity->next;
         } while (entity != ENTITIES);
     }
