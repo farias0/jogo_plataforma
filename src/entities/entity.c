@@ -6,47 +6,29 @@
 #include "enemy.h"
 #include "level.h"
 #include "camera.h"
+#include "../global.h"
 
 #define ON_THE_GROUND_Y_TOLERANCE 5 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 
 
-    /*
-        Adds a new entity right after listItem.
-    */
-void AddToEntityList(Entity *listItem, Entity *toBeAdded) {
-    
-    if (listItem) {
-        Entity *nextItem = listItem->next;
+Entity *AddToEntityList(Entity *head, Entity *toBeAdded) { 
 
-        nextItem->previous = toBeAdded;
-        toBeAdded->previous = listItem;
+    Entity *lastItem = head;
 
-        listItem->next = toBeAdded;
-        toBeAdded->next = nextItem;
-    } else {
-        toBeAdded->next = toBeAdded;
-        toBeAdded->previous = toBeAdded;
+    if (head) {
+        while (lastItem->next != 0) {
+            lastItem = lastItem->next;
+        }
+
+        lastItem->next = toBeAdded;
+    }  else {
+        head = toBeAdded;
     }
-}
 
-int RemoveFromEntityList(Entity *head, Entity *toBeRemoved) {
-    if (toBeRemoved->previous) toBeRemoved->previous->next = toBeRemoved->next;
-    if (toBeRemoved->next) toBeRemoved->next->previous = toBeRemoved->previous;
-    
-    if (head == toBeRemoved) head = head->next;
+    toBeAdded->previous = lastItem;
+    toBeAdded->next = 0;
 
-    MemFree(toBeRemoved);
-}
-
-void ClearEntityList(Entity *head) {
-    
-    Entity *current = head;
-
-    while (current) {
-        Entity *next = current->next;
-        MemFree(current);
-        current = next;
-    } 
+    return head;
 }
 
 void SetEntityPosition(Entity *entity, float x, float y) {
@@ -57,41 +39,52 @@ void SetEntityPosition(Entity *entity, float x, float y) {
 void TickAllEntities(Entity *listItem, Entity *player) {
     Entity *currentItem = listItem;
 
-    do {
+    while (currentItem != 0) {
         // IMPORTANT: Enemy must tick before player or collision check between
         // the two _might_ break
         if (currentItem->components & IsEnemy) EnemyTick(currentItem, player);
         else if (currentItem->components & IsPlayer) PlayerTick(currentItem);
         else if (currentItem->components & IsCamera) CameraTick();
 
+        /*
+            TODO !! EXTREMELY IMPORTANT !!
+            If currentItem was Destroyed during this iteration, then the statement below will break.
+            Fix this.
+        */
         currentItem = currentItem->next;
-    } while (currentItem != listItem);
-}
-
-Entity *DestroyEntity(Entity *entity) {
-    Entity *listReference = entity;
-    if (entity == entity->next) listReference = 0;
-    else listReference = entity->next;
-
-    entity->next->previous = entity->previous;
-    entity->previous->next = entity->next;
-
-    MemFree(entity);
-
-    return listReference;
-}
-
-void DestroyAllEntities(Entity *listItem) {
-    while (listItem) {
-        listItem = DestroyEntity(listItem);
     }
 }
 
-Entity *DestroyEntityOn(Entity *listItem, Vector2 pos) {
-    
-    Entity *currentItem = listItem;
+Entity *DestroyEntity(Entity *entity) {
+    Entity *listHead = ENTITIES; 
+    if (entity == ENTITIES) {
+        listHead = entity->next;
+        ENTITIES = listHead;
+    }
 
-    do {
+    if (entity->next) entity->next->previous = entity->previous;
+    if (entity->previous) entity->previous->next = entity->next;
+
+    Entity copy = *entity;
+
+    MemFree(entity);
+
+    TraceLog(LOG_DEBUG, "Entity of component=%lu destroyed.", copy.components);
+
+    return listHead;
+}
+
+void DestroyAllEntities(Entity *head) {
+    while (head) {
+        head = DestroyEntity(head);
+    }
+}
+
+Entity *DestroyEntityOn(Entity *head, Vector2 pos) {
+    
+    Entity *currentItem = head;
+
+    while (currentItem != 0) {
 
         if (currentItem->components & HasPosition &&
             !(currentItem->components & IsPlayer) &&
@@ -102,21 +95,20 @@ Entity *DestroyEntityOn(Entity *listItem, Vector2 pos) {
 
         currentItem = currentItem->next;
         
-    } while (currentItem != listItem);
+    };
 
-    return listItem;
+    return head;
 }
 
 int CountEntities(Entity *listItem) {
-    if (listItem == 0) return 0;
 
     Entity *currentItem = listItem;
     int counter = 0;
 
-    do {
+    while (currentItem != 0) {
         counter++;
         currentItem = currentItem->next;
-    } while (currentItem != listItem);
+    }
 
     return counter;
 }
@@ -124,12 +116,13 @@ int CountEntities(Entity *listItem) {
 Entity *GetGroundBeneath(Entity *entity) {
 
     int entitysFoot = entity->hitbox.y + entity->hitbox.height;
-    Entity *possibleGround = entity->next;
+    Entity *possibleGround = ENTITIES;
 
-    while (possibleGround != entity) {
+    while (possibleGround != 0) {
 
         if (possibleGround->components & IsLevelElement &&
 
+            possibleGround != entity &&
 
             // TODO increase x tolerance
 

@@ -16,10 +16,9 @@ void ResetGameState() {
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
 
     DestroyAllEntities(ENTITIES);
-    PLAYER = InitializePlayer(0);
-    ENTITIES = PLAYER;
-    CAMERA = InitializeCamera(ENTITIES);
-    InitializeLevel(ENTITIES);
+    ENTITIES = InitializePlayer(0, &PLAYER);
+    ENTITIES = InitializeCamera(ENTITIES, &CAMERA);
+    ENTITIES = InitializeLevel(ENTITIES);
 }
 
 bool IsInPlayArea(Vector2 pos) {

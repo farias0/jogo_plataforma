@@ -8,16 +8,14 @@
 #define CAMERA_FOLLOW_RIGHT_X (3*SCREEN_WIDTH)/5
 
 
-Entity *InitializeCamera(Entity *listItem) {
-    Entity *newCamera = MemAlloc(sizeof(Entity));
+Entity *InitializeCamera(Entity *head, Entity **newCamera) {
+    *newCamera = MemAlloc(sizeof(Entity));
 
-    newCamera->components = HasPosition +
+    (*newCamera)->components = HasPosition +
                             IsCamera;
-    newCamera->hitbox = (Rectangle){ 0, 0, 0, 0 };
+    (*newCamera)->hitbox = (Rectangle){ 0, 0, 0, 0 };
 
-    AddToEntityList(listItem, newCamera);
-
-    return newCamera;
+    return AddToEntityList(head, *newCamera);
 }
 
 void CameraTick() {

@@ -6,7 +6,8 @@
 
 #include "entity.h"
 
-Entity *InitializeCamera(Entity *listItem);
+// Initializes a new camera and returns the list's head.
+Entity *InitializeCamera(Entity *head, Entity **newCamera);
 void CameraTick();
 
 

@@ -28,7 +28,7 @@ void RenderAllEntities() {
 
     Entity *currentItem = ENTITIES;
 
-    do {
+    while (currentItem != 0) {
         float inSceneX = currentItem->hitbox.x - CAMERA->hitbox.x;
         float inSceneY = currentItem->hitbox.y - CAMERA->hitbox.y;
 
@@ -75,7 +75,7 @@ void RenderAllEntities() {
         }
 
         currentItem = currentItem->next;
-    } while (currentItem != ENTITIES);
+    }
 }
 
 

@@ -69,7 +69,7 @@ float snapToGrid(float v) {
     return v - (abs(v) % (int) BlockSprite.sprite.width); // BlockSprite is square, so same for x and y.
 }
 
-void addBlockToLevel(Entity *entitiesItem, LevelBlock block) {
+Entity *addBlockToLevel(Entity *head, LevelBlock block) {
     Entity *entity = MemAlloc(sizeof(Entity));
 
     block.rect.x = snapToGrid(block.rect.x);
@@ -81,10 +81,10 @@ void addBlockToLevel(Entity *entitiesItem, LevelBlock block) {
     entity->hitbox = block.rect;
     entity->sprite = BlockSprite;
 
-    AddToEntityList(entitiesItem, entity);
+    return AddToEntityList(head, entity);
 }
 
-Entity *InitializeLevel(Entity *entitiesItem) {
+Entity *InitializeLevel(Entity *head) {
     
     floorTileTexture = LoadTexture("../assets/floor_tile_1.png");
 
@@ -92,26 +92,27 @@ Entity *InitializeLevel(Entity *entitiesItem) {
 
     LevelBlock *block = data.blocks;
     for (int idx = 0; idx < data.blockCount; idx++) {
-        addBlockToLevel(entitiesItem, block[idx]);
+        head = addBlockToLevel(head, block[idx]);
     }
 
     LevelEnemy *enemy = data.enemies;
     for (int idx = 0; idx < data.enemyCount; idx++) {
-        entitiesItem = InitializeEnemy(entitiesItem, enemy[idx].pos.x, enemy[idx].pos.y);
+        head = InitializeEnemy(head, enemy[idx].pos.x, enemy[idx].pos.y);
     }
 
     freeLoadedLevelData(data);
 
     SetEntityPosition(PLAYER, SCREEN_WIDTH/5, 300);
 
-    return entitiesItem;
+    return head;
 }
 
-void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
+void AddBlockToLevel(Entity *head, Vector2 pos) {
+
+    Entity *possibleBlock = head;
 
     // Check if there's a block there already (currently only works for 1x1 blocks)
-    Entity *possibleBlock = entitiesItem;
-    do {
+    while (possibleBlock != 0) {
         
         if (possibleBlock->components & IsLevelElement &&
                 possibleBlock->hitbox.x == snapToGrid(pos.x) &&
@@ -122,11 +123,11 @@ void AddBlockToLevel(Entity *entitiesItem, Vector2 pos) {
 
         possibleBlock = possibleBlock->next;
 
-    } while (possibleBlock != entitiesItem);
+    }
 
     LevelBlock block = {
         { pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height }
     };
 
-    addBlockToLevel(entitiesItem, block);
+    addBlockToLevel(head, block);
 }

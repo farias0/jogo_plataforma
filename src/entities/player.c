@@ -51,25 +51,23 @@ void calculatePlayersHitboxes(Entity *player) {
     };
 }
 
-Entity *InitializePlayer(Entity *listItem) {
-    Entity *newPlayer = MemAlloc(sizeof(Entity));
+Entity *InitializePlayer(Entity *head, Entity **newPlayer) {
+    *newPlayer = MemAlloc(sizeof(Entity));
 
-    newPlayer->components = HasPosition +
+    (*newPlayer)->components = HasPosition +
                             IsPlayer +
                             HasSprite +
                             DoesTick;
-    newPlayer->hitbox = (Rectangle){ 0.0f,
+    (*newPlayer)->hitbox = (Rectangle){ 0.0f,
                                         0.0f,
                                         PlayerSprite.sprite.width * PlayerSprite.scale,
                                         PlayerSprite.sprite.height * PlayerSprite.scale};
-    newPlayer->sprite = PlayerSprite;
-    newPlayer->isFacingRight = true;
+    (*newPlayer)->sprite = PlayerSprite;
+    (*newPlayer)->isFacingRight = true;
 
-    calculatePlayersHitboxes(newPlayer);
+    calculatePlayersHitboxes(*newPlayer);
 
-    AddToEntityList(listItem, newPlayer);
-
-    return newPlayer;
+    return AddToEntityList(head, *newPlayer);
 }
 
 void UpdatePlayerHorizontalMovement(PlayerHorizontalMovementType direction) {
@@ -158,7 +156,7 @@ void PlayerTick(Entity *player) {
         }
 
         Entity *entity = ENTITIES;
-        do {
+        while (entity != 0) {
 
             if (entity->components & IsEnemy) {
 
@@ -187,8 +185,8 @@ void PlayerTick(Entity *player) {
                     DrawText("Hit wall", 10, 80, 20, WHITE);
 
                     player->hitbox.x -= xVelocity;
-                    
-                    continue;
+
+                    goto next_entity;
                 }
 
                 // Player hit ceiling
@@ -201,14 +199,15 @@ void PlayerTick(Entity *player) {
                     yVelocity = -(1/yVelocity);
                     yVelocityTarget = -JUMP_START_VELOCITY;
 
-                    continue;
+                    goto next_entity;
                 }
 
                 // TODO maybe ground check should be here as well
             }
 
+next_entity:
             entity = entity->next;
-        } while (entity != ENTITIES);
+        }
     }
 
 
