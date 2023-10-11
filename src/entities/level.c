@@ -14,7 +14,14 @@
     Snaps a coordinate (x or y) into the grid BlockSprites.
 */
 float snapToGrid(float v) {
-    return v - (abs(v) % (int) BlockSprite.sprite.width); // BlockSprite is square, so same for x and y.
+    
+    // BlockSprite is square, so same for x and y.
+
+    if (v >= 0) {
+        return v - ((int) v % (int) BlockSprite.sprite.width);
+    } else {
+        return v - BlockSprite.sprite.width - ((int) v % (int) BlockSprite.sprite.width);
+    }
 }
 
 Entity *addBlockToLevel(Entity *head, Rectangle hitbox) {
@@ -53,7 +60,7 @@ Entity *InitializeLevel(Entity *head) {
 Entity *AddBlockToLevel(Entity *head, Vector2 pos) {
 
     Entity *possibleBlock = head;
-    
+
     while (possibleBlock != 0) {
         
         if (possibleBlock->components & IsLevelElement &&
