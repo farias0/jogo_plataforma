@@ -28,6 +28,9 @@ Entity *AddToEntityList(Entity *head, Entity *toBeAdded) {
     toBeAdded->previous = lastItem;
     toBeAdded->next = 0;
 
+    TraceLog(LOG_DEBUG, "Entity of component=%lu, x=%.1f, y=%.1f added to list.",
+                toBeAdded->components, toBeAdded->hitbox.x, toBeAdded->hitbox.y);
+
     return head;
 }
 

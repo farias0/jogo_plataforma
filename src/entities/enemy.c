@@ -73,9 +73,8 @@ void EnemyTick(Entity *enemy, Entity *player) {
 
             if (enemy->components & IsEnemy) {
 
-                // Enemy offscreen
-                if  (enemy->hitbox.x + enemy->hitbox.width < 0 ||
-                        enemy->hitbox.y > FLOOR_DEATH_HEIGHT) {
+                // Enemy fell off level
+                if  (enemy->hitbox.y > FLOOR_DEATH_HEIGHT) {
                             
                     ENTITIES_HEAD = DestroyEntity(enemy); // TODO: How does this break the loop?
                     break;
