@@ -73,8 +73,8 @@ void addDotToLevel(Vector2 pos) {
 
 void LoadOverworld() {
 
-    float dotX = 200;
-    float dotY = 200;
+    float dotX = SCREEN_WIDTH/2;
+    float dotY = SCREEN_HEIGHT/2;
 
     addDotToLevel((Vector2){ dotX, dotY });
 

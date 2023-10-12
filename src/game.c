@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 
     InitializeGameState();
 
-    InitializeLevel();
+    InitializeOverworld();
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
