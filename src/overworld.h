@@ -3,6 +3,7 @@
 
 
 void LoadOverworld();
+void SelectLevel();
 
 
 #endif // _OVERWORLD_H_INCLUDED_

@@ -4,6 +4,7 @@
 #include "global.h"
 #include "entities/level.h"
 #include "entities/enemy.h"
+#include "overworld.h"
 
 
 #define CAMERA_SPEED 8.0f;
@@ -42,6 +43,11 @@ void handlePlayerInput() {
         UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_STOP);
 
     if (IsKeyPressed(KEY_X)) PlayerStartJump(PLAYER);
+}
+
+void handleOverworldInput() {
+
+    if (IsKeyPressed(KEY_X)) SelectLevel();
 }
 
 void handleEditorInput() {
@@ -94,7 +100,14 @@ void HandleInput() {
     handleGeneralInput();
     if (STATE->isPaused) return;
     
-    handlePlayerInput();
+    if (STATE->mode == InLevel) {
+        handlePlayerInput();
+    }
+
+    else if (STATE->mode == Overworld) {
+        handleOverworldInput();
+    }
+
     handleEditorInput();
     handleCameraInput(); // debug
 }

@@ -82,3 +82,8 @@ void LoadOverworld() {
     // TODO fix this hack
     initializeOverworldCursor(calculateCursorPosition((Vector2){ dotX, dotY }));
 }
+
+void SelectLevel() {
+
+    InitializeLevel(); 
+}

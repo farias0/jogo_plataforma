@@ -57,6 +57,7 @@ void InitializeOverworld() {
     ResetGameState();
     STATE->mode = Overworld;
 
+    PLAYER = 0;
     ReloadEntityList();
     LoadOverworld();
 
