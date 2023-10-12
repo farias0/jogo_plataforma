@@ -183,9 +183,15 @@ void PlayerTick(Entity *player) {
             else if (entity->components & IsLevelElement &&
                         CheckCollisionRecs(entity->hitbox, player->hitbox)) {
 
+
+                // ATENTION: It's important that the wall comes before the ceiling
+
                 // Player hit wall
-                if ((abs(player->hitbox.x - entity->hitbox.x - entity->hitbox.width) < 10.0f) ||
-                        (abs(player->hitbox.x + player->hitbox.width - entity->hitbox.x) < 10.0f)) {
+                if (((player->hitbox.x > entity->hitbox.x) &&
+                        (abs(player->hitbox.x - entity->hitbox.x - entity->hitbox.width) < 10.0f)) ||
+                        
+                        ((player->hitbox.x < entity->hitbox.x) &&
+                        (abs(player->hitbox.x + player->hitbox.width - entity->hitbox.x) < 10.0f))) {
 
                     // debug
                     DrawText("Hit wall", 10, 80, 20, WHITE);
