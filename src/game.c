@@ -20,12 +20,6 @@ void updateWindowTitle() {
 
 int main(int argc, char **argv)
 {
-    STATE = MemAlloc(sizeof(GameState));
-    ENTITIES_HEAD = 0;
-    PLAYER = 0;
-    CAMERA = 0;
-
-
     // debug
     int gamepadIdx = 0;
     if (IsGamepadAvailable(gamepadIdx))
@@ -33,12 +27,15 @@ int main(int argc, char **argv)
 
 
     SetTraceLogLevel(LOG_DEBUG);
+
     InitWindow(SCREEN_WIDTH_FULL, SCREEN_HEIGHT, "Jogo de plataforma");
+    
     SetTargetFPS(60);
 
     InitializeAssets();
 
-    ResetGameState();
+    InitializeGameState();
+
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {

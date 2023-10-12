@@ -39,6 +39,8 @@ extern Entity *PLAYER;
 extern Entity *CAMERA;
 
 
+void InitializeGameState();
+
 void ResetGameState();
 
 bool IsInPlayArea(Vector2 pos);

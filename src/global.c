@@ -3,11 +3,20 @@
 #include "entities/camera.h"
 #include "entities/level.h"
 
-GameState *STATE;
-Entity *ENTITIES_HEAD;
-Entity *PLAYER;
-Entity *CAMERA;
 
+GameState *STATE = 0;
+Entity *ENTITIES_HEAD = 0;
+Entity *PLAYER = 0;
+Entity *CAMERA = 0;
+
+
+void InitializeGameState() {
+    STATE = MemAlloc(sizeof(GameState));
+
+    ResetGameState();
+
+    STATE->editorSelectedItem = Block;
+}
 
 void ResetGameState() {
     STATE->isPaused = false;
@@ -23,11 +32,8 @@ void ResetGameState() {
 }
 
 bool IsInPlayArea(Vector2 pos) {
-    if (pos.x >= 0 && pos.x <= SCREEN_WIDTH &&
-        pos.y >= 0 && pos.y <= SCREEN_HEIGHT) {
-
-            return true;
-        }
-
-    return false;
+    return pos.x >= 0 &&
+            pos.x <= SCREEN_WIDTH &&
+            pos.y >= 0 &&
+            pos.y <= SCREEN_HEIGHT;
 }
