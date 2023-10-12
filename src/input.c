@@ -12,7 +12,7 @@ void handleGeneralInput() {
     if (STATE->isPaused) {
         if (IsKeyPressed(KEY_ENTER)) {
             if (STATE->isPlayerDead) {
-                ResetGameState();
+                PlayerContinue();
             } else {
                 STATE->isPaused = false;
             }
@@ -20,6 +20,10 @@ void handleGeneralInput() {
     }
     else if (IsKeyPressed(KEY_ENTER)) {
         STATE->isPaused = true;
+    }
+
+    if (IsKeyPressed(KEY_BACKSPACE)) {
+        ToggleGameMode();
     }
 }
 

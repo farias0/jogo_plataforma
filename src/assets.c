@@ -34,5 +34,5 @@ void InitializeAssets() {
         DEFAULT_SPRITE_SCALE
     };
 
-    TraceLog(LOG_DEBUG, "Assets initialized.");
+    TraceLog(LOG_INFO, "Assets initialized.");
 }

@@ -11,6 +11,13 @@
 #define ON_THE_GROUND_Y_TOLERANCE 5 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 
 
+void ReloadEntityList() {
+
+    DestroyAllEntities(ENTITIES_HEAD);
+    ENTITIES_HEAD = InitializePlayer(0, &PLAYER);
+    ENTITIES_HEAD = InitializeCamera(ENTITIES_HEAD, &CAMERA);
+}
+
 Entity *AddToEntityList(Entity *head, Entity *toBeAdded) { 
 
     Entity *lastItem = head;
@@ -34,9 +41,9 @@ Entity *AddToEntityList(Entity *head, Entity *toBeAdded) {
     return head;
 }
 
-void SetEntityPosition(Entity *entity, float x, float y) {
-    entity->hitbox.x = x;
-    entity->hitbox.y = y;
+void SetEntityPosition(Entity *entity, Vector2 pos) {
+    entity->hitbox.x = pos.x;
+    entity->hitbox.y = pos.y;
 }
 
 void TickAllEntities(Entity *listItem, Entity *player) {

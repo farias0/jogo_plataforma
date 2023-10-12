@@ -7,15 +7,16 @@
 #include "../assets.h"
 
 
-enum Components {
-    HasPosition     = 1,
-    IsPlayer        = 2,
-    HasSprite       = 4,
-    DoesTick        = 8,
-    IsEnemy         = 16,
-    IsLevelElement  = 32,
-    IsCamera        = 64
-};
+typedef enum Component {
+    HasPosition             = 1,
+    IsPlayer                = 2,
+    HasSprite               = 4,
+    DoesTick                = 8,
+    IsEnemy                 = 16,
+    IsLevelElement          = 32,
+    IsCamera                = 64,
+    IsOverworldElement      = 128
+} Component;
 
 typedef struct Entity {
     struct Entity *previous;
@@ -36,11 +37,13 @@ typedef struct Entity {
     Should reimplement it as a data structure that uses contiguous memory.
 */
 
+// Clears entity list and reloads basic entities
+void ReloadEntityList();
 
 // Adds an Entity to the end of the list and returns the head
 Entity *AddToEntityList(Entity *head, Entity *toBeAdded);
 
-void SetEntityPosition(Entity *entity, float x, float y); // Sets the position of the hitbox
+void SetEntityPosition(Entity *entity, Vector2 pos);
 
 void TickAllEntities(Entity *entity, Entity *player);
 

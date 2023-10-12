@@ -10,6 +10,8 @@
 #include "../assets.h"
 
 
+Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
+
 /*
     Snaps a coordinate (x or y) into the grid BlockSprites.
 */
@@ -39,7 +41,7 @@ Entity *addBlockToLevel(Entity *head, Rectangle hitbox) {
     return AddToEntityList(head, newBlock);
 }
 
-Entity *InitializeLevel(Entity *head) {
+Entity *LoadLevel(Entity *head) {
 
     head = addBlockToLevel(head, (Rectangle){ 0, FLOOR_HEIGHT, BlockSprite.sprite.width*25, BlockSprite.sprite.height*5 });
     
@@ -51,8 +53,6 @@ Entity *InitializeLevel(Entity *head) {
     head = addBlockToLevel(head, (Rectangle){ BlockSprite.sprite.width*45, FLOOR_HEIGHT-80, BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 });
     head = addBlockToLevel(head, (Rectangle){ BlockSprite.sprite.width*40, FLOOR_HEIGHT-200, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
     head = addBlockToLevel(head, (Rectangle){ BlockSprite.sprite.width*45, FLOOR_HEIGHT-320, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
-
-    SetEntityPosition(PLAYER, SCREEN_WIDTH/5, 300);
 
     return head;
 }
@@ -74,4 +74,8 @@ Entity *AddBlockToLevel(Entity *head, Vector2 pos) {
     }
 
     return addBlockToLevel(head, (Rectangle){ pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height });
+}
+
+Vector2 GetPlayerStartingPosition() {
+    return playersStartingPosition;
 }
