@@ -15,6 +15,7 @@ extern Sprite PlayerSprite;
 extern Sprite EnemySprite;
 extern Sprite BlockSprite;
 extern Sprite EraserSprite;
+extern Sprite LevelDotSprite;
 
 void InitializeAssets();
 

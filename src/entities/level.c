@@ -13,9 +13,9 @@
 Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
 /*
-    Snaps a coordinate (x or y) into the grid BlockSprites.
+    Snaps a coordinate (x or y) into the grid of BlockSprites.
 */
-float snapToGrid(float v) {
+float snapToBlockGrid(float v) {
     
     // BlockSprite is square, so same for x and y.
 
@@ -29,8 +29,8 @@ float snapToGrid(float v) {
 Entity *addBlockToLevel(Entity *head, Rectangle hitbox) {
     Entity *newBlock = MemAlloc(sizeof(Entity));
 
-    hitbox.x = snapToGrid(hitbox.x);
-    hitbox.y = snapToGrid(hitbox.y);
+    hitbox.x = snapToBlockGrid(hitbox.x);
+    hitbox.y = snapToBlockGrid(hitbox.y);
 
     newBlock->components = HasPosition +
                             HasSprite +

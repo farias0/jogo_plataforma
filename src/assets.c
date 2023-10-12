@@ -15,6 +15,7 @@ Sprite PlayerSprite;
 Sprite EnemySprite;
 Sprite BlockSprite;
 Sprite EraserSprite;
+Sprite LevelDotSprite;
 
 void InitializeAssets() {
     PlayerSprite = (Sprite){
@@ -31,6 +32,12 @@ void InitializeAssets() {
     };
     EraserSprite = (Sprite){
         LoadTexture("../assets/eraser_1.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+    
+    // Level
+    LevelDotSprite = (Sprite){
+        LoadTexture("../assets/level_dot_1.png"),
         DEFAULT_SPRITE_SCALE
     };
 
