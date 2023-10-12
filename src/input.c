@@ -70,8 +70,7 @@ void handleEditorInput() {
                 break;
 
             default:
-                // TODO log error
-                break;
+                TraceLog(LOG_WARNING, "No code to handle selected item %d.", STATE->editorSelectedItem);
             }
         }
     }
