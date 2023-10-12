@@ -22,10 +22,6 @@ void handleGeneralInput() {
     else if (IsKeyPressed(KEY_ENTER)) {
         STATE->isPaused = true;
     }
-
-    if (IsKeyPressed(KEY_BACKSPACE)) {
-        ToggleGameMode();
-    }
 }
 
 void handlePlayerInput() {
@@ -43,6 +39,8 @@ void handlePlayerInput() {
         UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_STOP);
 
     if (IsKeyPressed(KEY_X)) PlayerStartJump(PLAYER);
+
+    if (IsKeyPressed(KEY_BACKSPACE)) InitializeOverworld();
 }
 
 void handleOverworldInput() {
