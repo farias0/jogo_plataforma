@@ -44,6 +44,7 @@ void InitializeLevel() {
     STATE->mode = InLevel;
 
     ReloadEntityList();
+    ENTITIES_HEAD = InitializePlayer(ENTITIES_HEAD, &PLAYER);
     ENTITIES_HEAD = LoadLevel(ENTITIES_HEAD);
     
     SetEntityPosition(PLAYER, GetPlayerStartingPosition());

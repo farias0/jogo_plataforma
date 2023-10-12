@@ -15,7 +15,8 @@ typedef enum Component {
     IsEnemy                 = 16,
     IsLevelElement          = 32,
     IsCamera                = 64,
-    IsOverworldElement      = 128
+    IsOverworldElement      = 128,
+    IsCursor                = 256,
 } Component;
 
 typedef struct Entity {

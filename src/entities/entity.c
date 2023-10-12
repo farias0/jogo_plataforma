@@ -14,8 +14,7 @@
 void ReloadEntityList() {
 
     DestroyAllEntities(ENTITIES_HEAD);
-    ENTITIES_HEAD = InitializePlayer(0, &PLAYER);
-    ENTITIES_HEAD = InitializeCamera(ENTITIES_HEAD, &CAMERA);
+    ENTITIES_HEAD = InitializeCamera(0, &CAMERA);
 }
 
 Entity *AddToEntityList(Entity *head, Entity *toBeAdded) { 
