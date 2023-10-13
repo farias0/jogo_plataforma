@@ -17,6 +17,9 @@ extern Sprite BlockSprite;
 extern Sprite EraserSprite;
 extern Sprite LevelDotSprite;
 extern Sprite OverworldCursorSprite;
+extern Sprite PathTileJoinSprite;
+extern Sprite PathTileStraightSprite;
+
 
 void InitializeAssets();
 

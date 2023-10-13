@@ -17,6 +17,9 @@ Sprite BlockSprite;
 Sprite EraserSprite;
 Sprite LevelDotSprite;
 Sprite OverworldCursorSprite;
+Sprite PathTileJoinSprite;
+Sprite PathTileStraightSprite;
+
 
 void InitializeAssets() {
 
@@ -48,6 +51,15 @@ void InitializeAssets() {
         LoadTexture("../assets/cursor_default_1.png"),
         DEFAULT_SPRITE_SCALE
     };
+    PathTileJoinSprite = (Sprite){
+        LoadTexture("../assets/path_tile_join_vertical.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+    PathTileStraightSprite = (Sprite){
+        LoadTexture("../assets/path_tile_straight_vertical.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+
 
     TraceLog(LOG_INFO, "Assets initialized.");
 }
