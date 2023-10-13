@@ -32,8 +32,11 @@ void renderAllEntities() {
         float inSceneX = currentItem->hitbox.x - CAMERA->hitbox.x;
         float inSceneY = currentItem->hitbox.y - CAMERA->hitbox.y;
 
+        // TODO Restructure this 
+
         if (currentItem->components & IsPlayer ||
-            currentItem->components & IsEnemy)
+            currentItem->components & IsEnemy ||
+            currentItem->components & IsOverworldElement)
             if (currentItem->isFacingRight)
                 DrawTextureEx(currentItem->sprite.sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->sprite.scale, WHITE);
             else {

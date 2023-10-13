@@ -36,6 +36,7 @@ int main(int argc, char **argv)
 
     InitializeGameState();
 
+    InitializeOverworld();
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {

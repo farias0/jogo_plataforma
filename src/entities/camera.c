@@ -23,6 +23,11 @@ void CameraTick() {
     // TODO camera only ticks if player isn't moving
     // A way to do this might be to check player's velocity in a PLAYER_STATE global
 
+    // TODO implement camera for other game modes
+    if (STATE->mode != InLevel) {
+        return;
+    }
+
     if (PLAYER->hitbox.x < CAMERA->hitbox.x + CAMERA_FOLLOW_LEFT_X) {
         CAMERA->hitbox.x = PLAYER->hitbox.x - CAMERA_FOLLOW_LEFT_X;
     }

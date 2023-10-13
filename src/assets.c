@@ -15,8 +15,12 @@ Sprite PlayerSprite;
 Sprite EnemySprite;
 Sprite BlockSprite;
 Sprite EraserSprite;
+Sprite LevelDotSprite;
+Sprite OverworldCursorSprite;
 
 void InitializeAssets() {
+
+    // Level
     PlayerSprite = (Sprite){
         LoadTexture("../assets/player_default_1.png"),
         PLAYER_SPRITE_SCALE
@@ -33,6 +37,17 @@ void InitializeAssets() {
         LoadTexture("../assets/eraser_1.png"),
         DEFAULT_SPRITE_SCALE
     };
+    
+    // Overworld
+    LevelDotSprite = (Sprite){
+        LoadTexture("../assets/level_dot_1.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+    OverworldCursorSprite = (Sprite){
+        // TODO own sprite
+        LoadTexture("../assets/cursor_default_1.png"),
+        DEFAULT_SPRITE_SCALE
+    };
 
-    TraceLog(LOG_DEBUG, "Assets initialized.");
+    TraceLog(LOG_INFO, "Assets initialized.");
 }

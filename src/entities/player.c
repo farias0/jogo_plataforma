@@ -55,7 +55,7 @@ void die() {
     STATE->isPlayerDead = true;
     STATE->isPaused = true;
 
-    TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isJumping=%d",
+    TraceLog(LOG_INFO, "You Died.\n\tx=%f, y=%f, isJumping=%d",
                 PLAYER->hitbox.x, PLAYER->hitbox.y, isJumping);
 }
 
