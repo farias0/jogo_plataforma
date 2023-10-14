@@ -28,24 +28,26 @@ void handlePlayerInput() {
 
     Vector2 playerDelta = { 0.0f, 0.0f };
 
-    if (IsKeyDown(KEY_Z)) STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
-    else STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
+    if      (IsKeyDown(KEY_Z))              STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
+    else                                    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
 
-    if (IsKeyDown(KEY_RIGHT))
-        UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_RIGHT);
-    else if (IsKeyDown(KEY_LEFT))
-        UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_LEFT);
-    else
-        UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_STOP);
+    if      (IsKeyDown(KEY_RIGHT))          UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_RIGHT);
+    else if (IsKeyDown(KEY_LEFT))           UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_LEFT);
+    else                                    UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_STOP);
 
-    if (IsKeyPressed(KEY_X)) PlayerStartJump(PLAYER);
+    if      (IsKeyPressed(KEY_X))           PlayerStartJump(PLAYER);
 
-    if (IsKeyPressed(KEY_BACKSPACE)) InitializeOverworld();
+    if      (IsKeyPressed(KEY_BACKSPACE))   InitializeOverworld();
 }
 
 void handleOverworldInput() {
 
-    if (IsKeyPressed(KEY_X)) SelectLevel();
+    if      (IsKeyPressed(KEY_X))           SelectLevel();
+
+    if      (IsKeyPressed(KEY_UP))          OverworldMoveCursor(UP);
+    else if (IsKeyPressed(KEY_DOWN))        OverworldMoveCursor(DOWN);
+    else if (IsKeyPressed(KEY_LEFT))        OverworldMoveCursor(LEFT);
+    else if (IsKeyPressed(KEY_RIGHT))       OverworldMoveCursor(RIGHT);
 }
 
 void handleEditorInput() {

@@ -10,6 +10,10 @@ typedef struct Sprite {
     float scale;
 } Sprite;
 
+typedef struct SpriteDimensions {
+    float width;
+    float height;
+} SpriteDimensions;
 
 extern Sprite PlayerSprite;
 extern Sprite EnemySprite;
@@ -17,8 +21,13 @@ extern Sprite BlockSprite;
 extern Sprite EraserSprite;
 extern Sprite LevelDotSprite;
 extern Sprite OverworldCursorSprite;
+extern Sprite PathTileJoinSprite;
+extern Sprite PathTileStraightSprite;
+
 
 void InitializeAssets();
+// Get a Sprite's dimensions, scaled
+SpriteDimensions GetScaledDimensions(Sprite sprite);
 
 
 
