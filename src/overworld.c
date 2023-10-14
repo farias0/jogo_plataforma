@@ -193,6 +193,8 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
         bool isOnTheSameColumn = cursorState.tileUnder->hitbox.x == currentItem->hitbox.x;
         bool foundPath = false;
 
+
+        // This code is stupid, but I'm leaving it for sake of simplicity and ease of debug.
         switch(direction)
         {
         case UP:
@@ -200,7 +202,7 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
                 cursorState.tileUnder->hitbox.y - currentItemDimensions.height == currentItem->hitbox.y) {
 
                     foundPath = true;
-                    TraceLog(LOG_TRACE, "Go up.");
+                    TraceLog(LOG_TRACE, "Found path up.");
                 
                 }
                 break;
@@ -209,7 +211,7 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
                 cursorState.tileUnder->hitbox.y + tileUnderDimensions.height == currentItem->hitbox.y) {
 
                     foundPath = true;
-                    TraceLog(LOG_TRACE, "Go down.");
+                    TraceLog(LOG_TRACE, "Found path down.");
                 
                 }
                 break;
@@ -218,7 +220,7 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
                 cursorState.tileUnder->hitbox.x - currentItemDimensions.width == currentItem->hitbox.x) {
 
                     foundPath = true;
-                    TraceLog(LOG_TRACE, "Go left.");
+                    TraceLog(LOG_TRACE, "Found path left.");
                 
                 }
                 break;
@@ -227,13 +229,20 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
                 cursorState.tileUnder->hitbox.x + tileUnderDimensions.width == currentItem->hitbox.x) {
 
                     foundPath = true;
-                    TraceLog(LOG_TRACE, "Go right.");
+                    TraceLog(LOG_TRACE, "Found path right.");
                 
                 }
                 break;
         default:
-            TraceLog(LOG_WARNING, "No code to handle move overworld cursor to direction %d.", direction);
-            goto next_entity;
+            TraceLog(LOG_ERROR, "No code to handle move overworld cursor to direction %d.", direction);
+            return;
+        }
+
+
+        if (foundPath) {
+            cursorState.tileUnder = currentItem;
+            updateCursorPosition();
+            break;
         }
 
 next_entity:
