@@ -85,7 +85,8 @@ Entity *addDotToLevel(Vector2 pos) {
 
     newDot->components = HasPosition +
                             HasSprite +
-                            IsOverworldElement;
+                            IsOverworldElement +
+                            IsLevelDot;
     newDot->hitbox = (Rectangle){
         pos.x,
         pos.y,
@@ -159,13 +160,15 @@ void LoadOverworld() {
     // ATTENTION: Cursor is initialized at the end so it's rendered in front of the other entities
     // TODO fix this hack
     initializeOverworldCursor((Vector2){ 0, 0 });
-    cursorState.tileUnder = dot2;
+    cursorState.tileUnder = dot1;
     updateCursorPosition();
 }
 
 void SelectLevel() {
 
-    InitializeLevel(); 
+    if (cursorState.tileUnder->components & IsLevelDot) {
+        InitializeLevel();
+    }
 }
 
 void OverworldMoveCursor(OverworldCursorDirection direction) {
