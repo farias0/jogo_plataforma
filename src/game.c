@@ -26,7 +26,7 @@ int main(int argc, char **argv)
         TraceLog(LOG_DEBUG, "Gamepad detected. Index=%i.", gamepadIdx);
 
 
-    SetTraceLogLevel(LOG_DEBUG);
+    SetTraceLogLevel(LOG_TRACE);
 
     InitWindow(SCREEN_WIDTH_FULL, SCREEN_HEIGHT, "Jogo de plataforma");
     

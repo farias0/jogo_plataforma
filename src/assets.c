@@ -63,3 +63,10 @@ void InitializeAssets() {
 
     TraceLog(LOG_INFO, "Assets initialized.");
 }
+
+SpriteDimensions GetScaledDimensions(Sprite s) {
+    return (SpriteDimensions) {
+        s.sprite.width * s.scale,
+        s.sprite.height * s.scale
+    };
+}
