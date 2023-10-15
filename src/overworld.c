@@ -60,6 +60,8 @@ void initializeOverworldCursor(Vector2 pos) {
     pos.x = snapToOverworldGrid(pos.x);
     pos.y = snapToOverworldGrid(pos.y);
 
+    SpriteDimensions dimensions = GetScaledDimensions(OverworldCursorSprite);
+
     newCursor->components = HasPosition +
                             HasSprite +
                             IsOverworldElement +
@@ -67,8 +69,8 @@ void initializeOverworldCursor(Vector2 pos) {
     newCursor->hitbox = (Rectangle){
         pos.x,
         pos.y,
-        OverworldCursorSprite.sprite.width,
-        OverworldCursorSprite.sprite.height
+        dimensions.width,
+        dimensions.height
     };
     newCursor->sprite = OverworldCursorSprite;
 
@@ -83,6 +85,8 @@ Entity *addDotToLevel(Vector2 pos) {
     pos.x = snapToOverworldGrid(pos.x);
     pos.y = snapToOverworldGrid(pos.y);
 
+    SpriteDimensions dimensions = GetScaledDimensions(LevelDotSprite);
+
     newDot->components = HasPosition +
                             HasSprite +
                             IsOverworldElement +
@@ -90,8 +94,8 @@ Entity *addDotToLevel(Vector2 pos) {
     newDot->hitbox = (Rectangle){
         pos.x,
         pos.y,
-        LevelDotSprite.sprite.width,
-        LevelDotSprite.sprite.height
+        dimensions.width,
+        dimensions.height
     };
     newDot->sprite = LevelDotSprite;
 
@@ -107,6 +111,8 @@ Entity *addPathTileToLevel(Vector2 pos, PathTileType type, int degrees) {
     pos.x = snapToOverworldGrid(pos.x);
     pos.y = snapToOverworldGrid(pos.y);
 
+    SpriteDimensions dimensions;
+
     newPathTile->components = HasPosition +
                             HasSprite +
                             IsOverworldElement;
@@ -115,9 +121,13 @@ Entity *addPathTileToLevel(Vector2 pos, PathTileType type, int degrees) {
     switch (type)
     {
     case STRAIGHT:
-        sprite = PathTileStraightSprite; break;
+        sprite = PathTileStraightSprite;
+        dimensions = GetScaledDimensions(PathTileStraightSprite);
+        break;
     case JOIN:
-        sprite = PathTileJoinSprite; break;
+        sprite = PathTileJoinSprite;
+        dimensions = GetScaledDimensions(PathTileJoinSprite);
+        break;
     default:
         TraceLog(LOG_ERROR, "Could not find sprite for path tile type %d.", type);
     }
@@ -125,8 +135,8 @@ Entity *addPathTileToLevel(Vector2 pos, PathTileType type, int degrees) {
     newPathTile->hitbox = (Rectangle){
         pos.x,
         pos.y,
-        sprite.sprite.width,
-        sprite.sprite.height
+        dimensions.width,
+        dimensions.height
     };
     newPathTile->sprite = rotateSprite(sprite, degrees);
 
