@@ -47,7 +47,8 @@ EditorItem *loadEditorItem(Sprite sprite, void (*handler), EditorItemInteraction
 void loadInLevelEditor() {
 
     loadEditorItem(EraserSprite, &DestroyEntityOn, Hold);
-    STATE->editorSelectedItem = loadEditorItem(BlockSprite, &AddBlockToLevel, Hold);
+    STATE->editorSelectedItem =
+        loadEditorItem(BlockSprite, &AddBlockToLevel, Hold);
     loadEditorItem(EnemySprite, &AddEnemyToLevel, Click);
 
     TraceLog(LOG_DEBUG, "Editor loaded in level itens.");
@@ -55,7 +56,8 @@ void loadInLevelEditor() {
 
 void loadOverworldEditor() {
 
-    // STATE->editorSelectedItem = loadEditorItem(Block, BlockSprite, &AddBlockToLevel, Hold);;
+    STATE->editorSelectedItem =
+        loadEditorItem(LevelDotSprite, 0, Click);
 
     TraceLog(LOG_DEBUG, "Editor loaded overworld itens.");
 }

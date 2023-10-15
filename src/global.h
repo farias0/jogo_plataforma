@@ -50,9 +50,6 @@ void InitializeGameState();
 
 void ResetGameState();
 
-// Player resumes playing after dying. // TODO rename this function
-void PlayerContinue();
-
 // Goes to level
 void InitializeLevel();
 
@@ -61,6 +58,9 @@ void InitializeOverworld();
 
 // Toggles between level and overworld
 void ToggleGameMode();
+
+// Toggles between paused and unpaused game
+void ToggleInLevelState();
 
 // True if the given position is inside the play space on the screen (doesn't include the editor)
 bool IsInPlayArea(Vector2 pos);

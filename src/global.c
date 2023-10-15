@@ -11,6 +11,19 @@ Entity *ENTITIES_HEAD = 0;
 Entity *PLAYER = 0;
 Entity *CAMERA = 0;
 
+
+// Continue game after dying
+void playerContinue() {
+    STATE->isPaused = false;
+    STATE->isPlayerDead = false;
+
+    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
+
+    SetEntityPosition(PLAYER, GetPlayerStartingPosition());
+
+    TraceLog(LOG_INFO, "Player continue.");
+}
+
 void InitializeGameState() {
     STATE = MemAlloc(sizeof(GameState));
 
@@ -24,17 +37,6 @@ void ResetGameState() {
     STATE->mode = InLevel;
 
     TraceLog(LOG_INFO, "Game state reset.");
-}
-
-void PlayerContinue() {
-    STATE->isPaused = false;
-    STATE->isPlayerDead = false;
-
-    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
-
-    SetEntityPosition(PLAYER, GetPlayerStartingPosition());
-
-    TraceLog(LOG_INFO, "Player continue.");
 }
 
 void InitializeLevel() {
@@ -81,6 +83,20 @@ void ToggleGameMode() {
 
     default:
         TraceLog(LOG_WARNING, "No code to handle toggle game mode for mode %d.", STATE->mode);
+    }
+}
+
+void ToggleInLevelState() {
+    if (STATE->isPaused) {
+
+        if (STATE->isPlayerDead) {
+            playerContinue();
+        } else {
+            STATE->isPaused = false;
+        }
+
+    } else {
+        STATE->isPaused = true;
     }
 }
 

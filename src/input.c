@@ -9,24 +9,10 @@
 
 #define CAMERA_SPEED 8.0f;
 
-void handleGeneralInput() {
-    if (STATE->isPaused) {
-        if (IsKeyPressed(KEY_ENTER)) {
-            if (STATE->isPlayerDead) {
-                PlayerContinue();
-            } else {
-                STATE->isPaused = false;
-            }
-        }
-    }
-    else if (IsKeyPressed(KEY_ENTER)) {
-        STATE->isPaused = true;
-    }
-}
 
-void handlePlayerInput() {
+void handleInLevelInput() {
 
-    Vector2 playerDelta = { 0.0f, 0.0f };
+    if      (IsKeyPressed(KEY_ENTER))       { ToggleInLevelState(); return; }
 
     if      (IsKeyDown(KEY_Z))              STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
     else                                    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
@@ -62,7 +48,8 @@ void handleEditorInput() {
         if (STATE->editorSelectedItem == 0) return;
 
         if (STATE->editorSelectedItem->handler == 0) {
-            TraceLog(LOG_WARNING, "No code to handle selected editor item.");
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                TraceLog(LOG_WARNING, "No code to handle selected editor item.");
             return;
         }
 
@@ -91,11 +78,9 @@ void handleCameraInput() {
 
 void HandleInput() {
 
-    handleGeneralInput();
-    if (STATE->isPaused) return;
-    
     if (STATE->mode == InLevel) {
-        handlePlayerInput();
+        handleInLevelInput();
+        if (STATE->isPaused) return;
     }
     else if (STATE->mode == Overworld) {
         handleOverworldInput();
