@@ -13,12 +13,47 @@
 #define EDITOR_BUTTON_SPACING 12
 #define EDITOR_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (EDITOR_BUTTON_SIZE * 2) - EDITOR_BUTTON_SPACING) / 2
 
-#define BACKGROUND_LAYER_TINT (Color){ 0xFF, 0xFF, 0xFF, 0xAA }
+#define BACKGROUND_WIDTH    SCREEN_WIDTH * 2
+#define BACKGROUND_HEIGHT   SCREEN_HEIGHT
 
 
 // How many editor buttons were rendered this frame.
 int editorButtonsRendered = 0;
 
+
+// Draws sprite in the background, with effects applied.
+// The background repeats every BACKGROUND_WIDTH pixels.
+void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
+
+    float scale = 1;
+    Color tint = (Color){ 0xFF, 0xFF, 0xFF, 0xFF };
+
+    switch (layer) {
+
+    case -1:
+        scale = 1.4;
+        tint = (Color){ 0xFF, 0xFF, 0xFF, 0xAA };
+        
+        // TODO do pos calculation for parallax
+        
+        break;
+
+    case -2:
+        scale = 0.8;
+        tint = (Color){ 0xFF, 0xFF, 0xFF, 0x66 };
+        
+        break;
+
+    default:
+        TraceLog(LOG_ERROR, "No code found for drawing in the bg layer %d.", layer);
+        return;
+
+    }
+
+    // TODO find to which multiple of BACKGROUND_WIDTH the CAMERA applies
+    // and render only to them. Make it loop in case of pos.x > BACKGROUND_WIDTH.
+    DrawTextureEx(sprite.sprite, pos, 0, (scale * sprite.scale), tint);
+}
 
 void renderBackground() {
 
@@ -27,7 +62,11 @@ void renderBackground() {
     }
 
     else if (STATE->mode == InLevel) {
-        DrawTextureEx(NightclubSprite.sprite, (Vector2){750, 120}, 0, NightclubSprite.scale, BACKGROUND_LAYER_TINT);
+        Vector2 pos = PosInSceneToScreen((Vector2){ 750, 120 });
+        drawInBackground(NightclubSprite, pos, -1);
+
+        Vector2 pos2 = PosInSceneToScreen((Vector2){ 350, 120 });
+        drawInBackground(NightclubSprite, pos2, -2);
     }
 }
 

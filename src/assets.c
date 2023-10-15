@@ -6,7 +6,6 @@
 #define PLAYER_SPRITE_SCALE 2
 #define ENEMY_SPRITE_SCALE 2
 #define FLOOR_TILE_SIZE 1
-#define NIGHTCLUB_SPRITE_SCALE 1.4
 
 /*
     TODO use hash map
@@ -44,7 +43,7 @@ void InitializeAssets() {
     };
     NightclubSprite = (Sprite){
         LoadTexture("../assets/nightclub_1.png"),
-        NIGHTCLUB_SPRITE_SCALE
+        1
     };
 
     // Overworld
