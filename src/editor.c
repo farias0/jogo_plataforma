@@ -65,6 +65,7 @@ void SyncEditor() {
     
     case InLevel:
         loadInLevelEditor();
+        STATE->editorSelectedItem = Block;
         break;
 
     case Overworld:

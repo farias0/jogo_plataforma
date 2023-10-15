@@ -14,8 +14,6 @@ Entity *CAMERA = 0;
 void InitializeGameState() {
     STATE = MemAlloc(sizeof(GameState));
 
-    STATE->editorSelectedItem = Block;
-
     TraceLog(LOG_INFO, "Game state initialized.");
 }
 
