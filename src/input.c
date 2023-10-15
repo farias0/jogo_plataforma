@@ -53,38 +53,31 @@ void handleOverworldInput() {
 void handleEditorInput() {
 
     Vector2 mousePosInScreen = GetMousePosition();
-    if (IsInPlayArea(mousePosInScreen)) {
 
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-            // TODO use a timer to not keep checking it every frame
+    if (!IsInPlayArea(mousePosInScreen)) return;
 
-            Vector2 mousePosInScene = {
-                mousePosInScreen.x + CAMERA->hitbox.x,
-                mousePosInScreen.y + CAMERA->hitbox.y
-            };
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        // TODO use a timer to not keep checking it every frame
 
-            if (STATE->editorSelectedItem == 0) return;
+        if (STATE->editorSelectedItem == 0) return;
 
-            switch (STATE->editorSelectedItem->type)  {
-
-            case Block:
-                ENTITIES_HEAD = AddBlockToLevel(mousePosInScene);
-                break;
-
-            case Enemy:
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) { // so holding doesn't keep placing
-                    ENTITIES_HEAD = AddEnemyToLevel(mousePosInScene);
-                }
-                break;
-
-            case Eraser:
-                ENTITIES_HEAD = DestroyEntityOn(mousePosInScene);
-                break;
-
-            default:
-                TraceLog(LOG_WARNING, "No code to handle selected item %d.", STATE->editorSelectedItem);
-            }
+        if (STATE->editorSelectedItem->handler == 0) {
+            TraceLog(LOG_WARNING, "No code to handle selected item of type %d.",
+                STATE->editorSelectedItem->type);
+            return;
         }
+
+        // so holding doesn't keep activating the item
+        if (STATE->editorSelectedItem->interaction == Click &&
+            !IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                return;
+
+        Vector2 mousePosInScene = {
+            mousePosInScreen.x + CAMERA->hitbox.x,
+            mousePosInScreen.y + CAMERA->hitbox.y
+        };
+
+        STATE->editorSelectedItem->handler(mousePosInScene);
     }
 }
 

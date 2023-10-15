@@ -2,7 +2,9 @@
 
 #include "editor.h"
 #include "global.h"
-
+#include "entities/entity.h"
+#include "entities/level.h"
+#include "entities/enemy.h"
 
 EditorItem *EDITOR_ITEMS_HEAD = 0;
 
@@ -20,11 +22,13 @@ void clearEditorItems() {
     EDITOR_ITEMS_HEAD = 0;
 }
 
-EditorItem *loadEditorItem(EditorItemType type, Sprite sprite) {
+EditorItem *loadEditorItem(EditorItemType type, Sprite sprite, void (*handler), EditorItemInteraction interaction) {
 
     EditorItem *newItem = MemAlloc(sizeof(EditorItem));
     newItem->type = type;
     newItem->sprite = sprite;
+    newItem->handler = handler;
+    newItem->interaction = interaction;
 
     if (EDITOR_ITEMS_HEAD) {
 
@@ -45,9 +49,9 @@ EditorItem *loadEditorItem(EditorItemType type, Sprite sprite) {
 
 void loadInLevelEditor() {
 
-    loadEditorItem(Eraser, EraserSprite);
-    STATE->editorSelectedItem = loadEditorItem(Block, BlockSprite);
-    loadEditorItem(Enemy, EnemySprite);
+    loadEditorItem(Eraser, EraserSprite, &DestroyEntityOn, Hold);
+    STATE->editorSelectedItem = loadEditorItem(Block, BlockSprite, &AddBlockToLevel, Hold);
+    loadEditorItem(Enemy, EnemySprite, &AddEnemyToLevel, Click);
 
     TraceLog(LOG_DEBUG, "Editor loaded in level itens.");
 }

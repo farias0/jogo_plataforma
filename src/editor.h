@@ -12,9 +12,16 @@ typedef enum {
     Enemy,
 } EditorItemType;
 
+typedef enum {
+    Click,
+    Hold
+} EditorItemInteraction;
+
 typedef struct EditorItem {
     EditorItemType type;
     Sprite sprite;
+    void (*handler)(Vector2);
+    EditorItemInteraction interaction;
 
     struct EditorItem *previous;
     struct EditorItem *next;
