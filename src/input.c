@@ -59,11 +59,13 @@ void handleEditorInput() {
             // TODO use a timer to not keep checking it every frame
 
             Vector2 mousePosInScene = {
-                    mousePosInScreen.x + CAMERA->hitbox.x,
-                    mousePosInScreen.y + CAMERA->hitbox.y
-                };
+                mousePosInScreen.x + CAMERA->hitbox.x,
+                mousePosInScreen.y + CAMERA->hitbox.y
+            };
 
-            switch (STATE->editorSelectedItem)  {
+            if (STATE->editorSelectedItem == 0) return;
+
+            switch (STATE->editorSelectedItem->type)  {
 
             case Block:
                 ENTITIES_HEAD = AddBlockToLevel(ENTITIES_HEAD, mousePosInScene);
@@ -103,7 +105,6 @@ void HandleInput() {
     if (STATE->mode == InLevel) {
         handlePlayerInput();
     }
-
     else if (STATE->mode == Overworld) {
         handleOverworldInput();
     }

@@ -28,9 +28,5 @@ extern EditorItem *EDITOR_ITEMS_HEAD;
 // for the current game mode
 void SyncEditor();
 
-// Searches for an item of a given type in the loaded editor
-// itens list and sets it as selected only if 'set' is true
-void EditorSetSelectedItem(EditorItemType type, bool set);
-
 
 #endif // _EDITOR_H_INCLUDED_

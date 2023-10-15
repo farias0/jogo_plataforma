@@ -110,9 +110,9 @@ void renderButton(Rectangle editorWindow, EditorItem *item) {
     float itemY = editorWindow.y + EDITOR_BUTTON_WALL_SPACING;
     itemY += (EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING) * (editorButtonsRendered / 2);
     
-    bool isItemSelected = STATE->editorSelectedItem == item->type;
+    bool isItemSelected = STATE->editorSelectedItem == item;
     GuiToggleSprite((Rectangle){ itemX, itemY, EDITOR_BUTTON_SIZE, EDITOR_BUTTON_SIZE }, item->sprite, (Vector2){itemX, itemY}, &isItemSelected);
-    EditorSetSelectedItem(item->type, isItemSelected);
+    if (isItemSelected) STATE->editorSelectedItem = item;
 
     editorButtonsRendered++;
 }
