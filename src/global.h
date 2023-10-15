@@ -30,7 +30,7 @@ typedef struct GameState {
 
     PlayerMovementSpeed playerMovementSpeed;
 
-    EditorItem editorSelectedItem;
+    EditorItemType editorSelectedItem;
 } GameState;
 
 

@@ -3,6 +3,7 @@
 #include "entities/entity.h"
 #include "entities/camera.h"
 #include "entities/level.h"
+#include "editor.h"
 
 
 GameState *STATE = 0;
@@ -49,6 +50,8 @@ void InitializeLevel() {
     
     SetEntityPosition(PLAYER, GetPlayerStartingPosition());
 
+    SyncEditor();
+
     TraceLog(LOG_INFO, "Initialized level.");
 }
 
@@ -60,6 +63,8 @@ void InitializeOverworld() {
     PLAYER = 0;
     ReloadEntityList();
     LoadOverworld();
+
+    SyncEditor();
 
     TraceLog(LOG_INFO, "Initialized overworld.");
 }
