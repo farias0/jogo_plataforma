@@ -18,7 +18,6 @@ typedef enum {
 } EditorItemInteraction;
 
 typedef struct EditorItem {
-    EditorItemType type;
     Sprite sprite;
     void (*handler)(Vector2);
     EditorItemInteraction interaction;

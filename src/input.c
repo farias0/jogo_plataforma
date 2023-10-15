@@ -62,8 +62,7 @@ void handleEditorInput() {
         if (STATE->editorSelectedItem == 0) return;
 
         if (STATE->editorSelectedItem->handler == 0) {
-            TraceLog(LOG_WARNING, "No code to handle selected item of type %d.",
-                STATE->editorSelectedItem->type);
+            TraceLog(LOG_WARNING, "No code to handle selected editor item.");
             return;
         }
 
