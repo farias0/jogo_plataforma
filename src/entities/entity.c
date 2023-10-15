@@ -97,6 +97,7 @@ Entity *DestroyEntityOn(Entity *head, Vector2 pos) {
 
         if (currentItem->components & HasPosition &&
             !(currentItem->components & IsPlayer) &&
+            !(currentItem->components & IsCursor) &&
             CheckCollisionPointRec(pos, currentItem->hitbox)) {
 
                 return DestroyEntity(currentItem);
@@ -119,7 +120,7 @@ int CountEntities(Entity *listItem) {
         currentItem = currentItem->next;
     }
 
-    // At least Camera and Player must be present
+    // At least Camera and Player/Cursor must be present
     if (counter < 2) {
         TraceLog(LOG_ERROR, "Entity counter at %d!", counter);
     }
