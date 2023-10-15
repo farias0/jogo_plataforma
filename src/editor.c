@@ -56,8 +56,11 @@ void loadInLevelEditor() {
 
 void loadOverworldEditor() {
 
+    loadEditorItem(EraserSprite, &DestroyEntityOn, Hold);
     STATE->editorSelectedItem =
         loadEditorItem(LevelDotSprite, 0, Click);
+    loadEditorItem(PathTileJoinSprite, 0, Click);
+    loadEditorItem(PathTileStraightSprite, 0, Hold);
 
     TraceLog(LOG_DEBUG, "Editor loaded overworld itens.");
 }
