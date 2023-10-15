@@ -89,9 +89,9 @@ void DestroyAllEntities(Entity *head) {
     }
 }
 
-Entity *DestroyEntityOn(Entity *head, Vector2 pos) {
+Entity *DestroyEntityOn(Vector2 pos) {
     
-    Entity *currentItem = head;
+    Entity *currentItem = ENTITIES_HEAD;
 
     while (currentItem != 0) {
 
@@ -107,7 +107,7 @@ Entity *DestroyEntityOn(Entity *head, Vector2 pos) {
         
     };
 
-    return head;
+    return ENTITIES_HEAD;
 }
 
 int CountEntities(Entity *listItem) {

@@ -57,23 +57,23 @@ Entity *LoadLevel(Entity *head) {
     return head;
 }
 
-Entity *AddBlockToLevel(Entity *head, Vector2 pos) {
+Entity *AddBlockToLevel(Vector2 pos) {
 
-    Entity *possibleBlock = head;
+    Entity *possibleBlock = ENTITIES_HEAD;
 
     while (possibleBlock != 0) {
         
         if (possibleBlock->components & IsLevelElement &&
                 CheckCollisionPointRec(pos, possibleBlock->hitbox)) {
 
-            return head;
+            return ENTITIES_HEAD;
         }
 
         possibleBlock = possibleBlock->next;
 
     }
 
-    return addBlockToLevel(head, (Rectangle){ pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height });
+    return addBlockToLevel(ENTITIES_HEAD, (Rectangle){ pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height });
 }
 
 Vector2 GetPlayerStartingPosition() {
