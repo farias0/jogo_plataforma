@@ -58,12 +58,9 @@ void handleEditorInput() {
             !IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 return;
 
-        Vector2 mousePosInScene = {
-            mousePosInScreen.x + CAMERA->hitbox.x,
-            mousePosInScreen.y + CAMERA->hitbox.y
-        };
 
-        STATE->editorSelectedItem->handler(mousePosInScene);
+        STATE->editorSelectedItem->handler(
+            PosInScreenToScene(mousePosInScreen));
     }
 }
 

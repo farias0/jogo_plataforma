@@ -36,8 +36,7 @@ void renderAllEntities() {
     Entity *currentItem = ENTITIES_HEAD;
 
     while (currentItem != 0) {
-        float inSceneX = currentItem->hitbox.x - CAMERA->hitbox.x;
-        float inSceneY = currentItem->hitbox.y - CAMERA->hitbox.y;
+        Vector2 pos = PosInSceneToScreen((Vector2){ currentItem->hitbox.x, currentItem->hitbox.y });
 
         // TODO Restructure this 
 
@@ -45,7 +44,7 @@ void renderAllEntities() {
             currentItem->components & IsEnemy ||
             currentItem->components & IsOverworldElement)
             if (currentItem->isFacingRight)
-                DrawTextureEx(currentItem->sprite.sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->sprite.scale, WHITE);
+                DrawTextureEx(currentItem->sprite.sprite, (Vector2){pos.x, pos.y}, 0, currentItem->sprite.scale, WHITE);
             else {
                 Rectangle source = (Rectangle){
                     0,
@@ -54,8 +53,8 @@ void renderAllEntities() {
                     currentItem->sprite.sprite.height
                 };
                 Rectangle destination = (Rectangle){
-                    inSceneX,
-                    inSceneY,
+                    pos.x,
+                    pos.y,
                     currentItem->sprite.sprite.width * currentItem->sprite.scale,
                     currentItem->sprite.sprite.height * currentItem->sprite.scale
                 };
@@ -74,8 +73,8 @@ void renderAllEntities() {
                 for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
                     DrawTextureEx(
                                     currentItem->sprite.sprite,
-                                    (Vector2){inSceneX + (xCurrent * currentItem->sprite.sprite.width),
-                                                inSceneY + (yCurrent * currentItem->sprite.sprite.height)},
+                                    (Vector2){pos.x + (xCurrent * currentItem->sprite.sprite.width),
+                                                pos.y + (yCurrent * currentItem->sprite.sprite.height)},
                                     0,
                                     1,
                                     WHITE

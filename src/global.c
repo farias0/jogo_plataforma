@@ -106,3 +106,17 @@ bool IsInPlayArea(Vector2 pos) {
             pos.y >= 0 &&
             pos.y <= SCREEN_HEIGHT;
 }
+
+Vector2 PosInScreenToScene(Vector2 pos) {
+    return (Vector2){
+        pos.x + CAMERA->hitbox.x,
+        pos.y + CAMERA->hitbox.y
+    };
+}
+
+Vector2 PosInSceneToScreen(Vector2 pos) {
+    return (Vector2){
+        pos.x - CAMERA->hitbox.x,
+        pos.y - CAMERA->hitbox.y
+    };
+}
