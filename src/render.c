@@ -39,7 +39,7 @@ void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
         break;
 
     case -2:
-        scale = 0.8;
+        scale = 0.6;
         tint = (Color){ 0xFF, 0xFF, 0xFF, 0x66 };
         
         break;
@@ -66,7 +66,7 @@ void renderBackground() {
         drawInBackground(NightclubSprite, pos, -1);
 
         Vector2 pos2 = PosInSceneToScreen((Vector2){ 350, 120 });
-        drawInBackground(NightclubSprite, pos2, -2);
+        drawInBackground(BGHouseSprite, pos2, -2);
     }
 }
 

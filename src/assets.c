@@ -20,6 +20,7 @@ Sprite OverworldCursorSprite;
 Sprite PathTileJoinSprite;
 Sprite PathTileStraightSprite;
 Sprite NightclubSprite;
+Sprite BGHouseSprite;
 
 
 void InitializeAssets() {
@@ -43,6 +44,10 @@ void InitializeAssets() {
     };
     NightclubSprite = (Sprite){
         LoadTexture("../assets/nightclub_1.png"),
+        1
+    };
+    BGHouseSprite = (Sprite){
+        LoadTexture("../assets/bg_house_1.png"),
         1
     };
 
