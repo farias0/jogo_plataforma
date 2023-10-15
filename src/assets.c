@@ -6,6 +6,7 @@
 #define PLAYER_SPRITE_SCALE 2
 #define ENEMY_SPRITE_SCALE 2
 #define FLOOR_TILE_SIZE 1
+#define NIGHTCLUB_SPRITE_SCALE 1.4
 
 /*
     TODO use hash map
@@ -19,6 +20,7 @@ Sprite LevelDotSprite;
 Sprite OverworldCursorSprite;
 Sprite PathTileJoinSprite;
 Sprite PathTileStraightSprite;
+Sprite NightclubSprite;
 
 
 void InitializeAssets() {
@@ -40,14 +42,17 @@ void InitializeAssets() {
         LoadTexture("../assets/eraser_1.png"),
         DEFAULT_SPRITE_SCALE
     };
-    
+    NightclubSprite = (Sprite){
+        LoadTexture("../assets/nightclub_1.png"),
+        NIGHTCLUB_SPRITE_SCALE
+    };
+
     // Overworld
     LevelDotSprite = (Sprite){
         LoadTexture("../assets/level_dot_1.png"),
         DEFAULT_SPRITE_SCALE
     };
     OverworldCursorSprite = (Sprite){
-        // TODO own sprite
         LoadTexture("../assets/cursor_default_1.png"),
         DEFAULT_SPRITE_SCALE
     };

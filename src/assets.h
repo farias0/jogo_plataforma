@@ -23,6 +23,7 @@ extern Sprite LevelDotSprite;
 extern Sprite OverworldCursorSprite;
 extern Sprite PathTileJoinSprite;
 extern Sprite PathTileStraightSprite;
+extern Sprite NightclubSprite;
 
 
 void InitializeAssets();

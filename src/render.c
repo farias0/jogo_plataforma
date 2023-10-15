@@ -13,6 +13,8 @@
 #define EDITOR_BUTTON_SPACING 12
 #define EDITOR_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (EDITOR_BUTTON_SIZE * 2) - EDITOR_BUTTON_SPACING) / 2
 
+#define BACKGROUND_LAYER_TINT (Color){ 0xFF, 0xFF, 0xFF, 0xAA }
+
 
 // How many editor buttons were rendered this frame.
 int editorButtonsRendered = 0;
@@ -22,6 +24,10 @@ void renderBackground() {
 
     if (STATE->mode == Overworld) {
         DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 39, 39, 54, 255 }); 
+    }
+
+    else if (STATE->mode == InLevel) {
+        DrawTextureEx(NightclubSprite.sprite, (Vector2){750, 120}, 0, NightclubSprite.scale, BACKGROUND_LAYER_TINT);
     }
 }
 
