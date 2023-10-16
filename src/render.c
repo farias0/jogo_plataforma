@@ -75,33 +75,12 @@ void renderAllEntities() {
     while (currentItem != 0) {
         Vector2 pos = PosInSceneToScreen((Vector2){ currentItem->hitbox.x, currentItem->hitbox.y });
 
-        // TODO Restructure this 
+        if (currentItem->sprite.scale == 0) goto next_entity;
 
-        if (currentItem->components & IsPlayer ||
-            currentItem->components & IsEnemy ||
-            currentItem->components & IsOverworldElement)
-            if (currentItem->isFacingRight)
-                DrawTextureEx(currentItem->sprite.sprite, (Vector2){pos.x, pos.y}, 0, currentItem->sprite.scale, WHITE);
-            else {
-                Rectangle source = (Rectangle){
-                    0,
-                    0,
-                    -currentItem->sprite.sprite.width,
-                    currentItem->sprite.sprite.height
-                };
-                Rectangle destination = (Rectangle){
-                    pos.x,
-                    pos.y,
-                    currentItem->sprite.sprite.width * currentItem->sprite.scale,
-                    currentItem->sprite.sprite.height * currentItem->sprite.scale
-                };
-                DrawTexturePro(currentItem->sprite.sprite, source, destination, (Vector2){ 0, 0 }, 0, WHITE);
-            }
-
-        else if (currentItem->components & IsLevelElement) {
-            
-            // Currently the only level element is a floor area to be tiled with a sprite
-
+        // Currently the only level element is a floor area to be tiled with a sprite
+        bool isLevelBlock = (currentItem->components & IsLevelElement) &&
+                            !(currentItem->components & IsEnemy);
+        if (isLevelBlock) {
             // How many tiles to be drawn in each axis
             int xTilesCount = currentItem->hitbox.width / currentItem->sprite.sprite.width;
             int yTilesCount = currentItem->hitbox.height / currentItem->sprite.sprite.width;
@@ -118,8 +97,34 @@ void renderAllEntities() {
                                 );
                 }
             }
+
+            goto next_entity;
         }
 
+        if (currentItem->isFacingRight)
+
+            DrawTextureEx(currentItem->sprite.sprite, (Vector2){pos.x, pos.y}, 0, currentItem->sprite.scale, WHITE);
+            
+        else {
+
+            Rectangle source = (Rectangle){
+                0,
+                0,
+                -currentItem->sprite.sprite.width,
+                currentItem->sprite.sprite.height
+            };
+
+            Rectangle destination = (Rectangle){
+                pos.x,
+                pos.y,
+                currentItem->sprite.sprite.width * currentItem->sprite.scale,
+                currentItem->sprite.sprite.height * currentItem->sprite.scale
+            };
+
+            DrawTexturePro(currentItem->sprite.sprite, source, destination, (Vector2){ 0, 0 }, 0, WHITE);
+        }
+
+next_entity:
         currentItem = currentItem->next;
     }
 }

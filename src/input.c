@@ -90,5 +90,6 @@ void HandleInput() {
 }
 
 void ClickOnEditorItem(EditorItem *item) {
+
     STATE->editorSelectedItem = item;
 }
