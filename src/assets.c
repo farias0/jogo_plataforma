@@ -19,6 +19,8 @@ Sprite LevelDotSprite;
 Sprite OverworldCursorSprite;
 Sprite PathTileJoinSprite;
 Sprite PathTileStraightSprite;
+Sprite NightclubSprite;
+Sprite BGHouseSprite;
 
 
 void InitializeAssets() {
@@ -40,14 +42,21 @@ void InitializeAssets() {
         LoadTexture("../assets/eraser_1.png"),
         DEFAULT_SPRITE_SCALE
     };
-    
+    NightclubSprite = (Sprite){
+        LoadTexture("../assets/nightclub_2.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+    BGHouseSprite = (Sprite){
+        LoadTexture("../assets/bg_house_1.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+
     // Overworld
     LevelDotSprite = (Sprite){
         LoadTexture("../assets/level_dot_1.png"),
         DEFAULT_SPRITE_SCALE
     };
     OverworldCursorSprite = (Sprite){
-        // TODO own sprite
         LoadTexture("../assets/cursor_default_1.png"),
         DEFAULT_SPRITE_SCALE
     };
@@ -69,4 +78,16 @@ SpriteDimensions GetScaledDimensions(Sprite s) {
         s.sprite.width * s.scale,
         s.sprite.height * s.scale
     };
+}
+
+void RotateSprite(Sprite *sprite, int degrees) {
+    Image img = LoadImageFromTexture(sprite->sprite);
+    ImageRotate(&img, degrees);
+    sprite->sprite = LoadTextureFromImage(img); 
+}
+
+void FlipSpriteHorizontally(Sprite *sprite) {
+    Image img = LoadImageFromTexture(sprite->sprite);
+    ImageFlipHorizontal(&img);
+    sprite->sprite = LoadTextureFromImage(img); 
 }

@@ -18,10 +18,50 @@
 int editorButtonsRendered = 0;
 
 
+// Draws sprite in the background, with effects applied.
+void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
+
+    float scale = 1;
+    Color tint = (Color){ 0xFF, 0xFF, 0xFF, 0xFF };
+    float parallaxSpeed = 1;
+
+    switch (layer) {
+
+    case -1:
+        scale = 0.7;
+        tint = (Color){ 0xFF, 0xFF, 0xFF, 0x88 };
+        parallaxSpeed = 0.4;
+        break;
+
+    case -2:
+        scale = 0.3;
+        tint = (Color){ 0xFF, 0xFF, 0xFF, 0x44 };
+        parallaxSpeed = 0.25;
+        break;
+
+    default:
+        TraceLog(LOG_ERROR, "No code found for drawing in the bg layer %d.", layer);
+        return;
+    }
+
+    pos.x = pos.x * scale;
+    pos.y = pos.y * scale;
+
+    pos.x = pos.x - (CAMERA->hitbox.x * parallaxSpeed);
+    pos.y = pos.y - (CAMERA->hitbox.y * parallaxSpeed);
+
+    DrawTextureEx(sprite.sprite, pos, 0, (scale * sprite.scale), tint);
+}
+
 void renderBackground() {
 
     if (STATE->mode == Overworld) {
         DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 39, 39, 54, 255 }); 
+    }
+
+    else if (STATE->mode == InLevel) {
+        drawInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);
+        drawInBackground(BGHouseSprite,     (Vector2){ 600, 300 },  -2);
     }
 }
 
@@ -30,8 +70,7 @@ void renderAllEntities() {
     Entity *currentItem = ENTITIES_HEAD;
 
     while (currentItem != 0) {
-        float inSceneX = currentItem->hitbox.x - CAMERA->hitbox.x;
-        float inSceneY = currentItem->hitbox.y - CAMERA->hitbox.y;
+        Vector2 pos = PosInSceneToScreen((Vector2){ currentItem->hitbox.x, currentItem->hitbox.y });
 
         // TODO Restructure this 
 
@@ -39,7 +78,7 @@ void renderAllEntities() {
             currentItem->components & IsEnemy ||
             currentItem->components & IsOverworldElement)
             if (currentItem->isFacingRight)
-                DrawTextureEx(currentItem->sprite.sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->sprite.scale, WHITE);
+                DrawTextureEx(currentItem->sprite.sprite, (Vector2){pos.x, pos.y}, 0, currentItem->sprite.scale, WHITE);
             else {
                 Rectangle source = (Rectangle){
                     0,
@@ -48,8 +87,8 @@ void renderAllEntities() {
                     currentItem->sprite.sprite.height
                 };
                 Rectangle destination = (Rectangle){
-                    inSceneX,
-                    inSceneY,
+                    pos.x,
+                    pos.y,
                     currentItem->sprite.sprite.width * currentItem->sprite.scale,
                     currentItem->sprite.sprite.height * currentItem->sprite.scale
                 };
@@ -68,8 +107,8 @@ void renderAllEntities() {
                 for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
                     DrawTextureEx(
                                     currentItem->sprite.sprite,
-                                    (Vector2){inSceneX + (xCurrent * currentItem->sprite.sprite.width),
-                                                inSceneY + (yCurrent * currentItem->sprite.sprite.height)},
+                                    (Vector2){pos.x + (xCurrent * currentItem->sprite.sprite.width),
+                                                pos.y + (yCurrent * currentItem->sprite.sprite.height)},
                                     0,
                                     1,
                                     WHITE

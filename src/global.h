@@ -65,5 +65,10 @@ void ToggleInLevelState();
 // True if the given position is inside the play space on the screen (doesn't include the editor)
 bool IsInPlayArea(Vector2 pos);
 
+// Converts position from the screen coordinates to in game coordinates
+Vector2 PosInScreenToScene(Vector2 pos);
+
+// Converts position from in game coordinates to the screen coordinates
+Vector2 PosInSceneToScreen(Vector2 pos);
 
 #endif // _GLOBAL_H_INCLUDED_
