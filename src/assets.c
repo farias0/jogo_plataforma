@@ -43,7 +43,7 @@ void InitializeAssets() {
         DEFAULT_SPRITE_SCALE
     };
     NightclubSprite = (Sprite){
-        LoadTexture("../assets/nightclub_1.png"),
+        LoadTexture("../assets/nightclub_2.png"),
         DEFAULT_SPRITE_SCALE
     };
     BGHouseSprite = (Sprite){
@@ -78,4 +78,16 @@ SpriteDimensions GetScaledDimensions(Sprite s) {
         s.sprite.width * s.scale,
         s.sprite.height * s.scale
     };
+}
+
+void RotateSprite(Sprite *sprite, int degrees) {
+    Image img = LoadImageFromTexture(sprite->sprite);
+    ImageRotate(&img, degrees);
+    sprite->sprite = LoadTextureFromImage(img); 
+}
+
+void FlipSpriteHorizontally(Sprite *sprite) {
+    Image img = LoadImageFromTexture(sprite->sprite);
+    ImageFlipHorizontal(&img);
+    sprite->sprite = LoadTextureFromImage(img); 
 }

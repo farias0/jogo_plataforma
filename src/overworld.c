@@ -20,13 +20,6 @@ typedef struct CursorState {
 
 CursorState cursorState;
 
-Sprite rotateSprite(Sprite s, int degrees) {
-    Image img = LoadImageFromTexture(s.sprite);
-    ImageRotate(&img, degrees);
-    s.sprite = LoadTextureFromImage(img); 
-    return s;
-}
-
 /*
     Snaps a coordinate (x or y) into the grid of LevelDotSprites.
 */
@@ -117,15 +110,14 @@ Entity *addPathTileToLevel(Vector2 pos, PathTileType type, int degrees) {
                             HasSprite +
                             IsOverworldElement;
 
-    Sprite sprite;
     switch (type)
     {
     case STRAIGHT:
-        sprite = PathTileStraightSprite;
+        newPathTile->sprite = PathTileStraightSprite;
         dimensions = GetScaledDimensions(PathTileStraightSprite);
         break;
     case JOIN:
-        sprite = PathTileJoinSprite;
+        newPathTile->sprite = PathTileJoinSprite;
         dimensions = GetScaledDimensions(PathTileJoinSprite);
         break;
     default:
@@ -138,7 +130,8 @@ Entity *addPathTileToLevel(Vector2 pos, PathTileType type, int degrees) {
         dimensions.width,
         dimensions.height
     };
-    newPathTile->sprite = rotateSprite(sprite, degrees);
+    
+    RotateSprite(&newPathTile->sprite, degrees);
 
     ENTITIES_HEAD =  AddToEntityList(ENTITIES_HEAD, newPathTile);
 
