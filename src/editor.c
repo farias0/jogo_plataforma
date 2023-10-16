@@ -5,6 +5,7 @@
 #include "entities/entity.h"
 #include "entities/level.h"
 #include "entities/enemy.h"
+#include "overworld.h"
 
 EditorItem *EDITOR_ITEMS_HEAD = 0;
 
@@ -58,7 +59,7 @@ void loadOverworldEditor() {
 
     loadEditorItem(EraserSprite, &DestroyEntityOn, Hold);
     STATE->editorSelectedItem =
-        loadEditorItem(LevelDotSprite, 0, Click);
+        loadEditorItem(LevelDotSprite, &AddTileToOverworld, Click);
     loadEditorItem(PathTileJoinSprite, 0, Click);
     loadEditorItem(PathTileStraightSprite, 0, Hold);
 

@@ -25,7 +25,6 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_BACKSPACE))   InitializeOverworld();
 
-    // Debug
     if      (IsKeyPressed(KEY_F1))          STATE->showBackground = !STATE->showBackground;
 }
 
