@@ -88,3 +88,7 @@ void HandleInput() {
     handleEditorInput();
     handleCameraInput(); // debug
 }
+
+void ClickOnEditorItem(EditorItem *item) {
+    STATE->editorSelectedItem = item;
+}

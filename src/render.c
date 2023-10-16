@@ -4,6 +4,7 @@
 #include "entities/entity.h"
 #include "global.h"
 #include "assets.h"
+#include "input.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
@@ -160,7 +161,7 @@ void renderButton(Rectangle editorWindow, EditorItem *item) {
         &isItemSelected
     );
     
-    if (isItemSelected) STATE->editorSelectedItem = item;
+    if (isItemSelected) ClickOnEditorItem(item);
 
     editorButtonsRendered++;
 }
