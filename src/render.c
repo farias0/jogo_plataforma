@@ -28,27 +28,29 @@ void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
     float scale = 1;
     Color tint = (Color){ 0xFF, 0xFF, 0xFF, 0xFF };
 
+    // pos = PosInSceneToScreen(pos);
+
     switch (layer) {
 
     case -1:
-        scale = 1.4;
-        tint = (Color){ 0xFF, 0xFF, 0xFF, 0xAA };
-        
-        // TODO do pos calculation for parallax
-        
+        scale = 0.8;
+        tint = (Color){ 0xFF, 0xFF, 0xFF, 0x88 };
         break;
 
     case -2:
-        scale = 0.6;
-        tint = (Color){ 0xFF, 0xFF, 0xFF, 0x66 };
-        
+        scale = 0.3;
+        tint = (Color){ 0xFF, 0xFF, 0xFF, 0x44 };
         break;
 
     default:
         TraceLog(LOG_ERROR, "No code found for drawing in the bg layer %d.", layer);
         return;
-
     }
+
+    pos.x = pos.x * scale;
+    pos.y = pos.y * scale;
+
+    pos = PosInSceneToScreen(pos);
 
     // TODO find to which multiple of BACKGROUND_WIDTH the CAMERA applies
     // and render only to them. Make it loop in case of pos.x > BACKGROUND_WIDTH.
@@ -62,11 +64,8 @@ void renderBackground() {
     }
 
     else if (STATE->mode == InLevel) {
-        Vector2 pos = PosInSceneToScreen((Vector2){ 750, 120 });
-        drawInBackground(NightclubSprite, pos, -1);
-
-        Vector2 pos2 = PosInSceneToScreen((Vector2){ 350, 120 });
-        drawInBackground(BGHouseSprite, pos2, -2);
+        drawInBackground(NightclubSprite,   (Vector2){ 1050, 150 },  -1);
+        drawInBackground(BGHouseSprite,     (Vector2){ 600, 400 },  -2);
     }
 }
 

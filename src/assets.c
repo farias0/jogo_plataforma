@@ -44,11 +44,11 @@ void InitializeAssets() {
     };
     NightclubSprite = (Sprite){
         LoadTexture("../assets/nightclub_1.png"),
-        1
+        DEFAULT_SPRITE_SCALE
     };
     BGHouseSprite = (Sprite){
         LoadTexture("../assets/bg_house_1.png"),
-        1
+        DEFAULT_SPRITE_SCALE
     };
 
     // Overworld
