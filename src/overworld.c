@@ -55,6 +55,7 @@ void initializeOverworldCursor(Vector2 pos) {
                             IsCursor;
     newCursor->hitbox = GetSpritesHitboxFromEdge(OverworldCursorSprite, pos);
     newCursor->sprite = OverworldCursorSprite;
+    newCursor->layer = 1;
 
     ENTITIES_HEAD = AddToEntityList(ENTITIES_HEAD, newCursor);
     cursorState.cursor = newCursor;
@@ -105,6 +106,9 @@ void LoadOverworld() {
     float dotX = SCREEN_WIDTH/2;
     float dotY = SCREEN_HEIGHT/2;
 
+    initializeOverworldCursor((Vector2){ 0, 0 });
+
+
     Entity *dot1    = addTileToOverworld    ((Vector2){ dotX, dotY },                               LEVEL_DOT,      0);
 
     // Path to the right
@@ -119,9 +123,7 @@ void LoadOverworld() {
     Entity *path6   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 3},   JOIN_PATH,      0);
     Entity *dot3    = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   LEVEL_DOT,      0);
 
-    // ATTENTION: Cursor is initialized at the end so it's rendered in front of the other entities
-    // TODO fix this hack
-    initializeOverworldCursor((Vector2){ 0, 0 });
+
     cursorState.tileUnder = dot1;
     updateCursorPosition();
 }

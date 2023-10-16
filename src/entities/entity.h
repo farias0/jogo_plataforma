@@ -28,6 +28,7 @@ typedef struct Entity {
     
     Rectangle hitbox;
     Sprite sprite;
+    int layer;
 
     bool isFacingRight;
     bool isFallingDown;

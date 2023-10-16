@@ -10,6 +10,9 @@
 #include "../include/raygui.h"
 
 
+#define FIRST_LAYER 0
+#define LAST_LAYER  1
+
 #define EDITOR_BUTTON_SIZE 80
 #define EDITOR_BUTTON_SPACING 12
 #define EDITOR_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (EDITOR_BUTTON_SIZE * 2) - EDITOR_BUTTON_SPACING) / 2
@@ -68,14 +71,18 @@ void renderBackground() {
     }
 }
 
-void renderAllEntities() {
+void renderEntitiesInLayer(int layer) {
 
     Entity *currentItem = ENTITIES_HEAD;
 
     while (currentItem != 0) {
         Vector2 pos = PosInSceneToScreen((Vector2){ currentItem->hitbox.x, currentItem->hitbox.y });
 
-        if (currentItem->sprite.scale == 0) goto next_entity;
+        if (currentItem->sprite.scale == 0 ||
+            currentItem->layer != layer) {
+                
+                goto next_entity;
+            }
 
         // Currently the only level element is a floor area to be tiled with a sprite
         bool isLevelBlock = (currentItem->components & IsLevelElement) &&
@@ -104,7 +111,7 @@ void renderAllEntities() {
         if (currentItem->isFacingRight)
 
             DrawTextureEx(currentItem->sprite.sprite, (Vector2){pos.x, pos.y}, 0, currentItem->sprite.scale, WHITE);
-            
+
         else {
 
             Rectangle source = (Rectangle){
@@ -126,6 +133,14 @@ void renderAllEntities() {
 
 next_entity:
         currentItem = currentItem->next;
+    }
+}
+
+void renderAllEntities() {
+
+    for (int layer = FIRST_LAYER; layer <= LAST_LAYER; layer++) {
+        
+        renderEntitiesInLayer(layer);
     }
 }
 
