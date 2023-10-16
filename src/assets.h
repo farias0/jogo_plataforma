@@ -34,4 +34,10 @@ SpriteDimensions GetScaledDimensions(Sprite sprite);
 void RotateSprite(Sprite *sprite, int degrees);
 void FlipSpriteHorizontally(Sprite *sprite);
 
+// Returns a hitbox in the shape of sprite.
+Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin);
+
+// Returns a hitbox in the shape of sprite, centered around middlePoint.
+Rectangle GetSpritesHitboxFromMiddle(Sprite sprite, Vector2 middlePoint);
+
 #endif // _ASSETS_H_INCLUDED_

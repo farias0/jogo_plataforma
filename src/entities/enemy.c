@@ -88,13 +88,7 @@ void EnemyTick(Entity *enemy, Entity *player) {
 
 Entity *AddEnemyToLevel(Vector2 pos) {    
 
-    Rectangle hitbox = {
-        // Considering the player is clicking in the middle of the sprite
-        pos.x - ((EnemySprite.sprite.width * EnemySprite.scale) / 2),
-        pos.y - ((EnemySprite.sprite.height * EnemySprite.scale) / 2),
-        (EnemySprite.sprite.width * EnemySprite.scale),
-        (EnemySprite.sprite.height * EnemySprite.scale)
-    };
+    Rectangle hitbox = GetSpritesHitboxFromMiddle(EnemySprite, pos);
 
     Entity *currentItem = ENTITIES_HEAD;
     while (currentItem != 0) {

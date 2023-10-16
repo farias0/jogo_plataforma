@@ -66,10 +66,7 @@ Entity *InitializePlayer(Entity *head, Entity **newPlayer) {
                             IsPlayer +
                             HasSprite +
                             DoesTick;
-    (*newPlayer)->hitbox = (Rectangle){ 0.0f,
-                                        0.0f,
-                                        PlayerSprite.sprite.width * PlayerSprite.scale,
-                                        PlayerSprite.sprite.height * PlayerSprite.scale};
+    (*newPlayer)->hitbox = GetSpritesHitboxFromEdge(PlayerSprite, (Vector2){ 0.0f, 0.0f });
     (*newPlayer)->sprite = PlayerSprite;
     (*newPlayer)->isFacingRight = true;
 

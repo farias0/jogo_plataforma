@@ -91,3 +91,23 @@ void FlipSpriteHorizontally(Sprite *sprite) {
     ImageFlipHorizontal(&img);
     sprite->sprite = LoadTextureFromImage(img); 
 }
+
+Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin) {
+    SpriteDimensions dimensions = GetScaledDimensions(sprite);
+    return (Rectangle) {
+        origin.x,
+        origin.y,
+        dimensions.width,
+        dimensions.height
+    };
+}
+
+Rectangle GetSpritesHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
+    SpriteDimensions dimensions = GetScaledDimensions(sprite);
+    return (Rectangle) {
+        middlePoint.x - (dimensions.width / 2),
+        middlePoint.y - (dimensions.height / 2),
+        dimensions.width,
+        dimensions.height
+    };
+}
