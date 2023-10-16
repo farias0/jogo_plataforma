@@ -227,7 +227,7 @@ void AddTileToOverworld(Vector2 pos) {
                 !(possibleTile->components & IsCursor) &&
                 CheckCollisionRecs(hitbox, possibleTile->hitbox)) {
 
-                TraceLog(LOG_DEBUG, "Couldn't place dot, collided with item component=%d, x=%.1f, y=%.1f",
+                TraceLog(LOG_TRACE, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
                             possibleTile->components, possibleTile->hitbox.x, possibleTile->hitbox.y);
             return;
         }
@@ -236,5 +236,16 @@ void AddTileToOverworld(Vector2 pos) {
 
     }
 
-    addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, LEVEL_DOT, 0);
+    switch (STATE->editorSelectedItem->type) {
+        case LevelDot:
+            addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, LEVEL_DOT, 0); break;
+        case PathStraight:
+            addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, STRAIGHT_PATH, 0); break;
+        case PathJoin:
+            addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, JOIN_PATH, 0); break;
+        default:
+            TraceLog(LOG_ERROR,
+                        "Couldn't find Overworld Tile Type for Editor Item Type %d.",
+                        STATE->editorSelectedItem->type);
+    }
 }

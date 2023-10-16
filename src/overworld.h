@@ -19,6 +19,8 @@ typedef enum OverworldTileType {
 void LoadOverworld();
 void SelectLevel();
 void OverworldMoveCursor(OverworldCursorDirection direction);
+
+// Adds tile to overworld in according to the item selected in the editor.
 void AddTileToOverworld(Vector2 pos);
 
 #endif // _OVERWORLD_H_INCLUDED_

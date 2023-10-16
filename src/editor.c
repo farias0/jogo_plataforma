@@ -23,10 +23,11 @@ void clearEditorItems() {
     EDITOR_ITEMS_HEAD = 0;
 }
 
-EditorItem *loadEditorItem(Sprite sprite, void (*handler), EditorItemInteraction interaction) {
+EditorItem *loadEditorItem(EditorItemType type, Sprite sprite, void (*handler), EditorItemInteraction interaction) {
 
     EditorItem *newItem = MemAlloc(sizeof(EditorItem));
     newItem->sprite = sprite;
+    newItem->type = type;
     newItem->handler = handler;
     newItem->interaction = interaction;
 
@@ -47,21 +48,21 @@ EditorItem *loadEditorItem(Sprite sprite, void (*handler), EditorItemInteraction
 
 void loadInLevelEditor() {
 
-    loadEditorItem(EraserSprite, &DestroyEntityOn, Hold);
+    loadEditorItem(Eraser, EraserSprite, &DestroyEntityOn, Hold);
     STATE->editorSelectedItem =
-        loadEditorItem(BlockSprite, &AddBlockToLevel, Hold);
-    loadEditorItem(EnemySprite, &AddEnemyToLevel, Click);
+        loadEditorItem(Block, BlockSprite, &AddBlockToLevel, Hold);
+    loadEditorItem(Enemy, EnemySprite, &AddEnemyToLevel, Click);
 
     TraceLog(LOG_DEBUG, "Editor loaded in level itens.");
 }
 
 void loadOverworldEditor() {
 
-    loadEditorItem(EraserSprite, &DestroyEntityOn, Hold);
+    loadEditorItem(Eraser, EraserSprite, &DestroyEntityOn, Hold);
     STATE->editorSelectedItem =
-        loadEditorItem(LevelDotSprite, &AddTileToOverworld, Click);
-    loadEditorItem(PathTileJoinSprite, 0, Click);
-    loadEditorItem(PathTileStraightSprite, 0, Hold);
+        loadEditorItem(LevelDot, LevelDotSprite, &AddTileToOverworld, Click);
+    loadEditorItem(PathJoin, PathTileJoinSprite, &AddTileToOverworld, Click);
+    loadEditorItem(PathStraight, PathTileStraightSprite, &AddTileToOverworld, Hold);
 
     TraceLog(LOG_DEBUG, "Editor loaded overworld itens.");
 }

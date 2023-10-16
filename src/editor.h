@@ -10,6 +10,9 @@ typedef enum {
     Eraser,
     Block,
     Enemy,
+    LevelDot,
+    PathStraight,
+    PathJoin
 } EditorItemType;
 
 typedef enum {
@@ -19,6 +22,7 @@ typedef enum {
 
 typedef struct EditorItem {
     Sprite sprite;
+    EditorItemType type;
     void (*handler)(Vector2);
     EditorItemInteraction interaction;
 
