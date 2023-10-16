@@ -13,8 +13,6 @@
 #define EDITOR_BUTTON_SPACING 12
 #define EDITOR_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (EDITOR_BUTTON_SIZE * 2) - EDITOR_BUTTON_SPACING) / 2
 
-#define BACKGROUND_WIDTH    SCREEN_WIDTH * 2
-
 
 // How many editor buttons were rendered this frame.
 int editorButtonsRendered = 0;
@@ -52,7 +50,6 @@ void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
     pos.x = pos.x - (CAMERA->hitbox.x * parallaxSpeed);
     pos.y = pos.y - (CAMERA->hitbox.y * parallaxSpeed);
 
-    // TODO Make the background loop.
     DrawTextureEx(sprite.sprite, pos, 0, (scale * sprite.scale), tint);
 }
 
