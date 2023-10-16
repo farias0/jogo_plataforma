@@ -60,6 +60,8 @@ void renderBackground() {
     }
 
     else if (STATE->mode == InLevel) {
+        if (!STATE->showBackground) return; 
+
         drawInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);
         drawInBackground(BGHouseSprite,     (Vector2){ 600, 300 },  -2);
     }

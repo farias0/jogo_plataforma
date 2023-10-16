@@ -31,6 +31,9 @@ typedef struct GameState {
     PlayerMovementSpeed playerMovementSpeed;
 
     EditorItem *editorSelectedItem;
+
+    // Debug
+    bool showBackground;
 } GameState;
 
 

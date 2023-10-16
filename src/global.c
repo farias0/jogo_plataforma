@@ -36,6 +36,9 @@ void ResetGameState() {
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
     STATE->mode = InLevel;
 
+    // Debug
+    STATE->showBackground = false;
+
     TraceLog(LOG_INFO, "Game state reset.");
 }
 
