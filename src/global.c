@@ -109,8 +109,10 @@ void ToggleEditorEnabled() {
 
     if (STATE->isEditorEnabled) {
         SetWindowSize(SCREEN_WIDTH_FULL, SCREEN_HEIGHT);
+        TraceLog(LOG_INFO, "Editor enabled.");
     } else {
         SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        TraceLog(LOG_INFO, "Editor disabled.");
     }
 }
 
