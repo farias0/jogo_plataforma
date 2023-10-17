@@ -28,6 +28,7 @@ typedef struct Entity {
     
     Rectangle hitbox;
     Sprite sprite;
+    int layer;
 
     bool isFacingRight;
     bool isFallingDown;
@@ -53,7 +54,7 @@ void TickAllEntities(Entity *entity, Entity *player);
 Entity *DestroyEntity(Entity *entity);
 
 // Destroys an entity whose hitbox contains pos and returns the list's head
-Entity *DestroyEntityOn(Entity *head, Vector2 pos);
+Entity *DestroyEntityOn(Vector2 pos);
 
 void DestroyAllEntities(Entity *head);
 

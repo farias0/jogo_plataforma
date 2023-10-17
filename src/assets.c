@@ -19,6 +19,8 @@ Sprite LevelDotSprite;
 Sprite OverworldCursorSprite;
 Sprite PathTileJoinSprite;
 Sprite PathTileStraightSprite;
+Sprite NightclubSprite;
+Sprite BGHouseSprite;
 
 
 void InitializeAssets() {
@@ -40,14 +42,21 @@ void InitializeAssets() {
         LoadTexture("../assets/eraser_1.png"),
         DEFAULT_SPRITE_SCALE
     };
-    
+    NightclubSprite = (Sprite){
+        LoadTexture("../assets/nightclub_2.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+    BGHouseSprite = (Sprite){
+        LoadTexture("../assets/bg_house_1.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+
     // Overworld
     LevelDotSprite = (Sprite){
         LoadTexture("../assets/level_dot_1.png"),
         DEFAULT_SPRITE_SCALE
     };
     OverworldCursorSprite = (Sprite){
-        // TODO own sprite
         LoadTexture("../assets/cursor_default_1.png"),
         DEFAULT_SPRITE_SCALE
     };
@@ -68,5 +77,37 @@ SpriteDimensions GetScaledDimensions(Sprite s) {
     return (SpriteDimensions) {
         s.sprite.width * s.scale,
         s.sprite.height * s.scale
+    };
+}
+
+void RotateSprite(Sprite *sprite, int degrees) {
+    Image img = LoadImageFromTexture(sprite->sprite);
+    ImageRotate(&img, degrees);
+    sprite->sprite = LoadTextureFromImage(img); 
+}
+
+void FlipSpriteHorizontally(Sprite *sprite) {
+    Image img = LoadImageFromTexture(sprite->sprite);
+    ImageFlipHorizontal(&img);
+    sprite->sprite = LoadTextureFromImage(img); 
+}
+
+Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin) {
+    SpriteDimensions dimensions = GetScaledDimensions(sprite);
+    return (Rectangle) {
+        origin.x,
+        origin.y,
+        dimensions.width,
+        dimensions.height
+    };
+}
+
+Rectangle GetSpritesHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
+    SpriteDimensions dimensions = GetScaledDimensions(sprite);
+    return (Rectangle) {
+        middlePoint.x - (dimensions.width / 2),
+        middlePoint.y - (dimensions.height / 2),
+        dimensions.width,
+        dimensions.height
     };
 }

@@ -89,14 +89,15 @@ void DestroyAllEntities(Entity *head) {
     }
 }
 
-Entity *DestroyEntityOn(Entity *head, Vector2 pos) {
+Entity *DestroyEntityOn(Vector2 pos) {
     
-    Entity *currentItem = head;
+    Entity *currentItem = ENTITIES_HEAD;
 
     while (currentItem != 0) {
 
         if (currentItem->components & HasPosition &&
             !(currentItem->components & IsPlayer) &&
+            !(currentItem->components & IsCursor) &&
             CheckCollisionPointRec(pos, currentItem->hitbox)) {
 
                 return DestroyEntity(currentItem);
@@ -106,7 +107,7 @@ Entity *DestroyEntityOn(Entity *head, Vector2 pos) {
         
     };
 
-    return head;
+    return ENTITIES_HEAD;
 }
 
 int CountEntities(Entity *listItem) {
@@ -119,7 +120,7 @@ int CountEntities(Entity *listItem) {
         currentItem = currentItem->next;
     }
 
-    // At least Camera and Player must be present
+    // At least Camera and Player/Cursor must be present
     if (counter < 2) {
         TraceLog(LOG_ERROR, "Entity counter at %d!", counter);
     }

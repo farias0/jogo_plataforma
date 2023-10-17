@@ -4,10 +4,14 @@
 #include "entities/entity.h"
 #include "global.h"
 #include "assets.h"
+#include "input.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
 
+
+#define FIRST_LAYER 0
+#define LAST_LAYER  1
 
 #define EDITOR_BUTTON_SIZE 80
 #define EDITOR_BUTTON_SPACING 12
@@ -18,48 +22,72 @@
 int editorButtonsRendered = 0;
 
 
+// Draws sprite in the background, with effects applied.
+void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
+
+    float scale = 1;
+    Color tint = (Color){ 0xFF, 0xFF, 0xFF, 0xFF };
+    float parallaxSpeed = 1;
+
+    switch (layer) {
+
+    case -1:
+        scale = 0.7;
+        tint = (Color){ 0xFF, 0xFF, 0xFF, 0x88 };
+        parallaxSpeed = 0.4;
+        break;
+
+    case -2:
+        scale = 0.3;
+        tint = (Color){ 0xFF, 0xFF, 0xFF, 0x44 };
+        parallaxSpeed = 0.25;
+        break;
+
+    default:
+        TraceLog(LOG_ERROR, "No code found for drawing in the bg layer %d.", layer);
+        return;
+    }
+
+    pos.x = pos.x * scale;
+    pos.y = pos.y * scale;
+
+    pos.x = pos.x - (CAMERA->hitbox.x * parallaxSpeed);
+    pos.y = pos.y - (CAMERA->hitbox.y * parallaxSpeed);
+
+    DrawTextureEx(sprite.sprite, pos, 0, (scale * sprite.scale), tint);
+}
+
 void renderBackground() {
 
     if (STATE->mode == Overworld) {
         DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 39, 39, 54, 255 }); 
     }
+
+    else if (STATE->mode == InLevel) {
+        if (!STATE->showBackground) return; 
+
+        drawInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);
+        drawInBackground(BGHouseSprite,     (Vector2){ 600, 300 },  -2);
+    }
 }
 
-void renderAllEntities() {
+void renderEntitiesInLayer(int layer) {
 
     Entity *currentItem = ENTITIES_HEAD;
 
     while (currentItem != 0) {
-        float inSceneX = currentItem->hitbox.x - CAMERA->hitbox.x;
-        float inSceneY = currentItem->hitbox.y - CAMERA->hitbox.y;
+        Vector2 pos = PosInSceneToScreen((Vector2){ currentItem->hitbox.x, currentItem->hitbox.y });
 
-        // TODO Restructure this 
-
-        if (currentItem->components & IsPlayer ||
-            currentItem->components & IsEnemy ||
-            currentItem->components & IsOverworldElement)
-            if (currentItem->isFacingRight)
-                DrawTextureEx(currentItem->sprite.sprite, (Vector2){inSceneX, inSceneY}, 0, currentItem->sprite.scale, WHITE);
-            else {
-                Rectangle source = (Rectangle){
-                    0,
-                    0,
-                    -currentItem->sprite.sprite.width,
-                    currentItem->sprite.sprite.height
-                };
-                Rectangle destination = (Rectangle){
-                    inSceneX,
-                    inSceneY,
-                    currentItem->sprite.sprite.width * currentItem->sprite.scale,
-                    currentItem->sprite.sprite.height * currentItem->sprite.scale
-                };
-                DrawTexturePro(currentItem->sprite.sprite, source, destination, (Vector2){ 0, 0 }, 0, WHITE);
+        if (currentItem->sprite.scale == 0 ||
+            currentItem->layer != layer) {
+                
+                goto next_entity;
             }
 
-        else if (currentItem->components & IsLevelElement) {
-            
-            // Currently the only level element is a floor area to be tiled with a sprite
-
+        // Currently the only level element is a floor area to be tiled with a sprite
+        bool isLevelBlock = (currentItem->components & IsLevelElement) &&
+                            !(currentItem->components & IsEnemy);
+        if (isLevelBlock) {
             // How many tiles to be drawn in each axis
             int xTilesCount = currentItem->hitbox.width / currentItem->sprite.sprite.width;
             int yTilesCount = currentItem->hitbox.height / currentItem->sprite.sprite.width;
@@ -68,17 +96,51 @@ void renderAllEntities() {
                 for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
                     DrawTextureEx(
                                     currentItem->sprite.sprite,
-                                    (Vector2){inSceneX + (xCurrent * currentItem->sprite.sprite.width),
-                                                inSceneY + (yCurrent * currentItem->sprite.sprite.height)},
+                                    (Vector2){pos.x + (xCurrent * currentItem->sprite.sprite.width),
+                                                pos.y + (yCurrent * currentItem->sprite.sprite.height)},
                                     0,
                                     1,
                                     WHITE
                                 );
                 }
             }
+
+            goto next_entity;
         }
 
+        if (currentItem->isFacingRight)
+
+            DrawTextureEx(currentItem->sprite.sprite, (Vector2){pos.x, pos.y}, 0, currentItem->sprite.scale, WHITE);
+
+        else {
+
+            Rectangle source = (Rectangle){
+                0,
+                0,
+                -currentItem->sprite.sprite.width,
+                currentItem->sprite.sprite.height
+            };
+
+            Rectangle destination = (Rectangle){
+                pos.x,
+                pos.y,
+                currentItem->sprite.sprite.width * currentItem->sprite.scale,
+                currentItem->sprite.sprite.height * currentItem->sprite.scale
+            };
+
+            DrawTexturePro(currentItem->sprite.sprite, source, destination, (Vector2){ 0, 0 }, 0, WHITE);
+        }
+
+next_entity:
         currentItem = currentItem->next;
+    }
+}
+
+void renderAllEntities() {
+
+    for (int layer = FIRST_LAYER; layer <= LAST_LAYER; layer++) {
+        
+        renderEntitiesInLayer(layer);
     }
 }
 
@@ -102,7 +164,7 @@ void renderHUD() {
     }
 }
 
-void renderButton(Rectangle editorWindow, EditorItem item, Sprite sprite) {
+void renderButton(Rectangle editorWindow, EditorItem *item) {
     
     float itemX = editorWindow.x + EDITOR_BUTTON_WALL_SPACING;
     if (editorButtonsRendered % 2) itemX += EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING;
@@ -111,8 +173,15 @@ void renderButton(Rectangle editorWindow, EditorItem item, Sprite sprite) {
     itemY += (EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING) * (editorButtonsRendered / 2);
     
     bool isItemSelected = STATE->editorSelectedItem == item;
-    GuiToggleSprite((Rectangle){ itemX, itemY, EDITOR_BUTTON_SIZE, EDITOR_BUTTON_SIZE }, sprite, (Vector2){itemX, itemY}, &isItemSelected);
-    EditorSetSelectedItem(item, isItemSelected);
+
+    GuiToggleSprite(
+        (Rectangle){ itemX, itemY, EDITOR_BUTTON_SIZE, EDITOR_BUTTON_SIZE },
+        item->sprite, 
+        (Vector2){itemX, itemY},
+        &isItemSelected
+    );
+    
+    if (isItemSelected) ClickOnEditorItem(item);
 
     editorButtonsRendered++;
 }
@@ -128,9 +197,11 @@ void renderEditor() {
     GuiGroupBox(editorWindow, "Editor");
 
     editorButtonsRendered = 0;
-    renderButton(editorWindow, Eraser, EraserSprite);
-    renderButton(editorWindow, Block, BlockSprite);
-    renderButton(editorWindow, Enemy, EnemySprite);
+    EditorItem *currentItem = EDITOR_ITEMS_HEAD;
+    while (currentItem != 0) {
+        renderButton(editorWindow, currentItem);
+        currentItem = currentItem->next;
+    }
 }
 
 void Render() {

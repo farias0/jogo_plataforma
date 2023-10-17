@@ -9,24 +9,10 @@
 
 #define CAMERA_SPEED 8.0f;
 
-void handleGeneralInput() {
-    if (STATE->isPaused) {
-        if (IsKeyPressed(KEY_ENTER)) {
-            if (STATE->isPlayerDead) {
-                PlayerContinue();
-            } else {
-                STATE->isPaused = false;
-            }
-        }
-    }
-    else if (IsKeyPressed(KEY_ENTER)) {
-        STATE->isPaused = true;
-    }
-}
 
-void handlePlayerInput() {
+void handleInLevelInput() {
 
-    Vector2 playerDelta = { 0.0f, 0.0f };
+    if      (IsKeyPressed(KEY_ENTER))       { ToggleInLevelState(); return; }
 
     if      (IsKeyDown(KEY_Z))              STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
     else                                    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
@@ -38,6 +24,8 @@ void handlePlayerInput() {
     if      (IsKeyPressed(KEY_X))           PlayerStartJump(PLAYER);
 
     if      (IsKeyPressed(KEY_BACKSPACE))   InitializeOverworld();
+
+    if      (IsKeyPressed(KEY_F1))          STATE->showBackground = !STATE->showBackground;
 }
 
 void handleOverworldInput() {
@@ -53,36 +41,28 @@ void handleOverworldInput() {
 void handleEditorInput() {
 
     Vector2 mousePosInScreen = GetMousePosition();
-    if (IsInPlayArea(mousePosInScreen)) {
 
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-            // TODO use a timer to not keep checking it every frame
+    if (!IsInPlayArea(mousePosInScreen)) return;
 
-            Vector2 mousePosInScene = {
-                    mousePosInScreen.x + CAMERA->hitbox.x,
-                    mousePosInScreen.y + CAMERA->hitbox.y
-                };
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        // TODO use a timer to not keep checking it every frame
 
-            switch (STATE->editorSelectedItem)  {
+        if (STATE->editorSelectedItem == 0) return;
 
-            case Block:
-                ENTITIES_HEAD = AddBlockToLevel(ENTITIES_HEAD, mousePosInScene);
-                break;
-
-            case Enemy:
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) { // so holding doesn't keep placing
-                    ENTITIES_HEAD = AddEnemyToLevel(ENTITIES_HEAD, mousePosInScene);
-                }
-                break;
-
-            case Eraser:
-                ENTITIES_HEAD = DestroyEntityOn(ENTITIES_HEAD, mousePosInScene);
-                break;
-
-            default:
-                TraceLog(LOG_WARNING, "No code to handle selected item %d.", STATE->editorSelectedItem);
-            }
+        if (STATE->editorSelectedItem->handler == 0) {
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                TraceLog(LOG_WARNING, "No code to handle selected editor item.");
+            return;
         }
+
+        // so holding doesn't keep activating the item
+        if (STATE->editorSelectedItem->interaction == Click &&
+            !IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                return;
+
+
+        STATE->editorSelectedItem->handler(
+            PosInScreenToScene(mousePosInScreen));
     }
 }
 
@@ -97,17 +77,19 @@ void handleCameraInput() {
 
 void HandleInput() {
 
-    handleGeneralInput();
-    if (STATE->isPaused) return;
-    
     if (STATE->mode == InLevel) {
-        handlePlayerInput();
+        handleInLevelInput();
+        if (STATE->isPaused) return;
     }
-
     else if (STATE->mode == Overworld) {
         handleOverworldInput();
     }
 
     handleEditorInput();
     handleCameraInput(); // debug
+}
+
+void ClickOnEditorItem(EditorItem *item) {
+
+    STATE->editorSelectedItem = item;
 }
