@@ -150,17 +150,17 @@ void renderHUD() {
     if (STATE->isPlayerDead) DrawText("YOU DIED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 60, RAYWHITE);
 
 
-    // Debug
-    char entity_count[50];
-    sprintf(entity_count, "%d entities", CountEntities(ENTITIES_HEAD));
-    DrawText(entity_count, 10, 20, 20, WHITE);
+    if (STATE->showDebugHUD) {
+        char entity_count[50];
+        sprintf(entity_count, "%d entities", CountEntities(ENTITIES_HEAD));
+        DrawText(entity_count, 10, 20, 20, WHITE);
 
-    // Debug
-    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-        Vector2 mousePos = GetMousePosition();
-        char mousePosTxt[50];
-        sprintf(mousePosTxt, "Left click: x=%.0f, y=%.0f", mousePos.x, mousePos.y);
-        DrawText(mousePosTxt, 600, 20, 20, WHITE);
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            Vector2 mousePos = GetMousePosition();
+            char mousePosTxt[50];
+            sprintf(mousePosTxt, "Left click: x=%.0f, y=%.0f", mousePos.x, mousePos.y);
+            DrawText(mousePosTxt, 600, 20, 20, WHITE);
+        }
     }
 }
 

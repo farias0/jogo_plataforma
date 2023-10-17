@@ -33,6 +33,7 @@ typedef struct GameState {
     EditorItem *editorSelectedItem;
     bool isEditorEnabled;
 
+    bool showDebugHUD;
     bool showBackground;
 } GameState;
 

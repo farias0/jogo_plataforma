@@ -117,16 +117,16 @@ void PlayerStartJump(Entity *player) {
 
 void PlayerTick(Entity *player) {
 
-    // debug
-    char ySpeedTxt[100];
-    sprintf(ySpeedTxt, "yVelocity: %f   y: %f", yVelocity, player->hitbox.y);
-    DrawText(ySpeedTxt, 10, 40, 20, WHITE);
-
+    if (STATE->showDebugHUD) {
+        char ySpeedTxt[100];
+        sprintf(ySpeedTxt, "yVelocity: %f   y: %f", yVelocity, player->hitbox.y);
+        DrawText(ySpeedTxt, 10, 40, 20, WHITE);
+    }
+    
     Entity *groundBeneath = GetGroundBeneath(player); 
     if (groundBeneath) {
 
-        // debug
-        DrawText("On the ground!", 10, 60, 20, WHITE);
+        if (STATE->showDebugHUD) DrawText("On the ground!", 10, 60, 20, WHITE);
 
         if (!isJumping) {
             // Landing on the ground
@@ -184,8 +184,7 @@ void PlayerTick(Entity *player) {
                 if ((abs(player->hitbox.x - entity->hitbox.x - entity->hitbox.width) < 10.0f) ||
                         (abs(player->hitbox.x + player->hitbox.width - entity->hitbox.x) < 10.0f)) {
 
-                    // debug
-                    DrawText("Hit wall", 10, 80, 20, WHITE);
+                    if (STATE->showDebugHUD) ("Hit wall", 10, 80, 20, WHITE);
 
                     player->hitbox.x -= xVelocity;
 
@@ -195,8 +194,7 @@ void PlayerTick(Entity *player) {
                 // Player hit ceiling
                 if ((abs(player->hitbox.y - (entity->hitbox.y + entity->hitbox.height)) < 15.0f) && isJumping) {
 
-                    // debug
-                    DrawText("Hit ceiling", 10, 100, 20, WHITE);
+                    if (STATE->showDebugHUD) DrawText("Hit ceiling", 10, 100, 20, WHITE);
 
                     isJumping = false;
                     yVelocity = -(1/yVelocity);

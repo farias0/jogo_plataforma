@@ -25,7 +25,7 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_BACKSPACE))   InitializeOverworld();
 
-    if      (IsKeyPressed(KEY_F2))          STATE->showBackground = !STATE->showBackground;
+    if      (IsKeyPressed(KEY_F3))          STATE->showBackground = !STATE->showBackground;
 }
 
 void handleOverworldInput() {
@@ -41,6 +41,9 @@ void handleOverworldInput() {
 void handleEditorInput() {
 
     if      (IsKeyPressed(KEY_F1))           { ToggleEditorEnabled(); return; }
+
+    // Debug
+    if      (IsKeyPressed(KEY_F2))          STATE->showDebugHUD = !STATE->showDebugHUD;
 
     if (!STATE->isEditorEnabled) return;
 
@@ -82,6 +85,8 @@ void handleCameraInput() {
 
 void HandleInput() {
 
+    handleEditorInput();
+
     if (STATE->mode == InLevel) {
         handleInLevelInput();
         if (STATE->isPaused) return;
@@ -90,7 +95,6 @@ void HandleInput() {
         handleOverworldInput();
     }
 
-    handleEditorInput();
     handleCameraInput(); // debug
 }
 

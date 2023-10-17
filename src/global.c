@@ -27,6 +27,12 @@ void playerContinue() {
 void InitializeGameState() {
     STATE = MemAlloc(sizeof(GameState));
 
+    STATE->isEditorEnabled = false;
+
+    // Debug
+    STATE->showDebugHUD = false;
+    STATE->showBackground = false;
+
     TraceLog(LOG_INFO, "Game state initialized.");
 }
 
@@ -35,10 +41,6 @@ void ResetGameState() {
     STATE->isPlayerDead = false;
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
     STATE->mode = InLevel;
-    STATE->isEditorEnabled = false;
-
-    // Debug
-    STATE->showBackground = false;
 
     TraceLog(LOG_INFO, "Game state reset.");
 }
