@@ -13,6 +13,7 @@ typedef enum OverworldTileType {
     LEVEL_DOT,
     STRAIGHT_PATH,
     JOIN_PATH,
+    PATH_IN_L
 } OverworldTileType;
 
 

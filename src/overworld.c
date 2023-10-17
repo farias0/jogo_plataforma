@@ -89,6 +89,11 @@ Entity *addTileToOverworld(Vector2 pos, OverworldTileType type, int degrees) {
         newTile->hitbox = GetSpritesHitboxFromEdge(PathTileJoinSprite, pos);
         RotateSprite(&newTile->sprite, degrees);
         break;
+    case PATH_IN_L:
+        newTile->sprite = PathTileInLSprite;
+        newTile->hitbox = GetSpritesHitboxFromEdge(PathTileInLSprite, pos);
+        RotateSprite(&newTile->sprite, degrees);
+        break;
     default:
         TraceLog(LOG_ERROR, "Could not find sprite for overworld tile type %d.", type);
     }
@@ -260,6 +265,8 @@ void AddTileToOverworld(Vector2 pos) {
             addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, STRAIGHT_PATH, 0); break;
         case PathJoin:
             addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, JOIN_PATH, 0); break;
+        case PathInL:
+            addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, PATH_IN_L, 0); break;
         default:
             TraceLog(LOG_ERROR,
                         "Couldn't find Overworld Tile Type for Editor Item Type %d.",

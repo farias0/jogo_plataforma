@@ -12,7 +12,8 @@ typedef enum {
     Enemy,
     LevelDot,
     PathStraight,
-    PathJoin
+    PathJoin,
+    PathInL,
 } EditorItemType;
 
 typedef enum {
