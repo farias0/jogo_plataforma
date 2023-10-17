@@ -233,8 +233,19 @@ void AddTileToOverworld(Vector2 pos) {
                 !(possibleTile->components & IsCursor) &&
                 CheckCollisionRecs(hitbox, possibleTile->hitbox)) {
 
+                if (!(possibleTile->components & IsLevelDot)) {
+
+                    RotateSprite(&possibleTile->sprite, 90);
+
+                    TraceLog(LOG_TRACE, "Rotated tile component=%d, x=%.1f, y=%.1f",
+                            possibleTile->components, possibleTile->hitbox.x, possibleTile->hitbox.y);
+                            
+                    return;
+                }
+
                 TraceLog(LOG_TRACE, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
                             possibleTile->components, possibleTile->hitbox.x, possibleTile->hitbox.y);
+
             return;
         }
 
