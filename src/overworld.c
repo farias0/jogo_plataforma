@@ -219,7 +219,11 @@ next_entity:
 
 void AddTileToOverworld(Vector2 pos) {
 
-    Rectangle hitbox = GetSpritesHitboxFromMiddle(LevelDotSprite, pos);
+    SpriteDimensions dimensions = GetScaledDimensions(PathTileStraightSprite);
+    Rectangle hitbox = (Rectangle){ snapToOverworldGrid(pos.x),
+                                    snapToOverworldGrid(pos.y),
+                                    dimensions.width,
+                                    dimensions.height };
 
     Entity *possibleTile = ENTITIES_HEAD;
 
