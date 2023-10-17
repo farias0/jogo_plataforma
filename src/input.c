@@ -25,7 +25,7 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_BACKSPACE))   InitializeOverworld();
 
-    if      (IsKeyPressed(KEY_F1))          STATE->showBackground = !STATE->showBackground;
+    if      (IsKeyPressed(KEY_F2))          STATE->showBackground = !STATE->showBackground;
 }
 
 void handleOverworldInput() {
@@ -39,6 +39,11 @@ void handleOverworldInput() {
 }
 
 void handleEditorInput() {
+
+    if      (IsKeyPressed(KEY_F1))           { ToggleEditorEnabled(); return; }
+
+    if (!STATE->isEditorEnabled) return;
+
 
     Vector2 mousePosInScreen = GetMousePosition();
 
