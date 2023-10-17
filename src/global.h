@@ -31,6 +31,7 @@ typedef struct GameState {
     PlayerMovementSpeed playerMovementSpeed;
 
     EditorItem *editorSelectedItem;
+    bool isEditorEnabled;
 
     bool showBackground;
 } GameState;
@@ -66,6 +67,9 @@ void ToggleInLevelState();
 
 // True if the given position is inside the play space on the screen (doesn't include the editor)
 bool IsInPlayArea(Vector2 pos);
+
+// Enables and disables editor
+void ToggleEditorEnabled();
 
 // Converts position from the screen coordinates to in game coordinates
 Vector2 PosInScreenToScene(Vector2 pos);

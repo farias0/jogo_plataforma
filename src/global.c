@@ -35,6 +35,7 @@ void ResetGameState() {
     STATE->isPlayerDead = false;
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
     STATE->mode = InLevel;
+    STATE->isEditorEnabled = false;
 
     // Debug
     STATE->showBackground = false;
@@ -100,6 +101,16 @@ void ToggleInLevelState() {
 
     } else {
         STATE->isPaused = true;
+    }
+}
+
+void ToggleEditorEnabled() {
+    STATE->isEditorEnabled = !STATE->isEditorEnabled;
+
+    if (STATE->isEditorEnabled) {
+        SetWindowSize(SCREEN_WIDTH_FULL, SCREEN_HEIGHT);
+    } else {
+        SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     }
 }
 
