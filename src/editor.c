@@ -63,6 +63,7 @@ void loadOverworldEditor() {
         loadEditorItem(LevelDot, LevelDotSprite, &AddTileToOverworld, Click);
     loadEditorItem(PathJoin, PathTileJoinSprite, &AddTileToOverworld, Click);
     loadEditorItem(PathStraight, PathTileStraightSprite, &AddTileToOverworld, Click);
+    loadEditorItem(PathInL, PathTileInLSprite, &AddTileToOverworld, Click);
 
     TraceLog(LOG_DEBUG, "Editor loaded overworld itens.");
 }

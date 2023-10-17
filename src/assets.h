@@ -15,14 +15,23 @@ typedef struct SpriteDimensions {
     float height;
 } SpriteDimensions;
 
+
+// Editor
+extern Sprite EraserSprite;
+
+// In Level
 extern Sprite PlayerSprite;
 extern Sprite EnemySprite;
 extern Sprite BlockSprite;
-extern Sprite EraserSprite;
-extern Sprite LevelDotSprite;
+
+// Overworld
 extern Sprite OverworldCursorSprite;
+extern Sprite LevelDotSprite;
 extern Sprite PathTileJoinSprite;
 extern Sprite PathTileStraightSprite;
+extern Sprite PathTileInLSprite;
+
+// Background
 extern Sprite NightclubSprite;
 extern Sprite BGHouseSprite;
 

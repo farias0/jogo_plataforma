@@ -11,21 +11,35 @@
     TODO use hash map
 */
 
+// Editor
+Sprite EraserSprite;
+
+// In Level
 Sprite PlayerSprite;
 Sprite EnemySprite;
 Sprite BlockSprite;
-Sprite EraserSprite;
-Sprite LevelDotSprite;
+
+// Overworld
 Sprite OverworldCursorSprite;
+Sprite LevelDotSprite;
 Sprite PathTileJoinSprite;
 Sprite PathTileStraightSprite;
+Sprite PathTileInLSprite;
+
+// Background
 Sprite NightclubSprite;
 Sprite BGHouseSprite;
 
 
 void InitializeAssets() {
 
-    // Level
+    // Editor
+    EraserSprite = (Sprite){
+        LoadTexture("../assets/eraser_1.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+
+    // In Level
     PlayerSprite = (Sprite){
         LoadTexture("../assets/player_default_1.png"),
         PLAYER_SPRITE_SCALE
@@ -38,26 +52,14 @@ void InitializeAssets() {
         LoadTexture("../assets/floor_tile_1.png"),
         FLOOR_TILE_SIZE
     };
-    EraserSprite = (Sprite){
-        LoadTexture("../assets/eraser_1.png"),
-        DEFAULT_SPRITE_SCALE
-    };
-    NightclubSprite = (Sprite){
-        LoadTexture("../assets/nightclub_2.png"),
-        DEFAULT_SPRITE_SCALE
-    };
-    BGHouseSprite = (Sprite){
-        LoadTexture("../assets/bg_house_1.png"),
-        DEFAULT_SPRITE_SCALE
-    };
 
     // Overworld
-    LevelDotSprite = (Sprite){
-        LoadTexture("../assets/level_dot_1.png"),
-        DEFAULT_SPRITE_SCALE
-    };
     OverworldCursorSprite = (Sprite){
         LoadTexture("../assets/cursor_default_1.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+    LevelDotSprite = (Sprite){
+        LoadTexture("../assets/level_dot_1.png"),
         DEFAULT_SPRITE_SCALE
     };
     PathTileJoinSprite = (Sprite){
@@ -66,6 +68,20 @@ void InitializeAssets() {
     };
     PathTileStraightSprite = (Sprite){
         LoadTexture("../assets/path_tile_straight_vertical.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+    PathTileInLSprite = (Sprite){
+        LoadTexture("../assets/path_tile_L.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+
+    // Background
+    NightclubSprite = (Sprite){
+        LoadTexture("../assets/nightclub_2.png"),
+        DEFAULT_SPRITE_SCALE
+    };
+    BGHouseSprite = (Sprite){
+        LoadTexture("../assets/bg_house_1.png"),
         DEFAULT_SPRITE_SCALE
     };
 
