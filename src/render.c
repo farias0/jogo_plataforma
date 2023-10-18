@@ -25,7 +25,21 @@
 int editorButtonsRendered = 0;
 
 void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
+
+    SpriteDimensions dimensions = GetScaledDimensions(sprite);
+
+
+    // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
+    // Maybe this should be fixed in a way works for any angle. 
+    if (sprite.rotation == 90)          pos = (Vector2){ pos.x + dimensions.width, pos.y };
+    else if (sprite.rotation == 180)    pos = (Vector2){ pos.x + dimensions.width,
+                                                            pos.y + dimensions.height };
+    else if (sprite.rotation == 270)    pos = (Vector2){ pos.x, pos.y + dimensions.height };
+
+    // why is players sprite flipped
+
     if (flipHorizontally) {
+
         Rectangle source = (Rectangle){
             0,
             0,
@@ -36,15 +50,15 @@ void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) 
         Rectangle destination = (Rectangle){
             pos.x,
             pos.y,
-            sprite.sprite.width * sprite.scale,
-            sprite.sprite.height * sprite.scale
+            dimensions.width,
+            dimensions.height
         };
 
         DrawTexturePro(sprite.sprite,
                         source,
                         destination,
                         (Vector2){ 0, 0 },
-                        0,//currentItem->sprite.rotation,
+                        sprite.rotation,
                         WHITE);
 
         return;
@@ -52,8 +66,8 @@ void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) 
 
 
     DrawTextureEx(sprite.sprite,
-                    (Vector2){ pos.x, pos.y },
-                    0,//sprite.rotation,
+                    pos,
+                    sprite.rotation,
                     sprite.scale,
                     WHITE);        
 }
@@ -146,7 +160,7 @@ void renderEntitiesInLayer(int layer) {
         }
 
 
-        drawTexture(currentItem->sprite, (Vector2){ pos.x, pos.y }, WHITE, currentItem->isFacingRight);
+        drawTexture(currentItem->sprite, (Vector2){ pos.x, pos.y }, WHITE, !currentItem->isFacingRight);
 
 next_entity:
         currentItem = currentItem->next;

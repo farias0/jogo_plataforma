@@ -34,7 +34,7 @@ void handleInLevelInput() {
 
 void handleOverworldInput() {
 
-    if      (IsKeyPressed(KEY_X))           SelectLevel();
+    if      (IsKeyPressed(KEY_X))           { SelectLevel(); return; };
 
     if      (IsKeyPressed(KEY_UP))          OverworldMoveCursor(UP);
     else if (IsKeyPressed(KEY_DOWN))        OverworldMoveCursor(DOWN);

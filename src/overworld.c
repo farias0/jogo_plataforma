@@ -124,9 +124,9 @@ void LoadOverworld() {
     Entity *dot1    = addTileToOverworld    ((Vector2){ dotX, dotY },                               LEVEL_DOT,      0);
 
     // Path to the right
-    Entity *path1   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     JOIN_PATH,      90);
+    Entity *path1   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     JOIN_PATH,      270);
     Entity *path2   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 2, dotY },     STRAIGHT_PATH,  90);
-    Entity *path3   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     JOIN_PATH,      270);
+    Entity *path3   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     JOIN_PATH,      90);
     Entity *dot2    = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     LEVEL_DOT,      0);
 
     // Path up
