@@ -2,6 +2,9 @@
 #define _OVERWORLD_H_INCLUDED_
 
 
+#include "assets.h"
+
+
 typedef enum OverworldCursorDirection {
     UP,
     DOWN,
@@ -17,7 +20,7 @@ typedef enum OverworldTileType {
 } OverworldTileType;
 
 
-extern Vector2 OverworldGridDimensions;
+extern SpriteDimensions OverworldGridDimensions;
 
 void LoadOverworld();
 void SelectLevel();

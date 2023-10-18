@@ -6,7 +6,7 @@
 #include "entity.h"
 
 
-extern Vector2 LevelGridDimensions;
+extern SpriteDimensions LevelGridDimensions;
 
 Entity *LoadLevel(Entity *head);
 

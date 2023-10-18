@@ -180,7 +180,7 @@ void renderHUD() {
 
 
     if (STATE->showDebugGrid) {
-        Vector2 gridSquareDim;
+        SpriteDimensions gridSquareDim;
         if (STATE->mode == Overworld) gridSquareDim = OverworldGridDimensions;
         else if (STATE->mode == InLevel) gridSquareDim = LevelGridDimensions;
         else {
@@ -189,14 +189,14 @@ void renderHUD() {
         }
 
         Vector2 offset = (Vector2){
-            RoundValue(CAMERA->hitbox.x, gridSquareDim.x),
-            RoundValue(CAMERA->hitbox.y, gridSquareDim.y),
+            RoundValue(CAMERA->hitbox.x, gridSquareDim.width),
+            RoundValue(CAMERA->hitbox.y, gridSquareDim.height),
         };
 
-        for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += gridSquareDim.x) {
+        for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += gridSquareDim.width) {
             DrawLine(lineX, 0, lineX, SCREEN_HEIGHT, BLUE);
         }
-        for (float lineY = offset.y; lineY <= SCREEN_HEIGHT; lineY += gridSquareDim.y) {
+        for (float lineY = offset.y; lineY <= SCREEN_HEIGHT; lineY += gridSquareDim.height) {
             DrawLine(0, lineY, SCREEN_WIDTH, lineY, BLUE);
         }
 

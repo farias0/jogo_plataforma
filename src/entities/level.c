@@ -10,7 +10,7 @@
 #include "../assets.h"
 
 
-Vector2 LevelGridDimensions = (Vector2){
+SpriteDimensions LevelGridDimensions = (SpriteDimensions){
     // Based on a block tile
     32,
     32
@@ -18,25 +18,22 @@ Vector2 LevelGridDimensions = (Vector2){
 
 Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
-/*
-    Snaps a coordinate (x or y) into the grid of BlockSprites.
-*/
-float snapToBlockGrid(float v) {
-    
-    // BlockSprite is square, so same for x and y.
+
+// Snaps a coordinate (x or y) to the Level Grid 
+float snapToLevelGrid(float v) {
 
     if (v >= 0) {
-        return v - ((int) v % (int) BlockSprite.sprite.width);
+        return v - ((int) v % (int) LevelGridDimensions.width);
     } else {
-        return v - BlockSprite.sprite.width - ((int) v % (int) BlockSprite.sprite.width);
+        return v - LevelGridDimensions.width - ((int) v % (int) LevelGridDimensions.width);
     }
 }
 
 Entity *addBlockToLevel(Entity *head, Rectangle hitbox) {
     Entity *newBlock = MemAlloc(sizeof(Entity));
 
-    hitbox.x = snapToBlockGrid(hitbox.x);
-    hitbox.y = snapToBlockGrid(hitbox.y);
+    hitbox.x = snapToLevelGrid(hitbox.x);
+    hitbox.y = snapToLevelGrid(hitbox.y);
 
     newBlock->components = HasPosition +
                             HasSprite +

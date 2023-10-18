@@ -4,6 +4,7 @@
 #include "overworld.h"
 #include "entities/entity.h"
 #include "global.h"
+#include "assets.h"
 
 
 typedef struct CursorState {
@@ -14,7 +15,7 @@ typedef struct CursorState {
 } CursorState;
 
 
-Vector2 OverworldGridDimensions = (Vector2){
+SpriteDimensions OverworldGridDimensions = (SpriteDimensions){
     // Based on a dot tile
     64,
     64
@@ -23,17 +24,13 @@ Vector2 OverworldGridDimensions = (Vector2){
 CursorState cursorState;
 
 
-// Snaps a coordinate (x or y) into the grid.
-// ATTENTION: Using a Path Sprite as grid's base
+// Snaps a coordinate (x or y) to the Overworld Grid.
 float snapToOverworldGrid(float v) {
-    
-    // Sprite is square, so same for x and y.
-    SpriteDimensions dimensions = GetScaledDimensions(PathTileStraightSprite);
 
     if (v >= 0) {
-        return v - ((int) v % (int) dimensions.width);
+        return v - ((int) v % (int) OverworldGridDimensions.width);
     } else {
-        return v - dimensions.width - ((int) v % (int) dimensions.width);
+        return v - OverworldGridDimensions.width - ((int) v % (int) OverworldGridDimensions.width);
     }
 }
 
