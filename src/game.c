@@ -20,13 +20,13 @@ void updateWindowTitle() {
 
 int main(int argc, char **argv)
 {
+
+    SetTraceLogLevel(LOG_TRACE);
+
     // debug
     int gamepadIdx = 0;
     if (IsGamepadAvailable(gamepadIdx))
         TraceLog(LOG_DEBUG, "Gamepad detected. Index=%i.", gamepadIdx);
-
-
-    SetTraceLogLevel(LOG_DEBUG);
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Jogo de plataforma");
     

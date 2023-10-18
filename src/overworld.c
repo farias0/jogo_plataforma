@@ -144,8 +144,12 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
 
     TraceLog(LOG_TRACE, "Overworld move to direction %d", direction);
 
+    // TODO currently it's using the sprite to have info on the path. Fix this.
+    
+    Sprite *currentSprite = &cursorState.tileUnder->sprite;
+    Sprite *targetSprite;
 
-    SpriteDimensions currentDimensions = GetScaledDimensions(cursorState.tileUnder->sprite);
+    SpriteDimensions currentDimensions = GetScaledDimensions(*currentSprite);
     SpriteDimensions targetDimensions;
 
 
@@ -159,19 +163,17 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
 
         // This code is stupid, but I'm leaving it for sake of simplicity and ease of debug.
 
+        targetSprite = &targetTile->sprite;
+        targetDimensions = GetScaledDimensions(*targetSprite);
 
-        targetDimensions = GetScaledDimensions(targetTile->sprite);
 
-
-        bool isCurrentAPath = !(cursorState.tileUnder->components & IsLevelDot);
-        bool isCurrentVertical = (cursorState.tileUnder->sprite.orientation % 180) == 0;  
-
-        bool isTargetAPath = !(targetTile->components & IsLevelDot);
-        bool isTargetVertical = (targetTile->sprite.orientation % 180) == 0;                                                                                                                                                                                         
+        bool isCurrentVertical = (currentSprite->orientation % 180) == 0;
+        bool isTargetVertical = (targetSprite->orientation % 180) == 0;                                                                                                                                                                                         
 
         bool isOnTheSameRow = cursorState.tileUnder->hitbox.y == targetTile->hitbox.y;
         bool isOnTheSameColumn = cursorState.tileUnder->hitbox.x == targetTile->hitbox.x;
         
+        // TODO add hitbox to the overworld elements and use them here
         bool isTargetUp = isOnTheSameColumn &&
                     cursorState.tileUnder->hitbox.y - targetDimensions.height == targetTile->hitbox.y;
         bool isTargetDown = isOnTheSameColumn &&
@@ -189,8 +191,8 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
         case UP:
             if (!isTargetUp) break;
 
-            if (isCurrentAPath && !isCurrentVertical) break;
-            if (isTargetAPath && !isTargetVertical) break;
+            if (currentSprite == &PathTileStraightSprite && !isCurrentVertical) break;
+            if (targetSprite == &PathTileStraightSprite && !isTargetVertical) break;
 
             foundPath = true;
             TraceLog(LOG_TRACE, "Found path up.");
@@ -200,8 +202,8 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
         case DOWN:
             if (!isTargetDown) break;
 
-            if (isCurrentAPath && !isCurrentVertical) break;
-            if (isTargetAPath && !isTargetVertical) break;
+            if (currentSprite == &PathTileStraightSprite && !isCurrentVertical) break;
+            if (targetSprite == &PathTileStraightSprite && !isTargetVertical) break;
 
             foundPath = true;
             TraceLog(LOG_TRACE, "Found path down.");
@@ -211,8 +213,8 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
         case LEFT:
             if (!isTargetLeft) break;
 
-            if (isCurrentAPath && isCurrentVertical) break;
-            if (isTargetAPath && isTargetVertical) break;
+            if (currentSprite == &PathTileStraightSprite && isCurrentVertical) break;
+            if (targetSprite == &PathTileStraightSprite && isTargetVertical) break;
 
             foundPath = true;
             TraceLog(LOG_TRACE, "Found path left.");
@@ -222,8 +224,8 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
         case RIGHT:
             if (!isTargetRight) break;
 
-            if (isCurrentAPath && isCurrentVertical) break;
-            if (isTargetAPath && isTargetVertical) break;
+            if (currentSprite == &PathTileStraightSprite && isCurrentVertical) break;
+            if (targetSprite == &PathTileStraightSprite && isTargetVertical) break;
 
             foundPath = true;
             TraceLog(LOG_TRACE, "Found path right.");
