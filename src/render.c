@@ -5,6 +5,9 @@
 #include "global.h"
 #include "assets.h"
 #include "input.h"
+#include "entities/level.h"
+#include "overworld.h"
+#include "entities/camera.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
@@ -149,6 +152,24 @@ void renderHUD() {
     if (STATE->isPaused && !STATE->isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
     if (STATE->isPlayerDead) DrawText("YOU DIED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 60, RAYWHITE);
 
+
+    if (STATE->showDebugGrid) {
+        Vector2 gridSquareDim;
+        if (STATE->mode == Overworld) gridSquareDim = OverworldGridDimensions;
+        if (STATE->mode == InLevel) gridSquareDim = LevelGridDimensions;
+        
+        Vector2 offset = (Vector2){
+            RoundValue(CAMERA->hitbox.x, gridSquareDim.x),
+            RoundValue(CAMERA->hitbox.y, gridSquareDim.y),
+        };
+
+        for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += gridSquareDim.x) {
+            DrawLine(lineX, 0, lineX, SCREEN_HEIGHT, BLUE);
+        }
+        for (float lineY = offset.y; lineY <= SCREEN_HEIGHT; lineY += gridSquareDim.y) {
+            DrawLine(0, lineY, SCREEN_WIDTH, lineY, BLUE);
+        }
+    }
 
     if (STATE->showDebugHUD) {
         char entity_count[50];

@@ -17,6 +17,8 @@ typedef enum OverworldTileType {
 } OverworldTileType;
 
 
+extern Vector2 OverworldGridDimensions;
+
 void LoadOverworld();
 void SelectLevel();
 void OverworldMoveCursor(OverworldCursorDirection direction);

@@ -14,7 +14,14 @@ typedef struct CursorState {
 } CursorState;
 
 
+Vector2 OverworldGridDimensions = (Vector2){
+    // Based on a dot tile
+    64,
+    64
+};
+
 CursorState cursorState;
+
 
 // Snaps a coordinate (x or y) into the grid.
 // ATTENTION: Using a Path Sprite as grid's base

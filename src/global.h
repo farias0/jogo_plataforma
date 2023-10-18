@@ -34,6 +34,7 @@ typedef struct GameState {
     bool isEditorEnabled;
 
     bool showDebugHUD;
+    bool showDebugGrid;
     bool showBackground;
 } GameState;
 
@@ -77,5 +78,10 @@ Vector2 PosInScreenToScene(Vector2 pos);
 
 // Converts position from in game coordinates to the screen coordinates
 Vector2 PosInSceneToScreen(Vector2 pos);
+
+// Rounds a value according to a period.
+// e.g. If period is 32 then it's 0, 32, 64, 128...
+// Useful for snapping things into grids.
+float RoundValue(float value, float period);
 
 #endif // _GLOBAL_H_INCLUDED_

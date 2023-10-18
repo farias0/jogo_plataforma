@@ -1,3 +1,5 @@
+#include "math.h"
+
 #include "global.h"
 #include "overworld.h"
 #include "entities/entity.h"
@@ -137,4 +139,13 @@ Vector2 PosInSceneToScreen(Vector2 pos) {
         pos.x - CAMERA->hitbox.x,
         pos.y - CAMERA->hitbox.y
     };
+}
+
+float RoundValue(float value, float period) {
+
+    if (value >= 0) {
+        return period - fmod(value, period);
+    } else {
+        return - period - fmod(value, period);
+    }
 }

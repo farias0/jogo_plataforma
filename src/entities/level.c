@@ -10,6 +10,12 @@
 #include "../assets.h"
 
 
+Vector2 LevelGridDimensions = (Vector2){
+    // Based on a block tile
+    32,
+    32
+};
+
 Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
 /*

@@ -25,7 +25,7 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_BACKSPACE))   InitializeOverworld();
 
-    if      (IsKeyPressed(KEY_F3))          STATE->showBackground = !STATE->showBackground;
+    if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
 }
 
 void handleOverworldInput() {
@@ -44,6 +44,7 @@ void handleEditorInput() {
 
     // Debug
     if      (IsKeyPressed(KEY_F2))          STATE->showDebugHUD = !STATE->showDebugHUD;
+    if      (IsKeyPressed(KEY_F3))          STATE->showDebugGrid = !STATE->showDebugGrid;
 
     if (!STATE->isEditorEnabled) return;
 
