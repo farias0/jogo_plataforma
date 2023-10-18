@@ -12,7 +12,15 @@
 
 void handleInLevelInput() {
 
+    if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
+
+    if      (IsKeyPressed(KEY_BACKSPACE))   { InitializeOverworld(); return; }
+
     if      (IsKeyPressed(KEY_ENTER))       { ToggleInLevelState(); return; }
+
+
+    if (STATE->isPlayerDead) return;
+
 
     if      (IsKeyDown(KEY_Z))              STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
     else                                    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
@@ -22,10 +30,6 @@ void handleInLevelInput() {
     else                                    UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_STOP);
 
     if      (IsKeyPressed(KEY_X))           PlayerStartJump(PLAYER);
-
-    if      (IsKeyPressed(KEY_BACKSPACE))   InitializeOverworld();
-
-    if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
 }
 
 void handleOverworldInput() {
