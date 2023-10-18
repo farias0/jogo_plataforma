@@ -8,6 +8,7 @@
 typedef struct Sprite {
     Texture2D sprite;
     float scale;
+    int orientation; // In degrees
 } Sprite;
 
 typedef struct SpriteDimensions {

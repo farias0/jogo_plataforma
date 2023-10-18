@@ -99,7 +99,8 @@ SpriteDimensions GetScaledDimensions(Sprite s) {
 void RotateSprite(Sprite *sprite, int degrees) {
     Image img = LoadImageFromTexture(sprite->sprite);
     ImageRotate(&img, degrees);
-    sprite->sprite = LoadTextureFromImage(img); 
+    sprite->sprite = LoadTextureFromImage(img);
+    sprite->orientation += degrees;
 }
 
 void FlipSpriteHorizontally(Sprite *sprite) {

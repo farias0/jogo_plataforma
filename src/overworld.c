@@ -145,66 +145,91 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
     TraceLog(LOG_TRACE, "Overworld move to direction %d", direction);
 
 
-    SpriteDimensions tileUnderDimensions = GetScaledDimensions(cursorState.tileUnder->sprite);
-    SpriteDimensions currentItemDimensions;
+    SpriteDimensions currentDimensions = GetScaledDimensions(cursorState.tileUnder->sprite);
+    SpriteDimensions targetDimensions;
 
 
-    Entity *currentItem = ENTITIES_HEAD;
-    while (currentItem != 0) {
-        
+    Entity *targetTile = ENTITIES_HEAD;
+    while (targetTile != 0) {
 
-        currentItemDimensions = GetScaledDimensions(currentItem->sprite);
-
-
-        bool isTile = currentItem->components & IsOverworldElement &&
-                        !(currentItem->components & IsCursor);
-        if (!isTile) goto next_entity;
-
-
-        bool isOnTheSameRow = cursorState.tileUnder->hitbox.y == currentItem->hitbox.y;
-        bool isOnTheSameColumn = cursorState.tileUnder->hitbox.x == currentItem->hitbox.x;
-        bool foundPath = false;
+        bool isTargetATile = targetTile->components & IsOverworldElement &&
+                        !(targetTile->components & IsCursor);
+        if (!isTargetATile) goto next_entity;
 
 
         // This code is stupid, but I'm leaving it for sake of simplicity and ease of debug.
+
+
+        targetDimensions = GetScaledDimensions(targetTile->sprite);
+
+
+        bool isCurrentAPath = !(cursorState.tileUnder->components & IsLevelDot);
+        bool isCurrentVertical = (cursorState.tileUnder->sprite.orientation % 180) == 0;  
+
+        bool isTargetAPath = !(targetTile->components & IsLevelDot);
+        bool isTargetVertical = (targetTile->sprite.orientation % 180) == 0;                                                                                                                                                                                         
+
+        bool isOnTheSameRow = cursorState.tileUnder->hitbox.y == targetTile->hitbox.y;
+        bool isOnTheSameColumn = cursorState.tileUnder->hitbox.x == targetTile->hitbox.x;
+        
+        bool isTargetUp = isOnTheSameColumn &&
+                    cursorState.tileUnder->hitbox.y - targetDimensions.height == targetTile->hitbox.y;
+        bool isTargetDown = isOnTheSameColumn &&
+                    cursorState.tileUnder->hitbox.y + currentDimensions.height == targetTile->hitbox.y;
+        bool isTargetLeft = isOnTheSameRow &&
+                    cursorState.tileUnder->hitbox.x - targetDimensions.width == targetTile->hitbox.x;
+        bool isTargetRight = isOnTheSameRow &&
+                    cursorState.tileUnder->hitbox.x + currentDimensions.width == targetTile->hitbox.x;
+        
+
+        bool foundPath = false;
+
         switch(direction)
         {
         case UP:
-            if (isOnTheSameColumn &&
-                cursorState.tileUnder->hitbox.y - currentItemDimensions.height == currentItem->hitbox.y) {
+            if (!isTargetUp) break;
 
-                    foundPath = true;
-                    TraceLog(LOG_TRACE, "Found path up.");
-                
-                }
-                break;
+            if (isCurrentAPath && !isCurrentVertical) break;
+            if (isTargetAPath && !isTargetVertical) break;
+
+            foundPath = true;
+            TraceLog(LOG_TRACE, "Found path up.");
+            
+            break;
+
         case DOWN:
-            if (isOnTheSameColumn &&
-                cursorState.tileUnder->hitbox.y + tileUnderDimensions.height == currentItem->hitbox.y) {
+            if (!isTargetDown) break;
 
-                    foundPath = true;
-                    TraceLog(LOG_TRACE, "Found path down.");
-                
-                }
-                break;
+            if (isCurrentAPath && !isCurrentVertical) break;
+            if (isTargetAPath && !isTargetVertical) break;
+
+            foundPath = true;
+            TraceLog(LOG_TRACE, "Found path down.");
+
+            break;
+
         case LEFT:
-            if (isOnTheSameRow &&
-                cursorState.tileUnder->hitbox.x - currentItemDimensions.width == currentItem->hitbox.x) {
+            if (!isTargetLeft) break;
 
-                    foundPath = true;
-                    TraceLog(LOG_TRACE, "Found path left.");
+            if (isCurrentAPath && isCurrentVertical) break;
+            if (isTargetAPath && isTargetVertical) break;
+
+            foundPath = true;
+            TraceLog(LOG_TRACE, "Found path left.");
                 
-                }
-                break;
+            break;
+
         case RIGHT:
-            if (isOnTheSameRow &&
-                cursorState.tileUnder->hitbox.x + tileUnderDimensions.width == currentItem->hitbox.x) {
+            if (!isTargetRight) break;
 
-                    foundPath = true;
-                    TraceLog(LOG_TRACE, "Found path right.");
-                
-                }
-                break;
+            if (isCurrentAPath && isCurrentVertical) break;
+            if (isTargetAPath && isTargetVertical) break;
+
+            foundPath = true;
+            TraceLog(LOG_TRACE, "Found path right.");
+        
+            break;
+
         default:
             TraceLog(LOG_ERROR, "No code to handle move overworld cursor to direction %d.", direction);
             return;
@@ -212,13 +237,13 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
 
 
         if (foundPath) {
-            cursorState.tileUnder = currentItem;
+            cursorState.tileUnder = targetTile;
             updateCursorPosition();
             break;
         }
 
 next_entity:
-        currentItem = currentItem->next;
+        targetTile = targetTile->next;
     }
 }
 
