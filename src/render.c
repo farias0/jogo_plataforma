@@ -24,6 +24,51 @@
 // How many editor buttons were rendered this frame.
 int editorButtonsRendered = 0;
 
+void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
+
+    SpriteDimensions dimensions = GetScaledDimensions(sprite);
+
+
+    // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
+    // Maybe this should be fixed in a way that works for any angle. 
+    if (sprite.rotation == 90)          pos = (Vector2){ pos.x + dimensions.width, pos.y };
+    else if (sprite.rotation == 180)    pos = (Vector2){ pos.x + dimensions.width,
+                                                            pos.y + dimensions.height };
+    else if (sprite.rotation == 270)    pos = (Vector2){ pos.x, pos.y + dimensions.height };
+
+
+
+    if (!flipHorizontally) {
+        DrawTextureEx(sprite.sprite,
+                    pos,
+                    sprite.rotation,
+                    sprite.scale,
+                    WHITE);    
+        
+        return;
+    }
+
+    Rectangle source = (Rectangle){
+        0,
+        0,
+        -sprite.sprite.width,
+        sprite.sprite.height
+    };
+
+    Rectangle destination = (Rectangle){
+        pos.x,
+        pos.y,
+        dimensions.width,
+        dimensions.height
+    };
+
+    DrawTexturePro(sprite.sprite,
+                    source,
+                    destination,
+                    (Vector2){ 0, 0 },
+                    sprite.rotation,
+                    WHITE);    
+}
 
 // Draws sprite in the background, with effects applied.
 void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
@@ -87,6 +132,7 @@ void renderEntitiesInLayer(int layer) {
                 goto next_entity;
             }
 
+
         // Currently the only level element is a floor area to be tiled with a sprite
         bool isLevelBlock = (currentItem->components & IsLevelElement) &&
                             !(currentItem->components & IsEnemy);
@@ -111,28 +157,8 @@ void renderEntitiesInLayer(int layer) {
             goto next_entity;
         }
 
-        if (currentItem->isFacingRight)
 
-            DrawTextureEx(currentItem->sprite.sprite, (Vector2){pos.x, pos.y}, 0, currentItem->sprite.scale, WHITE);
-
-        else {
-
-            Rectangle source = (Rectangle){
-                0,
-                0,
-                -currentItem->sprite.sprite.width,
-                currentItem->sprite.sprite.height
-            };
-
-            Rectangle destination = (Rectangle){
-                pos.x,
-                pos.y,
-                currentItem->sprite.sprite.width * currentItem->sprite.scale,
-                currentItem->sprite.sprite.height * currentItem->sprite.scale
-            };
-
-            DrawTexturePro(currentItem->sprite.sprite, source, destination, (Vector2){ 0, 0 }, 0, WHITE);
-        }
+        drawTexture(currentItem->sprite, (Vector2){ pos.x, pos.y }, WHITE, !currentItem->isFacingRight);
 
 next_entity:
         currentItem = currentItem->next;

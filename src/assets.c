@@ -97,15 +97,13 @@ SpriteDimensions GetScaledDimensions(Sprite s) {
 }
 
 void RotateSprite(Sprite *sprite, int degrees) {
-    Image img = LoadImageFromTexture(sprite->sprite);
-    ImageRotate(&img, degrees);
-    sprite->sprite = LoadTextureFromImage(img); 
-}
+    sprite->rotation += degrees;
+    
+    if (sprite->rotation >= 360 || sprite->rotation < 0) {
+        sprite->rotation %= 360;
+    }
 
-void FlipSpriteHorizontally(Sprite *sprite) {
-    Image img = LoadImageFromTexture(sprite->sprite);
-    ImageFlipHorizontal(&img);
-    sprite->sprite = LoadTextureFromImage(img); 
+    TraceLog(LOG_TRACE, "Rotated sprite in %d degrees. Now it's %d degrees.", degrees, sprite->rotation);
 }
 
 Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin) {

@@ -8,6 +8,7 @@
 typedef struct Sprite {
     Texture2D sprite;
     float scale;
+    int rotation;
 } Sprite;
 
 typedef struct SpriteDimensions {
@@ -40,8 +41,8 @@ void InitializeAssets();
 // Get a Sprite's dimensions, scaled
 SpriteDimensions GetScaledDimensions(Sprite sprite);
 
+// Rotates sprite in a number of degrees
 void RotateSprite(Sprite *sprite, int degrees);
-void FlipSpriteHorizontally(Sprite *sprite);
 
 // Returns a hitbox in the shape of sprite.
 Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin);
