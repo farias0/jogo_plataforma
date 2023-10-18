@@ -58,7 +58,7 @@ void loadInLevelEditor() {
 
 void loadOverworldEditor() {
 
-    loadEditorItem(Eraser, EraserSprite, &DestroyEntityOn, Hold);
+    loadEditorItem(Eraser, EraserSprite, &RemoveTileFromOverWorld, Click);
     STATE->editorSelectedItem =
         loadEditorItem(LevelDot, LevelDotSprite, &AddTileToOverworld, Click);
     loadEditorItem(PathJoin, PathTileJoinSprite, &AddTileToOverworld, Click);

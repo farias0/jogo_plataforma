@@ -272,3 +272,25 @@ void AddTileToOverworld(Vector2 pos) {
                         STATE->editorSelectedItem->type);
     }
 }
+
+void RemoveTileFromOverWorld(Vector2 pos) {
+
+    Entity *entity = GetEntityOn(pos);
+
+    if (!entity) {
+
+        TraceLog(LOG_DEBUG, "Didn't find any tile.");
+        return;
+    }
+
+    // Ideally the game would support removing the tile under the player,
+    // but this would demand some logic to manage the tileUnder pointer.
+    // For now this is good enough.
+    if (entity == cursorState.tileUnder) {
+
+            TraceLog(LOG_DEBUG, "Won't remove tile, it's under the cursor.");
+            return;
+        }
+
+    ENTITIES_HEAD = DestroyEntity(entity);
+}

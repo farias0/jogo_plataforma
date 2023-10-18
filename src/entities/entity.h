@@ -50,6 +50,10 @@ void SetEntityPosition(Entity *entity, Vector2 pos);
 
 void TickAllEntities(Entity *entity, Entity *player);
 
+// Searches for an entity whose hitbox contains pos and returns it, if found.
+// Ignores the player and the overworld cursor.
+Entity *GetEntityOn(Vector2 pos);
+
 // Remove entity from linked list, destroy it and returns the list's head
 Entity *DestroyEntity(Entity *entity);
 
