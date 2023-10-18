@@ -30,46 +30,44 @@ void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) 
 
 
     // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
-    // Maybe this should be fixed in a way works for any angle. 
+    // Maybe this should be fixed in a way that works for any angle. 
     if (sprite.rotation == 90)          pos = (Vector2){ pos.x + dimensions.width, pos.y };
     else if (sprite.rotation == 180)    pos = (Vector2){ pos.x + dimensions.width,
                                                             pos.y + dimensions.height };
     else if (sprite.rotation == 270)    pos = (Vector2){ pos.x, pos.y + dimensions.height };
 
-    // why is players sprite flipped
-
-    if (flipHorizontally) {
-
-        Rectangle source = (Rectangle){
-            0,
-            0,
-            -sprite.sprite.width,
-            sprite.sprite.height
-        };
-
-        Rectangle destination = (Rectangle){
-            pos.x,
-            pos.y,
-            dimensions.width,
-            dimensions.height
-        };
-
-        DrawTexturePro(sprite.sprite,
-                        source,
-                        destination,
-                        (Vector2){ 0, 0 },
-                        sprite.rotation,
-                        WHITE);
-
-        return;
-    }
 
 
-    DrawTextureEx(sprite.sprite,
+    if (!flipHorizontally) {
+        DrawTextureEx(sprite.sprite,
                     pos,
                     sprite.rotation,
                     sprite.scale,
-                    WHITE);        
+                    WHITE);    
+        
+        return;
+    }
+
+    Rectangle source = (Rectangle){
+        0,
+        0,
+        -sprite.sprite.width,
+        sprite.sprite.height
+    };
+
+    Rectangle destination = (Rectangle){
+        pos.x,
+        pos.y,
+        dimensions.width,
+        dimensions.height
+    };
+
+    DrawTexturePro(sprite.sprite,
+                    source,
+                    destination,
+                    (Vector2){ 0, 0 },
+                    sprite.rotation,
+                    WHITE);    
 }
 
 // Draws sprite in the background, with effects applied.
