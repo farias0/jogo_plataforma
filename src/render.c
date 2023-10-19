@@ -269,10 +269,10 @@ static void renderEditor() {
     GuiGroupBox(editorWindow, "Editor");
 
     editorButtonsRendered = 0;
-    EditorItem *currentItem = EDITOR_ITEMS_HEAD;
-    while (currentItem != 0) {
-        renderButton(editorWindow, currentItem);
-        currentItem = currentItem->next;
+    ListNode *node = EDITOR_ITEMS_HEAD;
+    while (node != 0) {
+        renderButton(editorWindow, (EditorItem *) node->item);
+        node = node->next;
     }
 }
 

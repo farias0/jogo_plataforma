@@ -5,22 +5,11 @@
 #include "inlevel/level.h"
 #include "inlevel/enemy.h"
 #include "overworld.h"
+#include "linked_list.h"
 
-EditorItem *EDITOR_ITEMS_HEAD = 0;
 
-void clearEditorItems() {
-    
-    EditorItem *current = EDITOR_ITEMS_HEAD;
-    EditorItem *next;
+ListNode *EDITOR_ITEMS_HEAD = 0;
 
-    while (current) {
-        next = current->next;
-        MemFree(current);
-        current = next;
-    }
-
-    EDITOR_ITEMS_HEAD = 0;
-}
 
 EditorItem *loadEditorItem(EditorItemType type, Sprite sprite, void (*handler), EditorItemInteraction interaction) {
 
@@ -30,17 +19,9 @@ EditorItem *loadEditorItem(EditorItemType type, Sprite sprite, void (*handler), 
     newItem->handler = handler;
     newItem->interaction = interaction;
 
-    if (EDITOR_ITEMS_HEAD) {
-
-        EditorItem *lastItem = EDITOR_ITEMS_HEAD;
-        while (lastItem->next != 0) { lastItem = lastItem->next; }
-
-        lastItem->next = newItem;
-        newItem->previous = lastItem;
-
-    } else {
-        EDITOR_ITEMS_HEAD = newItem;
-    }
+    ListNode *node = MemAlloc(sizeof(ListNode));
+    node->item = newItem;
+    LinkedListAdd(&EDITOR_ITEMS_HEAD, node);
 
     return newItem;
 }
@@ -69,7 +50,7 @@ void loadOverworldEditor() {
 
 void EditorSync() {
 
-    clearEditorItems();
+    LinkedListRemoveAll(&EDITOR_ITEMS_HEAD);
 
     switch (STATE->mode) {
     
