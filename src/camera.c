@@ -40,3 +40,17 @@ void CameraTick() {
         // TODO camera's vertical movement
     }
 }
+
+Vector2 PosInScreenToScene(Vector2 pos) {
+    return (Vector2){
+        pos.x + CAMERA->pos.x,
+        pos.y + CAMERA->pos.y
+    };
+}
+
+Vector2 PosInSceneToScreen(Vector2 pos) {
+    return (Vector2){
+        pos.x - CAMERA->pos.x,
+        pos.y - CAMERA->pos.y
+    };
+}

@@ -87,20 +87,6 @@ bool IsInPlayArea(Vector2 pos) {
             pos.y <= SCREEN_HEIGHT;
 }
 
-Vector2 PosInScreenToScene(Vector2 pos) {
-    return (Vector2){
-        pos.x + CAMERA->pos.x,
-        pos.y + CAMERA->pos.y
-    };
-}
-
-Vector2 PosInSceneToScreen(Vector2 pos) {
-    return (Vector2){
-        pos.x - CAMERA->pos.x,
-        pos.y - CAMERA->pos.y
-    };
-}
-
 float SnapToGrid(float value, float length) {
 
     if (value >= 0) {

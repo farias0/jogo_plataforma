@@ -60,12 +60,6 @@ bool IsInPlayArea(Vector2 pos);
 // Returns the entity list's head for the current selected game mode
 ListNode *GetEntityListHead();
 
-// Converts position from the screen coordinates to in game coordinates
-Vector2 PosInScreenToScene(Vector2 pos);
-
-// Converts position from in game coordinates to the screen coordinates
-Vector2 PosInSceneToScreen(Vector2 pos);
-
 // Snaps a coordinate (x or y) to a grid.
 float SnapToGrid(float value, float length);
 
