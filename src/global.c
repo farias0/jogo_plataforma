@@ -2,29 +2,12 @@
 
 #include "global.h"
 #include "overworld.h"
-#include "entities/entity.h"
 #include "entities/camera.h"
 #include "entities/level.h"
 #include "editor.h"
 
 
 GameState *STATE = 0;
-Entity *ENTITIES_HEAD = 0;
-Entity *PLAYER = 0;
-Entity *CAMERA = 0;
-
-
-// Continue game after dying
-void playerContinue() {
-    STATE->isPaused = false;
-    STATE->isPlayerDead = false;
-
-    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
-
-    SetEntityPosition(PLAYER, GetPlayerStartingPosition());
-
-    TraceLog(LOG_INFO, "Player continue.");
-}
 
 void InitializeGameState() {
     STATE = MemAlloc(sizeof(GameState));
@@ -42,51 +25,21 @@ void ResetGameState() {
     STATE->isPaused = false;
     STATE->isPlayerDead = false;
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
-    STATE->mode = InLevel;
+    STATE->mode = MODE_IN_LEVEL;
 
     TraceLog(LOG_INFO, "Game state reset.");
-}
-
-void InitializeLevel() {
-
-    ResetGameState();
-    STATE->mode = InLevel;
-
-    ReloadEntityList();
-    ENTITIES_HEAD = InitializePlayer(ENTITIES_HEAD, &PLAYER);
-    ENTITIES_HEAD = LoadLevel(ENTITIES_HEAD);
-    
-    SetEntityPosition(PLAYER, GetPlayerStartingPosition());
-
-    SyncEditor();
-
-    TraceLog(LOG_INFO, "Initialized level.");
-}
-
-void InitializeOverworld() {
-
-    ResetGameState();
-    STATE->mode = Overworld;
-
-    PLAYER = 0;
-    ReloadEntityList();
-    LoadOverworld();
-
-    SyncEditor();
-
-    TraceLog(LOG_INFO, "Initialized overworld.");
 }
 
 void ToggleGameMode() {
 
     switch (STATE->mode)
     {
-    case InLevel:
-        InitializeOverworld();
+    case MODE_IN_LEVEL:
+        OverworldInitialize();
         break;
     
-    case Overworld:
-        InitializeLevel();
+    case MODE_OVERWORLD:
+        LevelInitialize();
         break;
 
     default:
@@ -98,7 +51,7 @@ void ToggleInLevelState() {
     if (STATE->isPaused) {
 
         if (STATE->isPlayerDead) {
-            playerContinue();
+            LevelPlayerContinue();
         } else {
             STATE->isPaused = false;
         }
@@ -112,12 +65,19 @@ void ToggleEditorEnabled() {
     STATE->isEditorEnabled = !STATE->isEditorEnabled;
 
     if (STATE->isEditorEnabled) {
-        SetWindowSize(SCREEN_WIDTH_FULL, SCREEN_HEIGHT);
+        SetWindowSize(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
         TraceLog(LOG_INFO, "Editor enabled.");
     } else {
         SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
         TraceLog(LOG_INFO, "Editor disabled.");
     }
+}
+
+ListNode *GetListHead() {
+
+    if (STATE->mode == MODE_IN_LEVEL) return LEVEL_LIST_HEAD;
+    else if (STATE->mode == MODE_OVERWORLD) return OW_LIST_HEAD;
+    else return 0;
 }
 
 bool IsInPlayArea(Vector2 pos) {
@@ -129,15 +89,15 @@ bool IsInPlayArea(Vector2 pos) {
 
 Vector2 PosInScreenToScene(Vector2 pos) {
     return (Vector2){
-        pos.x + CAMERA->hitbox.x,
-        pos.y + CAMERA->hitbox.y
+        pos.x + CAMERA->pos.x,
+        pos.y + CAMERA->pos.y
     };
 }
 
 Vector2 PosInSceneToScreen(Vector2 pos) {
     return (Vector2){
-        pos.x - CAMERA->hitbox.x,
-        pos.y - CAMERA->hitbox.y
+        pos.x - CAMERA->pos.x,
+        pos.y - CAMERA->pos.y
     };
 }
 

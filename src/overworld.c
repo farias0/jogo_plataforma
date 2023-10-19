@@ -3,189 +3,240 @@
 #include "math.h"
 
 #include "overworld.h"
-#include "entities/entity.h"
 #include "global.h"
 #include "assets.h"
+#include "entities/camera.h"
 
 
 typedef struct CursorState {
-    Entity *cursor;
+    OverworldEntity *cursor;
 
     // The tile the cursor is over
-    Entity *tileUnder;
+    OverworldEntity *tileUnder;
 } CursorState;
 
 
-SpriteDimensions OverworldGridDimensions = (SpriteDimensions){
-    // Based on a dot tile
-    64,
-    64
-};
+ListNode *OW_LIST_HEAD = 0;
+const Dimensions OW_GRID = (Dimensions){ 64, 64 };
 
-CursorState cursorState;
+static OverworldEntity *OW_CURSOR = 0;
+static CursorState CURSOR_STATE;
 
+
+static Rectangle getGridSquare(OverworldEntity *entity) {
+    return (Rectangle) {
+        entity->gridPos.x,
+        entity->gridPos.y,
+        OW_GRID.width,
+        OW_GRID.height,
+    };
+}
 
 // Updates the position for the cursor according to the tile under it
-void updateCursorPosition() {
+static void updateCursorPosition() {
 
-    SpriteDimensions cursorDimensions = GetScaledDimensions(cursorState.cursor->sprite);
-    SpriteDimensions tileUnderDimensions = GetScaledDimensions(cursorState.tileUnder->sprite);
+    Dimensions cursorDimensions = GetScaledDimensions(OverworldCursorSprite);
 
-    cursorState.cursor->hitbox.x = cursorState.tileUnder->hitbox.x;
+    OW_CURSOR->gridPos.x = CURSOR_STATE.tileUnder->gridPos.x;
 
-    cursorState.cursor->hitbox.y = cursorState.tileUnder->hitbox.y +
-                    (tileUnderDimensions.height / 2) -
+    OW_CURSOR->gridPos.y = CURSOR_STATE.tileUnder->gridPos.y +
+                    (OW_GRID.height / 2) -
                     cursorDimensions.height;
 }
 
-void initializeOverworldCursor(Vector2 pos) {
-    Entity *newCursor = MemAlloc(sizeof(Entity));
+static void initializeCursor() {
 
-    pos.x = SnapToGrid(pos.x, OverworldGridDimensions.width);
-    pos.y = SnapToGrid(pos.y, OverworldGridDimensions.height);
+    OverworldEntity *newCursor = MemAlloc(sizeof(OverworldEntity));
 
-    newCursor->components = HasPosition +
-                            HasSprite +
-                            IsOverworldElement +
-                            IsCursor;
-    newCursor->hitbox = GetSpritesHitboxFromEdge(OverworldCursorSprite, pos);
+    newCursor->components = OW_IS_CURSOR;
     newCursor->sprite = OverworldCursorSprite;
     newCursor->layer = 1;
 
-    ENTITIES_HEAD = AddToEntityList(ENTITIES_HEAD, newCursor);
-    cursorState.cursor = newCursor;
+    ListNode *node = MemAlloc(sizeof(ListNode));
+    node->item = newCursor;
+    LinkedListAdd(&OW_LIST_HEAD, node);
+
+    OW_CURSOR = newCursor;
+    CURSOR_STATE.cursor = OW_CURSOR;
+
+    TraceLog(LOG_INFO, "Added cursor to overworld (x=%.1f, y=%.1f)",
+                newCursor->gridPos.x, newCursor->gridPos.y);
 }
 
-Entity *addTileToOverworld(Vector2 pos, OverworldTileType type, int degrees) {
+static OverworldEntity *addTileToOverworld(Vector2 pos, OverworldTileType type, int degrees) {
 
-    Entity *newTile = MemAlloc(sizeof(Entity));
+    OverworldEntity *newTile = MemAlloc(sizeof(OverworldEntity));
 
-    pos.x = SnapToGrid(pos.x, OverworldGridDimensions.width);
-    pos.y = SnapToGrid(pos.y, OverworldGridDimensions.height);
+    pos.x = SnapToGrid(pos.x, OW_GRID.width);
+    pos.y = SnapToGrid(pos.y, OW_GRID.height);
 
-    newTile->components = HasPosition +
-                            HasSprite +
-                            IsOverworldElement;
-    if (type == LEVEL_DOT) newTile->components += IsLevelDot;
+    newTile->tileType = type;
+    newTile->gridPos = pos;
 
-    switch (type)
+    switch (newTile->tileType)
     {
-    case LEVEL_DOT:
+    case OW_LEVEL_DOT:
+        newTile->components = OW_IS_LEVEL_DOT;
         newTile->sprite = LevelDotSprite;
-        newTile->hitbox = GetSpritesHitboxFromEdge(LevelDotSprite, pos);
         break;
-    case STRAIGHT_PATH:
+    case OW_STRAIGHT_PATH:
+        newTile->components = OW_IS_PATH;
         newTile->sprite = PathTileStraightSprite;
-        newTile->hitbox = GetSpritesHitboxFromEdge(PathTileStraightSprite, pos);
         RotateSprite(&newTile->sprite, degrees);
         break;
-    case JOIN_PATH:
+    case OW_JOIN_PATH:
+        newTile->components = OW_IS_PATH;
         newTile->sprite = PathTileJoinSprite;
-        newTile->hitbox = GetSpritesHitboxFromEdge(PathTileJoinSprite, pos);
         RotateSprite(&newTile->sprite, degrees);
         break;
-    case PATH_IN_L:
+    case OW_PATH_IN_L:
+        newTile->components = OW_IS_PATH;
         newTile->sprite = PathTileInLSprite;
-        newTile->hitbox = GetSpritesHitboxFromEdge(PathTileInLSprite, pos);
         RotateSprite(&newTile->sprite, degrees);
         break;
     default:
         TraceLog(LOG_ERROR, "Could not find sprite for overworld tile type %d.", type);
     }
 
-    ENTITIES_HEAD =  AddToEntityList(ENTITIES_HEAD, newTile);
+    ListNode *node = MemAlloc(sizeof(ListNode));
+    node->item = newTile;
+    LinkedListAdd(&OW_LIST_HEAD, node);
+
+    TraceLog(LOG_DEBUG, "Added tile to overworld (x=%.1f, y=%.1f)",
+                newTile->gridPos.x, newTile->gridPos.y);
 
     return newTile;
 }
 
-void LoadOverworld() {
+// Searches for an entity that's not the cursor
+// in a given position and returns its node, or 0 if not found.
+static ListNode *getNodeOfEntityOn(Vector2 pos) {
+
+    ListNode *node = OW_LIST_HEAD;
+
+    while (node != 0) {
+
+        OverworldEntity *entity = (OverworldEntity *) node->item;
+
+        if (!(entity->components & OW_IS_CURSOR) &&
+            CheckCollisionPointRec(pos, getGridSquare(entity))) {
+
+                return node;
+            }
+
+        node = node->next;
+    };
+
+    return 0;
+}
+
+static void overworldLoad() {
 
     // ATTENTION: Using dot sprite dimension to all tilings
-    SpriteDimensions tileDimension = GetScaledDimensions(LevelDotSprite);
+    Dimensions tileDimension = GetScaledDimensions(LevelDotSprite);
 
     float dotX = SCREEN_WIDTH/2;
     float dotY = SCREEN_HEIGHT/2;
 
-    initializeOverworldCursor((Vector2){ 0, 0 });
 
-
-    Entity *dot1    = addTileToOverworld    ((Vector2){ dotX, dotY },                               LEVEL_DOT,      0);
+    OverworldEntity *dot1    = addTileToOverworld    ((Vector2){ dotX, dotY },                               OW_LEVEL_DOT,      0);
 
     // Path to the right
-    Entity *path1   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     JOIN_PATH,      270);
-    Entity *path2   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 2, dotY },     STRAIGHT_PATH,  90);
-    Entity *path3   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     JOIN_PATH,      90);
-    Entity *dot2    = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     LEVEL_DOT,      0);
+    OverworldEntity *path1   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     OW_JOIN_PATH,      270);
+    OverworldEntity *path2   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 2, dotY },     OW_STRAIGHT_PATH,  90);
+    OverworldEntity *path3   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     OW_JOIN_PATH,      90);
+    OverworldEntity *dot2    = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     OW_LEVEL_DOT,      0);
 
     // Path up
-    Entity *path4   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height },      JOIN_PATH,      180);
-    Entity *path5   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 2},   STRAIGHT_PATH,  0);
-    Entity *path6   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 3},   JOIN_PATH,      0);
-    Entity *dot3    = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   LEVEL_DOT,      0);
+    OverworldEntity *path4   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height },      OW_JOIN_PATH,      180);
+    OverworldEntity *path5   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 2},   OW_STRAIGHT_PATH,  0);
+    OverworldEntity *path6   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 3},   OW_JOIN_PATH,      0);
+    OverworldEntity *dot3    = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
 
 
-    cursorState.tileUnder = dot1;
-    updateCursorPosition();
+    CURSOR_STATE.tileUnder = dot1;
+
+    TraceLog(LOG_INFO, "Overworld loaded.");
 }
 
-void SelectLevel() {
+void OverworldInitialize() {
 
-    if (cursorState.tileUnder->components & IsLevelDot) {
-        InitializeLevel();
+    ResetGameState();
+    STATE->mode = MODE_OVERWORLD;
+
+    LinkedListRemoveAll(&OW_LIST_HEAD);
+
+    initializeCursor();
+    overworldLoad();
+    updateCursorPosition();
+
+    SyncEditor();
+
+    TraceLog(LOG_INFO, "Overworld initialized.");
+}
+
+void OverworldLevelSelect() {
+
+    if (CURSOR_STATE.tileUnder->components & OW_IS_LEVEL_DOT) {
+        LevelInitialize();
     }
 }
 
-void OverworldMoveCursor(OverworldCursorDirection direction) {
+void OverworldCursorMove(OverworldCursorDirection direction) {
 
     TraceLog(LOG_TRACE, "Overworld move to direction %d", direction);
 
+    OverworldEntity *tileUnder = CURSOR_STATE.tileUnder;
 
-    Entity *currentItem = ENTITIES_HEAD;
-    while (currentItem != 0) {
+    ListNode *node = OW_LIST_HEAD;
 
-        bool isTile = currentItem->components & IsOverworldElement &&
-                        !(currentItem->components & IsCursor);
+    while (node != 0) {
+
+        OverworldEntity *entity = (OverworldEntity *) node->item;
+
+        bool isTile = (entity->components & OW_IS_PATH) ||
+                        (entity->components & OW_IS_LEVEL_DOT);
         if (!isTile) goto next_entity;
 
 
-        bool isOnTheSameRow = cursorState.tileUnder->hitbox.y == currentItem->hitbox.y;
-        bool isOnTheSameColumn = cursorState.tileUnder->hitbox.x == currentItem->hitbox.x;
+        bool isOnTheSameRow = tileUnder->gridPos.y == entity->gridPos.y;
+        bool isOnTheSameColumn = tileUnder->gridPos.x == entity->gridPos.x;
         bool foundPath = false;
 
 
         // This code is stupid, but I'm leaving it for sake of simplicity and ease of debug.
         switch(direction)
         {
-        case UP:
+        case OW_CURSOR_UP:
             if (isOnTheSameColumn &&
-                cursorState.tileUnder->hitbox.y - currentItem->hitbox.height == currentItem->hitbox.y) {
+                tileUnder->gridPos.y - OW_GRID.height == entity->gridPos.y) {
 
                     foundPath = true;
                     TraceLog(LOG_TRACE, "Found path up.");
                 
                 }
                 break;
-        case DOWN:
+        case OW_CURSOR_DOWN:
             if (isOnTheSameColumn &&
-                cursorState.tileUnder->hitbox.y + currentItem->hitbox.height == currentItem->hitbox.y) {
+                tileUnder->gridPos.y + OW_GRID.height == entity->gridPos.y) {
 
                     foundPath = true;
                     TraceLog(LOG_TRACE, "Found path down.");
                 
                 }
                 break;
-        case LEFT:
+        case OW_CURSOR_LEFT:
             if (isOnTheSameRow &&
-                cursorState.tileUnder->hitbox.x - currentItem->hitbox.width == currentItem->hitbox.x) {
+                tileUnder->gridPos.x - OW_GRID.width == entity->gridPos.x) {
 
                     foundPath = true;
                     TraceLog(LOG_TRACE, "Found path left.");
                 
                 }
                 break;
-        case RIGHT:
+        case OW_CURSOR_RIGHT:
             if (isOnTheSameRow &&
-                cursorState.tileUnder->hitbox.x + currentItem->hitbox.width == currentItem->hitbox.x) {
+                tileUnder->gridPos.x + OW_GRID.width == entity->gridPos.x) {
 
                     foundPath = true;
                     TraceLog(LOG_TRACE, "Found path right.");
@@ -199,86 +250,97 @@ void OverworldMoveCursor(OverworldCursorDirection direction) {
 
 
         if (foundPath) {
-            cursorState.tileUnder = currentItem;
+            CURSOR_STATE.tileUnder = entity;
             updateCursorPosition();
             break;
         }
 
 next_entity:
-        currentItem = currentItem->next;
+        node = node->next;
     }
 }
 
-void AddTileToOverworld(Vector2 pos) {
+void OverworldTileAddOrInteract(Vector2 pos) {
 
-    SpriteDimensions dimensions = GetScaledDimensions(PathTileStraightSprite);
-    Rectangle hitbox = (Rectangle){ SnapToGrid(pos.x, OverworldGridDimensions.width),
-                                    SnapToGrid(pos.y, OverworldGridDimensions.height),
-                                    dimensions.width,
-                                    dimensions.height };
+    Dimensions testDimensions = GetScaledDimensions(PathTileStraightSprite);
+    Rectangle testHitbox = (Rectangle){ SnapToGrid(pos.x, OW_GRID.width),
+                                    SnapToGrid(pos.y, OW_GRID.height),
+                                    OW_GRID.width,
+                                    OW_GRID.width };
 
-    Entity *possibleTile = ENTITIES_HEAD;
+    ListNode *node = OW_LIST_HEAD;
 
-    while (possibleTile != 0) {
-        
-        if (possibleTile->components & IsOverworldElement &&
-                !(possibleTile->components & IsCursor) &&
-                CheckCollisionRecs(hitbox, possibleTile->hitbox)) {
+    // First, test collision with other tiles
+    while (node != 0) {
 
-                if (!(possibleTile->components & IsLevelDot)) {
+        OverworldEntity *entity = (OverworldEntity *) node->item;
 
-                    RotateSprite(&possibleTile->sprite, 90);
+        if (entity->components & OW_IS_CURSOR) goto next_entity;
 
-                    TraceLog(LOG_TRACE, "Rotated tile component=%d, x=%.1f, y=%.1f",
-                            possibleTile->components, possibleTile->hitbox.x, possibleTile->hitbox.y);
-                            
-                    return;
-                }
+        if (!CheckCollisionRecs(testHitbox, getGridSquare(entity))) goto next_entity;
 
-                TraceLog(LOG_TRACE, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
-                            possibleTile->components, possibleTile->hitbox.x, possibleTile->hitbox.y);
-
+        if (entity->components & OW_IS_LEVEL_DOT) {
+            TraceLog(LOG_DEBUG, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
+                            entity->components, entity->gridPos.x, entity->gridPos.y);
             return;
         }
 
-        possibleTile = possibleTile->next;
+        RotateSprite(&entity->sprite, 90);
+        TraceLog(LOG_DEBUG, "Rotated tile component=%d, x=%.1f, y=%.1f",
+                entity->components, entity->gridPos.x, entity->gridPos.y);
+        return;
 
+next_entity:
+        node = node->next;
     }
+
+    OverworldTileType typeToAdd;
 
     switch (STATE->editorSelectedItem->type) {
         case LevelDot:
-            addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, LEVEL_DOT, 0); break;
+            typeToAdd = OW_LEVEL_DOT; break;
         case PathStraight:
-            addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, STRAIGHT_PATH, 0); break;
+            typeToAdd = OW_STRAIGHT_PATH; break;
         case PathJoin:
-            addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, JOIN_PATH, 0); break;
+            typeToAdd = OW_JOIN_PATH; break;
         case PathInL:
-            addTileToOverworld((Vector2){ hitbox.x, hitbox.y }, PATH_IN_L, 0); break;
+            typeToAdd = OW_PATH_IN_L; break;
         default:
             TraceLog(LOG_ERROR,
                         "Couldn't find Overworld Tile Type for Editor Item Type %d.",
                         STATE->editorSelectedItem->type);
+            return;
     }
+
+    addTileToOverworld(pos, typeToAdd, 0);
+
+    TraceLog(LOG_DEBUG, "Added tile of type %d to the overworld (x=%.1f, y=%.1f).",
+                typeToAdd, pos.x, pos.y);
 }
 
-void RemoveTileFromOverWorld(Vector2 pos) {
+void OverworldTileRemoveAt(Vector2 pos) {
 
-    Entity *entity = GetEntityOn(pos);
+    ListNode *node = getNodeOfEntityOn(pos);
 
-    if (!entity) {
+    if (!node) {
 
-        TraceLog(LOG_DEBUG, "Didn't find any tile.");
+        TraceLog(LOG_DEBUG, "Didn't find any tile to remove.");
         return;
     }
 
     // Ideally the game would support removing the tile under the player,
     // but this would demand some logic to manage the tileUnder pointer.
     // For now this is good enough.
-    if (entity == cursorState.tileUnder) {
+    if (node->item == CURSOR_STATE.tileUnder) {
+        TraceLog(LOG_DEBUG, "Won't remove tile, it's under the cursor.");
+        return;
+    }
 
-            TraceLog(LOG_DEBUG, "Won't remove tile, it's under the cursor.");
-            return;
-        }
+    LinkedListRemove(&OW_LIST_HEAD, node);
+    TraceLog(LOG_DEBUG, "Removed overworld tile.");
+}
 
-    ENTITIES_HEAD = DestroyEntity(entity);
+void OverworldTick() {
+
+    CameraTick();    
 }

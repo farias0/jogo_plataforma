@@ -4,7 +4,7 @@
 
 #include <raylib.h>
 
-#include "entity.h"
+#include "level.h"
 
 typedef enum PlayerMovementSpeed {
     PLAYER_MOVEMENT_DEFAULT,
@@ -17,17 +17,16 @@ typedef enum PlayerHorizontalMovementType {
     PLAYER_MOVEMENT_RIGHT
 } PlayerHorizontalMovementType;
 
-/*
-    TODO: Currently only the player has more than one hitbox,
-        but eventually every entity should support multiple hitboxes.
-*/
-extern Rectangle playersUpperbody, playersLowebody;
 
-// Initializes a player and returns the list's head.
-Entity *InitializePlayer(Entity *head, Entity **newPlayer);
-void UpdatePlayerHorizontalMovement(PlayerHorizontalMovementType direction);
-void PlayerStartJump(Entity *player);
-void PlayerTick(Entity *player);
+extern LevelEntity *LEVEL_PLAYER; 
+
+
+void LevelPlayerInitialize(Vector2 pos);
+void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction);
+void LevelPlayerJump();
+void LevelPlayerTick();
+// Continues the game after dying.
+void LevelPlayerContinue();
 
 
 #endif // _PLAYER_H_INCLUDED_

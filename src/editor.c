@@ -2,7 +2,6 @@
 
 #include "editor.h"
 #include "global.h"
-#include "entities/entity.h"
 #include "entities/level.h"
 #include "entities/enemy.h"
 #include "overworld.h"
@@ -48,22 +47,22 @@ EditorItem *loadEditorItem(EditorItemType type, Sprite sprite, void (*handler), 
 
 void loadInLevelEditor() {
 
-    loadEditorItem(Eraser, EraserSprite, &DestroyEntityOn, Hold);
+    loadEditorItem(Eraser, EraserSprite, &LevelEntityRemoveAt, Hold);
     STATE->editorSelectedItem =
-        loadEditorItem(Block, BlockSprite, &AddBlockToLevel, Hold);
-    loadEditorItem(Enemy, EnemySprite, &AddEnemyToLevel, Click);
+        loadEditorItem(Block, BlockSprite, &LevelBlockCheckAndAdd, Hold);
+    loadEditorItem(Enemy, EnemySprite, &LevelEnemyCheckAndAdd, Click);
 
     TraceLog(LOG_DEBUG, "Editor loaded in level itens.");
 }
 
 void loadOverworldEditor() {
 
-    loadEditorItem(Eraser, EraserSprite, &RemoveTileFromOverWorld, Click);
+    loadEditorItem(Eraser, EraserSprite, &OverworldTileRemoveAt, Click);
     STATE->editorSelectedItem =
-        loadEditorItem(LevelDot, LevelDotSprite, &AddTileToOverworld, Click);
-    loadEditorItem(PathJoin, PathTileJoinSprite, &AddTileToOverworld, Click);
-    loadEditorItem(PathStraight, PathTileStraightSprite, &AddTileToOverworld, Click);
-    loadEditorItem(PathInL, PathTileInLSprite, &AddTileToOverworld, Click);
+        loadEditorItem(LevelDot, LevelDotSprite, &OverworldTileAddOrInteract, Click);
+    loadEditorItem(PathJoin, PathTileJoinSprite, &OverworldTileAddOrInteract, Click);
+    loadEditorItem(PathStraight, PathTileStraightSprite, &OverworldTileAddOrInteract, Click);
+    loadEditorItem(PathInL, PathTileInLSprite, &OverworldTileAddOrInteract, Click);
 
     TraceLog(LOG_DEBUG, "Editor loaded overworld itens.");
 }
@@ -74,11 +73,11 @@ void SyncEditor() {
 
     switch (STATE->mode) {
     
-    case InLevel:
+    case MODE_IN_LEVEL:
         loadInLevelEditor();
         break;
 
-    case Overworld:
+    case MODE_OVERWORLD:
         loadOverworldEditor();
         break;
 

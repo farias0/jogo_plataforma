@@ -89,8 +89,8 @@ void InitializeAssets() {
     TraceLog(LOG_INFO, "Assets initialized.");
 }
 
-SpriteDimensions GetScaledDimensions(Sprite s) {
-    return (SpriteDimensions) {
+Dimensions GetScaledDimensions(Sprite s) {
+    return (Dimensions) {
         s.sprite.width * s.scale,
         s.sprite.height * s.scale
     };
@@ -107,7 +107,7 @@ void RotateSprite(Sprite *sprite, int degrees) {
 }
 
 Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin) {
-    SpriteDimensions dimensions = GetScaledDimensions(sprite);
+    Dimensions dimensions = GetScaledDimensions(sprite);
     return (Rectangle) {
         origin.x,
         origin.y,
@@ -117,7 +117,7 @@ Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin) {
 }
 
 Rectangle GetSpritesHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
-    SpriteDimensions dimensions = GetScaledDimensions(sprite);
+    Dimensions dimensions = GetScaledDimensions(sprite);
     return (Rectangle) {
         middlePoint.x - (dimensions.width / 2),
         middlePoint.y - (dimensions.height / 2),

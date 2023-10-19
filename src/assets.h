@@ -11,10 +11,10 @@ typedef struct Sprite {
     int rotation;
 } Sprite;
 
-typedef struct SpriteDimensions {
+typedef struct Dimensions {
     float width;
     float height;
-} SpriteDimensions;
+} Dimensions;
 
 
 // Editor
@@ -39,7 +39,7 @@ extern Sprite BGHouseSprite;
 
 void InitializeAssets();
 // Get a Sprite's dimensions, scaled
-SpriteDimensions GetScaledDimensions(Sprite sprite);
+Dimensions GetScaledDimensions(Sprite sprite);
 
 // Rotates sprite in a number of degrees
 void RotateSprite(Sprite *sprite, int degrees);

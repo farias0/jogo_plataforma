@@ -1,9 +1,9 @@
 #ifndef _EDITOR_H_INCLUDED_
 #define _EDITOR_H_INCLUDED_
 
+
 #include <raylib.h>
 #include "assets.h"
-
 
 
 typedef enum { 
