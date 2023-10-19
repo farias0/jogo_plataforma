@@ -2,7 +2,7 @@
 #define _GLOBAL_H_INCLUDED_
 
 
-#include "entities/player.h"
+#include "inlevel/player.h"
 #include "editor.h"
 #include "linked_list.h"
 

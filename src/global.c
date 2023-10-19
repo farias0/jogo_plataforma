@@ -2,8 +2,8 @@
 
 #include "global.h"
 #include "overworld.h"
-#include "entities/camera.h"
-#include "entities/level.h"
+#include "inlevel/camera.h"
+#include "inlevel/level.h"
 #include "editor.h"
 
 

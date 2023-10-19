@@ -4,9 +4,9 @@
 #include "global.h"
 #include "assets.h"
 #include "input.h"
-#include "entities/level.h"
+#include "inlevel/level.h"
 #include "overworld.h"
-#include "entities/camera.h"
+#include "inlevel/camera.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"

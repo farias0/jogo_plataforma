@@ -2,10 +2,10 @@
 
 #include "input.h"
 #include "global.h"
-#include "entities/level.h"
-#include "entities/enemy.h"
+#include "inlevel/level.h"
+#include "inlevel/enemy.h"
 #include "overworld.h"
-#include "entities/camera.h"
+#include "inlevel/camera.h"
 
 
 #define CAMERA_SPEED 8.0f;

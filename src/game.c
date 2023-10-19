@@ -2,10 +2,10 @@
 #include <stdio.h>
 
 #include "global.h"
-#include "entities/player.h"
-#include "entities/enemy.h"
-#include "entities/level.h"
-#include "entities/camera.h"
+#include "inlevel/player.h"
+#include "inlevel/enemy.h"
+#include "inlevel/level.h"
+#include "inlevel/camera.h"
 #include "render.h"
 #include "input.h"
 #include "assets.h"

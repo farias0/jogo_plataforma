@@ -2,8 +2,8 @@
 
 #include "editor.h"
 #include "global.h"
-#include "entities/level.h"
-#include "entities/enemy.h"
+#include "inlevel/level.h"
+#include "inlevel/enemy.h"
 #include "overworld.h"
 
 EditorItem *EDITOR_ITEMS_HEAD = 0;

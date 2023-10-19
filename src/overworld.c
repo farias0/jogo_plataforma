@@ -5,7 +5,7 @@
 #include "overworld.h"
 #include "global.h"
 #include "assets.h"
-#include "entities/camera.h"
+#include "inlevel/camera.h"
 
 
 typedef struct CursorState {
