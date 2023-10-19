@@ -35,7 +35,7 @@ static Rectangle getGridSquare(OverworldEntity *entity) {
 // Updates the position for the cursor according to the tile under it
 static void updateCursorPosition() {
 
-    Dimensions cursorDimensions = GetScaledDimensions(OverworldCursorSprite);
+    Dimensions cursorDimensions = SpriteScaledDimensions(OverworldCursorSprite);
 
     OW_CURSOR->gridPos.x = CURSOR_STATE.tileUnder->gridPos.x;
 
@@ -82,17 +82,17 @@ static OverworldEntity *addTileToOverworld(Vector2 pos, OverworldTileType type, 
     case OW_STRAIGHT_PATH:
         newTile->components = OW_IS_PATH;
         newTile->sprite = PathTileStraightSprite;
-        RotateSprite(&newTile->sprite, degrees);
+        SpriteRotate(&newTile->sprite, degrees);
         break;
     case OW_JOIN_PATH:
         newTile->components = OW_IS_PATH;
         newTile->sprite = PathTileJoinSprite;
-        RotateSprite(&newTile->sprite, degrees);
+        SpriteRotate(&newTile->sprite, degrees);
         break;
     case OW_PATH_IN_L:
         newTile->components = OW_IS_PATH;
         newTile->sprite = PathTileInLSprite;
-        RotateSprite(&newTile->sprite, degrees);
+        SpriteRotate(&newTile->sprite, degrees);
         break;
     default:
         TraceLog(LOG_ERROR, "Could not find sprite for overworld tile type %d.", type);
@@ -133,7 +133,7 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
 static void overworldLoad() {
 
     // ATTENTION: Using dot sprite dimension to all tilings
-    Dimensions tileDimension = GetScaledDimensions(LevelDotSprite);
+    Dimensions tileDimension = SpriteScaledDimensions(LevelDotSprite);
 
     float dotX = SCREEN_WIDTH/2;
     float dotY = SCREEN_HEIGHT/2;
@@ -284,7 +284,7 @@ void OverworldTileAddOrInteract(Vector2 pos) {
             return;
         }
 
-        RotateSprite(&entity->sprite, 90);
+        SpriteRotate(&entity->sprite, 90);
         TraceLog(LOG_DEBUG, "Rotated tile component=%d, x=%.1f, y=%.1f",
                 entity->components, entity->gridPos.x, entity->gridPos.y);
         return;

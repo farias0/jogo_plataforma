@@ -37,7 +37,7 @@ static inline Sprite defaultSprite(Texture2D texture) {
     };
 }
 
-void InitializeAssets() {
+void AssetsInitialize() {
 
     // Editor
     EraserSprite = defaultSprite(LoadTexture("../assets/eraser_1.png"));
@@ -66,14 +66,14 @@ void InitializeAssets() {
     TraceLog(LOG_INFO, "Assets initialized.");
 }
 
-Dimensions GetScaledDimensions(Sprite s) {
+Dimensions SpriteScaledDimensions(Sprite s) {
     return (Dimensions) {
         s.sprite.width * s.scale,
         s.sprite.height * s.scale
     };
 }
 
-void RotateSprite(Sprite *sprite, int degrees) {
+void SpriteRotate(Sprite *sprite, int degrees) {
     sprite->rotation += degrees;
     
     if (sprite->rotation >= 360 || sprite->rotation < 0) {
@@ -83,8 +83,8 @@ void RotateSprite(Sprite *sprite, int degrees) {
     TraceLog(LOG_TRACE, "Rotated sprite in %d degrees. Now it's %d degrees.", degrees, sprite->rotation);
 }
 
-Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin) {
-    Dimensions dimensions = GetScaledDimensions(sprite);
+Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin) {
+    Dimensions dimensions = SpriteScaledDimensions(sprite);
     return (Rectangle) {
         origin.x,
         origin.y,
@@ -93,8 +93,8 @@ Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin) {
     };
 }
 
-Rectangle GetSpritesHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
-    Dimensions dimensions = GetScaledDimensions(sprite);
+Rectangle SpriteHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
+    Dimensions dimensions = SpriteScaledDimensions(sprite);
     return (Rectangle) {
         middlePoint.x - (dimensions.width / 2),
         middlePoint.y - (dimensions.height / 2),

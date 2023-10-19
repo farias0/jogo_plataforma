@@ -70,7 +70,7 @@ void LevelPlayerInitialize(Vector2 pos) {
     LEVEL_PLAYER = newPlayer;
 
     newPlayer->components = LEVEL_IS_PLAYER;
-    newPlayer->hitbox = GetSpritesHitboxFromEdge(PlayerSprite, pos);
+    newPlayer->hitbox = SpriteHitboxFromEdge(PlayerSprite, pos);
     newPlayer->sprite = PlayerSprite;
     newPlayer->isFacingRight = true;
 

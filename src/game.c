@@ -31,7 +31,7 @@ int main() {
     
     SetTargetFPS(60);
 
-    InitializeAssets();
+    AssetsInitialize();
 
     GameStateInitialize();
 

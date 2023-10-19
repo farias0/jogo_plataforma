@@ -34,7 +34,7 @@ void LevelEnemyAdd(int x, int y) {
 
 void LevelEnemyCheckAndAdd(Vector2 pos) {    
 
-    Rectangle hitbox = GetSpritesHitboxFromMiddle(EnemySprite, pos);
+    Rectangle hitbox = SpriteHitboxFromMiddle(EnemySprite, pos);
 
     ListNode *node = LEVEL_LIST_HEAD;
 

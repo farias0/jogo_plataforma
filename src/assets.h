@@ -37,17 +37,19 @@ extern Sprite NightclubSprite;
 extern Sprite BGHouseSprite;
 
 
-void InitializeAssets();
+void AssetsInitialize();
+
 // Get a Sprite's dimensions, scaled
-Dimensions GetScaledDimensions(Sprite sprite);
+Dimensions SpriteScaledDimensions(Sprite sprite);
 
 // Rotates sprite in a number of degrees
-void RotateSprite(Sprite *sprite, int degrees);
+void SpriteRotate(Sprite *sprite, int degrees);
 
 // Returns a hitbox in the shape of sprite.
-Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin);
+Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin);
 
 // Returns a hitbox in the shape of sprite, centered around middlePoint.
-Rectangle GetSpritesHitboxFromMiddle(Sprite sprite, Vector2 middlePoint);
+Rectangle SpriteHitboxFromMiddle(Sprite sprite, Vector2 middlePoint);
+
 
 #endif // _ASSETS_H_INCLUDED_

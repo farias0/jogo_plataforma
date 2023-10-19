@@ -28,7 +28,7 @@ int editorButtonsRendered = 0;
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
 
-    Dimensions dimensions = GetScaledDimensions(sprite);
+    Dimensions dimensions = SpriteScaledDimensions(sprite);
 
 
     // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
