@@ -1,7 +1,6 @@
 #include <raylib.h>
 #include <stdio.h>
 
-#include "entities/entity.h"
 #include "global.h"
 #include "assets.h"
 #include "input.h"
@@ -24,9 +23,9 @@
 // How many editor buttons were rendered this frame.
 int editorButtonsRendered = 0;
 
-void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
+static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
 
-    SpriteDimensions dimensions = GetScaledDimensions(sprite);
+    Dimensions dimensions = GetScaledDimensions(sprite);
 
 
     // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
@@ -71,7 +70,7 @@ void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) 
 }
 
 // Draws sprite in the background, with effects applied.
-void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
+static void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
 
     float scale = 1;
     Color tint = (Color){ 0xFF, 0xFF, 0xFF, 0xFF };
@@ -99,19 +98,19 @@ void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
     pos.x = pos.x * scale;
     pos.y = pos.y * scale;
 
-    pos.x = pos.x - (CAMERA->hitbox.x * parallaxSpeed);
-    pos.y = pos.y - (CAMERA->hitbox.y * parallaxSpeed);
+    pos.x = pos.x - (CAMERA->pos.x * parallaxSpeed);
+    pos.y = pos.y - (CAMERA->pos.y * parallaxSpeed);
 
     DrawTextureEx(sprite.sprite, pos, 0, (scale * sprite.scale), tint);
 }
 
-void renderBackground() {
+static void renderBackground() {
 
-    if (STATE->mode == Overworld) {
+    if (STATE->mode == MODE_OVERWORLD) {
         DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 39, 39, 54, 255 }); 
     }
 
-    else if (STATE->mode == InLevel) {
+    else if (STATE->mode == MODE_IN_LEVEL) {
         if (!STATE->showBackground) return; 
 
         drawInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);
@@ -119,78 +118,91 @@ void renderBackground() {
     }
 }
 
-void renderEntitiesInLayer(int layer) {
+static void renderOverworldEntity(OverworldEntity *entity) {
 
-    Entity *currentItem = ENTITIES_HEAD;
+    Vector2 pos = PosInSceneToScreen((Vector2){
+                                        entity->gridPos.x,
+                                        entity->gridPos.y });
 
-    while (currentItem != 0) {
-        Vector2 pos = PosInSceneToScreen((Vector2){ currentItem->hitbox.x, currentItem->hitbox.y });
+    drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, false);
+}
 
-        if (currentItem->sprite.scale == 0 ||
-            currentItem->layer != layer) {
-                
-                goto next_entity;
+static void renderLevelEntity(LevelEntity *entity) {
+
+    Vector2 pos = PosInSceneToScreen((Vector2){
+                                        entity->hitbox.x,
+                                        entity->hitbox.y });
+
+    if (entity->components & LEVEL_IS_SCENARIO) {
+        // How many tiles to be drawn in each axis
+        int xTilesCount = entity->hitbox.width / entity->sprite.sprite.width;
+        int yTilesCount = entity->hitbox.height / entity->sprite.sprite.width;
+
+        for (int xCurrent = 0; xCurrent < xTilesCount; xCurrent++) {
+            for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
+                DrawTextureEx(
+                                entity->sprite.sprite,
+                                (Vector2){pos.x + (xCurrent * entity->sprite.sprite.width),
+                                            pos.y + (yCurrent * entity->sprite.sprite.height)},
+                                0,
+                                1,
+                                WHITE
+                            );
             }
-
-
-        // Currently the only level element is a floor area to be tiled with a sprite
-        bool isLevelBlock = (currentItem->components & IsLevelElement) &&
-                            !(currentItem->components & IsEnemy);
-        if (isLevelBlock) {
-            // How many tiles to be drawn in each axis
-            int xTilesCount = currentItem->hitbox.width / currentItem->sprite.sprite.width;
-            int yTilesCount = currentItem->hitbox.height / currentItem->sprite.sprite.width;
-
-            for (int xCurrent = 0; xCurrent < xTilesCount; xCurrent++) {
-                for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
-                    DrawTextureEx(
-                                    currentItem->sprite.sprite,
-                                    (Vector2){pos.x + (xCurrent * currentItem->sprite.sprite.width),
-                                                pos.y + (yCurrent * currentItem->sprite.sprite.height)},
-                                    0,
-                                    1,
-                                    WHITE
-                                );
-                }
-            }
-
-            goto next_entity;
         }
 
-
-        drawTexture(currentItem->sprite, (Vector2){ pos.x, pos.y }, WHITE, !currentItem->isFacingRight);
-
-next_entity:
-        currentItem = currentItem->next;
+        return;
     }
+
+    drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, !entity->isFacingRight);
 }
 
-void renderAllEntities() {
+static void renderEntities() {
 
     for (int layer = FIRST_LAYER; layer <= LAST_LAYER; layer++) {
-        
-        renderEntitiesInLayer(layer);
+
+        ListNode *node = GetListHead();
+
+        while (node != 0) {
+
+            if (STATE->mode == MODE_IN_LEVEL) {
+                LevelEntity *entity = (LevelEntity *) node->item;
+                if (entity->layer != layer) goto next_entity;
+                renderLevelEntity(entity);
+            }
+
+            else if (STATE->mode == MODE_OVERWORLD) {
+                OverworldEntity *entity = (OverworldEntity *) node->item;
+                if (entity->layer != layer) goto next_entity;
+                renderOverworldEntity((OverworldEntity *) node->item);
+            }
+
+            else return;
+
+next_entity:
+            node = node->next;
+        }
     }
 }
 
 
-void renderHUD() {
+static void renderHUD() {
     if (STATE->isPaused && !STATE->isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
     if (STATE->isPlayerDead) DrawText("YOU DIED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 60, RAYWHITE);
 
 
     if (STATE->showDebugGrid) {
-        SpriteDimensions gridSquareDim;
-        if (STATE->mode == Overworld) gridSquareDim = OverworldGridDimensions;
-        else if (STATE->mode == InLevel) gridSquareDim = LevelGridDimensions;
+        Dimensions gridSquareDim;
+        if (STATE->mode == MODE_OVERWORLD) gridSquareDim = OW_GRID;
+        else if (STATE->mode == MODE_IN_LEVEL) gridSquareDim = LEVEL_GRID;
         else {
             // maybe write something to the screen?
             goto skip_debug_grid;
         }
 
         Vector2 offset = (Vector2){
-            PushOnGrid(CAMERA->hitbox.x, gridSquareDim.width),
-            PushOnGrid(CAMERA->hitbox.y, gridSquareDim.height),
+            PushOnGrid(CAMERA->pos.x, gridSquareDim.width),
+            PushOnGrid(CAMERA->pos.y, gridSquareDim.height),
         };
 
         for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += gridSquareDim.width) {
@@ -204,9 +216,13 @@ skip_debug_grid:
     }
 
     if (STATE->showDebugHUD) {
-        char entity_count[50];
-        sprintf(entity_count, "%d entities", CountEntities(ENTITIES_HEAD));
-        DrawText(entity_count, 10, 20, 20, WHITE);
+
+        ListNode *listHead = GetListHead();
+        if (listHead) {
+            char entity_count[50];
+            sprintf(entity_count, "%d entities", LinkedListCountNodes(listHead));
+            DrawText(entity_count, 10, 20, 20, WHITE);
+        }
 
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             Vector2 mousePos = GetMousePosition();
@@ -217,7 +233,7 @@ skip_debug_grid:
     }
 }
 
-void renderButton(Rectangle editorWindow, EditorItem *item) {
+static void renderButton(Rectangle editorWindow, EditorItem *item) {
     
     float itemX = editorWindow.x + EDITOR_BUTTON_WALL_SPACING;
     if (editorButtonsRendered % 2) itemX += EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING;
@@ -239,7 +255,7 @@ void renderButton(Rectangle editorWindow, EditorItem *item) {
     editorButtonsRendered++;
 }
 
-void renderEditor() {
+static void renderEditor() {
 
     Rectangle editorWindow = { SCREEN_WIDTH, 5, EDITOR_BAR_WIDTH, SCREEN_HEIGHT };
     // Currently the color is transparent because it's fun,
@@ -262,7 +278,7 @@ void Render() {
 
     renderBackground();
 
-    renderAllEntities();
+    renderEntities();
 
     renderEditor();
 

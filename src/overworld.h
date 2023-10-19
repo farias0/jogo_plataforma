@@ -4,33 +4,61 @@
 
 #include "assets.h"
 
+#include "linked_list.h"
+
 
 typedef enum OverworldCursorDirection {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT
+    OW_CURSOR_UP,
+    OW_CURSOR_DOWN,
+    OW_CURSOR_LEFT,
+    OW_CURSOR_RIGHT
 } OverworldCursorDirection;
 
 typedef enum OverworldTileType {
-    LEVEL_DOT,
-    STRAIGHT_PATH,
-    JOIN_PATH,
-    PATH_IN_L
+    OW_NOT_TILE,
+    OW_LEVEL_DOT,
+    OW_STRAIGHT_PATH,
+    OW_JOIN_PATH,
+    OW_PATH_IN_L
 } OverworldTileType;
 
+typedef enum OverworldEntityComponent {
+    OW_IS_CURSOR            = 1,
+    OW_IS_LEVEL_DOT         = 2,
+    OW_IS_PATH              = 4,
+} OverworldEntityComponent;
 
-extern SpriteDimensions OverworldGridDimensions;
+typedef struct OverworldEntity {
 
-void LoadOverworld();
-void SelectLevel();
-void OverworldMoveCursor(OverworldCursorDirection direction);
+    unsigned long int components;
+    OverworldTileType tileType;
+    
+    Vector2 gridPos;
+    Sprite sprite;
+    int layer;
+    
+} OverworldEntity;
 
-// Adds tile to overworld in according to the item selected in the editor.
-void AddTileToOverworld(Vector2 pos);
+
+// The head of the linked list of all the overworld entities
+extern ListNode *OW_LIST_HEAD;
+
+extern const Dimensions OW_GRID;
+
+void OverworldInitialize();
+
+void OverworldLevelSelect();
+
+void OverworldCursorMove(OverworldCursorDirection direction);
+
+// Adds tile to overworld in according to the item selected in the editor,
+// or interacts with it if it's already present.
+void OverworldTileAddOrInteract(Vector2 pos);
 
 // Removes tile from overworld and destroys it, if present and if allowed.
-void RemoveTileFromOverWorld(Vector2 pos);
+void OverworldTileRemoveAt(Vector2 pos);
+
+void OverworldTick();
 
 
 #endif // _OVERWORLD_H_INCLUDED_

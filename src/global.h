@@ -2,24 +2,24 @@
 #define _GLOBAL_H_INCLUDED_
 
 
-#include "entities/entity.h"
 #include "entities/player.h"
 #include "editor.h"
+#include "linked_list.h"
 
 // Currently this represents the play space (not including editor)
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
-#define EDITOR_BAR_WIDTH    200
-#define SCREEN_WIDTH_FULL   SCREEN_WIDTH + EDITOR_BAR_WIDTH // TODO rename this constant
+#define EDITOR_BAR_WIDTH        200
+#define SCREEN_WIDTH_W_EDITOR   SCREEN_WIDTH + EDITOR_BAR_WIDTH
 
 #define FLOOR_HEIGHT 600
 #define FLOOR_DEATH_HEIGHT 800 // Below this y the player dies
 
 
 typedef enum GameMode {
-    InLevel,
-    Overworld
+    MODE_IN_LEVEL,
+    MODE_OVERWORLD
 } GameMode;
 
 typedef struct GameState {
@@ -41,25 +41,10 @@ typedef struct GameState {
 
 extern GameState *STATE;
 
-// The head of the linked list of all the entities
-extern Entity *ENTITIES_HEAD;
-
-// The entity "player" in the linked list of all the entities
-extern Entity *PLAYER;
-
-// The entity "camera" in the linked list of all the entities
-extern Entity *CAMERA;
-
 
 void InitializeGameState();
 
 void ResetGameState();
-
-// Goes to level
-void InitializeLevel();
-
-// Goes to overworld
-void InitializeOverworld();
 
 // Toggles between level and overworld
 void ToggleGameMode();
@@ -73,6 +58,9 @@ bool IsInPlayArea(Vector2 pos);
 // Enables and disables editor
 void ToggleEditorEnabled();
 
+// Returns the entity list's head for the current selected game mode
+ListNode *GetListHead();
+
 // Converts position from the screen coordinates to in game coordinates
 Vector2 PosInScreenToScene(Vector2 pos);
 
@@ -84,5 +72,6 @@ float SnapToGrid(float value, float length);
 
 // Pushes a coordinate (x or y) according to a grid.
 float PushOnGrid(float value, float length);
+
 
 #endif // _GLOBAL_H_INCLUDED_

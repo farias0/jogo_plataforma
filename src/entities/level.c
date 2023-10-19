@@ -4,71 +4,172 @@
 #include <stdio.h>
 
 #include "level.h"
+#include "../linked_list.h"
 #include "../global.h"
-#include "entity.h"
 #include "enemy.h"
-#include "../assets.h"
+#include "camera.h"
+
+// The difference between the y of the hitbox and the ground to be considered "on the ground"
+#define ON_THE_GROUND_Y_TOLERANCE 5
 
 
-SpriteDimensions LevelGridDimensions = (SpriteDimensions){
-    // Based on a block tile
-    32,
-    32
-};
+ListNode *LEVEL_LIST_HEAD = 0;
+const Dimensions LEVEL_GRID = (Dimensions){ 32, 32 };
 
-Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
+static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
 
-Entity *addBlockToLevel(Entity *head, Rectangle hitbox) {
-    Entity *newBlock = MemAlloc(sizeof(Entity));
+static void addBlockToLevel(Rectangle hitbox) {
 
-    hitbox.x = SnapToGrid(hitbox.x, LevelGridDimensions.width);
-    hitbox.y = SnapToGrid(hitbox.y, LevelGridDimensions.height);
+    LevelEntity *newBlock = MemAlloc(sizeof(LevelEntity));
 
-    newBlock->components = HasPosition +
-                            HasSprite +
-                            IsLevelElement;
+    hitbox.x = SnapToGrid(hitbox.x, LEVEL_GRID.width);
+    hitbox.y = SnapToGrid(hitbox.y, LEVEL_GRID.height);
+
+    newBlock->components = LEVEL_IS_SCENARIO;
     newBlock->hitbox = hitbox;
     newBlock->sprite = BlockSprite;
 
-    return AddToEntityList(head, newBlock);
+    ListNode *node = MemAlloc(sizeof(ListNode));
+    node->item = newBlock;
+    LinkedListAdd(&LEVEL_LIST_HEAD, node);
+
+    TraceLog(LOG_DEBUG, "Added block to level (x=%.1f, y=%.1f)",
+                newBlock->hitbox.x, newBlock->hitbox.y);
 }
 
-Entity *LoadLevel(Entity *head) {
+// Searches for an entity that's not the player
+// in a given position and returns its node, or 0 if not found.
+static ListNode *getNodeOfEntityOn(Vector2 pos) {
 
-    head = addBlockToLevel(head, (Rectangle){ 0, FLOOR_HEIGHT, BlockSprite.sprite.width*25, BlockSprite.sprite.height*5 });
+    ListNode *node = LEVEL_LIST_HEAD;
+
+    while (node != 0) {
+
+        LevelEntity *entity = (LevelEntity *) node->item;
+
+        if (!(entity->components & LEVEL_IS_PLAYER) &&
+            CheckCollisionPointRec(pos, entity->hitbox)) {
+
+                return node;
+            }
+
+        node = node->next;
+    };
+
+    return 0;
+}
+
+static void levelLoad() {
+
+    addBlockToLevel((Rectangle){ 0, FLOOR_HEIGHT, BlockSprite.sprite.width*25, BlockSprite.sprite.height*5 });
     
     float x = BlockSprite.sprite.width*30;
     float width = BlockSprite.sprite.width*10;
-    head = addBlockToLevel(head, (Rectangle){ x, FLOOR_HEIGHT, width, BlockSprite.sprite.height*5 });
-    head = InitializeEnemy(head, x + (width / 2), 200);
+    addBlockToLevel((Rectangle){ x, FLOOR_HEIGHT, width, BlockSprite.sprite.height*5 });
+    LevelEnemyAdd(x + (width / 2), 200);
     
-    head = addBlockToLevel(head, (Rectangle){ BlockSprite.sprite.width*45, FLOOR_HEIGHT-80, BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 });
-    head = addBlockToLevel(head, (Rectangle){ BlockSprite.sprite.width*40, FLOOR_HEIGHT-200, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
-    head = addBlockToLevel(head, (Rectangle){ BlockSprite.sprite.width*45, FLOOR_HEIGHT-320, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
+    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*45, FLOOR_HEIGHT-80, BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 });
+    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*40, FLOOR_HEIGHT-200, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
+    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*45, FLOOR_HEIGHT-320, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
 
-    return head;
+    TraceLog(LOG_INFO, "Level loaded.");
 }
 
-Entity *AddBlockToLevel(Vector2 pos) {
+void LevelInitialize() {
 
-    Entity *possibleBlock = ENTITIES_HEAD;
+    ResetGameState();
+    STATE->mode = MODE_IN_LEVEL;
 
-    while (possibleBlock != 0) {
+    LinkedListRemoveAll(&LEVEL_LIST_HEAD);
+    LevelPlayerInitialize(playersStartingPosition);
+    levelLoad();
+
+    SyncEditor();
+
+    TraceLog(LOG_INFO, "Level initialized.");
+}
+
+void LevelBlockCheckAndAdd(Vector2 pos) {
+
+    ListNode *node = LEVEL_LIST_HEAD;
+
+    while (node != 0) {
         
-        if (possibleBlock->components & IsLevelElement &&
+        LevelEntity *possibleBlock = (LevelEntity *)node->item;
+
+        if (possibleBlock->components & LEVEL_IS_SCENARIO &&
                 CheckCollisionPointRec(pos, possibleBlock->hitbox)) {
 
-            return ENTITIES_HEAD;
+            return;
         }
 
-        possibleBlock = possibleBlock->next;
-
+        node = node->next;
     }
 
-    return addBlockToLevel(ENTITIES_HEAD, (Rectangle){ pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height });
+    addBlockToLevel((Rectangle){ pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height });
 }
 
-Vector2 GetPlayerStartingPosition() {
+Vector2 LevelGetPlayerStartingPosition() {
     return playersStartingPosition;
+}
+
+LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
+
+    int entitysFoot = entity->hitbox.y + entity->hitbox.height;
+
+    ListNode *node = LEVEL_LIST_HEAD;
+
+    while (node != 0) {
+
+        LevelEntity *possibleGround = (LevelEntity *)node->item;
+
+        if (possibleGround != entity &&
+
+            // If x is within the possible ground
+            possibleGround->hitbox.x < (entity->hitbox.x + entity->hitbox.width) &&
+            entity->hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&
+
+            // If y is RIGHT above the possible ground
+            abs(possibleGround->hitbox.y - entitysFoot) <= ON_THE_GROUND_Y_TOLERANCE) {
+                
+                return possibleGround;
+            } 
+
+        node = node->next;
+    }
+
+    return 0;    
+}
+
+void LevelEntityRemoveAt(Vector2 pos) {
+
+    ListNode *node = getNodeOfEntityOn(pos);
+
+    if (node) {
+        LinkedListRemove(&LEVEL_LIST_HEAD, node);
+        TraceLog(LOG_DEBUG, "Removed level entity.");
+    }
+}
+
+void LevelTick() {
+
+    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *next;
+
+    while (node != 0) {
+
+        next = node->next;
+
+        LevelEntity *entity = (LevelEntity *)node->item;
+
+        // IMPORTANT: Enemy must tick before player or collision check between
+        // the two _might_ break
+        if (entity->components & LEVEL_IS_ENEMY) LevelEnemyTick(node);
+        else if (entity->components & LEVEL_IS_PLAYER) LevelPlayerTick();
+
+        node = next;
+    }
+
+    CameraTick();
 }

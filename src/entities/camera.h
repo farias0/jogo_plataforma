@@ -4,10 +4,18 @@
 
 #include <raylib.h>
 
-#include "entity.h"
+#include "level.h"
 
-// Initializes a new camera and returns the list's head.
-Entity *InitializeCamera(Entity *head, Entity **newCamera);
+
+typedef struct MyCamera {
+    Vector2 pos;
+} MyCamera;
+
+
+extern MyCamera *CAMERA;
+
+
+void CameraInitialize();
 void CameraTick();
 
 

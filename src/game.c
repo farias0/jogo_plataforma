@@ -2,7 +2,6 @@
 #include <stdio.h>
 
 #include "global.h"
-#include "entities/entity.h"
 #include "entities/player.h"
 #include "entities/enemy.h"
 #include "entities/level.h"
@@ -10,6 +9,7 @@
 #include "render.h"
 #include "input.h"
 #include "assets.h"
+#include "overworld.h"
 
 
 void updateWindowTitle() {
@@ -35,7 +35,9 @@ int main(int argc, char **argv)
 
     InitializeGameState();
 
-    InitializeOverworld();
+    CameraInitialize();
+
+    OverworldInitialize();
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -49,7 +51,8 @@ int main(int argc, char **argv)
             HandleInput();
             if (STATE->isPaused) goto render;
 
-            TickAllEntities(ENTITIES_HEAD, PLAYER);
+            if (STATE->mode == MODE_IN_LEVEL) LevelTick();
+            else if (STATE->mode == MODE_OVERWORLD) OverworldTick();
             if (STATE->isPaused) goto render;
 
             updateWindowTitle();

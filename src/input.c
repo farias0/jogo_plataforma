@@ -5,6 +5,7 @@
 #include "entities/level.h"
 #include "entities/enemy.h"
 #include "overworld.h"
+#include "entities/camera.h"
 
 
 #define CAMERA_SPEED 8.0f;
@@ -14,7 +15,7 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
 
-    if      (IsKeyPressed(KEY_BACKSPACE))   { InitializeOverworld(); return; }
+    if      (IsKeyPressed(KEY_BACKSPACE))   { OverworldInitialize(); return; }
 
     if      (IsKeyPressed(KEY_ENTER))       { ToggleInLevelState(); return; }
 
@@ -25,21 +26,21 @@ void handleInLevelInput() {
     if      (IsKeyDown(KEY_Z))              STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
     else                                    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
 
-    if      (IsKeyDown(KEY_RIGHT))          UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_RIGHT);
-    else if (IsKeyDown(KEY_LEFT))           UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_LEFT);
-    else                                    UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_STOP);
+    if      (IsKeyDown(KEY_RIGHT))          LevelPlayerMoveHorizontal(PLAYER_MOVEMENT_RIGHT);
+    else if (IsKeyDown(KEY_LEFT))           LevelPlayerMoveHorizontal(PLAYER_MOVEMENT_LEFT);
+    else                                    LevelPlayerMoveHorizontal(PLAYER_MOVEMENT_STOP);
 
-    if      (IsKeyPressed(KEY_X))           PlayerStartJump(PLAYER);
+    if      (IsKeyPressed(KEY_X))           LevelPlayerJump();
 }
 
 void handleOverworldInput() {
 
-    if      (IsKeyPressed(KEY_X))           { SelectLevel(); return; };
+    if      (IsKeyPressed(KEY_X))           { OverworldLevelSelect(); return; };
 
-    if      (IsKeyPressed(KEY_UP))          OverworldMoveCursor(UP);
-    else if (IsKeyPressed(KEY_DOWN))        OverworldMoveCursor(DOWN);
-    else if (IsKeyPressed(KEY_LEFT))        OverworldMoveCursor(LEFT);
-    else if (IsKeyPressed(KEY_RIGHT))       OverworldMoveCursor(RIGHT);
+    if      (IsKeyPressed(KEY_UP))          OverworldCursorMove(OW_CURSOR_UP);
+    else if (IsKeyPressed(KEY_DOWN))        OverworldCursorMove(OW_CURSOR_DOWN);
+    else if (IsKeyPressed(KEY_LEFT))        OverworldCursorMove(OW_CURSOR_LEFT);
+    else if (IsKeyPressed(KEY_RIGHT))       OverworldCursorMove(OW_CURSOR_RIGHT);
 }
 
 void handleEditorInput() {
@@ -82,21 +83,21 @@ void handleEditorInput() {
 void handleCameraInput() {
 
     // TODO move camera code to camera.c
-    if (IsKeyDown(KEY_A)) CAMERA->hitbox.x -= CAMERA_SPEED;
-    if (IsKeyDown(KEY_D)) CAMERA->hitbox.x += CAMERA_SPEED;
-    if (IsKeyDown(KEY_W)) CAMERA->hitbox.y -= CAMERA_SPEED;
-    if (IsKeyDown(KEY_S)) CAMERA->hitbox.y += CAMERA_SPEED;
+    if (IsKeyDown(KEY_A)) CAMERA->pos.x -= CAMERA_SPEED;
+    if (IsKeyDown(KEY_D)) CAMERA->pos.x += CAMERA_SPEED;
+    if (IsKeyDown(KEY_W)) CAMERA->pos.y -= CAMERA_SPEED;
+    if (IsKeyDown(KEY_S)) CAMERA->pos.y += CAMERA_SPEED;
 }
 
 void HandleInput() {
 
     handleEditorInput();
 
-    if (STATE->mode == InLevel) {
+    if (STATE->mode == MODE_IN_LEVEL) {
         handleInLevelInput();
         if (STATE->isPaused) return;
     }
-    else if (STATE->mode == Overworld) {
+    else if (STATE->mode == MODE_OVERWORLD) {
         handleOverworldInput();
     }
 
