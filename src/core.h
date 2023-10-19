@@ -1,5 +1,5 @@
-#ifndef _GLOBAL_H_INCLUDED_
-#define _GLOBAL_H_INCLUDED_
+#ifndef _CORE_H_INCLUDED_
+#define _CORE_H_INCLUDED_
 
 
 #include "inlevel/player.h"
@@ -13,8 +13,7 @@
 #define EDITOR_BAR_WIDTH        200
 #define SCREEN_WIDTH_W_EDITOR   SCREEN_WIDTH + EDITOR_BAR_WIDTH
 
-#define FLOOR_HEIGHT 600
-#define FLOOR_DEATH_HEIGHT 800 // Below this y the player dies
+#define FLOOR_DEATH_HEIGHT 800 // Below this y in level the player dies
 
 
 typedef enum GameMode {
@@ -42,24 +41,24 @@ typedef struct GameState {
 extern GameState *STATE;
 
 
-void InitializeGameState();
+void GameStateInitialize();
 
-void ResetGameState();
+void GameStateReset();
 
 // Toggles between level and overworld
-void ToggleGameMode();
+void GameModeToggle();
 
 // Toggles between paused and unpaused game
-void ToggleInLevelState();
-
-// True if the given position is inside the play space on the screen (doesn't include the editor)
-bool IsInPlayArea(Vector2 pos);
+void StateInLevelToggle();
 
 // Enables and disables editor
-void ToggleEditorEnabled();
+void EditorEnabledToggle();
+
+// True if the given position is inside the game screen (doesn't include the editor)
+bool IsInPlayArea(Vector2 pos);
 
 // Returns the entity list's head for the current selected game mode
-ListNode *GetListHead();
+ListNode *GetEntityListHead();
 
 // Converts position from the screen coordinates to in game coordinates
 Vector2 PosInScreenToScene(Vector2 pos);
@@ -74,4 +73,4 @@ float SnapToGrid(float value, float length);
 float PushOnGrid(float value, float length);
 
 
-#endif // _GLOBAL_H_INCLUDED_
+#endif // _CORE_H_INCLUDED_

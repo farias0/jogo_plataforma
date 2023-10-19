@@ -1,7 +1,7 @@
 #include <raylib.h>
 
 #include "input.h"
-#include "global.h"
+#include "core.h"
 #include "inlevel/level.h"
 #include "inlevel/enemy.h"
 #include "overworld.h"
@@ -17,7 +17,7 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_BACKSPACE))   { OverworldInitialize(); return; }
 
-    if      (IsKeyPressed(KEY_ENTER))       { ToggleInLevelState(); return; }
+    if      (IsKeyPressed(KEY_ENTER))       { StateInLevelToggle(); return; }
 
 
     if (STATE->isPlayerDead) return;
@@ -45,7 +45,7 @@ void handleOverworldInput() {
 
 void handleEditorInput() {
 
-    if      (IsKeyPressed(KEY_F1))           { ToggleEditorEnabled(); return; }
+    if      (IsKeyPressed(KEY_F1))           { EditorEnabledToggle(); return; }
 
     // Debug
     if      (IsKeyPressed(KEY_F2))          STATE->showDebugHUD = !STATE->showDebugHUD;

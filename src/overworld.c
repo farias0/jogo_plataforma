@@ -3,7 +3,7 @@
 #include "math.h"
 
 #include "overworld.h"
-#include "global.h"
+#include "core.h"
 #include "assets.h"
 #include "camera.h"
 
@@ -161,7 +161,7 @@ static void overworldLoad() {
 
 void OverworldInitialize() {
 
-    ResetGameState();
+    GameStateReset();
     STATE->mode = MODE_OVERWORLD;
 
     LinkedListRemoveAll(&OW_LIST_HEAD);

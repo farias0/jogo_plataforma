@@ -1,7 +1,7 @@
 #include <raylib.h>
 #include <stdio.h>
 
-#include "global.h"
+#include "core.h"
 #include "assets.h"
 #include "input.h"
 #include "inlevel/level.h"
@@ -161,7 +161,7 @@ static void renderEntities() {
 
     for (int layer = FIRST_LAYER; layer <= LAST_LAYER; layer++) {
 
-        ListNode *node = GetListHead();
+        ListNode *node = GetEntityListHead();
 
         while (node != 0) {
 
@@ -217,7 +217,7 @@ skip_debug_grid:
 
     if (STATE->showDebugHUD) {
 
-        ListNode *listHead = GetListHead();
+        ListNode *listHead = GetEntityListHead();
         if (listHead) {
             char entity_count[50];
             sprintf(entity_count, "%d entities", LinkedListCountNodes(listHead));

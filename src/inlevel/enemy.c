@@ -2,7 +2,7 @@
 
 #include "enemy.h"
 #include "../linked_list.h"
-#include "../global.h"
+#include "../core.h"
 #include "level.h"
 #include "../render.h"
 #include "../assets.h"

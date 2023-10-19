@@ -2,7 +2,7 @@
 
 #include "camera.h"
 #include "inlevel/player.h"
-#include "global.h"
+#include "core.h"
 
 #define CAMERA_FOLLOW_LEFT_X SCREEN_WIDTH/4
 #define CAMERA_FOLLOW_RIGHT_X (3*SCREEN_WIDTH)/5

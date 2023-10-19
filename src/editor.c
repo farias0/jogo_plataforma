@@ -1,7 +1,7 @@
 #include <raylib.h>
 
 #include "editor.h"
-#include "global.h"
+#include "core.h"
 #include "inlevel/level.h"
 #include "inlevel/enemy.h"
 #include "overworld.h"

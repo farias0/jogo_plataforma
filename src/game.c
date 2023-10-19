@@ -1,7 +1,7 @@
 #include <raylib.h>
 #include <stdio.h>
 
-#include "global.h"
+#include "core.h"
 #include "inlevel/player.h"
 #include "inlevel/enemy.h"
 #include "inlevel/level.h"
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 
     InitializeAssets();
 
-    InitializeGameState();
+    GameStateInitialize();
 
     CameraInitialize();
 

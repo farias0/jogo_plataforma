@@ -5,7 +5,7 @@
 
 #include "level.h"
 #include "../linked_list.h"
-#include "../global.h"
+#include "../core.h"
 #include "enemy.h"
 #include "../camera.h"
 
@@ -62,23 +62,25 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
 
 static void levelLoad() {
 
-    addBlockToLevel((Rectangle){ 0, FLOOR_HEIGHT, BlockSprite.sprite.width*25, BlockSprite.sprite.height*5 });
+    const float floorHeight = 600;
+
+    addBlockToLevel((Rectangle){ 0, floorHeight, BlockSprite.sprite.width*25, BlockSprite.sprite.height*5 });
     
     float x = BlockSprite.sprite.width*30;
     float width = BlockSprite.sprite.width*10;
-    addBlockToLevel((Rectangle){ x, FLOOR_HEIGHT, width, BlockSprite.sprite.height*5 });
+    addBlockToLevel((Rectangle){ x, floorHeight, width, BlockSprite.sprite.height*5 });
     LevelEnemyAdd(x + (width / 2), 200);
     
-    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*45, FLOOR_HEIGHT-80, BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 });
-    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*40, FLOOR_HEIGHT-200, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
-    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*45, FLOOR_HEIGHT-320, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
+    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*45, floorHeight-80, BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 });
+    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*40, floorHeight-200, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
+    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*45, floorHeight-320, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
 
     TraceLog(LOG_INFO, "Level loaded.");
 }
 
 void LevelInitialize() {
 
-    ResetGameState();
+    GameStateReset();
     STATE->mode = MODE_IN_LEVEL;
 
     LinkedListRemoveAll(&LEVEL_LIST_HEAD);
