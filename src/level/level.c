@@ -6,7 +6,6 @@
 #include "level.h"
 #include "../linked_list.h"
 #include "../core.h"
-#include "enemy.h"
 #include "../camera.h"
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"

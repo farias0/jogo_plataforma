@@ -2,8 +2,7 @@
 
 #include "input.h"
 #include "core.h"
-#include "inlevel/level.h"
-#include "inlevel/enemy.h"
+#include "level/level.h"
 #include "overworld.h"
 #include "camera.h"
 

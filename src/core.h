@@ -2,7 +2,7 @@
 #define _CORE_H_INCLUDED_
 
 
-#include "inlevel/player.h"
+#include "level/level.h"
 #include "editor.h"
 #include "linked_list.h"
 

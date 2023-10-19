@@ -3,7 +3,7 @@
 #include "core.h"
 #include "overworld.h"
 #include "camera.h"
-#include "inlevel/level.h"
+#include "level/level.h"
 #include "editor.h"
 
 

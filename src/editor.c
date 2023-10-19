@@ -2,8 +2,7 @@
 
 #include "editor.h"
 #include "core.h"
-#include "inlevel/level.h"
-#include "inlevel/enemy.h"
+#include "level/level.h"
 #include "overworld.h"
 #include "linked_list.h"
 

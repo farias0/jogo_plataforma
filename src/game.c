@@ -2,9 +2,7 @@
 #include <stdio.h>
 
 #include "core.h"
-#include "inlevel/player.h"
-#include "inlevel/enemy.h"
-#include "inlevel/level.h"
+#include "level/level.h"
 #include "camera.h"
 #include "render.h"
 #include "input.h"

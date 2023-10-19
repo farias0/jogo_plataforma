@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "player.h"
 #include "level.h"
 #include "../core.h"
 #include "../assets.h"

@@ -1,7 +1,7 @@
 #include <raylib.h>
 
 #include "camera.h"
-#include "inlevel/player.h"
+#include "level/level.h"
 #include "core.h"
 
 #define CAMERA_FOLLOW_LEFT_X SCREEN_WIDTH/4
