@@ -79,12 +79,10 @@ Vector2 PosInScreenToScene(Vector2 pos);
 // Converts position from in game coordinates to the screen coordinates
 Vector2 PosInSceneToScreen(Vector2 pos);
 
-// Rounds a value according to a period.
-// e.g. If period is 32 then it's 0, 32, 64, 128...
-// Useful for snapping things into grids.
-float RoundValue(float value, float period);
+// Snaps a coordinate (x or y) to a grid.
+float SnapToGrid(float value, float length);
 
-// Snaps a coordinate (x or y) to a grid of square side = squareSide.
-float SnapToGrid(float value, float squareSide);
+// Pushes a coordinate (x or y) according to a grid.
+float PushOnGrid(float value, float length);
 
 #endif // _GLOBAL_H_INCLUDED_

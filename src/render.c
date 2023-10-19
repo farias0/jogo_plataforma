@@ -189,8 +189,8 @@ void renderHUD() {
         }
 
         Vector2 offset = (Vector2){
-            RoundValue(CAMERA->hitbox.x, gridSquareDim.width),
-            RoundValue(CAMERA->hitbox.y, gridSquareDim.height),
+            PushOnGrid(CAMERA->hitbox.x, gridSquareDim.width),
+            PushOnGrid(CAMERA->hitbox.y, gridSquareDim.height),
         };
 
         for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += gridSquareDim.width) {

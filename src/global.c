@@ -141,20 +141,20 @@ Vector2 PosInSceneToScreen(Vector2 pos) {
     };
 }
 
-float RoundValue(float value, float period) {
+float SnapToGrid(float value, float length) {
 
     if (value >= 0) {
-        return period - fmod(value, period);
+        return value - fmod(value, length);
     } else {
-        return - period - fmod(value, period);
+        return value - length - fmod(value, length);
     }
 }
 
-float SnapToGrid(float value, float squareSide) {
+float PushOnGrid(float value, float length) {
 
     if (value >= 0) {
-        return value - fmod(value, squareSide);
+        return length - fmod(value, length);
     } else {
-        return value - squareSide - fmod(value, squareSide);
+        return - length - fmod(value, length);
     }
 }
