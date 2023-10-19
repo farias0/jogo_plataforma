@@ -11,15 +11,12 @@
 #define ENEMY_FALL_RATE 7.0f
 
 
-void LevelEnemyAdd(int x, int y) {
+void LevelEnemyAdd(Vector2 pos) {
 
     LevelEntity *newEnemy = MemAlloc(sizeof(LevelEntity));
 
     newEnemy->components = LEVEL_IS_ENEMY;
-    newEnemy->hitbox = (Rectangle){ x - ((EnemySprite.sprite.width * EnemySprite.scale) / 2),
-                                    y - (EnemySprite.sprite.height * EnemySprite.scale) + 1,
-                                    EnemySprite.sprite.width * EnemySprite.scale,
-                                    EnemySprite.sprite.height * EnemySprite.scale };
+    newEnemy->hitbox = SpriteHitboxFromMiddle(EnemySprite, pos);
     newEnemy->sprite = EnemySprite;
     newEnemy->isFacingRight = false;
     newEnemy->isFallingDown = true;
@@ -64,17 +61,7 @@ void LevelEnemyCheckAndAdd(Vector2 pos) {
 
     }
 
-    /*
-        LevelEnemyAdd places the enemy _above_ this point,
-        so we bring the y down to the feet of the sprite.
-        
-        TODO: Make InitializeAbove receive normal x and y.
-        The level positions the enemy to fall to the floor.
-    */
-    float feet = pos.y + ((EnemySprite.sprite.height * EnemySprite.scale) / 2);
-
-
-    LevelEnemyAdd(pos.x, feet);
+    LevelEnemyAdd(pos);
 }
 
 void LevelEnemyTick(ListNode *enemyNode) {

@@ -69,7 +69,7 @@ static void levelLoad() {
     float x = BlockSprite.sprite.width*30;
     float width = BlockSprite.sprite.width*10;
     addBlockToLevel((Rectangle){ x, floorHeight, width, BlockSprite.sprite.height*5 });
-    LevelEnemyAdd(x + (width / 2), 200);
+    LevelEnemyAdd((Vector2){ x + (width / 2), 200 });
     
     addBlockToLevel((Rectangle){ BlockSprite.sprite.width*45, floorHeight-80, BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 });
     addBlockToLevel((Rectangle){ BlockSprite.sprite.width*40, floorHeight-200, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });

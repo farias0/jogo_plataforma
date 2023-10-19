@@ -7,8 +7,8 @@
 #include "../linked_list.h"
 
 
-// X and Y above which the enemy will be spawn. Initializes an enemy and returns the list's head.
-void LevelEnemyAdd(int x, int y);
+// Initializes and adds an enemy to the level in the given pos
+void LevelEnemyAdd(Vector2 pos);
 
 // Initializes and adds an enemy to the level in the given pos,
 // if there are not other elements there already.
