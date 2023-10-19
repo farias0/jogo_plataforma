@@ -89,7 +89,7 @@ void handleCameraInput() {
     if (IsKeyDown(KEY_S)) CAMERA->pos.y += CAMERA_SPEED;
 }
 
-void HandleInput() {
+void InputHandle() {
 
     handleEditorInput();
 
@@ -104,7 +104,7 @@ void HandleInput() {
     handleCameraInput(); // debug
 }
 
-void ClickOnEditorItem(EditorItem *item) {
+void InputEditorItemClick(EditorItem *item) {
 
     STATE->editorSelectedItem = item;
 }

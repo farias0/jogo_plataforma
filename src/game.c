@@ -48,7 +48,7 @@ int main(int argc, char **argv)
                 collision checking, which is done in the tick functions, might break. 
             */
 
-            HandleInput();
+            InputHandle();
             if (STATE->isPaused) goto render;
 
             if (STATE->mode == MODE_IN_LEVEL) LevelTick();

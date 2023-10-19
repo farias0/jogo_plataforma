@@ -250,7 +250,7 @@ static void renderButton(Rectangle editorWindow, EditorItem *item) {
         &isItemSelected
     );
     
-    if (isItemSelected) ClickOnEditorItem(item);
+    if (isItemSelected) InputEditorItemClick(item);
 
     editorButtonsRendered++;
 }

@@ -4,8 +4,8 @@
 
 #include "editor.h"
 
-void HandleInput();
-void ClickOnEditorItem(EditorItem *item);
+void InputHandle();
+void InputEditorItemClick(EditorItem *item);
 
 
 #endif // _INPUT_H_INCLUDED_
