@@ -146,7 +146,8 @@ void LevelPlayerTick() {
         }
     }
 
-    bool yVelocityWithinTarget = abs(yVelocity - yVelocityTarget) < Y_VELOCITY_TARGET_TOLERANCE;
+    bool yVelocityWithinTarget =
+        abs((int) (yVelocity - yVelocityTarget)) < Y_VELOCITY_TARGET_TOLERANCE;
     if (yVelocityWithinTarget) {
         isJumping = false;
 
@@ -197,10 +198,10 @@ void LevelPlayerTick() {
                         CheckCollisionRecs(entity->hitbox, LEVEL_PLAYER->hitbox)) {
 
                 // Player hit wall
-                if ((abs(LEVEL_PLAYER->hitbox.x - entity->hitbox.x - entity->hitbox.width) < 10.0f) ||
-                        (abs(LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width - entity->hitbox.x) < 10.0f)) {
+                if ((abs((int) (LEVEL_PLAYER->hitbox.x - entity->hitbox.x - entity->hitbox.width)) < 10.0f) ||
+                        (abs((int) (LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width - entity->hitbox.x)) < 10.0f)) {
 
-                    if (STATE->showDebugHUD) ("Hit wall", 10, 80, 20, WHITE);
+                    if (STATE->showDebugHUD) DrawText("Hit wall", 10, 80, 20, WHITE);
 
                     LEVEL_PLAYER->hitbox.x -= xVelocity;
 
@@ -208,7 +209,7 @@ void LevelPlayerTick() {
                 }
 
                 // Player hit ceiling
-                if ((abs(LEVEL_PLAYER->hitbox.y - (entity->hitbox.y + entity->hitbox.height)) < 15.0f) && isJumping) {
+                if ((abs((int) (LEVEL_PLAYER->hitbox.y - (entity->hitbox.y + entity->hitbox.height))) < 15.0f) && isJumping) {
 
                     if (STATE->showDebugHUD) DrawText("Hit ceiling", 10, 100, 20, WHITE);
 

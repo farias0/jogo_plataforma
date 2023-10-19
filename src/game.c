@@ -18,8 +18,8 @@ void updateWindowTitle() {
     SetWindowTitle(title);
 }
 
-int main(int argc, char **argv)
-{
+int main() {
+
     SetTraceLogLevel(LOG_DEBUG);
 
     // debug

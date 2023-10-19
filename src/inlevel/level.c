@@ -133,7 +133,8 @@ LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
             entity->hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&
 
             // If y is RIGHT above the possible ground
-            abs(possibleGround->hitbox.y - entitysFoot) <= ON_THE_GROUND_Y_TOLERANCE) {
+            abs((int) (possibleGround->hitbox.y - entitysFoot)) <= 
+                ON_THE_GROUND_Y_TOLERANCE) {
                 
                 return possibleGround;
             } 

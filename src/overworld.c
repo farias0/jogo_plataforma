@@ -142,16 +142,16 @@ static void overworldLoad() {
     OverworldEntity *dot1    = addTileToOverworld    ((Vector2){ dotX, dotY },                               OW_LEVEL_DOT,      0);
 
     // Path to the right
-    OverworldEntity *path1   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     OW_JOIN_PATH,      270);
-    OverworldEntity *path2   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 2, dotY },     OW_STRAIGHT_PATH,  90);
-    OverworldEntity *path3   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     OW_JOIN_PATH,      90);
-    OverworldEntity *dot2    = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     OW_LEVEL_DOT,      0);
+    addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     OW_JOIN_PATH,      270);
+    addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 2, dotY },     OW_STRAIGHT_PATH,  90);
+    addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     OW_JOIN_PATH,      90);
+    addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     OW_LEVEL_DOT,      0);
 
     // Path up
-    OverworldEntity *path4   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height },      OW_JOIN_PATH,      180);
-    OverworldEntity *path5   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 2},   OW_STRAIGHT_PATH,  0);
-    OverworldEntity *path6   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 3},   OW_JOIN_PATH,      0);
-    OverworldEntity *dot3    = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
+    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height },      OW_JOIN_PATH,      180);
+    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 2},   OW_STRAIGHT_PATH,  0);
+    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 3},   OW_JOIN_PATH,      0);
+    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
 
 
     CURSOR_STATE.tileUnder = dot1;
@@ -262,7 +262,6 @@ next_entity:
 
 void OverworldTileAddOrInteract(Vector2 pos) {
 
-    Dimensions testDimensions = GetScaledDimensions(PathTileStraightSprite);
     Rectangle testHitbox = (Rectangle){ SnapToGrid(pos.x, OW_GRID.width),
                                     SnapToGrid(pos.y, OW_GRID.height),
                                     OW_GRID.width,

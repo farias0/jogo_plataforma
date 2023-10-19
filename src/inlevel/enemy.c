@@ -74,7 +74,7 @@ void LevelEnemyCheckAndAdd(Vector2 pos) {
     float feet = pos.y + ((EnemySprite.sprite.height * EnemySprite.scale) / 2);
 
 
-    return LevelEnemyAdd(pos.x, feet);
+    LevelEnemyAdd(pos.x, feet);
 }
 
 void LevelEnemyTick(ListNode *enemyNode) {

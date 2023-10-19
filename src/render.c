@@ -8,8 +8,11 @@
 #include "overworld.h"
 #include "camera.h"
 
+#pragma GCC diagnostic push 
+#pragma GCC diagnostic ignored "-Wunused-parameter" // Ignore warnings
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
+#pragma GCC diagnostic pop
 
 
 #define FIRST_LAYER 0
@@ -42,7 +45,7 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
                     pos,
                     sprite.rotation,
                     sprite.scale,
-                    WHITE);    
+                    tint);    
         
         return;
     }
@@ -66,7 +69,7 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
                     destination,
                     (Vector2){ 0, 0 },
                     sprite.rotation,
-                    WHITE);    
+                    tint);    
 }
 
 // Draws sprite in the background, with effects applied.
