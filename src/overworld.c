@@ -1,9 +1,11 @@
 #include <raylib.h>
 #include <stdlib.h>
+#include "math.h"
 
 #include "overworld.h"
 #include "entities/entity.h"
 #include "global.h"
+#include "assets.h"
 
 
 typedef struct CursorState {
@@ -14,21 +16,14 @@ typedef struct CursorState {
 } CursorState;
 
 
+SpriteDimensions OverworldGridDimensions = (SpriteDimensions){
+    // Based on a dot tile
+    64,
+    64
+};
+
 CursorState cursorState;
 
-// Snaps a coordinate (x or y) into the grid.
-// ATTENTION: Using a Path Sprite as grid's base
-float snapToOverworldGrid(float v) {
-    
-    // Sprite is square, so same for x and y.
-    SpriteDimensions dimensions = GetScaledDimensions(PathTileStraightSprite);
-
-    if (v >= 0) {
-        return v - ((int) v % (int) dimensions.width);
-    } else {
-        return v - dimensions.width - ((int) v % (int) dimensions.width);
-    }
-}
 
 // Updates the position for the cursor according to the tile under it
 void updateCursorPosition() {
@@ -46,8 +41,8 @@ void updateCursorPosition() {
 void initializeOverworldCursor(Vector2 pos) {
     Entity *newCursor = MemAlloc(sizeof(Entity));
 
-    pos.x = snapToOverworldGrid(pos.x);
-    pos.y = snapToOverworldGrid(pos.y);
+    pos.x = SnapToGrid(pos.x, OverworldGridDimensions.width);
+    pos.y = SnapToGrid(pos.y, OverworldGridDimensions.height);
 
     newCursor->components = HasPosition +
                             HasSprite +
@@ -65,8 +60,8 @@ Entity *addTileToOverworld(Vector2 pos, OverworldTileType type, int degrees) {
 
     Entity *newTile = MemAlloc(sizeof(Entity));
 
-    pos.x = snapToOverworldGrid(pos.x);
-    pos.y = snapToOverworldGrid(pos.y);
+    pos.x = SnapToGrid(pos.x, OverworldGridDimensions.width);
+    pos.y = SnapToGrid(pos.y, OverworldGridDimensions.height);
 
     newTile->components = HasPosition +
                             HasSprite +
@@ -117,9 +112,9 @@ void LoadOverworld() {
     Entity *dot1    = addTileToOverworld    ((Vector2){ dotX, dotY },                               LEVEL_DOT,      0);
 
     // Path to the right
-    Entity *path1   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     JOIN_PATH,      90);
+    Entity *path1   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     JOIN_PATH,      270);
     Entity *path2   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 2, dotY },     STRAIGHT_PATH,  90);
-    Entity *path3   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     JOIN_PATH,      270);
+    Entity *path3   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     JOIN_PATH,      90);
     Entity *dot2    = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     LEVEL_DOT,      0);
 
     // Path up
@@ -217,8 +212,8 @@ next_entity:
 void AddTileToOverworld(Vector2 pos) {
 
     SpriteDimensions dimensions = GetScaledDimensions(PathTileStraightSprite);
-    Rectangle hitbox = (Rectangle){ snapToOverworldGrid(pos.x),
-                                    snapToOverworldGrid(pos.y),
+    Rectangle hitbox = (Rectangle){ SnapToGrid(pos.x, OverworldGridDimensions.width),
+                                    SnapToGrid(pos.y, OverworldGridDimensions.height),
                                     dimensions.width,
                                     dimensions.height };
 
@@ -264,4 +259,26 @@ void AddTileToOverworld(Vector2 pos) {
                         "Couldn't find Overworld Tile Type for Editor Item Type %d.",
                         STATE->editorSelectedItem->type);
     }
+}
+
+void RemoveTileFromOverWorld(Vector2 pos) {
+
+    Entity *entity = GetEntityOn(pos);
+
+    if (!entity) {
+
+        TraceLog(LOG_DEBUG, "Didn't find any tile.");
+        return;
+    }
+
+    // Ideally the game would support removing the tile under the player,
+    // but this would demand some logic to manage the tileUnder pointer.
+    // For now this is good enough.
+    if (entity == cursorState.tileUnder) {
+
+            TraceLog(LOG_DEBUG, "Won't remove tile, it's under the cursor.");
+            return;
+        }
+
+    ENTITIES_HEAD = DestroyEntity(entity);
 }

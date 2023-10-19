@@ -64,6 +64,27 @@ void TickAllEntities(Entity *listItem, Entity *player) {
     }
 }
 
+Entity *GetEntityOn(Vector2 pos) {
+    
+    Entity *currentItem = ENTITIES_HEAD;
+
+    while (currentItem != 0) {
+
+        if (currentItem->components & HasPosition &&
+            !(currentItem->components & IsPlayer) &&
+            !(currentItem->components & IsCursor) &&
+            CheckCollisionPointRec(pos, currentItem->hitbox)) {
+
+                return currentItem;
+            }
+
+        currentItem = currentItem->next;
+        
+    };
+
+    return 0;
+}
+
 Entity *DestroyEntity(Entity *entity) {
     Entity *listHead = ENTITIES_HEAD; 
     if (entity == ENTITIES_HEAD) {
@@ -91,21 +112,11 @@ void DestroyAllEntities(Entity *head) {
 
 Entity *DestroyEntityOn(Vector2 pos) {
     
-    Entity *currentItem = ENTITIES_HEAD;
+    Entity *entity = GetEntityOn(pos);
 
-    while (currentItem != 0) {
-
-        if (currentItem->components & HasPosition &&
-            !(currentItem->components & IsPlayer) &&
-            !(currentItem->components & IsCursor) &&
-            CheckCollisionPointRec(pos, currentItem->hitbox)) {
-
-                return DestroyEntity(currentItem);
-            }
-
-        currentItem = currentItem->next;
-        
-    };
+    if (entity) {
+        return DestroyEntity(entity);
+    }
 
     return ENTITIES_HEAD;
 }

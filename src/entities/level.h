@@ -5,6 +5,9 @@
 #include <raylib.h>
 #include "entity.h"
 
+
+extern SpriteDimensions LevelGridDimensions;
+
 Entity *LoadLevel(Entity *head);
 
 // Initializes and adds a block to the level in the given pos,

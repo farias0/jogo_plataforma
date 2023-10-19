@@ -34,6 +34,7 @@ typedef struct GameState {
     bool isEditorEnabled;
 
     bool showDebugHUD;
+    bool showDebugGrid;
     bool showBackground;
 } GameState;
 
@@ -77,5 +78,11 @@ Vector2 PosInScreenToScene(Vector2 pos);
 
 // Converts position from in game coordinates to the screen coordinates
 Vector2 PosInSceneToScreen(Vector2 pos);
+
+// Snaps a coordinate (x or y) to a grid.
+float SnapToGrid(float value, float length);
+
+// Pushes a coordinate (x or y) according to a grid.
+float PushOnGrid(float value, float length);
 
 #endif // _GLOBAL_H_INCLUDED_

@@ -12,7 +12,15 @@
 
 void handleInLevelInput() {
 
+    if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
+
+    if      (IsKeyPressed(KEY_BACKSPACE))   { InitializeOverworld(); return; }
+
     if      (IsKeyPressed(KEY_ENTER))       { ToggleInLevelState(); return; }
+
+
+    if (STATE->isPlayerDead) return;
+
 
     if      (IsKeyDown(KEY_Z))              STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
     else                                    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
@@ -22,15 +30,11 @@ void handleInLevelInput() {
     else                                    UpdatePlayerHorizontalMovement(PLAYER_MOVEMENT_STOP);
 
     if      (IsKeyPressed(KEY_X))           PlayerStartJump(PLAYER);
-
-    if      (IsKeyPressed(KEY_BACKSPACE))   InitializeOverworld();
-
-    if      (IsKeyPressed(KEY_F3))          STATE->showBackground = !STATE->showBackground;
 }
 
 void handleOverworldInput() {
 
-    if      (IsKeyPressed(KEY_X))           SelectLevel();
+    if      (IsKeyPressed(KEY_X))           { SelectLevel(); return; };
 
     if      (IsKeyPressed(KEY_UP))          OverworldMoveCursor(UP);
     else if (IsKeyPressed(KEY_DOWN))        OverworldMoveCursor(DOWN);
@@ -44,6 +48,7 @@ void handleEditorInput() {
 
     // Debug
     if      (IsKeyPressed(KEY_F2))          STATE->showDebugHUD = !STATE->showDebugHUD;
+    if      (IsKeyPressed(KEY_F3))          STATE->showDebugGrid = !STATE->showDebugGrid;
 
     if (!STATE->isEditorEnabled) return;
 

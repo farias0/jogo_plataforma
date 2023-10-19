@@ -1,3 +1,5 @@
+#include "math.h"
+
 #include "global.h"
 #include "overworld.h"
 #include "entities/entity.h"
@@ -137,4 +139,22 @@ Vector2 PosInSceneToScreen(Vector2 pos) {
         pos.x - CAMERA->hitbox.x,
         pos.y - CAMERA->hitbox.y
     };
+}
+
+float SnapToGrid(float value, float length) {
+
+    if (value >= 0) {
+        return value - fmod(value, length);
+    } else {
+        return value - length - fmod(value, length);
+    }
+}
+
+float PushOnGrid(float value, float length) {
+
+    if (value >= 0) {
+        return length - fmod(value, length);
+    } else {
+        return - length - fmod(value, length);
+    }
 }
