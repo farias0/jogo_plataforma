@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <stdlib.h>
+#include "math.h"
 
 #include "overworld.h"
 #include "entities/entity.h"
@@ -24,16 +25,6 @@ SpriteDimensions OverworldGridDimensions = (SpriteDimensions){
 CursorState cursorState;
 
 
-// Snaps a coordinate (x or y) to the Overworld Grid.
-float snapToOverworldGrid(float v) {
-
-    if (v >= 0) {
-        return v - ((int) v % (int) OverworldGridDimensions.width);
-    } else {
-        return v - OverworldGridDimensions.width - ((int) v % (int) OverworldGridDimensions.width);
-    }
-}
-
 // Updates the position for the cursor according to the tile under it
 void updateCursorPosition() {
 
@@ -50,8 +41,8 @@ void updateCursorPosition() {
 void initializeOverworldCursor(Vector2 pos) {
     Entity *newCursor = MemAlloc(sizeof(Entity));
 
-    pos.x = snapToOverworldGrid(pos.x);
-    pos.y = snapToOverworldGrid(pos.y);
+    pos.x = SnapToGrid(pos.x, OverworldGridDimensions.width);
+    pos.y = SnapToGrid(pos.y, OverworldGridDimensions.height);
 
     newCursor->components = HasPosition +
                             HasSprite +
@@ -69,8 +60,8 @@ Entity *addTileToOverworld(Vector2 pos, OverworldTileType type, int degrees) {
 
     Entity *newTile = MemAlloc(sizeof(Entity));
 
-    pos.x = snapToOverworldGrid(pos.x);
-    pos.y = snapToOverworldGrid(pos.y);
+    pos.x = SnapToGrid(pos.x, OverworldGridDimensions.width);
+    pos.y = SnapToGrid(pos.y, OverworldGridDimensions.height);
 
     newTile->components = HasPosition +
                             HasSprite +
@@ -221,8 +212,8 @@ next_entity:
 void AddTileToOverworld(Vector2 pos) {
 
     SpriteDimensions dimensions = GetScaledDimensions(PathTileStraightSprite);
-    Rectangle hitbox = (Rectangle){ snapToOverworldGrid(pos.x),
-                                    snapToOverworldGrid(pos.y),
+    Rectangle hitbox = (Rectangle){ SnapToGrid(pos.x, OverworldGridDimensions.width),
+                                    SnapToGrid(pos.y, OverworldGridDimensions.height),
                                     dimensions.width,
                                     dimensions.height };
 

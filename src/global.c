@@ -149,3 +149,12 @@ float RoundValue(float value, float period) {
         return - period - fmod(value, period);
     }
 }
+
+float SnapToGrid(float value, float squareSide) {
+
+    if (value >= 0) {
+        return value - fmod(value, squareSide);
+    } else {
+        return value - squareSide - fmod(value, squareSide);
+    }
+}

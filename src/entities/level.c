@@ -19,21 +19,11 @@ SpriteDimensions LevelGridDimensions = (SpriteDimensions){
 Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
 
-// Snaps a coordinate (x or y) to the Level Grid 
-float snapToLevelGrid(float v) {
-
-    if (v >= 0) {
-        return v - ((int) v % (int) LevelGridDimensions.width);
-    } else {
-        return v - LevelGridDimensions.width - ((int) v % (int) LevelGridDimensions.width);
-    }
-}
-
 Entity *addBlockToLevel(Entity *head, Rectangle hitbox) {
     Entity *newBlock = MemAlloc(sizeof(Entity));
 
-    hitbox.x = snapToLevelGrid(hitbox.x);
-    hitbox.y = snapToLevelGrid(hitbox.y);
+    hitbox.x = SnapToGrid(hitbox.x, LevelGridDimensions.width);
+    hitbox.y = SnapToGrid(hitbox.y, LevelGridDimensions.height);
 
     newBlock->components = HasPosition +
                             HasSprite +

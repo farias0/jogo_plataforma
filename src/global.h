@@ -84,4 +84,7 @@ Vector2 PosInSceneToScreen(Vector2 pos);
 // Useful for snapping things into grids.
 float RoundValue(float value, float period);
 
+// Snaps a coordinate (x or y) to a grid of square side = squareSide.
+float SnapToGrid(float value, float squareSide);
+
 #endif // _GLOBAL_H_INCLUDED_
