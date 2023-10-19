@@ -10,7 +10,7 @@ find_package(raylib 4.5 REQUIRED)
 set(CMAKE_C_STANDARD 11) # required by raylib
 
 add_executable(${PROJECT_NAME} src/game.c src/inlevel/player.c src/linked_list.c src/inlevel/enemy.c
-    src/inlevel/level.c src/inlevel/camera.c src/global.c src/render.c src/input.c src/editor.c src/assets.c
+    src/inlevel/level.c src/camera.c src/global.c src/render.c src/input.c src/editor.c src/assets.c
     src/overworld.c)
 
 set(raylib_VERBOSE 1)

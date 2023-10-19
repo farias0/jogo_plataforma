@@ -2,7 +2,7 @@
 
 #include "global.h"
 #include "overworld.h"
-#include "inlevel/camera.h"
+#include "camera.h"
 #include "inlevel/level.h"
 #include "editor.h"
 

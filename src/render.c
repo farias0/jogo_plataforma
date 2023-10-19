@@ -6,7 +6,7 @@
 #include "input.h"
 #include "inlevel/level.h"
 #include "overworld.h"
-#include "inlevel/camera.h"
+#include "camera.h"
 
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"

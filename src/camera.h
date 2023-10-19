@@ -4,8 +4,6 @@
 
 #include <raylib.h>
 
-#include "level.h"
-
 
 typedef struct MyCamera {
     Vector2 pos;

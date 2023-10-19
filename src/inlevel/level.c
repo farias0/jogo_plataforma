@@ -7,7 +7,7 @@
 #include "../linked_list.h"
 #include "../global.h"
 #include "enemy.h"
-#include "camera.h"
+#include "../camera.h"
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 #define ON_THE_GROUND_Y_TOLERANCE 5

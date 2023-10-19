@@ -5,7 +5,7 @@
 #include "inlevel/player.h"
 #include "inlevel/enemy.h"
 #include "inlevel/level.h"
-#include "inlevel/camera.h"
+#include "camera.h"
 #include "render.h"
 #include "input.h"
 #include "assets.h"
