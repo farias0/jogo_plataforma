@@ -67,7 +67,7 @@ void loadOverworldEditor() {
     TraceLog(LOG_DEBUG, "Editor loaded overworld itens.");
 }
 
-void SyncEditor() {
+void EditorSync() {
 
     clearEditorItems();
 

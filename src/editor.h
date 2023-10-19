@@ -37,7 +37,7 @@ extern EditorItem *EDITOR_ITEMS_HEAD;
 
 // Destroy any existing editor itens and then loads the items
 // for the current game mode
-void SyncEditor();
+void EditorSync();
 
 
 #endif // _EDITOR_H_INCLUDED_

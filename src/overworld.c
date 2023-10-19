@@ -170,7 +170,7 @@ void OverworldInitialize() {
     overworldLoad();
     updateCursorPosition();
 
-    SyncEditor();
+    EditorSync();
 
     TraceLog(LOG_INFO, "Overworld initialized.");
 }

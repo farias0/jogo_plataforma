@@ -87,7 +87,7 @@ void LevelInitialize() {
     LevelPlayerInitialize(playersStartingPosition);
     levelLoad();
 
-    SyncEditor();
+    EditorSync();
 
     TraceLog(LOG_INFO, "Level initialized.");
 }
