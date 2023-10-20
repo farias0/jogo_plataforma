@@ -1,8 +1,8 @@
 #include <raylib.h>
 
 #include "camera.h"
-#include "player.h"
-#include "../global.h"
+#include "level/level.h"
+#include "core.h"
 
 #define CAMERA_FOLLOW_LEFT_X SCREEN_WIDTH/4
 #define CAMERA_FOLLOW_RIGHT_X (3*SCREEN_WIDTH)/5
@@ -39,4 +39,18 @@ void CameraTick() {
     if (LEVEL_PLAYER->hitbox.y) {
         // TODO camera's vertical movement
     }
+}
+
+Vector2 PosInScreenToScene(Vector2 pos) {
+    return (Vector2){
+        pos.x + CAMERA->pos.x,
+        pos.y + CAMERA->pos.y
+    };
+}
+
+Vector2 PosInSceneToScreen(Vector2 pos) {
+    return (Vector2){
+        pos.x - CAMERA->pos.x,
+        pos.y - CAMERA->pos.y
+    };
 }

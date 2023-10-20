@@ -5,9 +5,8 @@
 
 #include "level.h"
 #include "../linked_list.h"
-#include "../global.h"
-#include "enemy.h"
-#include "camera.h"
+#include "../core.h"
+#include "../camera.h"
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 #define ON_THE_GROUND_Y_TOLERANCE 5
@@ -18,25 +17,6 @@ const Dimensions LEVEL_GRID = (Dimensions){ 32, 32 };
 
 static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
-
-static void addBlockToLevel(Rectangle hitbox) {
-
-    LevelEntity *newBlock = MemAlloc(sizeof(LevelEntity));
-
-    hitbox.x = SnapToGrid(hitbox.x, LEVEL_GRID.width);
-    hitbox.y = SnapToGrid(hitbox.y, LEVEL_GRID.height);
-
-    newBlock->components = LEVEL_IS_SCENARIO;
-    newBlock->hitbox = hitbox;
-    newBlock->sprite = BlockSprite;
-
-    ListNode *node = MemAlloc(sizeof(ListNode));
-    node->item = newBlock;
-    LinkedListAdd(&LEVEL_LIST_HEAD, node);
-
-    TraceLog(LOG_DEBUG, "Added block to level (x=%.1f, y=%.1f)",
-                newBlock->hitbox.x, newBlock->hitbox.y);
-}
 
 // Searches for an entity that's not the player
 // in a given position and returns its node, or 0 if not found.
@@ -62,52 +42,34 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
 
 static void levelLoad() {
 
-    addBlockToLevel((Rectangle){ 0, FLOOR_HEIGHT, BlockSprite.sprite.width*25, BlockSprite.sprite.height*5 });
+    const float floorHeight = 600;
+
+    LevelBlockAdd((Rectangle){ 0, floorHeight, BlockSprite.sprite.width*25, BlockSprite.sprite.height*5 });
     
     float x = BlockSprite.sprite.width*30;
     float width = BlockSprite.sprite.width*10;
-    addBlockToLevel((Rectangle){ x, FLOOR_HEIGHT, width, BlockSprite.sprite.height*5 });
-    LevelEnemyAdd(x + (width / 2), 200);
+    LevelBlockAdd((Rectangle){ x, floorHeight, width, BlockSprite.sprite.height*5 });
+    LevelEnemyAdd((Vector2){ x + (width / 2), 200 });
     
-    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*45, FLOOR_HEIGHT-80, BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 });
-    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*40, FLOOR_HEIGHT-200, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
-    addBlockToLevel((Rectangle){ BlockSprite.sprite.width*45, FLOOR_HEIGHT-320, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
+    LevelBlockAdd((Rectangle){ BlockSprite.sprite.width*45, floorHeight-80, BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 });
+    LevelBlockAdd((Rectangle){ BlockSprite.sprite.width*40, floorHeight-200, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
+    LevelBlockAdd((Rectangle){ BlockSprite.sprite.width*45, floorHeight-320, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
 
     TraceLog(LOG_INFO, "Level loaded.");
 }
 
 void LevelInitialize() {
 
-    ResetGameState();
+    GameStateReset();
     STATE->mode = MODE_IN_LEVEL;
 
     LinkedListRemoveAll(&LEVEL_LIST_HEAD);
     LevelPlayerInitialize(playersStartingPosition);
     levelLoad();
 
-    SyncEditor();
+    EditorSync();
 
     TraceLog(LOG_INFO, "Level initialized.");
-}
-
-void LevelBlockCheckAndAdd(Vector2 pos) {
-
-    ListNode *node = LEVEL_LIST_HEAD;
-
-    while (node != 0) {
-        
-        LevelEntity *possibleBlock = (LevelEntity *)node->item;
-
-        if (possibleBlock->components & LEVEL_IS_SCENARIO &&
-                CheckCollisionPointRec(pos, possibleBlock->hitbox)) {
-
-            return;
-        }
-
-        node = node->next;
-    }
-
-    addBlockToLevel((Rectangle){ pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height });
 }
 
 Vector2 LevelGetPlayerStartingPosition() {
@@ -131,7 +93,8 @@ LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
             entity->hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&
 
             // If y is RIGHT above the possible ground
-            abs(possibleGround->hitbox.y - entitysFoot) <= ON_THE_GROUND_Y_TOLERANCE) {
+            abs((int) (possibleGround->hitbox.y - entitysFoot)) <= 
+                ON_THE_GROUND_Y_TOLERANCE) {
                 
                 return possibleGround;
             } 

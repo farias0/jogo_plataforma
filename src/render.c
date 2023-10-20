@@ -1,15 +1,18 @@
 #include <raylib.h>
 #include <stdio.h>
 
-#include "global.h"
+#include "core.h"
 #include "assets.h"
 #include "input.h"
-#include "entities/level.h"
+#include "level/level.h"
 #include "overworld.h"
-#include "entities/camera.h"
+#include "camera.h"
 
+#pragma GCC diagnostic push 
+#pragma GCC diagnostic ignored "-Wunused-parameter" // Ignore warnings
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
+#pragma GCC diagnostic pop
 
 
 #define FIRST_LAYER 0
@@ -25,7 +28,7 @@ int editorButtonsRendered = 0;
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
 
-    Dimensions dimensions = GetScaledDimensions(sprite);
+    Dimensions dimensions = SpriteScaledDimensions(sprite);
 
 
     // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
@@ -42,7 +45,7 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
                     pos,
                     sprite.rotation,
                     sprite.scale,
-                    WHITE);    
+                    tint);    
         
         return;
     }
@@ -66,7 +69,7 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
                     destination,
                     (Vector2){ 0, 0 },
                     sprite.rotation,
-                    WHITE);    
+                    tint);    
 }
 
 // Draws sprite in the background, with effects applied.
@@ -161,7 +164,7 @@ static void renderEntities() {
 
     for (int layer = FIRST_LAYER; layer <= LAST_LAYER; layer++) {
 
-        ListNode *node = GetListHead();
+        ListNode *node = GetEntityListHead();
 
         while (node != 0) {
 
@@ -217,7 +220,7 @@ skip_debug_grid:
 
     if (STATE->showDebugHUD) {
 
-        ListNode *listHead = GetListHead();
+        ListNode *listHead = GetEntityListHead();
         if (listHead) {
             char entity_count[50];
             sprintf(entity_count, "%d entities", LinkedListCountNodes(listHead));
@@ -250,7 +253,7 @@ static void renderButton(Rectangle editorWindow, EditorItem *item) {
         &isItemSelected
     );
     
-    if (isItemSelected) ClickOnEditorItem(item);
+    if (isItemSelected) InputEditorItemClick(item);
 
     editorButtonsRendered++;
 }
@@ -266,10 +269,10 @@ static void renderEditor() {
     GuiGroupBox(editorWindow, "Editor");
 
     editorButtonsRendered = 0;
-    EditorItem *currentItem = EDITOR_ITEMS_HEAD;
-    while (currentItem != 0) {
-        renderButton(editorWindow, currentItem);
-        currentItem = currentItem->next;
+    ListNode *node = EDITOR_ITEMS_HEAD;
+    while (node != 0) {
+        renderButton(editorWindow, (EditorItem *) node->item);
+        node = node->next;
     }
 }
 

@@ -1,15 +1,15 @@
 #include "math.h"
 
-#include "global.h"
+#include "core.h"
 #include "overworld.h"
-#include "entities/camera.h"
-#include "entities/level.h"
+#include "camera.h"
+#include "level/level.h"
 #include "editor.h"
 
 
 GameState *STATE = 0;
 
-void InitializeGameState() {
+void GameStateInitialize() {
     STATE = MemAlloc(sizeof(GameState));
 
     STATE->isEditorEnabled = false;
@@ -21,7 +21,7 @@ void InitializeGameState() {
     TraceLog(LOG_INFO, "Game state initialized.");
 }
 
-void ResetGameState() {
+void GameStateReset() {
     STATE->isPaused = false;
     STATE->isPlayerDead = false;
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
@@ -30,7 +30,7 @@ void ResetGameState() {
     TraceLog(LOG_INFO, "Game state reset.");
 }
 
-void ToggleGameMode() {
+void GameModeToggle() {
 
     switch (STATE->mode)
     {
@@ -47,7 +47,7 @@ void ToggleGameMode() {
     }
 }
 
-void ToggleInLevelState() {
+void StateInLevelToggle() {
     if (STATE->isPaused) {
 
         if (STATE->isPlayerDead) {
@@ -61,7 +61,7 @@ void ToggleInLevelState() {
     }
 }
 
-void ToggleEditorEnabled() {
+void EditorEnabledToggle() {
     STATE->isEditorEnabled = !STATE->isEditorEnabled;
 
     if (STATE->isEditorEnabled) {
@@ -73,7 +73,7 @@ void ToggleEditorEnabled() {
     }
 }
 
-ListNode *GetListHead() {
+ListNode *GetEntityListHead() {
 
     if (STATE->mode == MODE_IN_LEVEL) return LEVEL_LIST_HEAD;
     else if (STATE->mode == MODE_OVERWORLD) return OW_LIST_HEAD;
@@ -85,20 +85,6 @@ bool IsInPlayArea(Vector2 pos) {
             pos.x <= SCREEN_WIDTH &&
             pos.y >= 0 &&
             pos.y <= SCREEN_HEIGHT;
-}
-
-Vector2 PosInScreenToScene(Vector2 pos) {
-    return (Vector2){
-        pos.x + CAMERA->pos.x,
-        pos.y + CAMERA->pos.y
-    };
-}
-
-Vector2 PosInSceneToScreen(Vector2 pos) {
-    return (Vector2){
-        pos.x - CAMERA->pos.x,
-        pos.y - CAMERA->pos.y
-    };
 }
 
 float SnapToGrid(float value, float length) {

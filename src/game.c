@@ -1,11 +1,9 @@
 #include <raylib.h>
 #include <stdio.h>
 
-#include "global.h"
-#include "entities/player.h"
-#include "entities/enemy.h"
-#include "entities/level.h"
-#include "entities/camera.h"
+#include "core.h"
+#include "level/level.h"
+#include "camera.h"
 #include "render.h"
 #include "input.h"
 #include "assets.h"
@@ -18,8 +16,8 @@ void updateWindowTitle() {
     SetWindowTitle(title);
 }
 
-int main(int argc, char **argv)
-{
+int main() {
+
     SetTraceLogLevel(LOG_DEBUG);
 
     // debug
@@ -31,9 +29,9 @@ int main(int argc, char **argv)
     
     SetTargetFPS(60);
 
-    InitializeAssets();
+    AssetsInitialize();
 
-    InitializeGameState();
+    GameStateInitialize();
 
     CameraInitialize();
 
@@ -48,7 +46,7 @@ int main(int argc, char **argv)
                 collision checking, which is done in the tick functions, might break. 
             */
 
-            HandleInput();
+            InputHandle();
             if (STATE->isPaused) goto render;
 
             if (STATE->mode == MODE_IN_LEVEL) LevelTick();

@@ -3,8 +3,6 @@
 #include "string.h"
 
 #define DEFAULT_SPRITE_SCALE 2
-#define PLAYER_SPRITE_SCALE 2
-#define ENEMY_SPRITE_SCALE 2
 #define FLOOR_TILE_SIZE 1
 
 /*
@@ -31,72 +29,51 @@ Sprite NightclubSprite;
 Sprite BGHouseSprite;
 
 
-void InitializeAssets() {
+static inline Sprite defaultSprite(Texture2D texture) {
+    return (Sprite) {
+        texture,
+        DEFAULT_SPRITE_SCALE,
+        0
+    };
+}
+
+void AssetsInitialize() {
 
     // Editor
-    EraserSprite = (Sprite){
-        LoadTexture("../assets/eraser_1.png"),
-        DEFAULT_SPRITE_SCALE
-    };
+    EraserSprite = defaultSprite(LoadTexture("../assets/eraser_1.png"));
 
     // In Level
-    PlayerSprite = (Sprite){
-        LoadTexture("../assets/player_default_1.png"),
-        PLAYER_SPRITE_SCALE
-    };
-    EnemySprite = (Sprite){
-        LoadTexture("../assets/enemy_default_1.png"),
-        ENEMY_SPRITE_SCALE
-    };
+    PlayerSprite = defaultSprite(LoadTexture("../assets/player_default_1.png"));
+    EnemySprite = defaultSprite(LoadTexture("../assets/enemy_default_1.png"));
     BlockSprite = (Sprite){
         LoadTexture("../assets/floor_tile_1.png"),
-        FLOOR_TILE_SIZE
+        FLOOR_TILE_SIZE,
+        0
     };
 
     // Overworld
-    OverworldCursorSprite = (Sprite){
-        LoadTexture("../assets/cursor_default_1.png"),
-        DEFAULT_SPRITE_SCALE
-    };
-    LevelDotSprite = (Sprite){
-        LoadTexture("../assets/level_dot_1.png"),
-        DEFAULT_SPRITE_SCALE
-    };
-    PathTileJoinSprite = (Sprite){
-        LoadTexture("../assets/path_tile_join_vertical.png"),
-        DEFAULT_SPRITE_SCALE
-    };
-    PathTileStraightSprite = (Sprite){
-        LoadTexture("../assets/path_tile_straight_vertical.png"),
-        DEFAULT_SPRITE_SCALE
-    };
-    PathTileInLSprite = (Sprite){
-        LoadTexture("../assets/path_tile_L.png"),
-        DEFAULT_SPRITE_SCALE
-    };
+    OverworldCursorSprite = defaultSprite(LoadTexture("../assets/cursor_default_1.png"));
+    LevelDotSprite = defaultSprite(LoadTexture("../assets/level_dot_1.png"));
+    PathTileJoinSprite = defaultSprite(LoadTexture("../assets/path_tile_join_vertical.png"));
+    PathTileStraightSprite = defaultSprite(LoadTexture("../assets/path_tile_straight_vertical.png"));
+    PathTileInLSprite = defaultSprite(LoadTexture("../assets/path_tile_L.png"));
 
     // Background
-    NightclubSprite = (Sprite){
-        LoadTexture("../assets/nightclub_2.png"),
-        DEFAULT_SPRITE_SCALE
-    };
-    BGHouseSprite = (Sprite){
-        LoadTexture("../assets/bg_house_1.png"),
-        DEFAULT_SPRITE_SCALE
-    };
+    NightclubSprite = defaultSprite(LoadTexture("../assets/nightclub_2.png"));
+    BGHouseSprite = defaultSprite(LoadTexture("../assets/bg_house_1.png"));
 
 
     TraceLog(LOG_INFO, "Assets initialized.");
 }
 
-Dimensions GetScaledDimensions(Sprite s) {
+Dimensions SpriteScaledDimensions(Sprite s) {
     return (Dimensions) {
         s.sprite.width * s.scale,
         s.sprite.height * s.scale
     };
 }
 
-void RotateSprite(Sprite *sprite, int degrees) {
+void SpriteRotate(Sprite *sprite, int degrees) {
     sprite->rotation += degrees;
     
     if (sprite->rotation >= 360 || sprite->rotation < 0) {
@@ -106,8 +83,8 @@ void RotateSprite(Sprite *sprite, int degrees) {
     TraceLog(LOG_TRACE, "Rotated sprite in %d degrees. Now it's %d degrees.", degrees, sprite->rotation);
 }
 
-Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin) {
-    Dimensions dimensions = GetScaledDimensions(sprite);
+Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin) {
+    Dimensions dimensions = SpriteScaledDimensions(sprite);
     return (Rectangle) {
         origin.x,
         origin.y,
@@ -116,8 +93,8 @@ Rectangle GetSpritesHitboxFromEdge(Sprite sprite, Vector2 origin) {
     };
 }
 
-Rectangle GetSpritesHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
-    Dimensions dimensions = GetScaledDimensions(sprite);
+Rectangle SpriteHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
+    Dimensions dimensions = SpriteScaledDimensions(sprite);
     return (Rectangle) {
         middlePoint.x - (dimensions.width / 2),
         middlePoint.y - (dimensions.height / 2),

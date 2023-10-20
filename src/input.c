@@ -1,11 +1,10 @@
 #include <raylib.h>
 
 #include "input.h"
-#include "global.h"
-#include "entities/level.h"
-#include "entities/enemy.h"
+#include "core.h"
+#include "level/level.h"
 #include "overworld.h"
-#include "entities/camera.h"
+#include "camera.h"
 
 
 #define CAMERA_SPEED 8.0f;
@@ -17,7 +16,7 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_BACKSPACE))   { OverworldInitialize(); return; }
 
-    if      (IsKeyPressed(KEY_ENTER))       { ToggleInLevelState(); return; }
+    if      (IsKeyPressed(KEY_ENTER))       { StateInLevelToggle(); return; }
 
 
     if (STATE->isPlayerDead) return;
@@ -45,7 +44,7 @@ void handleOverworldInput() {
 
 void handleEditorInput() {
 
-    if      (IsKeyPressed(KEY_F1))           { ToggleEditorEnabled(); return; }
+    if      (IsKeyPressed(KEY_F1))           { EditorEnabledToggle(); return; }
 
     // Debug
     if      (IsKeyPressed(KEY_F2))          STATE->showDebugHUD = !STATE->showDebugHUD;
@@ -89,7 +88,7 @@ void handleCameraInput() {
     if (IsKeyDown(KEY_S)) CAMERA->pos.y += CAMERA_SPEED;
 }
 
-void HandleInput() {
+void InputHandle() {
 
     handleEditorInput();
 
@@ -104,7 +103,7 @@ void HandleInput() {
     handleCameraInput(); // debug
 }
 
-void ClickOnEditorItem(EditorItem *item) {
+void InputEditorItemClick(EditorItem *item) {
 
     STATE->editorSelectedItem = item;
 }

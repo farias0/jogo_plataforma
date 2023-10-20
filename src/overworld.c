@@ -3,9 +3,9 @@
 #include "math.h"
 
 #include "overworld.h"
-#include "global.h"
+#include "core.h"
 #include "assets.h"
-#include "entities/camera.h"
+#include "camera.h"
 
 
 typedef struct CursorState {
@@ -35,7 +35,7 @@ static Rectangle getGridSquare(OverworldEntity *entity) {
 // Updates the position for the cursor according to the tile under it
 static void updateCursorPosition() {
 
-    Dimensions cursorDimensions = GetScaledDimensions(OverworldCursorSprite);
+    Dimensions cursorDimensions = SpriteScaledDimensions(OverworldCursorSprite);
 
     OW_CURSOR->gridPos.x = CURSOR_STATE.tileUnder->gridPos.x;
 
@@ -82,17 +82,17 @@ static OverworldEntity *addTileToOverworld(Vector2 pos, OverworldTileType type, 
     case OW_STRAIGHT_PATH:
         newTile->components = OW_IS_PATH;
         newTile->sprite = PathTileStraightSprite;
-        RotateSprite(&newTile->sprite, degrees);
+        SpriteRotate(&newTile->sprite, degrees);
         break;
     case OW_JOIN_PATH:
         newTile->components = OW_IS_PATH;
         newTile->sprite = PathTileJoinSprite;
-        RotateSprite(&newTile->sprite, degrees);
+        SpriteRotate(&newTile->sprite, degrees);
         break;
     case OW_PATH_IN_L:
         newTile->components = OW_IS_PATH;
         newTile->sprite = PathTileInLSprite;
-        RotateSprite(&newTile->sprite, degrees);
+        SpriteRotate(&newTile->sprite, degrees);
         break;
     default:
         TraceLog(LOG_ERROR, "Could not find sprite for overworld tile type %d.", type);
@@ -133,7 +133,7 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
 static void overworldLoad() {
 
     // ATTENTION: Using dot sprite dimension to all tilings
-    Dimensions tileDimension = GetScaledDimensions(LevelDotSprite);
+    Dimensions tileDimension = SpriteScaledDimensions(LevelDotSprite);
 
     float dotX = SCREEN_WIDTH/2;
     float dotY = SCREEN_HEIGHT/2;
@@ -142,16 +142,16 @@ static void overworldLoad() {
     OverworldEntity *dot1    = addTileToOverworld    ((Vector2){ dotX, dotY },                               OW_LEVEL_DOT,      0);
 
     // Path to the right
-    OverworldEntity *path1   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     OW_JOIN_PATH,      270);
-    OverworldEntity *path2   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 2, dotY },     OW_STRAIGHT_PATH,  90);
-    OverworldEntity *path3   = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     OW_JOIN_PATH,      90);
-    OverworldEntity *dot2    = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     OW_LEVEL_DOT,      0);
+    addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     OW_JOIN_PATH,      270);
+    addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 2, dotY },     OW_STRAIGHT_PATH,  90);
+    addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     OW_JOIN_PATH,      90);
+    addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     OW_LEVEL_DOT,      0);
 
     // Path up
-    OverworldEntity *path4   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height },      OW_JOIN_PATH,      180);
-    OverworldEntity *path5   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 2},   OW_STRAIGHT_PATH,  0);
-    OverworldEntity *path6   = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 3},   OW_JOIN_PATH,      0);
-    OverworldEntity *dot3    = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
+    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height },      OW_JOIN_PATH,      180);
+    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 2},   OW_STRAIGHT_PATH,  0);
+    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 3},   OW_JOIN_PATH,      0);
+    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
 
 
     CURSOR_STATE.tileUnder = dot1;
@@ -161,7 +161,7 @@ static void overworldLoad() {
 
 void OverworldInitialize() {
 
-    ResetGameState();
+    GameStateReset();
     STATE->mode = MODE_OVERWORLD;
 
     LinkedListRemoveAll(&OW_LIST_HEAD);
@@ -170,7 +170,7 @@ void OverworldInitialize() {
     overworldLoad();
     updateCursorPosition();
 
-    SyncEditor();
+    EditorSync();
 
     TraceLog(LOG_INFO, "Overworld initialized.");
 }
@@ -262,7 +262,6 @@ next_entity:
 
 void OverworldTileAddOrInteract(Vector2 pos) {
 
-    Dimensions testDimensions = GetScaledDimensions(PathTileStraightSprite);
     Rectangle testHitbox = (Rectangle){ SnapToGrid(pos.x, OW_GRID.width),
                                     SnapToGrid(pos.y, OW_GRID.height),
                                     OW_GRID.width,
@@ -285,7 +284,7 @@ void OverworldTileAddOrInteract(Vector2 pos) {
             return;
         }
 
-        RotateSprite(&entity->sprite, 90);
+        SpriteRotate(&entity->sprite, 90);
         TraceLog(LOG_DEBUG, "Rotated tile component=%d, x=%.1f, y=%.1f",
                 entity->components, entity->gridPos.x, entity->gridPos.y);
         return;

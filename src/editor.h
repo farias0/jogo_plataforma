@@ -3,7 +3,9 @@
 
 
 #include <raylib.h>
+
 #include "assets.h"
+#include "linked_list.h"
 
 
 typedef enum { 
@@ -33,11 +35,11 @@ typedef struct EditorItem {
 
 
 // The head of the linked list of all the loaded editor itens
-extern EditorItem *EDITOR_ITEMS_HEAD;
+extern ListNode *EDITOR_ITEMS_HEAD;
 
 // Destroy any existing editor itens and then loads the items
 // for the current game mode
-void SyncEditor();
+void EditorSync();
 
 
 #endif // _EDITOR_H_INCLUDED_
