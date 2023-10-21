@@ -85,6 +85,13 @@ void LevelEnemyTick(ListNode *enemyNode) {
             enemy->hitbox.y += ENEMY_FALL_RATE;
         }
 
+        if  (enemy->hitbox.y + enemy->hitbox.height > FLOOR_DEATH_HEIGHT) {
+
+            TraceLog(LOG_DEBUG, "Enemy fell off level (x=%.1f, y=%.1f).", enemy->hitbox.x, enemy->hitbox.y);
+            LinkedListRemove(&LEVEL_LIST_HEAD, enemyNode);
+            return;
+        }
+
         return;
     }
 
@@ -98,13 +105,5 @@ void LevelEnemyTick(ListNode *enemyNode) {
         // Turn around
         enemy->hitbox.x = x_back;
         enemy->isFacingRight = !(enemy->isFacingRight);
-    }
-
-
-    // Enemy fell off level
-    if  (enemy->hitbox.y > FLOOR_DEATH_HEIGHT) {
-                
-        LinkedListRemove(&LEVEL_LIST_HEAD, enemyNode);
-        return;
     }
 }
