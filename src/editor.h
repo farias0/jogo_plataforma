@@ -43,7 +43,7 @@ typedef enum {
 typedef struct EditorControlItem {
     EditorControlType type;
 
-    void (*handler)(Vector2);
+    void (*handler)();
 
     char *label;
 } EditorControlItem;

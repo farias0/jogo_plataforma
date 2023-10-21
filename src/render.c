@@ -280,8 +280,18 @@ static void renderEditorControl() {
 
         Rectangle buttonRect = EditorControlButtonRect(editorButtonsRendered);
 
-        GuiButton(buttonRect, item->label);
+        if (GuiButton(buttonRect, item->label)) {
 
+            if (!item->handler) {
+                TraceLog(LOG_WARNING, "No handler to editor control button #%d, '%s'.",
+                            editorButtonsRendered, item->label);
+                goto next_button;
+            }
+
+            item->handler();
+        }
+
+next_button:
         editorButtonsRendered++;
 
         node = node->next;

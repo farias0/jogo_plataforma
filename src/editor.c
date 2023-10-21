@@ -72,7 +72,7 @@ void loadInLevelEditor() {
         loadEditorEntityItem(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
     loadEditorEntityItem(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
-    loadEditorControlItem(EDITOR_CONTROL_SAVE, "Save", 0);
+    loadEditorControlItem(EDITOR_CONTROL_SAVE, "Save", &LevelSave);
 
     TraceLog(LOG_DEBUG, "Editor loaded in level itens.");
 }
