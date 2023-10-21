@@ -68,7 +68,7 @@ EditorControlItem *loadEditorControlItem(EditorControlType type, char *label, vo
 void loadInLevelEditor() {
 
     loadEditorEntityItem(EDITOR_ENTITY_ERASER, EraserSprite, &LevelEntityRemoveAt, EDITOR_INTERACTION_HOLD);
-    STATE->editorSelectedItem =
+    STATE->editorSelectedEntity =
         loadEditorEntityItem(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
     loadEditorEntityItem(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
@@ -80,7 +80,7 @@ void loadInLevelEditor() {
 void loadOverworldEditor() {
 
     loadEditorEntityItem(EDITOR_ENTITY_ERASER, EraserSprite, &OverworldTileRemoveAt, EDITOR_INTERACTION_CLICK);
-    STATE->editorSelectedItem =
+    STATE->editorSelectedEntity =
         loadEditorEntityItem(EDITOR_ENTITY_LEVEL_DOT, LevelDotSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     loadEditorEntityItem(EDITOR_ENTITY_PATH_JOIN, PathTileJoinSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     loadEditorEntityItem(EDITOR_ENTITY_STRAIGHT, PathTileStraightSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);

@@ -60,21 +60,21 @@ void handleEditorInput() {
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         // TODO use a timer to not keep checking it every frame
 
-        if (STATE->editorSelectedItem == 0) return;
+        if (STATE->editorSelectedEntity == 0) return;
 
-        if (STATE->editorSelectedItem->handler == 0) {
+        if (STATE->editorSelectedEntity->handler == 0) {
             if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-                TraceLog(LOG_WARNING, "No code to handle selected editor item.");
+                TraceLog(LOG_WARNING, "No code to handle selected editor entity.");
             return;
         }
 
         // so holding doesn't keep activating the item
-        if (STATE->editorSelectedItem->interaction == EDITOR_INTERACTION_CLICK &&
+        if (STATE->editorSelectedEntity->interaction == EDITOR_INTERACTION_CLICK &&
             !IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 return;
 
 
-        STATE->editorSelectedItem->handler(
+        STATE->editorSelectedEntity->handler(
             PosInScreenToScene(mousePosInScreen));
     }
 }
@@ -105,5 +105,5 @@ void InputHandle() {
 
 void InputEditorEntitySelect(EditorEntityItem *item) {
 
-    STATE->editorSelectedItem = item;
+    STATE->editorSelectedEntity = item;
 }

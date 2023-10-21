@@ -28,7 +28,7 @@ typedef struct GameState {
 
     PlayerMovementSpeed playerMovementSpeed;
 
-    EditorEntityItem *editorSelectedItem;
+    EditorEntityItem *editorSelectedEntity;
     bool isEditorEnabled;
 
     bool showDebugHUD;

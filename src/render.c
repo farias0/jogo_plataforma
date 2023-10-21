@@ -247,7 +247,7 @@ static void renderEditorEntities() {
 
         EditorEntityItem *item = (EditorEntityItem *) node->item;
 
-        bool isItemSelected = STATE->editorSelectedItem == item;
+        bool isItemSelected = STATE->editorSelectedEntity == item;
 
         Rectangle buttonRect = EditorEntityButtonRect(editorButtonsRendered);
 
