@@ -18,13 +18,6 @@
 #define FIRST_LAYER 0
 #define LAST_LAYER  1
 
-#define EDITOR_BUTTON_SIZE 80
-#define EDITOR_BUTTON_SPACING 12
-#define EDITOR_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (EDITOR_BUTTON_SIZE * 2) - EDITOR_BUTTON_SPACING) / 2
-
-
-// How many editor buttons were rendered this frame.
-int editorButtonsRendered = 0;
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
 
@@ -236,42 +229,33 @@ skip_debug_grid:
     }
 }
 
-static void renderButton(Rectangle editorWindow, EditorItem *item) {
-    
-    float itemX = editorWindow.x + EDITOR_BUTTON_WALL_SPACING;
-    if (editorButtonsRendered % 2) itemX += EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING;
-
-    float itemY = editorWindow.y + EDITOR_BUTTON_WALL_SPACING;
-    itemY += (EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING) * (editorButtonsRendered / 2);
-    
-    bool isItemSelected = STATE->editorSelectedItem == item;
-
-    GuiToggleSprite(
-        (Rectangle){ itemX, itemY, EDITOR_BUTTON_SIZE, EDITOR_BUTTON_SIZE },
-        item->sprite, 
-        (Vector2){itemX, itemY},
-        &isItemSelected
-    );
-    
-    if (isItemSelected) InputEditorItemClick(item);
-
-    editorButtonsRendered++;
-}
-
 static void renderEditor() {
 
-    Rectangle editorWindow = { SCREEN_WIDTH, 5, EDITOR_BAR_WIDTH, SCREEN_HEIGHT };
-    // Currently the color is transparent because it's fun,
-    // but in the future for game design reasons it will have to be solid.
-    Color backgroundColor = (Color){ 150, 150, 150, 40 };
+    DrawRectangle(EDITOR_RECT.x, EDITOR_RECT.y, EDITOR_RECT.width, EDITOR_RECT.height, EDITOR_BG_COLOR);
+    GuiGroupBox(EDITOR_RECT, EDITOR_LABEL);
 
-    DrawRectangle( editorWindow.x, editorWindow.y, editorWindow.width, editorWindow.height, backgroundColor );
-    GuiGroupBox(editorWindow, "Editor");
-
-    editorButtonsRendered = 0;
+    int editorButtonsRendered = 0;
     ListNode *node = EDITOR_ITEMS_HEAD;
+
     while (node != 0) {
-        renderButton(editorWindow, (EditorItem *) node->item);
+
+        EditorItem *item = (EditorItem *) node->item;
+
+        bool isItemSelected = STATE->editorSelectedItem == item;
+
+        Rectangle buttonRect = EditorButtonGetRect(editorButtonsRendered);
+
+        GuiToggleSprite(
+            buttonRect,
+            item->sprite, 
+            (Vector2){ buttonRect.x, buttonRect.y },
+            &isItemSelected
+        );
+
+        if (isItemSelected) InputEditorItemClick(item);
+
+        editorButtonsRendered++;
+
         node = node->next;
     }
 }
