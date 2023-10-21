@@ -49,12 +49,14 @@ typedef struct EditorControlItem {
 } EditorControlItem;
 
 
-extern const Rectangle EDITOR_RECT;
+// The rectangle defining the entity area of the editor in the screen
+extern const Rectangle EDITOR_ENTITIES_AREA;
 
+// The rectangle defining the control area of the editor in the screen
+extern const Rectangle EDITOR_CONTROL_AREA;
+
+// The background color of the editor
 extern const Color EDITOR_BG_COLOR;
-
-extern const char* EDITOR_LABEL;
-
 
 // The head of the linked list of all the loaded editor entity itens
 extern ListNode *EDITOR_ENTITIES_HEAD;
@@ -67,9 +69,12 @@ extern ListNode *EDITOR_CONTROL_HEAD;
 // for the current game mode
 void EditorSync();
 
-// Calculates and returns an editor buttons' coordinates,
+// Calculates and returns an editor entity buttons' coordinates,
 // alongside its dimensions
-Rectangle EditorButtonGetRect(int buttonNumber);
+Rectangle EditorEntityButtonRect(int buttonNumber);
 
+// Calculates and returns an editor entity buttons' coordinates,
+// alongside its dimensions
+Rectangle EditorControlButtonRect(int buttonNumber);
 
 #endif // _EDITOR_H_INCLUDED_

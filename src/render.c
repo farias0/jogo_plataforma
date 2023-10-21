@@ -229,10 +229,13 @@ skip_debug_grid:
     }
 }
 
-static void renderEditor() {
+static void renderEditorEntities() {
 
-    DrawRectangle(EDITOR_RECT.x, EDITOR_RECT.y, EDITOR_RECT.width, EDITOR_RECT.height, EDITOR_BG_COLOR);
-    GuiGroupBox(EDITOR_RECT, EDITOR_LABEL);
+    DrawRectangle(EDITOR_ENTITIES_AREA.x,
+                    EDITOR_ENTITIES_AREA.y,
+                    EDITOR_ENTITIES_AREA.width,
+                    EDITOR_ENTITIES_AREA.height,
+                    EDITOR_BG_COLOR);
 
     int editorButtonsRendered = 0;
     ListNode *node = EDITOR_ENTITIES_HEAD;
@@ -243,7 +246,7 @@ static void renderEditor() {
 
         bool isItemSelected = STATE->editorSelectedItem == item;
 
-        Rectangle buttonRect = EditorButtonGetRect(editorButtonsRendered);
+        Rectangle buttonRect = EditorEntityButtonRect(editorButtonsRendered);
 
         GuiToggleSprite(
             buttonRect,
@@ -260,6 +263,50 @@ static void renderEditor() {
     }
 }
 
+static void renderEditorControl() {
+
+    DrawRectangle(EDITOR_CONTROL_AREA.x,
+                    EDITOR_CONTROL_AREA.y,
+                    EDITOR_CONTROL_AREA.width,
+                    EDITOR_CONTROL_AREA.height,
+                    EDITOR_BG_COLOR);
+
+    int editorButtonsRendered = 0;
+    ListNode *node = EDITOR_CONTROL_HEAD;
+
+    while (node != 0) {
+
+        EditorControlItem *item = (EditorControlItem *) node->item;
+
+        Rectangle buttonRect = EditorControlButtonRect(editorButtonsRendered);
+
+        GuiButton(buttonRect, item->label);
+
+        editorButtonsRendered++;
+
+        node = node->next;
+    }
+}
+
+static void renderEditor() {
+
+    DrawLine(SCREEN_WIDTH,
+                0,
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                RAYWHITE);
+
+    renderEditorEntities();
+
+    DrawLine(SCREEN_WIDTH,
+                EDITOR_ENTITIES_AREA.height,
+                SCREEN_WIDTH + EDITOR_BAR_WIDTH,
+                EDITOR_ENTITIES_AREA.height,
+                RAYWHITE); // Separator
+
+    renderEditorControl();
+}
+
 void Render() {
     ClearBackground(BLACK);
 
@@ -267,7 +314,8 @@ void Render() {
 
     renderEntities();
 
-    renderEditor();
+    if (STATE->isEditorEnabled)
+        renderEditor();
 
     renderHUD();
 }

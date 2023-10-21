@@ -6,19 +6,33 @@
 #include "overworld.h"
 #include "linked_list.h"
 
-#define EDITOR_BUTTON_SIZE 80
-#define EDITOR_BUTTON_SPACING 12
-#define EDITOR_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (EDITOR_BUTTON_SIZE * 2) - EDITOR_BUTTON_SPACING) / 2
+
+#define EDITOR_ENTITIES_HEIGHT      4*SCREEN_HEIGHT/5
+
+#define ENTITY_BUTTON_SIZE          80
+#define ENTITY_BUTTON_SPACING       12
+#define ENTITY_BUTTON_WALL_SPACING  (EDITOR_BAR_WIDTH - (ENTITY_BUTTON_SIZE * 2) - ENTITY_BUTTON_SPACING) / 2
+
+#define CONTROL_BUTTON_HEIGHT       40
+#define CONTROL_BUTTON_WIDTH        ENTITY_BUTTON_SIZE
+#define CONTROL_BUTTON_SPACING      ENTITY_BUTTON_SPACING
+#define CONTROL_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (CONTROL_BUTTON_WIDTH * 2) - CONTROL_BUTTON_SPACING) / 2
 
 
 ListNode *EDITOR_ENTITIES_HEAD = 0;
 ListNode *EDITOR_CONTROL_HEAD = 0;
 
-const Rectangle EDITOR_RECT = (Rectangle){ SCREEN_WIDTH, 5, EDITOR_BAR_WIDTH, SCREEN_HEIGHT };
+const Rectangle EDITOR_ENTITIES_AREA = (Rectangle){ SCREEN_WIDTH,
+                                                    0,
+                                                    EDITOR_BAR_WIDTH,
+                                                    EDITOR_ENTITIES_HEIGHT };
 
-const Color EDITOR_BG_COLOR = (Color){ 150, 150, 150, 40 };
+const Rectangle EDITOR_CONTROL_AREA = (Rectangle){ SCREEN_WIDTH,
+                                                    EDITOR_ENTITIES_HEIGHT,
+                                                    EDITOR_BAR_WIDTH,
+                                                    SCREEN_HEIGHT - EDITOR_ENTITIES_HEIGHT };
 
-const char* EDITOR_LABEL = "Editor";
+const Color EDITOR_BG_COLOR = (Color){ 0, 0, 0, 220 };
 
 
 EditorEntityItem *loadEditorEntityItem(
@@ -95,13 +109,24 @@ void EditorSync() {
     }
 }
 
-Rectangle EditorButtonGetRect(int buttonNumber) {
+Rectangle EditorEntityButtonRect(int buttonNumber) {
 
-    float itemX = EDITOR_RECT.x + EDITOR_BUTTON_WALL_SPACING;
-    if (buttonNumber % 2) itemX += EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING;
+    float itemX = EDITOR_ENTITIES_AREA.x + ENTITY_BUTTON_WALL_SPACING;
+    if (buttonNumber % 2) itemX += ENTITY_BUTTON_SIZE + ENTITY_BUTTON_SPACING;
 
-    float itemY = EDITOR_RECT.y + EDITOR_BUTTON_WALL_SPACING;
-    itemY += (EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING) * (buttonNumber / 2);
+    float itemY = EDITOR_ENTITIES_AREA.y + ENTITY_BUTTON_WALL_SPACING;
+    itemY += (ENTITY_BUTTON_SIZE + ENTITY_BUTTON_SPACING) * (buttonNumber / 2);
 
-    return (Rectangle){ itemX, itemY, EDITOR_BUTTON_SIZE, EDITOR_BUTTON_SIZE };
+    return (Rectangle){ itemX, itemY, ENTITY_BUTTON_SIZE, ENTITY_BUTTON_SIZE };
+}
+
+Rectangle EditorControlButtonRect(int buttonNumber) {
+
+    float itemX = EDITOR_CONTROL_AREA.x + CONTROL_BUTTON_WALL_SPACING;
+    if (buttonNumber % 2) itemX += CONTROL_BUTTON_WIDTH + CONTROL_BUTTON_SPACING;
+
+    float itemY = EDITOR_CONTROL_AREA.y + CONTROL_BUTTON_WALL_SPACING;
+    itemY += (CONTROL_BUTTON_HEIGHT + CONTROL_BUTTON_SPACING) * (buttonNumber / 2);
+
+    return (Rectangle){ itemX, itemY, CONTROL_BUTTON_WIDTH, CONTROL_BUTTON_HEIGHT };
 }
