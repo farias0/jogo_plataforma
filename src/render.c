@@ -114,6 +114,10 @@ static void renderBackground() {
     }
 
     else if (STATE->mode == MODE_IN_LEVEL) {
+        Vector2 levelBottom = PosInSceneToScreen((Vector2){ 0, FLOOR_DEATH_HEIGHT });
+        if (levelBottom.y >= 0 && levelBottom.y <= SCREEN_HEIGHT)
+            DrawRectangle(0, levelBottom.y, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 39, 39, 54, 255 });
+
         if (!STATE->showBackground) return; 
 
         drawInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);

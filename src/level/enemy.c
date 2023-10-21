@@ -102,7 +102,7 @@ void LevelEnemyTick(ListNode *enemyNode) {
 
 
     // Enemy fell off level
-    if  (enemy->hitbox.y > FLOOR_DEATH_HEIGHT) {
+    if  (enemy->hitbox.y + enemy->hitbox.height > FLOOR_DEATH_HEIGHT) {
                 
         LinkedListRemove(&LEVEL_LIST_HEAD, enemyNode);
         return;

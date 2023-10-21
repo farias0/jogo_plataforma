@@ -59,7 +59,7 @@ static void die() {
     STATE->isPlayerDead = true;
     STATE->isPaused = true;
 
-    TraceLog(LOG_INFO, "You Died.\n\tx=%f, y=%f, isJumping=%d",
+    TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isJumping=%d",
                 LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y, isJumping);
 }
 
@@ -164,7 +164,7 @@ void LevelPlayerTick() {
 
     // Collision checking
     {
-        if (LEVEL_PLAYER->hitbox.y > FLOOR_DEATH_HEIGHT) {
+        if (LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height > FLOOR_DEATH_HEIGHT) {
             die();
             return;
         }
