@@ -235,11 +235,11 @@ static void renderEditor() {
     GuiGroupBox(EDITOR_RECT, EDITOR_LABEL);
 
     int editorButtonsRendered = 0;
-    ListNode *node = EDITOR_ITEMS_HEAD;
+    ListNode *node = EDITOR_ENTITIES_HEAD;
 
     while (node != 0) {
 
-        EditorItem *item = (EditorItem *) node->item;
+        EditorEntityItem *item = (EditorEntityItem *) node->item;
 
         bool isItemSelected = STATE->editorSelectedItem == item;
 
@@ -252,7 +252,7 @@ static void renderEditor() {
             &isItemSelected
         );
 
-        if (isItemSelected) InputEditorItemClick(item);
+        if (isItemSelected) InputEditorEntitySelect(item);
 
         editorButtonsRendered++;
 

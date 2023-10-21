@@ -69,7 +69,7 @@ void handleEditorInput() {
         }
 
         // so holding doesn't keep activating the item
-        if (STATE->editorSelectedItem->interaction == Click &&
+        if (STATE->editorSelectedItem->interaction == EDITOR_INTERACTION_CLICK &&
             !IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                 return;
 
@@ -103,7 +103,7 @@ void InputHandle() {
     handleCameraInput(); // debug
 }
 
-void InputEditorItemClick(EditorItem *item) {
+void InputEditorEntitySelect(EditorEntityItem *item) {
 
     STATE->editorSelectedItem = item;
 }

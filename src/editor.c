@@ -11,7 +11,8 @@
 #define EDITOR_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (EDITOR_BUTTON_SIZE * 2) - EDITOR_BUTTON_SPACING) / 2
 
 
-ListNode *EDITOR_ITEMS_HEAD = 0;
+ListNode *EDITOR_ENTITIES_HEAD = 0;
+ListNode *EDITOR_CONTROL_HEAD = 0;
 
 const Rectangle EDITOR_RECT = (Rectangle){ SCREEN_WIDTH, 5, EDITOR_BAR_WIDTH, SCREEN_HEIGHT };
 
@@ -20,46 +21,64 @@ const Color EDITOR_BG_COLOR = (Color){ 150, 150, 150, 40 };
 const char* EDITOR_LABEL = "Editor";
 
 
-EditorItem *loadEditorItem(EditorItemType type, Sprite sprite, void (*handler), EditorItemInteraction interaction) {
+EditorEntityItem *loadEditorEntityItem(
+    EditorEntityType type, Sprite sprite, void (*handler), EditorItemInteraction interaction) {
 
-    EditorItem *newItem = MemAlloc(sizeof(EditorItem));
-    newItem->sprite = sprite;
+        EditorEntityItem *newItem = MemAlloc(sizeof(EditorEntityItem));
+        newItem->type = type;
+        newItem->handler = handler;
+        newItem->sprite = sprite;
+        newItem->interaction = interaction;
+
+        ListNode *node = MemAlloc(sizeof(ListNode));
+        node->item = newItem;
+        LinkedListAdd(&EDITOR_ENTITIES_HEAD, node);
+
+        return newItem;
+}
+
+EditorControlItem *loadEditorControlItem(EditorControlType type, char *label, void (*handler)) {
+
+    EditorControlItem *newItem = MemAlloc(sizeof(EditorControlItem));
     newItem->type = type;
     newItem->handler = handler;
-    newItem->interaction = interaction;
+    newItem->label = label;
 
     ListNode *node = MemAlloc(sizeof(ListNode));
     node->item = newItem;
-    LinkedListAdd(&EDITOR_ITEMS_HEAD, node);
+    LinkedListAdd(&EDITOR_CONTROL_HEAD, node);
 
     return newItem;
 }
 
 void loadInLevelEditor() {
 
-    loadEditorItem(Eraser, EraserSprite, &LevelEntityRemoveAt, Hold);
+    loadEditorEntityItem(EDITOR_ENTITY_ERASER, EraserSprite, &LevelEntityRemoveAt, EDITOR_INTERACTION_HOLD);
     STATE->editorSelectedItem =
-        loadEditorItem(Block, BlockSprite, &LevelBlockCheckAndAdd, Hold);
-    loadEditorItem(Enemy, EnemySprite, &LevelEnemyCheckAndAdd, Click);
+        loadEditorEntityItem(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
+    loadEditorEntityItem(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
+
+    loadEditorControlItem(EDITOR_CONTROL_SAVE, "Save", 0);
 
     TraceLog(LOG_DEBUG, "Editor loaded in level itens.");
 }
 
 void loadOverworldEditor() {
 
-    loadEditorItem(Eraser, EraserSprite, &OverworldTileRemoveAt, Click);
+    loadEditorEntityItem(EDITOR_ENTITY_ERASER, EraserSprite, &OverworldTileRemoveAt, EDITOR_INTERACTION_CLICK);
     STATE->editorSelectedItem =
-        loadEditorItem(LevelDot, LevelDotSprite, &OverworldTileAddOrInteract, Click);
-    loadEditorItem(PathJoin, PathTileJoinSprite, &OverworldTileAddOrInteract, Click);
-    loadEditorItem(PathStraight, PathTileStraightSprite, &OverworldTileAddOrInteract, Click);
-    loadEditorItem(PathInL, PathTileInLSprite, &OverworldTileAddOrInteract, Click);
+        loadEditorEntityItem(EDITOR_ENTITY_LEVEL_DOT, LevelDotSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    loadEditorEntityItem(EDITOR_ENTITY_PATH_JOIN, PathTileJoinSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    loadEditorEntityItem(EDITOR_ENTITY_STRAIGHT, PathTileStraightSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    loadEditorEntityItem(EDITOR_ENTITY_PATH_IN_L, PathTileInLSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
 
     TraceLog(LOG_DEBUG, "Editor loaded overworld itens.");
 }
 
 void EditorSync() {
 
-    LinkedListRemoveAll(&EDITOR_ITEMS_HEAD);
+    LinkedListRemoveAll(&EDITOR_ENTITIES_HEAD);
+    LinkedListRemoveAll(&EDITOR_CONTROL_HEAD);
 
     switch (STATE->mode) {
     

@@ -296,13 +296,13 @@ next_entity:
     OverworldTileType typeToAdd;
 
     switch (STATE->editorSelectedItem->type) {
-        case LevelDot:
+        case EDITOR_ENTITY_LEVEL_DOT:
             typeToAdd = OW_LEVEL_DOT; break;
-        case PathStraight:
+        case EDITOR_ENTITY_STRAIGHT:
             typeToAdd = OW_STRAIGHT_PATH; break;
-        case PathJoin:
+        case EDITOR_ENTITY_PATH_JOIN:
             typeToAdd = OW_JOIN_PATH; break;
-        case PathInL:
+        case EDITOR_ENTITY_PATH_IN_L:
             typeToAdd = OW_PATH_IN_L; break;
         default:
             TraceLog(LOG_ERROR,
