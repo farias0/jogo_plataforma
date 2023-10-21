@@ -18,13 +18,6 @@
 #define FIRST_LAYER 0
 #define LAST_LAYER  1
 
-#define EDITOR_BUTTON_SIZE 80
-#define EDITOR_BUTTON_SPACING 12
-#define EDITOR_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (EDITOR_BUTTON_SIZE * 2) - EDITOR_BUTTON_SPACING) / 2
-
-
-// How many editor buttons were rendered this frame.
-int editorButtonsRendered = 0;
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
 
@@ -239,44 +232,92 @@ skip_debug_grid:
     }
 }
 
-static void renderButton(Rectangle editorWindow, EditorItem *item) {
-    
-    float itemX = editorWindow.x + EDITOR_BUTTON_WALL_SPACING;
-    if (editorButtonsRendered % 2) itemX += EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING;
+static void renderEditorEntities() {
 
-    float itemY = editorWindow.y + EDITOR_BUTTON_WALL_SPACING;
-    itemY += (EDITOR_BUTTON_SIZE + EDITOR_BUTTON_SPACING) * (editorButtonsRendered / 2);
-    
-    bool isItemSelected = STATE->editorSelectedItem == item;
+    DrawRectangle(EDITOR_ENTITIES_AREA.x,
+                    EDITOR_ENTITIES_AREA.y,
+                    EDITOR_ENTITIES_AREA.width,
+                    EDITOR_ENTITIES_AREA.height,
+                    EDITOR_BG_COLOR);
 
-    GuiToggleSprite(
-        (Rectangle){ itemX, itemY, EDITOR_BUTTON_SIZE, EDITOR_BUTTON_SIZE },
-        item->sprite, 
-        (Vector2){itemX, itemY},
-        &isItemSelected
-    );
-    
-    if (isItemSelected) InputEditorItemClick(item);
+    int editorButtonsRendered = 0;
+    ListNode *node = EDITOR_ENTITIES_HEAD;
 
-    editorButtonsRendered++;
+    while (node != 0) {
+
+        EditorEntityItem *item = (EditorEntityItem *) node->item;
+
+        bool isItemSelected = STATE->editorSelectedEntity == item;
+
+        Rectangle buttonRect = EditorEntityButtonRect(editorButtonsRendered);
+
+        GuiToggleSprite(
+            buttonRect,
+            item->sprite, 
+            (Vector2){ buttonRect.x, buttonRect.y },
+            &isItemSelected
+        );
+
+        if (isItemSelected) InputEditorEntitySelect(item);
+
+        editorButtonsRendered++;
+
+        node = node->next;
+    }
+}
+
+static void renderEditorControl() {
+
+    DrawRectangle(EDITOR_CONTROL_AREA.x,
+                    EDITOR_CONTROL_AREA.y,
+                    EDITOR_CONTROL_AREA.width,
+                    EDITOR_CONTROL_AREA.height,
+                    EDITOR_BG_COLOR);
+
+    int editorButtonsRendered = 0;
+    ListNode *node = EDITOR_CONTROL_HEAD;
+
+    while (node != 0) {
+
+        EditorControlItem *item = (EditorControlItem *) node->item;
+
+        Rectangle buttonRect = EditorControlButtonRect(editorButtonsRendered);
+
+        if (GuiButton(buttonRect, item->label)) {
+
+            if (!item->handler) {
+                TraceLog(LOG_WARNING, "No handler to editor control button #%d, '%s'.",
+                            editorButtonsRendered, item->label);
+                goto next_button;
+            }
+
+            item->handler();
+        }
+
+next_button:
+        editorButtonsRendered++;
+
+        node = node->next;
+    }
 }
 
 static void renderEditor() {
 
-    Rectangle editorWindow = { SCREEN_WIDTH, 5, EDITOR_BAR_WIDTH, SCREEN_HEIGHT };
-    // Currently the color is transparent because it's fun,
-    // but in the future for game design reasons it will have to be solid.
-    Color backgroundColor = (Color){ 150, 150, 150, 40 };
+    DrawLine(SCREEN_WIDTH,
+                0,
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                RAYWHITE);
 
-    DrawRectangle( editorWindow.x, editorWindow.y, editorWindow.width, editorWindow.height, backgroundColor );
-    GuiGroupBox(editorWindow, "Editor");
+    renderEditorEntities();
 
-    editorButtonsRendered = 0;
-    ListNode *node = EDITOR_ITEMS_HEAD;
-    while (node != 0) {
-        renderButton(editorWindow, (EditorItem *) node->item);
-        node = node->next;
-    }
+    DrawLine(SCREEN_WIDTH,
+                EDITOR_ENTITIES_AREA.height,
+                SCREEN_WIDTH + EDITOR_BAR_WIDTH,
+                EDITOR_ENTITIES_AREA.height,
+                RAYWHITE); // Separator
+
+    renderEditorControl();
 }
 
 void Render() {
@@ -286,7 +327,8 @@ void Render() {
 
     renderEntities();
 
-    renderEditor();
+    if (STATE->isEditorEnabled)
+        renderEditor();
 
     renderHUD();
 }

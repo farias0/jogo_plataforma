@@ -10,7 +10,6 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
-#define EDITOR_BAR_WIDTH        200
 #define SCREEN_WIDTH_W_EDITOR   SCREEN_WIDTH + EDITOR_BAR_WIDTH
 
 #define FLOOR_DEATH_HEIGHT 800 // Below this y in level the player dies
@@ -29,7 +28,7 @@ typedef struct GameState {
 
     PlayerMovementSpeed playerMovementSpeed;
 
-    EditorItem *editorSelectedItem;
+    EditorEntityItem *editorSelectedEntity;
     bool isEditorEnabled;
 
     bool showDebugHUD;

@@ -295,19 +295,19 @@ next_entity:
 
     OverworldTileType typeToAdd;
 
-    switch (STATE->editorSelectedItem->type) {
-        case LevelDot:
+    switch (STATE->editorSelectedEntity->type) {
+        case EDITOR_ENTITY_LEVEL_DOT:
             typeToAdd = OW_LEVEL_DOT; break;
-        case PathStraight:
+        case EDITOR_ENTITY_STRAIGHT:
             typeToAdd = OW_STRAIGHT_PATH; break;
-        case PathJoin:
+        case EDITOR_ENTITY_PATH_JOIN:
             typeToAdd = OW_JOIN_PATH; break;
-        case PathInL:
+        case EDITOR_ENTITY_PATH_IN_L:
             typeToAdd = OW_PATH_IN_L; break;
         default:
             TraceLog(LOG_ERROR,
                         "Couldn't find Overworld Tile Type for Editor Item Type %d.",
-                        STATE->editorSelectedItem->type);
+                        STATE->editorSelectedEntity->type);
             return;
     }
 

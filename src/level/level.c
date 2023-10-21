@@ -136,3 +136,10 @@ void LevelTick() {
 
     CameraTick();
 }
+
+void LevelSave() {
+
+    // TODO
+
+    TraceLog(LOG_INFO, "Level saved.");
+}

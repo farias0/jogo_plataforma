@@ -62,6 +62,9 @@ void LevelEntityRemoveAt(Vector2 pos);
 
 void LevelTick();
 
+// Saves to file the current loaded level's data
+void LevelSave();
+
 
 void LevelPlayerInitialize(Vector2 pos);
 
