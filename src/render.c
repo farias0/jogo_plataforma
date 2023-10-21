@@ -114,9 +114,8 @@ static void renderBackground() {
     }
 
     else if (STATE->mode == MODE_IN_LEVEL) {
-        Vector2 levelBottom = PosInSceneToScreen((Vector2){ 0, FLOOR_DEATH_HEIGHT });
-        if (levelBottom.y >= 0 && levelBottom.y <= SCREEN_HEIGHT)
-            DrawRectangle(0, levelBottom.y, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 62, 35, 71, 255 });
+        Vector2 levelBottomOnScreen = PosInSceneToScreen((Vector2){ 0, FLOOR_DEATH_HEIGHT });
+        DrawRectangle(0, 0, SCREEN_WIDTH, levelBottomOnScreen.y, (Color){ 15, 15, 20, 255 });
 
         if (!STATE->showBackground) return; 
 
