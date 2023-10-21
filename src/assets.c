@@ -59,7 +59,7 @@ void AssetsInitialize() {
     PathTileInLSprite = defaultSprite(LoadTexture("../assets/path_tile_L.png"));
 
     // Background
-    NightclubSprite = defaultSprite(LoadTexture("../assets/nightclub_2.png"));
+    NightclubSprite = defaultSprite(LoadTexture("../assets/nightclub_1.png"));
     BGHouseSprite = defaultSprite(LoadTexture("../assets/bg_house_1.png"));
 
 
