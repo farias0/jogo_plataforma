@@ -7,6 +7,8 @@
 #include "../linked_list.h"
 #include "../core.h"
 #include "../camera.h"
+#include "../files.h"
+
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 #define ON_THE_GROUND_Y_TOLERANCE 5
@@ -126,8 +128,6 @@ void LevelTick() {
 
         LevelEntity *entity = (LevelEntity *)node->item;
 
-        // IMPORTANT: Enemy must tick before player or collision check between
-        // the two _might_ break
         if (entity->components & LEVEL_IS_ENEMY) LevelEnemyTick(node);
         else if (entity->components & LEVEL_IS_PLAYER) LevelPlayerTick();
 
@@ -139,7 +139,24 @@ void LevelTick() {
 
 void LevelSave() {
 
-    // TODO
+    size_t itemsCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
+    LevelEntity data[itemsCount];
+
+    TraceLog(LOG_DEBUG,
+        "Saving level... (struct size=%d, items count=%d)", sizeof(LevelEntity), itemsCount);
+
+    ListNode *node = LEVEL_LIST_HEAD;
+    for (size_t i = 0; i < itemsCount; i++) {
+        data[i] = *((LevelEntity *) node->item);
+        node = node->next;
+    }
+
+    if (!FilesSave(&data, sizeof(LevelEntity), itemsCount)) {
+        TraceLog(LOG_ERROR, "Could not save level.");
+        // TODO print something to screen
+        return;
+    }
 
     TraceLog(LOG_INFO, "Level saved.");
+    // TODO print something to screen
 }
