@@ -55,17 +55,19 @@ static bool levelLoad() {
     LevelEntity *data = (LevelEntity *) filedata.data;
 
     for (size_t i = 0; i < filedata.itemCount; i++) {
+
+        Vector2 pos = (Vector2){ data[i].hitbox.x, data[i].hitbox.y };
         
         if (data[i].components & LEVEL_IS_PLAYER) {
-            LevelPlayerInitialize((Vector2){ data[i].hitbox.x, data[i].hitbox.y });
+            LevelPlayerInitialize(pos);
             playersStartingPosition = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y }; // TODO replace with 'origin' level entity param
         }
 
         else if (data[i].components & LEVEL_IS_ENEMY)
-            LevelEnemyAdd((Vector2){ data[i].hitbox.x, data[i].hitbox.y });
+            LevelEnemyAdd(pos);
         
         else if (data[i].components & LEVEL_IS_SCENARIO)
-            LevelBlockAdd(data[i].hitbox);
+            LevelBlockAdd(pos);
         
         else
             TraceLog(LOG_ERROR, "Unknow entity type found when loading level, components=%d."); 

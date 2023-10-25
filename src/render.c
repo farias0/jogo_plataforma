@@ -132,27 +132,6 @@ static void renderLevelEntity(LevelEntity *entity) {
                                         entity->hitbox.x,
                                         entity->hitbox.y });
 
-    if (entity->components & LEVEL_IS_SCENARIO) {
-        // How many tiles to be drawn in each axis
-        int xTilesCount = entity->hitbox.width / entity->sprite.sprite.width;
-        int yTilesCount = entity->hitbox.height / entity->sprite.sprite.width;
-
-        for (int xCurrent = 0; xCurrent < xTilesCount; xCurrent++) {
-            for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
-                DrawTextureEx(
-                                entity->sprite.sprite,
-                                (Vector2){pos.x + (xCurrent * entity->sprite.sprite.width),
-                                            pos.y + (yCurrent * entity->sprite.sprite.height)},
-                                0,
-                                1,
-                                WHITE
-                            );
-            }
-        }
-
-        return;
-    }
-
     drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, !entity->isFacingRight);
 }
 
