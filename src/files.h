@@ -2,8 +2,15 @@
 #define _FILES_H_INCLUDED_
 
 
-bool FilesSave(void *data, size_t structSize, size_t itemsCount);
-void *FilesLoad();
+typedef struct FileData {
+    void *data;
+    size_t itemSize;
+    size_t itemCount;
+} FileData;
+
+
+bool FileSave(FileData data);
+FileData FileLoad(size_t itemSize);
 
 
 #endif // _FILES_H_INCLUDED_

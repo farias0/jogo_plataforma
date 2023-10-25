@@ -4,10 +4,19 @@
 
 #include "files.h"
 
+#define MODE_READ "ab+"
+#define MODE_WRITE "wb+"
+
 
 static char *LEVELS_DIR = "../levels/";
 
 static char *LEVEL_NAME = "my_level.lvl";
+
+/*
+    1048576 bytes = 1 MiB.
+    For a struct size of 64 bytes, this means 16384 entities.
+*/
+static size_t READ_BUFFER_SIZE = 1048576;
 
 
 static char *getFullPath(char *filename) {
@@ -20,11 +29,11 @@ static char *getFullPath(char *filename) {
     return path;
 }
 
-static FILE *openFile(char *filename) {
+static FILE *openFile(char *filename, char* mode) {
 
     filename = getFullPath(filename);
 
-    FILE *file = fopen(filename, "wb+");
+    FILE *file = fopen(filename, mode);
 
     if (!file) {
         TraceLog(LOG_ERROR, "Could not open file %s.", filename);
@@ -42,32 +51,56 @@ static void closeFile(FILE *file) {
     TraceLog(LOG_DEBUG, "Closed file.");
 }
 
-static bool writeToFile(FILE *file, void *data, size_t structSize, size_t itemsCount) {
+FileData readFromFile(FILE *file, size_t itemSize) {
 
-    size_t itemsWritten = fwrite(data, structSize, itemsCount, file);
+    FileData data;
+    void *buffer = MemAlloc(itemSize * READ_BUFFER_SIZE);
 
-    if (itemsWritten != itemsCount) {
+    data.itemSize = itemSize;
+
+    data.itemCount = fread(buffer, itemSize, READ_BUFFER_SIZE, file);
+
+    if (!data.itemCount) {
+        TraceLog(LOG_ERROR, "Error reading file.");
+        return data;
+    }
+
+    data.data = MemRealloc(buffer, itemSize * data.itemCount);
+
+    TraceLog(LOG_DEBUG,
+        "Read from file. (%d items, %d bytes)", data.itemCount, data.itemSize * data.itemCount);
+
+    return data;
+}
+
+static bool writeToFile(FILE *file, FileData data) {
+
+    size_t itemsWritten = fwrite(data.data, data.itemSize, data.itemCount, file);
+
+    if (itemsWritten != data.itemCount) {
         TraceLog(LOG_ERROR,
-            "Error writing to file. Written %d items; expected %d.", itemsCount, itemsWritten);
+            "Error writing to file. Written %d items; expected %d.", data.itemCount, itemsWritten);
         return false;
     }
 
-    TraceLog(LOG_DEBUG, "Written to file. (%d bytes)", structSize * itemsCount);
+    TraceLog(LOG_DEBUG, "Written to file. (%d bytes)", data.itemSize * data.itemCount);
 
     return true;
 }
 
-void *loadFromFile(char *filename) {
-    return filename; // TODO
-}
+bool FileSave(FileData data) {
 
-bool FilesSave(void *data, size_t structSize, size_t itemsCount) {
-    FILE *file = openFile(LEVEL_NAME);
-    bool result = writeToFile(file, data, structSize, itemsCount);
+    FILE *file = openFile(LEVEL_NAME, MODE_WRITE);
+    bool result = writeToFile(file, data);
     closeFile(file);
     return result;
 }
 
-void *FilesLoad() {
-    return loadFromFile(LEVEL_NAME);
+FileData FileLoad(size_t itemSize) {
+
+    FILE *file = openFile(LEVEL_NAME, MODE_READ);
+    rewind(file);
+    FileData data = readFromFile(file, itemSize);
+    closeFile(file);
+    return data;
 }

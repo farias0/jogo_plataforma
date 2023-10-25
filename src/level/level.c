@@ -42,22 +42,41 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
     return 0;
 }
 
-static void levelLoad() {
+static bool levelLoad() {
 
-    const float floorHeight = 600;
+    FileData filedata = FileLoad(sizeof(LevelEntity));
 
-    LevelBlockAdd((Rectangle){ 0, floorHeight, BlockSprite.sprite.width*25, BlockSprite.sprite.height*5 });
-    
-    float x = BlockSprite.sprite.width*30;
-    float width = BlockSprite.sprite.width*10;
-    LevelBlockAdd((Rectangle){ x, floorHeight, width, BlockSprite.sprite.height*5 });
-    LevelEnemyAdd((Vector2){ x + (width / 2), 200 });
-    
-    LevelBlockAdd((Rectangle){ BlockSprite.sprite.width*45, floorHeight-80, BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 });
-    LevelBlockAdd((Rectangle){ BlockSprite.sprite.width*40, floorHeight-200, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
-    LevelBlockAdd((Rectangle){ BlockSprite.sprite.width*45, floorHeight-320, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
+    if (!filedata.itemCount) {
+        TraceLog(LOG_ERROR, "Could not load level.");
+        // TODO print something to screen
+        return false;
+    }
+
+    LevelEntity *data = (LevelEntity *) filedata.data;
+
+    for (size_t i = 0; i < filedata.itemCount; i++) {
+        
+        if (data[i].components & LEVEL_IS_PLAYER) {
+            LevelPlayerInitialize((Vector2){ data[i].hitbox.x, data[i].hitbox.y });
+            playersStartingPosition = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y }; // TODO replace with 'origin' level entity param
+        }
+
+        else if (data[i].components & LEVEL_IS_ENEMY)
+            LevelEnemyAdd((Vector2){ data[i].hitbox.x, data[i].hitbox.y });
+        
+        else if (data[i].components & LEVEL_IS_SCENARIO)
+            LevelBlockAdd(data[i].hitbox);
+        
+        else
+            TraceLog(LOG_ERROR, "Unknow entity type found when loading level, components=%d."); 
+    }
+
+    MemFree(data);
 
     TraceLog(LOG_INFO, "Level loaded.");
+    // TODO print something to screen
+
+    return true;
 }
 
 void LevelInitialize() {
@@ -66,8 +85,11 @@ void LevelInitialize() {
     STATE->mode = MODE_IN_LEVEL;
 
     LinkedListRemoveAll(&LEVEL_LIST_HEAD);
-    LevelPlayerInitialize(playersStartingPosition);
-    levelLoad();
+
+    if (!levelLoad()) {
+        GameModeToggle();
+        return;
+    }
 
     EditorSync();
 
@@ -139,19 +161,25 @@ void LevelTick() {
 
 void LevelSave() {
 
-    size_t itemsCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
-    LevelEntity data[itemsCount];
+    size_t itemCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
+    LevelEntity data[itemCount];
 
     TraceLog(LOG_DEBUG,
-        "Saving level... (struct size=%d, items count=%d)", sizeof(LevelEntity), itemsCount);
+        "Saving level... (struct size=%d, item count=%d)", sizeof(LevelEntity), itemCount);
 
     ListNode *node = LEVEL_LIST_HEAD;
-    for (size_t i = 0; i < itemsCount; i++) {
+    for (size_t i = 0; i < itemCount; i++) {
         data[i] = *((LevelEntity *) node->item);
         node = node->next;
     }
 
-    if (!FilesSave(&data, sizeof(LevelEntity), itemsCount)) {
+    FileData filedata = (FileData){
+        &data,
+        sizeof(LevelEntity),
+        itemCount
+    };
+
+    if (!FileSave(filedata)) {
         TraceLog(LOG_ERROR, "Could not save level.");
         // TODO print something to screen
         return;
