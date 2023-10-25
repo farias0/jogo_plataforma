@@ -8,6 +8,7 @@
 #include "../core.h"
 #include "../camera.h"
 #include "../files.h"
+#include "../render.h"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
@@ -48,7 +49,7 @@ static bool levelLoad() {
 
     if (!filedata.itemCount) {
         TraceLog(LOG_ERROR, "Could not load level.");
-        // TODO print something to screen
+        RenderPrintSysMessage("Could not load level.");
         return false;
     }
 
@@ -76,7 +77,6 @@ static bool levelLoad() {
     MemFree(data);
 
     TraceLog(LOG_INFO, "Level loaded.");
-    // TODO print something to screen
 
     return true;
 }
@@ -183,10 +183,10 @@ void LevelSave() {
 
     if (!FileSave(filedata)) {
         TraceLog(LOG_ERROR, "Could not save level.");
-        // TODO print something to screen
+        RenderPrintSysMessage("Could not save level.");
         return;
     }
 
     TraceLog(LOG_INFO, "Level saved.");
-    // TODO print something to screen
+    RenderPrintSysMessage("Level saved.");
 }
