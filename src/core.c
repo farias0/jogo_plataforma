@@ -12,7 +12,8 @@ GameState *STATE = 0;
 void GameStateInitialize() {
     STATE = MemAlloc(sizeof(GameState));
 
-    STATE->isEditorEnabled = false;
+    STATE->isEditorEnabled = true;
+    EditorEnabledToggle(); // To hide mouse cursor
 
     // Debug
     STATE->showDebugHUD = false;
@@ -66,9 +67,11 @@ void EditorEnabledToggle() {
 
     if (STATE->isEditorEnabled) {
         SetWindowSize(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+        ShowCursor();
         TraceLog(LOG_INFO, "Editor enabled.");
     } else {
         SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        HideCursor();
         TraceLog(LOG_INFO, "Editor disabled.");
     }
 }
