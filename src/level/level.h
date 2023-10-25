@@ -87,7 +87,7 @@ void LevelEnemyCheckAndAdd(Vector2 pos);
 void LevelEnemyTick(ListNode *enemyNode);
 
 
-void LevelBlockAdd(Rectangle hitbox);
+void LevelBlockAdd(Vector2 pos);
 
 // Initializes and adds a block to the level in the given pos,
 // if there are no other blocks there already.

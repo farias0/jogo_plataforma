@@ -4,15 +4,15 @@
 #include "../core.h"
 
 
-void LevelBlockAdd(Rectangle hitbox) {
+void LevelBlockAdd(Vector2 pos) {
 
     LevelEntity *newBlock = MemAlloc(sizeof(LevelEntity));
 
-    hitbox.x = SnapToGrid(hitbox.x, LEVEL_GRID.width);
-    hitbox.y = SnapToGrid(hitbox.y, LEVEL_GRID.height);
+    pos.x = SnapToGrid(pos.x, LEVEL_GRID.width);
+    pos.y = SnapToGrid(pos.y, LEVEL_GRID.height);
 
     newBlock->components = LEVEL_IS_SCENARIO;
-    newBlock->hitbox = hitbox;
+    newBlock->hitbox = SpriteHitboxFromEdge(BlockSprite, pos);
     newBlock->sprite = BlockSprite;
 
     ListNode *node = MemAlloc(sizeof(ListNode));
@@ -40,5 +40,5 @@ void LevelBlockCheckAndAdd(Vector2 pos) {
         node = node->next;
     }
 
-    LevelBlockAdd((Rectangle){ pos.x, pos.y, BlockSprite.sprite.width, BlockSprite.sprite.height });
+    LevelBlockAdd(pos);
 }

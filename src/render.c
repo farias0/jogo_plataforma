@@ -18,6 +18,17 @@
 #define FIRST_LAYER 0
 #define LAST_LAYER  1
 
+#define SYS_MESSAGE_SECONDS 2
+
+
+typedef struct SysMessage {
+    char *msg;
+    float secondsUntilDisappear;
+} SysMessage;
+
+
+ListNode *SYS_MESSAGES_HEAD = 0;
+
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
 
@@ -132,27 +143,6 @@ static void renderLevelEntity(LevelEntity *entity) {
                                         entity->hitbox.x,
                                         entity->hitbox.y });
 
-    if (entity->components & LEVEL_IS_SCENARIO) {
-        // How many tiles to be drawn in each axis
-        int xTilesCount = entity->hitbox.width / entity->sprite.sprite.width;
-        int yTilesCount = entity->hitbox.height / entity->sprite.sprite.width;
-
-        for (int xCurrent = 0; xCurrent < xTilesCount; xCurrent++) {
-            for (int yCurrent = 0; yCurrent < yTilesCount; yCurrent++) {
-                DrawTextureEx(
-                                entity->sprite.sprite,
-                                (Vector2){pos.x + (xCurrent * entity->sprite.sprite.width),
-                                            pos.y + (yCurrent * entity->sprite.sprite.height)},
-                                0,
-                                1,
-                                WHITE
-                            );
-            }
-        }
-
-        return;
-    }
-
     drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, !entity->isFacingRight);
 }
 
@@ -184,11 +174,43 @@ next_entity:
     }
 }
 
+static void renderSysMsgs() {
+
+    ListNode *node = SYS_MESSAGES_HEAD;
+    ListNode *nextNode;
+    SysMessage *msg;
+    size_t currentMsg = 1;
+    int x, y;
+
+    while (node) {
+
+        nextNode = node->next;
+
+        msg = (SysMessage *) node->item;
+
+        if (msg->secondsUntilDisappear <= 0) {
+            LinkedListRemove(&SYS_MESSAGES_HEAD, node);
+            goto next_node;
+        }        
+
+        x = 15;
+        y = SCREEN_HEIGHT - 15 - (30 * currentMsg);
+
+        DrawText(msg->msg, x, y, 30, RAYWHITE);
+        
+        currentMsg++;
+        msg->secondsUntilDisappear -= GetFrameTime();
+
+next_node:
+        node = nextNode;
+    } 
+}
 
 static void renderHUD() {
     if (STATE->isPaused && !STATE->isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
     if (STATE->isPlayerDead) DrawText("YOU DIED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 60, RAYWHITE);
 
+    renderSysMsgs();
 
     if (STATE->showDebugGrid) {
         Dimensions gridSquareDim;
@@ -331,4 +353,17 @@ void Render() {
         renderEditor();
 
     renderHUD();
+}
+
+void RenderPrintSysMessage(char *msg) {
+
+    SysMessage *newMsg = MemAlloc(sizeof(SysMessage));
+    newMsg->msg = msg;
+    newMsg->secondsUntilDisappear = SYS_MESSAGE_SECONDS;
+    
+    ListNode *node = MemAlloc(sizeof(ListNode));
+    node->item = newMsg;
+    LinkedListAdd(&SYS_MESSAGES_HEAD, node);
+
+    TraceLog(LOG_TRACE, "Added sys message to list: '%s'.", msg);
 }

@@ -7,6 +7,9 @@
 #include "../linked_list.h"
 #include "../core.h"
 #include "../camera.h"
+#include "../files.h"
+#include "../render.h"
+
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 #define ON_THE_GROUND_Y_TOLERANCE 5
@@ -40,22 +43,42 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
     return 0;
 }
 
-static void levelLoad() {
+static bool levelLoad() {
 
-    const float floorHeight = 600;
+    FileData filedata = FileLoad(sizeof(LevelEntity));
 
-    LevelBlockAdd((Rectangle){ 0, floorHeight, BlockSprite.sprite.width*25, BlockSprite.sprite.height*5 });
-    
-    float x = BlockSprite.sprite.width*30;
-    float width = BlockSprite.sprite.width*10;
-    LevelBlockAdd((Rectangle){ x, floorHeight, width, BlockSprite.sprite.height*5 });
-    LevelEnemyAdd((Vector2){ x + (width / 2), 200 });
-    
-    LevelBlockAdd((Rectangle){ BlockSprite.sprite.width*45, floorHeight-80, BlockSprite.sprite.width*10, BlockSprite.sprite.height*2 });
-    LevelBlockAdd((Rectangle){ BlockSprite.sprite.width*40, floorHeight-200, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
-    LevelBlockAdd((Rectangle){ BlockSprite.sprite.width*45, floorHeight-320, BlockSprite.sprite.width*5, BlockSprite.sprite.height*1 });
+    if (!filedata.itemCount) {
+        TraceLog(LOG_ERROR, "Could not load level.");
+        RenderPrintSysMessage("Could not load level.");
+        return false;
+    }
+
+    LevelEntity *data = (LevelEntity *) filedata.data;
+
+    for (size_t i = 0; i < filedata.itemCount; i++) {
+
+        Vector2 pos = (Vector2){ data[i].hitbox.x, data[i].hitbox.y };
+        
+        if (data[i].components & LEVEL_IS_PLAYER) {
+            LevelPlayerInitialize(pos);
+            playersStartingPosition = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y }; // TODO replace with 'origin' level entity param
+        }
+
+        else if (data[i].components & LEVEL_IS_ENEMY)
+            LevelEnemyAdd(pos);
+        
+        else if (data[i].components & LEVEL_IS_SCENARIO)
+            LevelBlockAdd(pos);
+        
+        else
+            TraceLog(LOG_ERROR, "Unknow entity type found when loading level, components=%d."); 
+    }
+
+    MemFree(data);
 
     TraceLog(LOG_INFO, "Level loaded.");
+
+    return true;
 }
 
 void LevelInitialize() {
@@ -64,8 +87,11 @@ void LevelInitialize() {
     STATE->mode = MODE_IN_LEVEL;
 
     LinkedListRemoveAll(&LEVEL_LIST_HEAD);
-    LevelPlayerInitialize(playersStartingPosition);
-    levelLoad();
+
+    if (!levelLoad()) {
+        GameModeToggle();
+        return;
+    }
 
     EditorSync();
 
@@ -126,8 +152,6 @@ void LevelTick() {
 
         LevelEntity *entity = (LevelEntity *)node->item;
 
-        // IMPORTANT: Enemy must tick before player or collision check between
-        // the two _might_ break
         if (entity->components & LEVEL_IS_ENEMY) LevelEnemyTick(node);
         else if (entity->components & LEVEL_IS_PLAYER) LevelPlayerTick();
 
@@ -139,7 +163,30 @@ void LevelTick() {
 
 void LevelSave() {
 
-    // TODO
+    size_t itemCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
+    LevelEntity data[itemCount];
+
+    TraceLog(LOG_DEBUG,
+        "Saving level... (struct size=%d, item count=%d)", sizeof(LevelEntity), itemCount);
+
+    ListNode *node = LEVEL_LIST_HEAD;
+    for (size_t i = 0; i < itemCount; i++) {
+        data[i] = *((LevelEntity *) node->item);
+        node = node->next;
+    }
+
+    FileData filedata = (FileData){
+        &data,
+        sizeof(LevelEntity),
+        itemCount
+    };
+
+    if (!FileSave(filedata)) {
+        TraceLog(LOG_ERROR, "Could not save level.");
+        RenderPrintSysMessage("Could not save level.");
+        return;
+    }
 
     TraceLog(LOG_INFO, "Level saved.");
+    RenderPrintSysMessage("Level saved.");
 }
