@@ -14,7 +14,7 @@ add_executable(${PROJECT_NAME} src/game.c src/level/player.c src/linked_list.c s
     src/overworld.c src/level/block.c src/files.c)
 
 set(raylib_VERBOSE 1)
-target_link_libraries(${PROJECT_NAME} raylib m) # 'm' is libm
+target_link_libraries(${PROJECT_NAME} raylib) # 'm' is libm # TODO add back libm for Linux
 
 # required by raylib
 if (APPLE)
@@ -24,7 +24,7 @@ if (APPLE)
 endif()
 
 if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Werror)
 endif()

@@ -17,7 +17,6 @@ typedef struct CursorState {
 
 
 ListNode *OW_LIST_HEAD = 0;
-const Dimensions OW_GRID = (Dimensions){ 64, 64 };
 
 static OverworldEntity *OW_CURSOR = 0;
 static CursorState CURSOR_STATE;

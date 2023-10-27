@@ -16,7 +16,6 @@
 
 
 ListNode *LEVEL_LIST_HEAD = 0;
-const Dimensions LEVEL_GRID = (Dimensions){ 32, 32 };
 
 static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
@@ -164,7 +163,7 @@ void LevelTick() {
 void LevelSave() {
 
     size_t itemCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
-    LevelEntity data[itemCount];
+    LevelEntity *data = (LevelEntity *) MemAlloc(sizeof(LevelEntity) * itemCount);
 
     TraceLog(LOG_DEBUG,
         "Saving level... (struct size=%d, item count=%d)", sizeof(LevelEntity), itemCount);
@@ -176,10 +175,12 @@ void LevelSave() {
     }
 
     FileData filedata = (FileData){
-        &data,
+        data,
         sizeof(LevelEntity),
         itemCount
     };
+
+    MemFree(data);
 
     if (!FileSave(filedata)) {
         TraceLog(LOG_ERROR, "Could not save level.");

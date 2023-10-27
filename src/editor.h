@@ -8,7 +8,33 @@
 #include "linked_list.h"
 
 
+#define EDITOR_ENTITIES_HEIGHT      4*SCREEN_HEIGHT/5
+
+#define ENTITY_BUTTON_SIZE          80
+#define ENTITY_BUTTON_SPACING       12
+#define ENTITY_BUTTON_WALL_SPACING  (EDITOR_BAR_WIDTH - (ENTITY_BUTTON_SIZE * 2) - ENTITY_BUTTON_SPACING) / 2
+
+#define CONTROL_BUTTON_HEIGHT       40
+#define CONTROL_BUTTON_WIDTH        ENTITY_BUTTON_SIZE
+#define CONTROL_BUTTON_SPACING      ENTITY_BUTTON_SPACING
+#define CONTROL_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (CONTROL_BUTTON_WIDTH * 2) - CONTROL_BUTTON_SPACING) / 2
+
 #define EDITOR_BAR_WIDTH        200
+
+// The rectangle defining the entity area of the editor in the screen
+#define EDITOR_ENTITIES_AREA    (Rectangle){ SCREEN_WIDTH, \
+                                                0, \
+                                                EDITOR_BAR_WIDTH, \
+                                                EDITOR_ENTITIES_HEIGHT }
+
+// The rectangle defining the control area of the editor in the screen
+#define EDITOR_CONTROL_AREA     (Rectangle){ SCREEN_WIDTH, \
+                                                EDITOR_ENTITIES_HEIGHT, \
+                                                EDITOR_BAR_WIDTH, \
+                                                SCREEN_HEIGHT - EDITOR_ENTITIES_HEIGHT }
+
+// The background color of the editor
+#define EDITOR_BG_COLOR         (Color){ 0, 0, 0, 220 }
 
 
 typedef enum { 
@@ -48,15 +74,6 @@ typedef struct EditorControlItem {
     char *label;
 } EditorControlItem;
 
-
-// The rectangle defining the entity area of the editor in the screen
-extern const Rectangle EDITOR_ENTITIES_AREA;
-
-// The rectangle defining the control area of the editor in the screen
-extern const Rectangle EDITOR_CONTROL_AREA;
-
-// The background color of the editor
-extern const Color EDITOR_BG_COLOR;
 
 // The head of the linked list of all the loaded editor entity itens
 extern ListNode *EDITOR_ENTITIES_HEAD;

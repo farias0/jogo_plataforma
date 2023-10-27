@@ -8,6 +8,9 @@
 #include "../assets.h"
 
 
+#define LEVEL_GRID (Dimensions){ 32, 32 }
+
+
 typedef enum PlayerMovementSpeed {
     PLAYER_MOVEMENT_DEFAULT,
     PLAYER_MOVEMENT_RUNNING
@@ -41,8 +44,6 @@ typedef struct LevelEntity {
 
 // The head of the linked list of all the level entities
 extern ListNode *LEVEL_LIST_HEAD;
-
-extern const Dimensions LEVEL_GRID;
 
 extern LevelEntity *LEVEL_PLAYER; 
 

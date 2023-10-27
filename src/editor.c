@@ -7,32 +7,8 @@
 #include "linked_list.h"
 
 
-#define EDITOR_ENTITIES_HEIGHT      4*SCREEN_HEIGHT/5
-
-#define ENTITY_BUTTON_SIZE          80
-#define ENTITY_BUTTON_SPACING       12
-#define ENTITY_BUTTON_WALL_SPACING  (EDITOR_BAR_WIDTH - (ENTITY_BUTTON_SIZE * 2) - ENTITY_BUTTON_SPACING) / 2
-
-#define CONTROL_BUTTON_HEIGHT       40
-#define CONTROL_BUTTON_WIDTH        ENTITY_BUTTON_SIZE
-#define CONTROL_BUTTON_SPACING      ENTITY_BUTTON_SPACING
-#define CONTROL_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (CONTROL_BUTTON_WIDTH * 2) - CONTROL_BUTTON_SPACING) / 2
-
-
 ListNode *EDITOR_ENTITIES_HEAD = 0;
 ListNode *EDITOR_CONTROL_HEAD = 0;
-
-const Rectangle EDITOR_ENTITIES_AREA = (Rectangle){ SCREEN_WIDTH,
-                                                    0,
-                                                    EDITOR_BAR_WIDTH,
-                                                    EDITOR_ENTITIES_HEIGHT };
-
-const Rectangle EDITOR_CONTROL_AREA = (Rectangle){ SCREEN_WIDTH,
-                                                    EDITOR_ENTITIES_HEIGHT,
-                                                    EDITOR_BAR_WIDTH,
-                                                    SCREEN_HEIGHT - EDITOR_ENTITIES_HEIGHT };
-
-const Color EDITOR_BG_COLOR = (Color){ 0, 0, 0, 220 };
 
 
 EditorEntityItem *loadEditorEntityItem(
