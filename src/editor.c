@@ -5,6 +5,7 @@
 #include "level/level.h"
 #include "overworld.h"
 #include "linked_list.h"
+#include "persistence.h"
 
 
 ListNode *EDITOR_ENTITIES_HEAD = 0;
@@ -48,7 +49,7 @@ void loadInLevelEditor() {
         loadEditorEntityItem(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
     loadEditorEntityItem(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
-    loadEditorControlItem(EDITOR_CONTROL_SAVE, "Save", &LevelSave);
+    loadEditorControlItem(EDITOR_CONTROL_SAVE, "Save", &PersistenceLevelSave);
 
     TraceLog(LOG_DEBUG, "Editor loaded in level itens.");
 }

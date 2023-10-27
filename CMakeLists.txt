@@ -11,7 +11,7 @@ set(CMAKE_C_STANDARD 11) # required by raylib
 
 add_executable(${PROJECT_NAME} src/game.c src/level/player.c src/linked_list.c src/level/enemy.c
     src/level/level.c src/camera.c src/core.c src/render.c src/input.c src/editor.c src/assets.c
-    src/overworld.c src/level/block.c src/files.c)
+    src/overworld.c src/level/block.c src/files.c src/persistence.c)
 
 set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

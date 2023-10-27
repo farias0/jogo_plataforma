@@ -74,8 +74,12 @@ void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction);
 void LevelPlayerJump();
 
 void LevelPlayerTick();
+
 // Continues the game after dying.
 void LevelPlayerContinue();
+
+// TODO remove it and use entity origin instead
+void LevelPlayerSetStartingPos(Vector2 pos);
 
 
 // Initializes and adds an enemy to the level in the given pos

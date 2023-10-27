@@ -73,6 +73,8 @@ void LevelPlayerInitialize(Vector2 pos) {
     newPlayer->sprite = PlayerSprite;
     newPlayer->isFacingRight = true;
 
+    LevelPlayerSetStartingPos(pos); // TODO replace it with entity origin
+
     calculatePlayersHitboxes();
 
     ListNode *node = MemAlloc(sizeof(ListNode));
