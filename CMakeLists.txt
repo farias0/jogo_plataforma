@@ -14,7 +14,7 @@ add_executable(${PROJECT_NAME} src/game.c src/level/player.c src/linked_list.c s
     src/overworld.c src/level/block.c src/files.c)
 
 set(raylib_VERBOSE 1)
-target_link_libraries(${PROJECT_NAME} raylib) # 'm' is libm # TODO add back libm for Linux
+target_link_libraries(${PROJECT_NAME} raylib)
 
 # required by raylib
 if (APPLE)
