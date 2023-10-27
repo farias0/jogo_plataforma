@@ -1,0 +1,7 @@
+{
+    "dotnet.defaultSolution": "disable",
+    "cmake.debugConfig": {
+        "cwd": "${workspaceFolder}\\build",
+        "console": "integratedTerminal"
+    }
+}
