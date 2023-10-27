@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.15) # required by raylib
 
 project(jogo_plataforma)
 
-find_package(raylib 4.5 REQUIRED)
+add_subdirectory(raylib)
 
 set(CMAKE_C_STANDARD 11) # required by raylib
 
