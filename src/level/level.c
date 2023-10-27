@@ -7,8 +7,7 @@
 #include "../linked_list.h"
 #include "../core.h"
 #include "../camera.h"
-#include "../files.h"
-#include "../render.h"
+#include "../persistence.h"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
@@ -43,44 +42,6 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
     return 0;
 }
 
-static bool levelLoad() {
-
-    FileData filedata = FileLoad(sizeof(LevelEntity));
-
-    if (!filedata.itemCount) {
-        TraceLog(LOG_ERROR, "Could not load level.");
-        RenderPrintSysMessage("Could not load level.");
-        return false;
-    }
-
-    LevelEntity *data = (LevelEntity *) filedata.data;
-
-    for (size_t i = 0; i < filedata.itemCount; i++) {
-
-        Vector2 pos = (Vector2){ data[i].hitbox.x, data[i].hitbox.y };
-        
-        if (data[i].components & LEVEL_IS_PLAYER) {
-            LevelPlayerInitialize(pos);
-            playersStartingPosition = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y }; // TODO replace with 'origin' level entity param
-        }
-
-        else if (data[i].components & LEVEL_IS_ENEMY)
-            LevelEnemyAdd(pos);
-        
-        else if (data[i].components & LEVEL_IS_SCENARIO)
-            LevelBlockAdd(pos);
-        
-        else
-            TraceLog(LOG_ERROR, "Unknow entity type found when loading level, components=%d."); 
-    }
-
-    MemFree(data);
-
-    TraceLog(LOG_INFO, "Level loaded.");
-
-    return true;
-}
-
 void LevelInitialize() {
 
     GameStateReset();
@@ -88,7 +49,7 @@ void LevelInitialize() {
 
     LinkedListRemoveAll(&LEVEL_LIST_HEAD);
 
-    if (!levelLoad()) {
+    if (!PersistenceLevelLoad()) {
         GameModeToggle();
         return;
     }
@@ -161,32 +122,6 @@ void LevelTick() {
     CameraTick();
 }
 
-void LevelSave() {
-
-    size_t itemCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
-    LevelEntity data[itemCount];
-
-    TraceLog(LOG_DEBUG,
-        "Saving level... (struct size=%d, item count=%d)", sizeof(LevelEntity), itemCount);
-
-    ListNode *node = LEVEL_LIST_HEAD;
-    for (size_t i = 0; i < itemCount; i++) {
-        data[i] = *((LevelEntity *) node->item);
-        node = node->next;
-    }
-
-    FileData filedata = (FileData){
-        &data,
-        sizeof(LevelEntity),
-        itemCount
-    };
-
-    if (!FileSave(filedata)) {
-        TraceLog(LOG_ERROR, "Could not save level.");
-        RenderPrintSysMessage("Could not save level.");
-        return;
-    }
-
-    TraceLog(LOG_INFO, "Level saved.");
-    RenderPrintSysMessage("Level saved.");
+void LevelPlayerSetStartingPos(Vector2 pos) {
+    playersStartingPosition = pos;
 }
