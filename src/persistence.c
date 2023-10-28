@@ -41,7 +41,8 @@ void PersistenceLevelSave(char *levelName) {
     size_t entitySize = sizeof(PersistenceLevelEntity);
     PersistenceLevelEntity *data = MemAlloc(entitySize * saveItemCount);
 
-    TraceLog(LOG_DEBUG, "Saving level... (struct size=%d, level item count=%d)", entitySize, levelItemCount);
+    TraceLog(LOG_DEBUG, "Saving level %s... (struct size=%d, level item count=%d)",
+                        levelName, entitySize, levelItemCount);
 
     ListNode *node = LEVEL_LIST_HEAD;
     for (size_t i = 0; i < levelItemCount; ) {
@@ -71,10 +72,10 @@ skip_entity:
     char *filepath = getFullPath(levelName);
 
     if (FileSave(filepath, filedata)) {
-        TraceLog(LOG_INFO, "Level saved.");
+        TraceLog(LOG_INFO, "Level saved: %s.", levelName);
         RenderPrintSysMessage("Level saved.");
     } else {
-        TraceLog(LOG_ERROR, "Could not save level.");
+        TraceLog(LOG_ERROR, "Could not save level %s.", levelName);
         RenderPrintSysMessage("Could not save level.");
     }
 
@@ -89,7 +90,7 @@ bool PersistenceLevelLoad(char *levelName) {
     FileData filedata = FileLoad(filepath, sizeof(PersistenceLevelEntity));
 
     if (!filedata.itemCount) {
-        TraceLog(LOG_ERROR, "Could not load level.");
+        TraceLog(LOG_ERROR, "Could not load level %s.", levelName);
         RenderPrintSysMessage("Could not load level.");
         return false;
     }
@@ -118,7 +119,7 @@ bool PersistenceLevelLoad(char *levelName) {
 
     MemFree(data);
 
-    TraceLog(LOG_TRACE, "Level loaded.");
+    TraceLog(LOG_TRACE, "Level loaded: %s.", levelName);
 
     return true;
 }
