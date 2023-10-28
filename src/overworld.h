@@ -40,6 +40,8 @@ typedef struct OverworldEntity {
     Sprite sprite;
     int layer;
     
+    char *levelName;
+
 } OverworldEntity;
 
 
