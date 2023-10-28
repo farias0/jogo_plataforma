@@ -22,14 +22,15 @@ typedef struct PersistenceLevelEntity {
 
 void PersistenceLevelSave() {
 
-    size_t itemCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
+    size_t levelItemCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
+    size_t saveItemCount = levelItemCount;
     size_t entitySize = sizeof(PersistenceLevelEntity);
-    PersistenceLevelEntity data[itemCount];
+    PersistenceLevelEntity *data = MemAlloc(entitySize * saveItemCount);
 
-    TraceLog(LOG_DEBUG, "Saving level... (struct size=%d, item count=%d)", entitySize, itemCount);
+    TraceLog(LOG_DEBUG, "Saving level... (struct size=%d, level item count=%d)", entitySize, levelItemCount);
 
     ListNode *node = LEVEL_LIST_HEAD;
-    for (size_t i = 0; i < itemCount; i++) {
+    for (size_t i = 0; i < levelItemCount; ) {
 
         LevelEntity *entity = (LevelEntity *) node->item;
 
@@ -38,26 +39,31 @@ void PersistenceLevelSave() {
         else if (entity->components & LEVEL_IS_SCENARIO)    data[i].entityType = LEVEL_ENTITY_BLOCK;
         else { 
             TraceLog(LOG_WARNING, "Unknow entity type found when serializing level, components=%d. Skipping it...");
-            goto next_node; 
+            saveItemCount--;
+            goto skip_entity; 
         }
         
-        data[i].x = entity->hitbox.x;
-        data[i].y = entity->hitbox.y;
+        data[i].x = (uint32_t) entity->hitbox.x;
+        data[i].y = (uint32_t) entity->hitbox.y;
 
-next_node:
+        i++;
+
+skip_entity:
         node = node->next;
     }
 
-    FileData filedata = (FileData){ &data, entitySize, itemCount };
+    FileData filedata = (FileData){ data, entitySize, saveItemCount };
 
-    if (!FileSave(filedata)) {
+    if (FileSave(filedata)) {
+        TraceLog(LOG_INFO, "Level saved.");
+        RenderPrintSysMessage("Level saved.");
+    } else {
         TraceLog(LOG_ERROR, "Could not save level.");
         RenderPrintSysMessage("Could not save level.");
-        return;
     }
 
-    TraceLog(LOG_INFO, "Level saved.");
-    RenderPrintSysMessage("Level saved.");
+    MemFree(data);
+
     return;
 }
 

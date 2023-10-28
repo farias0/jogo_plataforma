@@ -19,7 +19,7 @@ void LevelBlockAdd(Vector2 pos) {
     node->item = newBlock;
     LinkedListAdd(&LEVEL_LIST_HEAD, node);
 
-    TraceLog(LOG_DEBUG, "Added block to level (x=%.1f, y=%.1f)",
+    TraceLog(LOG_TRACE, "Added block to level (x=%.1f, y=%.1f)",
                 newBlock->hitbox.x, newBlock->hitbox.y);
 }
 

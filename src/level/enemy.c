@@ -24,7 +24,7 @@ void LevelEnemyAdd(Vector2 pos) {
     node->item = newEnemy;
     LinkedListAdd(&LEVEL_LIST_HEAD, node);
 
-    TraceLog(LOG_INFO, "Added enemy to level (x=%.1f, y=%.1f)",
+    TraceLog(LOG_TRACE, "Added enemy to level (x=%.1f, y=%.1f)",
                 newEnemy->hitbox.x, newEnemy->hitbox.y);
 }
 

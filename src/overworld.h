@@ -7,6 +7,9 @@
 #include "linked_list.h"
 
 
+#define OW_GRID (Dimensions){ 64, 64 }
+
+
 typedef enum OverworldCursorDirection {
     OW_CURSOR_UP,
     OW_CURSOR_DOWN,
@@ -43,7 +46,6 @@ typedef struct OverworldEntity {
 // The head of the linked list of all the overworld entities
 extern ListNode *OW_LIST_HEAD;
 
-extern const Dimensions OW_GRID;
 
 void OverworldInitialize();
 

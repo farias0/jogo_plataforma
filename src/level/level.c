@@ -15,7 +15,6 @@
 
 
 ListNode *LEVEL_LIST_HEAD = 0;
-const Dimensions LEVEL_GRID = (Dimensions){ 32, 32 };
 
 static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 

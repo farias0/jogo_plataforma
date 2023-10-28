@@ -232,9 +232,8 @@ static void renderHUD() {
         for (float lineY = offset.y; lineY <= SCREEN_HEIGHT; lineY += gridSquareDim.height) {
             DrawLine(0, lineY, SCREEN_WIDTH, lineY, BLUE);
         }
-
-skip_debug_grid:
     }
+skip_debug_grid:
 
     if (STATE->showDebugHUD) {
 
