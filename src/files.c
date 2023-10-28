@@ -8,11 +8,7 @@
 #define MODE_WRITE "wb+"
 
 
-/*
-    1048576 bytes = 1 MiB.
-    For a struct size of 64 bytes, this means 16384 entities.
-*/
-static size_t READ_BUFFER_SIZE = 1048576;
+static size_t MAX_ITEM_COUNT = 16384;
 
 
 static FILE *openFile(char *filepath, char* mode) {
@@ -38,11 +34,11 @@ static void closeFile(FILE *file) {
 FileData readFromFile(FILE *file, size_t itemSize) {
 
     FileData data;
-    void *buffer = MemAlloc(itemSize * READ_BUFFER_SIZE);
+    void *buffer = MemAlloc(itemSize * MAX_ITEM_COUNT);
 
     data.itemSize = itemSize;
 
-    data.itemCount = fread(buffer, itemSize, READ_BUFFER_SIZE, file);
+    data.itemCount = fread(buffer, itemSize, MAX_ITEM_COUNT, file);
 
     if (!data.itemCount) {
         TraceLog(LOG_ERROR, "Error reading file.");
@@ -58,6 +54,12 @@ FileData readFromFile(FILE *file, size_t itemSize) {
 }
 
 static bool writeToFile(FILE *file, FileData data) {
+
+    if (data.itemCount > MAX_ITEM_COUNT) {
+        TraceLog(LOG_ERROR,
+            "Writing to file, exceeded max item count. Count: %d, max: %d.", data.itemCount, MAX_ITEM_COUNT);
+        return false;
+    }
 
     size_t itemsWritten = fwrite(data.data, data.itemSize, data.itemCount, file);
 
