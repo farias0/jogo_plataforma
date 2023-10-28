@@ -22,6 +22,22 @@ ListNode *LEVEL_LIST_HEAD = 0;
 
 static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
+void initializeLevel(char *levelName) {
+
+    GameStateReset();
+    STATE->mode = MODE_IN_LEVEL;
+
+    LinkedListRemoveAll(&LEVEL_LIST_HEAD);
+
+    if (!PersistenceLevelLoad(levelName)) {
+        GameModeToggle();
+        return;
+    }
+
+    EditorSync();
+
+    TraceLog(LOG_INFO, "Level initialized: %s.", levelName);
+}
 
 // Searches for an entity that's not the player
 // in a given position and returns its node, or 0 if not found.
@@ -47,19 +63,7 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
 
 void LevelInitialize() {
 
-    GameStateReset();
-    STATE->mode = MODE_IN_LEVEL;
-
-    LinkedListRemoveAll(&LEVEL_LIST_HEAD);
-
-    if (!PersistenceLevelLoad(LEVEL_NAME)) {
-        GameModeToggle();
-        return;
-    }
-
-    EditorSync();
-
-    TraceLog(LOG_INFO, "Level initialized.");
+    initializeLevel(LEVEL_NAME);
 }
 
 Vector2 LevelGetPlayerStartingPosition() {
@@ -127,6 +131,10 @@ void LevelTick() {
 
 void LevelSave() {
     PersistenceLevelSave(LEVEL_NAME);
+}
+
+void LevelLoadNew() {
+    initializeLevel(DEFAULT_NEW_LEVEL_NAME);
 }
 
 void LevelPlayerSetStartingPos(Vector2 pos) {

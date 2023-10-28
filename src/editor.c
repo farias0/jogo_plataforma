@@ -49,6 +49,7 @@ void loadInLevelEditor() {
     loadEditorEntityItem(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
     loadEditorControlItem(EDITOR_CONTROL_SAVE, "Salvar fase", &LevelSave);
+    loadEditorControlItem(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded in level itens.");
 }

@@ -66,6 +66,9 @@ void LevelTick();
 // Saves to file the current loaded level's data
 void LevelSave();
 
+// Loads a new, default level
+void LevelLoadNew();
+
 
 void LevelPlayerInitialize(Vector2 pos);
 
