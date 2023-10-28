@@ -8,10 +8,6 @@
 #define MODE_WRITE "wb+"
 
 
-static char *LEVELS_DIR = "../levels/";
-
-static char *LEVEL_NAME = "my_level.lvl";
-
 /*
     1048576 bytes = 1 MiB.
     For a struct size of 64 bytes, this means 16384 entities.
@@ -19,28 +15,16 @@ static char *LEVEL_NAME = "my_level.lvl";
 static size_t READ_BUFFER_SIZE = 1048576;
 
 
-static char *getFullPath(char *filename) {
+static FILE *openFile(char *filepath, char* mode) {
 
-    char *path = MemAlloc(sizeof(char) * 100);
-    
-    strcat(path, LEVELS_DIR);
-    strcat(path, filename);
-    
-    return path;
-}
-
-static FILE *openFile(char *filename, char* mode) {
-
-    filename = getFullPath(filename);
-
-    FILE *file = fopen(filename, mode);
+    FILE *file = fopen(filepath, mode);
 
     if (!file) {
-        TraceLog(LOG_ERROR, "Could not open file %s.", filename);
+        TraceLog(LOG_ERROR, "Could not open file %s.", filepath);
         return false;
     }
 
-    TraceLog(LOG_TRACE, "Opened file '%s'.", filename);
+    TraceLog(LOG_TRACE, "Opened file '%s'.", filepath);
 
     return file;
 }
@@ -88,17 +72,17 @@ static bool writeToFile(FILE *file, FileData data) {
     return true;
 }
 
-bool FileSave(FileData data) {
+bool FileSave(char *filepath, FileData data) {
 
-    FILE *file = openFile(LEVEL_NAME, MODE_WRITE);
+    FILE *file = openFile(filepath, MODE_WRITE);
     bool result = writeToFile(file, data);
     closeFile(file);
     return result;
 }
 
-FileData FileLoad(size_t itemSize) {
+FileData FileLoad(char *filepath, size_t itemSize) {
 
-    FILE *file = openFile(LEVEL_NAME, MODE_READ);
+    FILE *file = openFile(filepath, MODE_READ);
     rewind(file);
     FileData data = readFromFile(file, itemSize);
     closeFile(file);

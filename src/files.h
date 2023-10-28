@@ -9,8 +9,8 @@ typedef struct FileData {
 } FileData;
 
 
-bool FileSave(FileData data);
-FileData FileLoad(size_t itemSize);
+bool FileSave(char *filepath, FileData data);
+FileData FileLoad(char *filepath, size_t itemSize);
 
 
 #endif // _FILES_H_INCLUDED_

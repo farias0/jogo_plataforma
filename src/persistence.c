@@ -7,6 +7,14 @@
 #include "files.h"
 #include "render.h"
 
+
+static char *LEVELS_DIR = "../levels/";
+
+static char *LEVEL_NAME = "my_level.lvl";
+
+static char *DEFAULT_NEW_LEVEL_NAME = "default_new_level.lvl";
+
+
 typedef enum LevelEntityType {
     LEVEL_ENTITY_PLAYER,
     LEVEL_ENTITY_ENEMY,
@@ -19,6 +27,16 @@ typedef struct PersistenceLevelEntity {
     uint32_t y;
 } PersistenceLevelEntity;
 
+
+static char *getFullPath(char *filename) {
+
+    char *path = MemAlloc(sizeof(char) * 100);
+    
+    strcat(path, LEVELS_DIR);
+    strcat(path, filename);
+    
+    return path;
+}
 
 void PersistenceLevelSave() {
 
@@ -54,7 +72,9 @@ skip_entity:
 
     FileData filedata = (FileData){ data, entitySize, saveItemCount };
 
-    if (FileSave(filedata)) {
+    char *filepath = getFullPath(LEVEL_NAME);
+
+    if (FileSave(filepath, filedata)) {
         TraceLog(LOG_INFO, "Level saved.");
         RenderPrintSysMessage("Level saved.");
     } else {
@@ -69,7 +89,8 @@ skip_entity:
 
 bool PersistenceLevelLoad() {
 
-    FileData filedata = FileLoad(sizeof(PersistenceLevelEntity));
+    char *filepath = getFullPath(LEVEL_NAME);
+    FileData filedata = FileLoad(filepath, sizeof(PersistenceLevelEntity));
 
     if (!filedata.itemCount) {
         TraceLog(LOG_ERROR, "Could not load level.");
