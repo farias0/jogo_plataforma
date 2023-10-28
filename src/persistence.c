@@ -101,7 +101,7 @@ bool PersistenceLevelLoad() {
 
     MemFree(data);
 
-    TraceLog(LOG_INFO, "Level loaded.");
+    TraceLog(LOG_TRACE, "Level loaded.");
 
     return true;
 }

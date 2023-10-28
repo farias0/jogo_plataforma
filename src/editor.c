@@ -51,7 +51,7 @@ void loadInLevelEditor() {
 
     loadEditorControlItem(EDITOR_CONTROL_SAVE, "Save", &PersistenceLevelSave);
 
-    TraceLog(LOG_DEBUG, "Editor loaded in level itens.");
+    TraceLog(LOG_TRACE, "Editor loaded in level itens.");
 }
 
 void loadOverworldEditor() {
@@ -63,7 +63,7 @@ void loadOverworldEditor() {
     loadEditorEntityItem(EDITOR_ENTITY_STRAIGHT, PathTileStraightSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     loadEditorEntityItem(EDITOR_ENTITY_PATH_IN_L, PathTileInLSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
 
-    TraceLog(LOG_DEBUG, "Editor loaded overworld itens.");
+    TraceLog(LOG_TRACE, "Editor loaded overworld itens.");
 }
 
 void EditorSync() {

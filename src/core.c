@@ -28,7 +28,7 @@ void GameStateReset() {
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
     STATE->mode = MODE_IN_LEVEL;
 
-    TraceLog(LOG_INFO, "Game state reset.");
+    TraceLog(LOG_DEBUG, "Game state reset.");
 }
 
 void GameModeToggle() {
@@ -68,11 +68,11 @@ void EditorEnabledToggle() {
     if (STATE->isEditorEnabled) {
         SetWindowSize(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
         ShowCursor();
-        TraceLog(LOG_INFO, "Editor enabled.");
+        TraceLog(LOG_TRACE, "Editor enabled.");
     } else {
         SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
         HideCursor();
-        TraceLog(LOG_INFO, "Editor disabled.");
+        TraceLog(LOG_TRACE, "Editor disabled.");
     }
 }
 

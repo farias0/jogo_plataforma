@@ -97,7 +97,7 @@ void LevelEntityRemoveAt(Vector2 pos) {
 
     if (node) {
         LinkedListRemove(&LEVEL_LIST_HEAD, node);
-        TraceLog(LOG_DEBUG, "Removed level entity.");
+        TraceLog(LOG_TRACE, "Removed level entity.");
     }
 }
 

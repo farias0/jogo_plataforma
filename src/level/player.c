@@ -81,7 +81,7 @@ void LevelPlayerInitialize(Vector2 pos) {
     node->item = newPlayer;
     LinkedListAdd(&LEVEL_LIST_HEAD, node);
 
-    TraceLog(LOG_INFO, "Added player to level (x=%.1f, y=%.1f)",
+    TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
 }
 

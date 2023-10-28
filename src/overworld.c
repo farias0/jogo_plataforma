@@ -58,7 +58,7 @@ static void initializeCursor() {
     OW_CURSOR = newCursor;
     CURSOR_STATE.cursor = OW_CURSOR;
 
-    TraceLog(LOG_INFO, "Added cursor to overworld (x=%.1f, y=%.1f)",
+    TraceLog(LOG_TRACE, "Added cursor to overworld (x=%.1f, y=%.1f)",
                 newCursor->gridPos.x, newCursor->gridPos.y);
 }
 
@@ -101,7 +101,7 @@ static OverworldEntity *addTileToOverworld(Vector2 pos, OverworldTileType type, 
     node->item = newTile;
     LinkedListAdd(&OW_LIST_HEAD, node);
 
-    TraceLog(LOG_DEBUG, "Added tile to overworld (x=%.1f, y=%.1f)",
+    TraceLog(LOG_TRACE, "Added tile to overworld (x=%.1f, y=%.1f)",
                 newTile->gridPos.x, newTile->gridPos.y);
 
     return newTile;
@@ -155,7 +155,7 @@ static void overworldLoad() {
 
     CURSOR_STATE.tileUnder = dot1;
 
-    TraceLog(LOG_INFO, "Overworld loaded.");
+    TraceLog(LOG_TRACE, "Overworld loaded.");
 }
 
 void OverworldInitialize() {
@@ -278,13 +278,13 @@ void OverworldTileAddOrInteract(Vector2 pos) {
         if (!CheckCollisionRecs(testHitbox, getGridSquare(entity))) goto next_entity;
 
         if (entity->components & OW_IS_LEVEL_DOT) {
-            TraceLog(LOG_DEBUG, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
+            TraceLog(LOG_TRACE, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
                             entity->components, entity->gridPos.x, entity->gridPos.y);
             return;
         }
 
         SpriteRotate(&entity->sprite, 90);
-        TraceLog(LOG_DEBUG, "Rotated tile component=%d, x=%.1f, y=%.1f",
+        TraceLog(LOG_TRACE, "Rotated tile component=%d, x=%.1f, y=%.1f",
                 entity->components, entity->gridPos.x, entity->gridPos.y);
         return;
 
@@ -312,7 +312,7 @@ next_entity:
 
     addTileToOverworld(pos, typeToAdd, 0);
 
-    TraceLog(LOG_DEBUG, "Added tile of type %d to the overworld (x=%.1f, y=%.1f).",
+    TraceLog(LOG_TRACE, "Added tile of type %d to the overworld (x=%.1f, y=%.1f).",
                 typeToAdd, pos.x, pos.y);
 }
 
@@ -322,7 +322,7 @@ void OverworldTileRemoveAt(Vector2 pos) {
 
     if (!node) {
 
-        TraceLog(LOG_DEBUG, "Didn't find any tile to remove.");
+        TraceLog(LOG_TRACE, "Didn't find any tile to remove.");
         return;
     }
 
@@ -330,12 +330,12 @@ void OverworldTileRemoveAt(Vector2 pos) {
     // but this would demand some logic to manage the tileUnder pointer.
     // For now this is good enough.
     if (node->item == CURSOR_STATE.tileUnder) {
-        TraceLog(LOG_DEBUG, "Won't remove tile, it's under the cursor.");
+        TraceLog(LOG_TRACE, "Won't remove tile, it's under the cursor.");
         return;
     }
 
     LinkedListRemove(&OW_LIST_HEAD, node);
-    TraceLog(LOG_DEBUG, "Removed overworld tile.");
+    TraceLog(LOG_TRACE, "Removed overworld tile.");
 }
 
 void OverworldTick() {

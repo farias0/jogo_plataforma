@@ -40,7 +40,7 @@ static FILE *openFile(char *filename, char* mode) {
         return false;
     }
 
-    TraceLog(LOG_DEBUG, "Opened file '%s'.", filename);
+    TraceLog(LOG_TRACE, "Opened file '%s'.", filename);
 
     return file;
 }
@@ -48,7 +48,7 @@ static FILE *openFile(char *filename, char* mode) {
 static void closeFile(FILE *file) {
 
     fclose(file);
-    TraceLog(LOG_DEBUG, "Closed file.");
+    TraceLog(LOG_TRACE, "Closed file.");
 }
 
 FileData readFromFile(FILE *file, size_t itemSize) {
