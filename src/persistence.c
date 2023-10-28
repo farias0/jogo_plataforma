@@ -73,10 +73,10 @@ skip_entity:
 
     if (FileSave(filepath, filedata)) {
         TraceLog(LOG_INFO, "Level saved: %s.", levelName);
-        RenderPrintSysMessage("Level saved.");
+        RenderPrintSysMessage("Fase salva.");
     } else {
         TraceLog(LOG_ERROR, "Could not save level %s.", levelName);
-        RenderPrintSysMessage("Could not save level.");
+        RenderPrintSysMessage("Erro salvando fase.");
     }
 
     MemFree(data);
@@ -91,7 +91,7 @@ bool PersistenceLevelLoad(char *levelName) {
 
     if (!filedata.itemCount) {
         TraceLog(LOG_ERROR, "Could not load level %s.", levelName);
-        RenderPrintSysMessage("Could not load level.");
+        RenderPrintSysMessage("Erro carregando fase.");
         return false;
     }
 
