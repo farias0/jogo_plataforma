@@ -10,10 +10,6 @@
 
 static char *LEVELS_DIR = "../levels/";
 
-static char *LEVEL_NAME = "my_level.lvl";
-
-static char *DEFAULT_NEW_LEVEL_NAME = "default_new_level.lvl";
-
 
 typedef enum LevelEntityType {
     LEVEL_ENTITY_PLAYER,
@@ -38,7 +34,7 @@ static char *getFullPath(char *filename) {
     return path;
 }
 
-void PersistenceLevelSave() {
+void PersistenceLevelSave(char *levelName) {
 
     size_t levelItemCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
     size_t saveItemCount = levelItemCount;
@@ -72,7 +68,7 @@ skip_entity:
 
     FileData filedata = (FileData){ data, entitySize, saveItemCount };
 
-    char *filepath = getFullPath(LEVEL_NAME);
+    char *filepath = getFullPath(levelName);
 
     if (FileSave(filepath, filedata)) {
         TraceLog(LOG_INFO, "Level saved.");
@@ -87,9 +83,9 @@ skip_entity:
     return;
 }
 
-bool PersistenceLevelLoad() {
+bool PersistenceLevelLoad(char *levelName) {
 
-    char *filepath = getFullPath(LEVEL_NAME);
+    char *filepath = getFullPath(levelName);
     FileData filedata = FileLoad(filepath, sizeof(PersistenceLevelEntity));
 
     if (!filedata.itemCount) {

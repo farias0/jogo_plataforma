@@ -13,6 +13,10 @@
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 #define ON_THE_GROUND_Y_TOLERANCE 5
 
+#define LEVEL_NAME              "my_level.lvl"
+
+#define DEFAULT_NEW_LEVEL_NAME  "default_new_level.lvl"
+
 
 ListNode *LEVEL_LIST_HEAD = 0;
 
@@ -48,7 +52,7 @@ void LevelInitialize() {
 
     LinkedListRemoveAll(&LEVEL_LIST_HEAD);
 
-    if (!PersistenceLevelLoad()) {
+    if (!PersistenceLevelLoad(LEVEL_NAME)) {
         GameModeToggle();
         return;
     }
@@ -119,6 +123,10 @@ void LevelTick() {
     }
 
     CameraTick();
+}
+
+void LevelSave() {
+    PersistenceLevelSave(LEVEL_NAME);
 }
 
 void LevelPlayerSetStartingPos(Vector2 pos) {

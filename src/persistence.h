@@ -5,9 +5,9 @@
 #include <stdbool.h>
 
 
-void PersistenceLevelSave();
+void PersistenceLevelSave(char *levelName);
 
-bool PersistenceLevelLoad();
+bool PersistenceLevelLoad(char *levelName);
 
 
 #endif // _PERSISTENCE_H_INCLUDED_
