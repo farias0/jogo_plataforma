@@ -64,6 +64,7 @@ typedef struct EditorEntityItem {
 
 typedef enum { 
     EDITOR_CONTROL_SAVE,
+    EDITOR_CONTROL_NEW_LEVEL
 } EditorControlType;
 
 typedef struct EditorControlItem {

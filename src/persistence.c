@@ -7,6 +7,10 @@
 #include "files.h"
 #include "render.h"
 
+
+static char *LEVELS_DIR = "../levels/";
+
+
 typedef enum LevelEntityType {
     LEVEL_ENTITY_PLAYER,
     LEVEL_ENTITY_ENEMY,
@@ -20,14 +24,25 @@ typedef struct PersistenceLevelEntity {
 } PersistenceLevelEntity;
 
 
-void PersistenceLevelSave() {
+static char *getFullPath(char *filename) {
+
+    char *path = MemAlloc(sizeof(char) * 100);
+    
+    strcat(path, LEVELS_DIR);
+    strcat(path, filename);
+    
+    return path;
+}
+
+void PersistenceLevelSave(char *levelName) {
 
     size_t levelItemCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
     size_t saveItemCount = levelItemCount;
     size_t entitySize = sizeof(PersistenceLevelEntity);
     PersistenceLevelEntity *data = MemAlloc(entitySize * saveItemCount);
 
-    TraceLog(LOG_DEBUG, "Saving level... (struct size=%d, level item count=%d)", entitySize, levelItemCount);
+    TraceLog(LOG_DEBUG, "Saving level %s... (struct size=%d, level item count=%d)",
+                        levelName, entitySize, levelItemCount);
 
     ListNode *node = LEVEL_LIST_HEAD;
     for (size_t i = 0; i < levelItemCount; ) {
@@ -54,11 +69,13 @@ skip_entity:
 
     FileData filedata = (FileData){ data, entitySize, saveItemCount };
 
-    if (FileSave(filedata)) {
-        TraceLog(LOG_INFO, "Level saved.");
+    char *filepath = getFullPath(levelName);
+
+    if (FileSave(filepath, filedata)) {
+        TraceLog(LOG_INFO, "Level saved: %s.", levelName);
         RenderPrintSysMessage("Level saved.");
     } else {
-        TraceLog(LOG_ERROR, "Could not save level.");
+        TraceLog(LOG_ERROR, "Could not save level %s.", levelName);
         RenderPrintSysMessage("Could not save level.");
     }
 
@@ -67,12 +84,13 @@ skip_entity:
     return;
 }
 
-bool PersistenceLevelLoad() {
+bool PersistenceLevelLoad(char *levelName) {
 
-    FileData filedata = FileLoad(sizeof(PersistenceLevelEntity));
+    char *filepath = getFullPath(levelName);
+    FileData filedata = FileLoad(filepath, sizeof(PersistenceLevelEntity));
 
     if (!filedata.itemCount) {
-        TraceLog(LOG_ERROR, "Could not load level.");
+        TraceLog(LOG_ERROR, "Could not load level %s.", levelName);
         RenderPrintSysMessage("Could not load level.");
         return false;
     }
@@ -101,7 +119,7 @@ bool PersistenceLevelLoad() {
 
     MemFree(data);
 
-    TraceLog(LOG_TRACE, "Level loaded.");
+    TraceLog(LOG_TRACE, "Level loaded: %s.", levelName);
 
     return true;
 }

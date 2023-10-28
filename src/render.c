@@ -313,6 +313,8 @@ static void renderEditorControl() {
             }
 
             item->handler();
+
+            return;
         }
 
 next_button:
