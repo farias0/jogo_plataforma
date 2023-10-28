@@ -31,24 +31,7 @@ void GameStateReset() {
     TraceLog(LOG_DEBUG, "Game state reset.");
 }
 
-void GameModeToggle() {
-
-    switch (STATE->mode)
-    {
-    case MODE_IN_LEVEL:
-        OverworldInitialize();
-        break;
-    
-    case MODE_OVERWORLD:
-        LevelInitialize();
-        break;
-
-    default:
-        TraceLog(LOG_WARNING, "No code to handle toggle game mode for mode %d.", STATE->mode);
-    }
-}
-
-void StateInLevelToggle() {
+void PausedGameToggle() {
     if (STATE->isPaused) {
 
         if (STATE->isPlayerDead) {

@@ -16,7 +16,7 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_BACKSPACE))   { OverworldInitialize(); return; }
 
-    if      (IsKeyPressed(KEY_ENTER))       { StateInLevelToggle(); return; }
+    if      (IsKeyPressed(KEY_ENTER))       { PausedGameToggle(); return; }
 
 
     if (STATE->isPlayerDead) return;

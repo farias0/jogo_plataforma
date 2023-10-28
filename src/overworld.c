@@ -8,6 +8,9 @@
 #include "camera.h"
 
 
+#define LEVEL_NAME "my_level.lvl"
+
+
 typedef struct CursorState {
     OverworldEntity *cursor;
 
@@ -177,7 +180,7 @@ void OverworldInitialize() {
 void OverworldLevelSelect() {
 
     if (CURSOR_STATE.tileUnder->components & OW_IS_LEVEL_DOT) {
-        LevelInitialize();
+        LevelInitialize(LEVEL_NAME);
     }
 }
 

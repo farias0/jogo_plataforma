@@ -44,11 +44,8 @@ void GameStateInitialize();
 
 void GameStateReset();
 
-// Toggles between level and overworld
-void GameModeToggle();
-
 // Toggles between paused and unpaused game
-void StateInLevelToggle();
+void PausedGameToggle();
 
 // Enables and disables editor
 void EditorEnabledToggle();
