@@ -48,7 +48,7 @@ extern ListNode *LEVEL_LIST_HEAD;
 extern LevelEntity *LEVEL_PLAYER; 
 
 
-void LevelInitialize();
+void LevelInitialize(char *levelName);
 
 // Returns the player's starting position for the currently loaded level
 Vector2 LevelGetPlayerStartingPosition();

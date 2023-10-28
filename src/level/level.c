@@ -8,36 +8,21 @@
 #include "../core.h"
 #include "../camera.h"
 #include "../persistence.h"
+#include "../overworld.h"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 #define ON_THE_GROUND_Y_TOLERANCE 5
 
-#define LEVEL_NAME              "my_level.lvl"
-
-#define DEFAULT_NEW_LEVEL_NAME  "default_new_level.lvl"
+#define DEFAULT_NEW_LEVEL_NAME "default_new_level.lvl"
 
 
 ListNode *LEVEL_LIST_HEAD = 0;
 
+static char *currentLoadedLevel = 0;
+
 static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
-void initializeLevel(char *levelName) {
-
-    GameStateReset();
-    STATE->mode = MODE_IN_LEVEL;
-
-    LinkedListRemoveAll(&LEVEL_LIST_HEAD);
-
-    if (!PersistenceLevelLoad(levelName)) {
-        GameModeToggle();
-        return;
-    }
-
-    EditorSync();
-
-    TraceLog(LOG_INFO, "Level initialized: %s.", levelName);
-}
 
 // Searches for an entity that's not the player
 // in a given position and returns its node, or 0 if not found.
@@ -61,9 +46,23 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
     return 0;
 }
 
-void LevelInitialize() {
+void LevelInitialize(char *levelName) {
 
-    initializeLevel(LEVEL_NAME);
+    GameStateReset();
+    STATE->mode = MODE_IN_LEVEL;
+
+    LinkedListRemoveAll(&LEVEL_LIST_HEAD);
+
+    if (!PersistenceLevelLoad(levelName)) {
+        OverworldInitialize();
+        return;
+    }
+
+    currentLoadedLevel = levelName;
+
+    EditorSync();
+
+    TraceLog(LOG_INFO, "Level initialized: %s.", levelName);
 }
 
 Vector2 LevelGetPlayerStartingPosition() {
@@ -130,11 +129,12 @@ void LevelTick() {
 }
 
 void LevelSave() {
-    PersistenceLevelSave(LEVEL_NAME);
+    PersistenceLevelSave(currentLoadedLevel);
 }
 
 void LevelLoadNew() {
-    initializeLevel(DEFAULT_NEW_LEVEL_NAME);
+    LevelInitialize(DEFAULT_NEW_LEVEL_NAME);
+    currentLoadedLevel = "new_level.lvl"; // TODO seek an unused level name
 }
 
 void LevelPlayerSetStartingPos(Vector2 pos) {

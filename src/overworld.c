@@ -6,6 +6,7 @@
 #include "core.h"
 #include "assets.h"
 #include "camera.h"
+#include "render.h"
 
 
 typedef struct CursorState {
@@ -144,13 +145,18 @@ static void overworldLoad() {
     addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     OW_JOIN_PATH,      270);
     addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 2, dotY },     OW_STRAIGHT_PATH,  90);
     addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     OW_JOIN_PATH,      90);
-    addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     OW_LEVEL_DOT,      0);
+    OverworldEntity *dot2    = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     OW_LEVEL_DOT,      0);
 
     // Path up
     addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height },      OW_JOIN_PATH,      180);
     addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 2},   OW_STRAIGHT_PATH,  0);
     addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 3},   OW_JOIN_PATH,      0);
-    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
+    OverworldEntity *dot3    = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
+
+
+    dot1->levelName = "level_1.lvl";
+    dot2->levelName = "level_2.lvl";
+    dot3->levelName = "level_3.lvl";
 
 
     CURSOR_STATE.tileUnder = dot1;
@@ -176,9 +182,19 @@ void OverworldInitialize() {
 
 void OverworldLevelSelect() {
 
-    if (CURSOR_STATE.tileUnder->components & OW_IS_LEVEL_DOT) {
-        LevelInitialize();
+    if (!(CURSOR_STATE.tileUnder->components & OW_IS_LEVEL_DOT)) {
+        TraceLog(LOG_TRACE, "Overworld tried to enter level, but not a dot.");
+        return;
     }
+
+    if (!CURSOR_STATE.tileUnder->levelName) {
+        // TODO allow to associate dot with level
+        TraceLog(LOG_DEBUG, "Overworld dot has no level associated to it.");
+        RenderPrintSysMessage("Sem fase associada.");
+        return;
+    }
+
+    LevelInitialize(CURSOR_STATE.tileUnder->levelName);
 }
 
 void OverworldCursorMove(OverworldCursorDirection direction) {
