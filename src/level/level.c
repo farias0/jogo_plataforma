@@ -1,7 +1,7 @@
 #include <raylib.h>
 #include "stdlib.h"
-
 #include <stdio.h>
+#include <string.h>
 
 #include "level.h"
 #include "../linked_list.h"
@@ -14,12 +14,10 @@
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 #define ON_THE_GROUND_Y_TOLERANCE 5
 
-#define DEFAULT_NEW_LEVEL_NAME "default_new_level.lvl"
-
 
 ListNode *LEVEL_LIST_HEAD = 0;
 
-static char *currentLoadedLevel = 0;
+static char currentLoadedLevel[LEVEL_NAME_BUFFER_SIZE] = "";
 
 static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
@@ -58,7 +56,7 @@ void LevelInitialize(char *levelName) {
         return;
     }
 
-    currentLoadedLevel = levelName;
+    strncpy(currentLoadedLevel, levelName, LEVEL_NAME_BUFFER_SIZE);
 
     EditorSync();
 
@@ -134,7 +132,7 @@ void LevelSave() {
 
 void LevelLoadNew() {
     LevelInitialize(DEFAULT_NEW_LEVEL_NAME);
-    currentLoadedLevel = "new_level.lvl"; // TODO seek an unused level name
+    strncpy(currentLoadedLevel, "new_level.lvl", LEVEL_NAME_BUFFER_SIZE); // TODO seek an unused level name
 }
 
 void LevelPlayerSetStartingPos(Vector2 pos) {

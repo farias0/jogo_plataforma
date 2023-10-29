@@ -5,6 +5,7 @@
 #include "level/level.h"
 #include "overworld.h"
 #include "camera.h"
+#include "persistence.h"
 
 
 #define CAMERA_SPEED 8.0f;
@@ -88,9 +89,23 @@ void handleCameraInput() {
     if (IsKeyDown(KEY_S)) CAMERA->pos.y += CAMERA_SPEED;
 }
 
+void handleDroppedFile() {
+
+    char *levelName = MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
+    if (PersistenceGetDroppedLevelName(levelName)) {
+        LevelInitialize(levelName);
+    }
+    MemFree(levelName);
+}
+
 void InputHandle() {
 
     handleEditorInput();
+
+    if (IsFileDropped()) {
+        handleDroppedFile();
+        return;
+    }
 
     if (STATE->mode == MODE_IN_LEVEL) {
         handleInLevelInput();
