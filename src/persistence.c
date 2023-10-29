@@ -145,8 +145,8 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
     // Ideally we'd support loading levels from anywhere,
     // but this would involve rewriting the InitializeLevel logic.
     // ATTENTION: It presumes the working dir is next to the 'levels' dir (i.e., it's the 'build' dir)
-    char *fileDir = GetDirectoryPath(filePath);
-    char *projectRootPath = GetPrevDirectoryPath(GetWorkingDirectory());
+    const char *fileDir = GetDirectoryPath(filePath);
+    const char *projectRootPath = GetPrevDirectoryPath(GetWorkingDirectory());
     if (strcmp(projectRootPath, GetPrevDirectoryPath(fileDir)) != 0 ||
         strcmp(GetFileName(fileDir), LEVELS_DIR_NAME) != 0) {
 
@@ -162,7 +162,7 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
         goto return_result;
     }
 
-    char *fileName = GetFileName(filePath);
+    const char *fileName = GetFileName(filePath);
 
     if (strcmp(fileName, NEW_LEVEL_NAME) == 0 ||
         strlen(fileName) > LEVEL_NAME_BUFFER_SIZE) {
