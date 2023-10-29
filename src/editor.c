@@ -49,7 +49,6 @@ void loadInLevelEditor() {
     loadEditorEntityItem(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
     loadEditorControlItem(EDITOR_CONTROL_SAVE, "Salvar fase", &LevelSave);
-    loadEditorControlItem(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded in level itens.");
 }
@@ -62,6 +61,8 @@ void loadOverworldEditor() {
     loadEditorEntityItem(EDITOR_ENTITY_PATH_JOIN, PathTileJoinSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     loadEditorEntityItem(EDITOR_ENTITY_STRAIGHT, PathTileStraightSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     loadEditorEntityItem(EDITOR_ENTITY_PATH_IN_L, PathTileInLSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+
+    loadEditorControlItem(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded overworld itens.");
 }
