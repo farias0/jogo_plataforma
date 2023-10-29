@@ -14,6 +14,10 @@
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 #define ON_THE_GROUND_Y_TOLERANCE 5
 
+// TODO seek an unused level name, i.e. "new_level_2.lvl"
+// THe name of a new level
+#define DEFAULT_NEW_LEVEL_NAME "new_level.lvl"
+
 
 ListNode *LEVEL_LIST_HEAD = 0;
 
@@ -131,8 +135,8 @@ void LevelSave() {
 }
 
 void LevelLoadNew() {
-    LevelInitialize(DEFAULT_NEW_LEVEL_NAME);
-    strncpy(currentLoadedLevel, "new_level.lvl", LEVEL_NAME_BUFFER_SIZE); // TODO seek an unused level name
+    LevelInitialize(NEW_LEVEL_NAME);
+    strncpy(currentLoadedLevel, DEFAULT_NEW_LEVEL_NAME, LEVEL_NAME_BUFFER_SIZE);
 }
 
 void LevelPlayerSetStartingPos(Vector2 pos) {

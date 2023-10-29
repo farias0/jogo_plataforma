@@ -164,7 +164,7 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
 
     char *fileName = GetFileName(filePath);
 
-    if (strcmp(fileName, DEFAULT_NEW_LEVEL_NAME) == 0 ||
+    if (strcmp(fileName, NEW_LEVEL_NAME) == 0 ||
         strlen(fileName) > LEVEL_NAME_BUFFER_SIZE) {
 
             TraceLog(LOG_ERROR, "Dropped file has invalid level name %s.",
