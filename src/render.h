@@ -2,6 +2,9 @@
 #define _RENDER_H_INCLUDED_
 
 
+#define SYS_MSG_BUFFER_SIZE 1000
+
+
 void Render();
 
 // Prints a system message in the screen

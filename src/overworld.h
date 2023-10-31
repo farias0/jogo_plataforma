@@ -3,8 +3,8 @@
 
 
 #include "assets.h"
-
 #include "linked_list.h"
+#include "persistence.h"
 
 
 #define OW_GRID (Dimensions){ 64, 64 }
@@ -40,7 +40,7 @@ typedef struct OverworldEntity {
     Sprite sprite;
     int layer;
     
-    char *levelName;
+    char levelName[LEVEL_NAME_BUFFER_SIZE];
 
 } OverworldEntity;
 

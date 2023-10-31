@@ -1,10 +1,14 @@
 #include <raylib.h>
+#include <string.h>
+#include <stdio.h>
 
 #include "input.h"
 #include "core.h"
 #include "level/level.h"
 #include "overworld.h"
 #include "camera.h"
+#include "persistence.h"
+#include "render.h"
 
 
 #define CAMERA_SPEED 8.0f;
@@ -20,6 +24,7 @@ void handleInLevelInput() {
 
 
     if (STATE->isPlayerDead) return;
+    if (!LEVEL_PLAYER) return;
 
 
     if      (IsKeyDown(KEY_Z))              STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
@@ -88,9 +93,41 @@ void handleCameraInput() {
     if (IsKeyDown(KEY_S)) CAMERA->pos.y += CAMERA_SPEED;
 }
 
+void handleDroppedFile() {
+
+    char *levelName = MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
+    
+    if (PersistenceGetDroppedLevelName(levelName)) {
+        
+        LevelInitialize(levelName);
+        
+        if (STATE->expectingLevelAssociation) {
+
+            strncpy(STATE->tileUnderCursor->levelName, levelName, LEVEL_NAME_BUFFER_SIZE);
+
+            TraceLog(LOG_INFO, "Dot on x=%.1f, y=%.1f associated with level %s.",
+                        STATE->tileUnderCursor->gridPos.x, STATE->tileUnderCursor->gridPos.y, levelName);
+            
+            char *sysMsg = MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
+            sprintf(sysMsg, "Associada fase %s", levelName);
+            RenderPrintSysMessage(sysMsg);
+            MemFree(sysMsg);
+
+            STATE->expectingLevelAssociation = false;
+        }
+    }
+
+    MemFree(levelName);
+}
+
 void InputHandle() {
 
     handleEditorInput();
+
+    if (IsFileDropped()) {
+        handleDroppedFile();
+        return;
+    }
 
     if (STATE->mode == MODE_IN_LEVEL) {
         handleInLevelInput();

@@ -189,6 +189,7 @@ static void renderSysMsgs() {
         msg = (SysMessage *) node->item;
 
         if (msg->secondsUntilDisappear <= 0) {
+            MemFree(msg->msg);
             LinkedListRemove(&SYS_MESSAGES_HEAD, node);
             goto next_node;
         }        
@@ -207,10 +208,6 @@ next_node:
 }
 
 static void renderHUD() {
-    if (STATE->isPaused && !STATE->isPlayerDead) DrawText("PAUSE", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, RAYWHITE);
-    if (STATE->isPlayerDead) DrawText("YOU DIED", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 60, RAYWHITE);
-
-    renderSysMsgs();
 
     if (STATE->showDebugGrid) {
         Dimensions gridSquareDim;
@@ -235,6 +232,36 @@ static void renderHUD() {
     }
 skip_debug_grid:
 
+
+    if (STATE->mode == MODE_IN_LEVEL) {
+
+        if (STATE->isPaused && !STATE->isPlayerDead) DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
+        
+        if (STATE->isPlayerDead) DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
+        
+        if (STATE->loadedLevel[0] == '\0')
+            DrawText("Arraste uma fase para cá", 400, 350, 40, RAYWHITE);
+
+    }
+    else if (STATE->mode == MODE_OVERWORLD) {
+
+        OverworldEntity *tile = STATE->tileUnderCursor;
+
+        if (tile->tileType == OW_LEVEL_DOT) {
+
+            char levelName[LEVEL_NAME_BUFFER_SIZE];
+            if (tile->levelName[0] != '\0') strncpy(levelName, tile->levelName, LEVEL_NAME_BUFFER_SIZE);
+            else strncpy(levelName, "[sem fase]", LEVEL_NAME_BUFFER_SIZE);
+            DrawText(levelName,
+                        tile->gridPos.x - 20,
+                        tile->gridPos.y + (tile->sprite.sprite.height * tile->sprite.scale),
+                        20,
+                        RAYWHITE);
+        }
+
+    }
+
+
     if (STATE->showDebugHUD) {
 
         ListNode *listHead = GetEntityListHead();
@@ -251,6 +278,8 @@ skip_debug_grid:
             DrawText(mousePosTxt, 600, 20, 20, WHITE);
         }
     }
+
+    renderSysMsgs();
 }
 
 static void renderEditorEntities() {
@@ -358,8 +387,11 @@ void Render() {
 
 void RenderPrintSysMessage(char *msg) {
 
+    char *msgCopy = MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
+    strncpy(msgCopy, msg, SYS_MSG_BUFFER_SIZE); 
+
     SysMessage *newMsg = MemAlloc(sizeof(SysMessage));
-    newMsg->msg = msg;
+    newMsg->msg = msgCopy;
     newMsg->secondsUntilDisappear = SYS_MESSAGE_SECONDS;
     
     ListNode *node = MemAlloc(sizeof(ListNode));

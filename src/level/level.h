@@ -8,6 +8,8 @@
 #include "../assets.h"
 
 
+#define NEW_LEVEL_NAME "default_new_level.lvl"
+
 #define LEVEL_GRID (Dimensions){ 32, 32 }
 
 

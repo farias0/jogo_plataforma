@@ -5,6 +5,8 @@
 #include "level/level.h"
 #include "editor.h"
 #include "linked_list.h"
+#include "persistence.h"
+#include "overworld.h"
 
 // Currently this represents the play space (not including editor)
 #define SCREEN_WIDTH 1280
@@ -23,6 +25,8 @@ typedef enum GameMode {
 typedef struct GameState {
     GameMode mode;
 
+    char loadedLevel[LEVEL_NAME_BUFFER_SIZE];
+
     bool isPaused;
     bool isPlayerDead;
 
@@ -30,6 +34,11 @@ typedef struct GameState {
 
     EditorEntityItem *editorSelectedEntity;
     bool isEditorEnabled;
+
+    OverworldEntity *tileUnderCursor;
+    
+    // If selected a dot in the OW without an associated level
+    bool expectingLevelAssociation;
 
     bool showDebugHUD;
     bool showDebugGrid;

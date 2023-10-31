@@ -25,7 +25,7 @@ void CameraTick() {
     // A way to do this might be to check player's velocity in a PLAYER_STATE global
 
     // TODO implement camera for other game modes
-    if (STATE->mode != MODE_IN_LEVEL) {
+    if (STATE->mode != MODE_IN_LEVEL || !LEVEL_PLAYER) {
         return;
     }
 

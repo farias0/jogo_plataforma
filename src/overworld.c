@@ -1,26 +1,19 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include "math.h"
+#include <string.h>
 
 #include "overworld.h"
 #include "core.h"
 #include "assets.h"
 #include "camera.h"
 #include "render.h"
-
-
-typedef struct CursorState {
-    OverworldEntity *cursor;
-
-    // The tile the cursor is over
-    OverworldEntity *tileUnder;
-} CursorState;
+#include "persistence.h"
 
 
 ListNode *OW_LIST_HEAD = 0;
 
 static OverworldEntity *OW_CURSOR = 0;
-static CursorState CURSOR_STATE;
 
 
 static Rectangle getGridSquare(OverworldEntity *entity) {
@@ -37,9 +30,9 @@ static void updateCursorPosition() {
 
     Dimensions cursorDimensions = SpriteScaledDimensions(OverworldCursorSprite);
 
-    OW_CURSOR->gridPos.x = CURSOR_STATE.tileUnder->gridPos.x;
+    OW_CURSOR->gridPos.x = STATE->tileUnderCursor->gridPos.x;
 
-    OW_CURSOR->gridPos.y = CURSOR_STATE.tileUnder->gridPos.y +
+    OW_CURSOR->gridPos.y = STATE->tileUnderCursor->gridPos.y +
                     (OW_GRID.height / 2) -
                     cursorDimensions.height;
 }
@@ -57,7 +50,6 @@ static void initializeCursor() {
     LinkedListAdd(&OW_LIST_HEAD, node);
 
     OW_CURSOR = newCursor;
-    CURSOR_STATE.cursor = OW_CURSOR;
 
     TraceLog(LOG_TRACE, "Added cursor to overworld (x=%.1f, y=%.1f)",
                 newCursor->gridPos.x, newCursor->gridPos.y);
@@ -154,12 +146,12 @@ static void overworldLoad() {
     OverworldEntity *dot3    = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
 
 
-    dot1->levelName = "level_1.lvl";
-    dot2->levelName = "level_2.lvl";
-    dot3->levelName = "level_3.lvl";
+    strncpy(dot1->levelName, "level_1.lvl", LEVEL_NAME_BUFFER_SIZE);
+    strncpy(dot2->levelName, "level_2.lvl", LEVEL_NAME_BUFFER_SIZE);
+    strncpy(dot3->levelName, "level_3.lvl", LEVEL_NAME_BUFFER_SIZE);
+    
 
-
-    CURSOR_STATE.tileUnder = dot1;
+    STATE->tileUnderCursor = dot1;
 
     TraceLog(LOG_TRACE, "Overworld loaded.");
 }
@@ -169,11 +161,15 @@ void OverworldInitialize() {
     GameStateReset();
     STATE->mode = MODE_OVERWORLD;
 
-    LinkedListRemoveAll(&OW_LIST_HEAD);
+    if (!OW_LIST_HEAD) {
+        // LinkedListRemoveAll(&OW_LIST_HEAD);
 
-    initializeCursor();
-    overworldLoad();
-    updateCursorPosition();
+        initializeCursor();
+        overworldLoad();
+        updateCursorPosition();
+    }
+
+    STATE->expectingLevelAssociation = false;
 
     EditorSync();
 
@@ -182,26 +178,23 @@ void OverworldInitialize() {
 
 void OverworldLevelSelect() {
 
-    if (!(CURSOR_STATE.tileUnder->components & OW_IS_LEVEL_DOT)) {
+    if (!(STATE->tileUnderCursor->components & OW_IS_LEVEL_DOT)) {
         TraceLog(LOG_TRACE, "Overworld tried to enter level, but not a dot.");
         return;
     }
 
-    if (!CURSOR_STATE.tileUnder->levelName) {
-        // TODO allow to associate dot with level
-        TraceLog(LOG_DEBUG, "Overworld dot has no level associated to it.");
-        RenderPrintSysMessage("Sem fase associada.");
-        return;
+    if (STATE->tileUnderCursor->levelName[0] == '\0') {
+        STATE->expectingLevelAssociation = true;
     }
 
-    LevelInitialize(CURSOR_STATE.tileUnder->levelName);
+    LevelInitialize(STATE->tileUnderCursor->levelName);
 }
 
 void OverworldCursorMove(OverworldCursorDirection direction) {
 
     TraceLog(LOG_TRACE, "Overworld move to direction %d", direction);
 
-    OverworldEntity *tileUnder = CURSOR_STATE.tileUnder;
+    OverworldEntity *tileUnder = STATE->tileUnderCursor;
 
     ListNode *node = OW_LIST_HEAD;
 
@@ -265,7 +258,7 @@ void OverworldCursorMove(OverworldCursorDirection direction) {
 
 
         if (foundPath) {
-            CURSOR_STATE.tileUnder = entity;
+            STATE->tileUnderCursor = entity;
             updateCursorPosition();
             break;
         }
@@ -345,7 +338,7 @@ void OverworldTileRemoveAt(Vector2 pos) {
     // Ideally the game would support removing the tile under the player,
     // but this would demand some logic to manage the tileUnder pointer.
     // For now this is good enough.
-    if (node->item == CURSOR_STATE.tileUnder) {
+    if (node->item == STATE->tileUnderCursor) {
         TraceLog(LOG_TRACE, "Won't remove tile, it's under the cursor.");
         return;
     }

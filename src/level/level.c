@@ -1,7 +1,7 @@
 #include <raylib.h>
 #include "stdlib.h"
-
 #include <stdio.h>
+#include <string.h>
 
 #include "level.h"
 #include "../linked_list.h"
@@ -14,12 +14,12 @@
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
 #define ON_THE_GROUND_Y_TOLERANCE 5
 
-#define DEFAULT_NEW_LEVEL_NAME "default_new_level.lvl"
+// TODO seek an unused level name, i.e. "new_level_2.lvl"
+// THe name of a new level
+#define DEFAULT_NEW_LEVEL_NAME "new_level.lvl"
 
 
 ListNode *LEVEL_LIST_HEAD = 0;
-
-static char *currentLoadedLevel = 0;
 
 static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
@@ -52,13 +52,20 @@ void LevelInitialize(char *levelName) {
     STATE->mode = MODE_IN_LEVEL;
 
     LinkedListRemoveAll(&LEVEL_LIST_HEAD);
+    LEVEL_PLAYER = 0;
+
+    if (levelName[0] == '\0') {
+        EditorEmpty();
+        TraceLog(LOG_INFO, "Level waiting for file drop.");
+        return;
+    }
 
     if (!PersistenceLevelLoad(levelName)) {
         OverworldInitialize();
         return;
     }
 
-    currentLoadedLevel = levelName;
+    strncpy(STATE->loadedLevel, levelName, LEVEL_NAME_BUFFER_SIZE);
 
     EditorSync();
 
@@ -129,12 +136,12 @@ void LevelTick() {
 }
 
 void LevelSave() {
-    PersistenceLevelSave(currentLoadedLevel);
+    PersistenceLevelSave(STATE->loadedLevel);
 }
 
 void LevelLoadNew() {
-    LevelInitialize(DEFAULT_NEW_LEVEL_NAME);
-    currentLoadedLevel = "new_level.lvl"; // TODO seek an unused level name
+    LevelInitialize(NEW_LEVEL_NAME);
+    strncpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME, LEVEL_NAME_BUFFER_SIZE);
 }
 
 void LevelPlayerSetStartingPos(Vector2 pos) {
