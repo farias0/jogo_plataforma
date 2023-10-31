@@ -35,8 +35,10 @@ typedef struct GameState {
     EditorEntityItem *editorSelectedEntity;
     bool isEditorEnabled;
 
-    // A overworld dot without a level associated that was selected 
-    OverworldEntity *dotToSetLevelTo;
+    OverworldEntity *tileUnderCursor;
+    
+    // If selected a dot in the OW without an associated level
+    bool expectingLevelAssociation;
 
     bool showDebugHUD;
     bool showDebugGrid;

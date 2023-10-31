@@ -101,19 +101,19 @@ void handleDroppedFile() {
         
         LevelInitialize(levelName);
         
-        if (STATE->dotToSetLevelTo) {
+        if (STATE->expectingLevelAssociation) {
 
-            strncpy(STATE->dotToSetLevelTo->levelName, levelName, LEVEL_NAME_BUFFER_SIZE);
+            strncpy(STATE->tileUnderCursor->levelName, levelName, LEVEL_NAME_BUFFER_SIZE);
 
             TraceLog(LOG_INFO, "Dot on x=%.1f, y=%.1f associated with level %s.",
-                        STATE->dotToSetLevelTo->gridPos.x, STATE->dotToSetLevelTo->gridPos.y, levelName);
+                        STATE->tileUnderCursor->gridPos.x, STATE->tileUnderCursor->gridPos.y, levelName);
             
             char *sysMsg = MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
             sprintf(sysMsg, "Associada fase %s", levelName);
             RenderPrintSysMessage(sysMsg);
             MemFree(sysMsg);
 
-            STATE->dotToSetLevelTo = 0;
+            STATE->expectingLevelAssociation = false;
         }
     }
 
