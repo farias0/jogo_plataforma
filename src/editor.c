@@ -87,6 +87,16 @@ void EditorSync() {
     }
 }
 
+void EditorEmpty() {
+
+    LinkedListRemoveAll(&EDITOR_ENTITIES_HEAD);
+    LinkedListRemoveAll(&EDITOR_CONTROL_HEAD);
+
+    STATE->editorSelectedEntity = 0;
+
+    TraceLog(LOG_TRACE, "Editor emptied.");
+}
+
 Rectangle EditorEntityButtonRect(int buttonNumber) {
 
     float itemX = EDITOR_ENTITIES_AREA.x + ENTITY_BUTTON_WALL_SPACING;

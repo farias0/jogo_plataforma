@@ -87,6 +87,9 @@ extern ListNode *EDITOR_CONTROL_HEAD;
 // for the current game mode
 void EditorSync();
 
+// Empties all editor itens, keeping it from being used.
+void EditorEmpty();
+
 // Calculates and returns an editor entity buttons' coordinates,
 // alongside its dimensions
 Rectangle EditorEntityButtonRect(int buttonNumber);

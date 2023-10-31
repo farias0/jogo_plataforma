@@ -1,4 +1,6 @@
 #include <raylib.h>
+#include <string.h>
+#include <stdio.h>
 
 #include "input.h"
 #include "core.h"
@@ -6,6 +8,7 @@
 #include "overworld.h"
 #include "camera.h"
 #include "persistence.h"
+#include "render.h"
 
 
 #define CAMERA_SPEED 8.0f;
@@ -21,6 +24,7 @@ void handleInLevelInput() {
 
 
     if (STATE->isPlayerDead) return;
+    if (!LEVEL_PLAYER) return;
 
 
     if      (IsKeyDown(KEY_Z))              STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
@@ -92,9 +96,27 @@ void handleCameraInput() {
 void handleDroppedFile() {
 
     char *levelName = MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
+    
     if (PersistenceGetDroppedLevelName(levelName)) {
+        
         LevelInitialize(levelName);
+        
+        if (STATE->dotToSetLevelTo) {
+
+            strncpy(STATE->dotToSetLevelTo->levelName, levelName, LEVEL_NAME_BUFFER_SIZE);
+
+            TraceLog(LOG_INFO, "Dot on x=%.1f, y=%.1f associated with level %s.",
+                        STATE->dotToSetLevelTo->gridPos.x, STATE->dotToSetLevelTo->gridPos.y, levelName);
+            
+            char *sysMsg = MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
+            sprintf(sysMsg, "Associada fase %s", levelName);
+            RenderPrintSysMessage(sysMsg);
+            MemFree(sysMsg);
+
+            STATE->dotToSetLevelTo = 0;
+        }
     }
+
     MemFree(levelName);
 }
 

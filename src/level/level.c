@@ -21,8 +21,6 @@
 
 ListNode *LEVEL_LIST_HEAD = 0;
 
-static char currentLoadedLevel[LEVEL_NAME_BUFFER_SIZE] = "";
-
 static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
 
@@ -54,13 +52,20 @@ void LevelInitialize(char *levelName) {
     STATE->mode = MODE_IN_LEVEL;
 
     LinkedListRemoveAll(&LEVEL_LIST_HEAD);
+    LEVEL_PLAYER = 0;
+
+    if (levelName[0] == '\0') {
+        EditorEmpty();
+        TraceLog(LOG_INFO, "Level waiting for file drop.");
+        return;
+    }
 
     if (!PersistenceLevelLoad(levelName)) {
         OverworldInitialize();
         return;
     }
 
-    strncpy(currentLoadedLevel, levelName, LEVEL_NAME_BUFFER_SIZE);
+    strncpy(STATE->loadedLevel, levelName, LEVEL_NAME_BUFFER_SIZE);
 
     EditorSync();
 
@@ -131,12 +136,12 @@ void LevelTick() {
 }
 
 void LevelSave() {
-    PersistenceLevelSave(currentLoadedLevel);
+    PersistenceLevelSave(STATE->loadedLevel);
 }
 
 void LevelLoadNew() {
     LevelInitialize(NEW_LEVEL_NAME);
-    strncpy(currentLoadedLevel, DEFAULT_NEW_LEVEL_NAME, LEVEL_NAME_BUFFER_SIZE);
+    strncpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME, LEVEL_NAME_BUFFER_SIZE);
 }
 
 void LevelPlayerSetStartingPos(Vector2 pos) {

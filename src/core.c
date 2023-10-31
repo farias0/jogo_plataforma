@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "level/level.h"
 #include "editor.h"
+#include "string.h"
 
 
 GameState *STATE = 0;
@@ -23,6 +24,7 @@ void GameStateInitialize() {
 }
 
 void GameStateReset() {
+    strcpy(STATE->loadedLevel, "");
     STATE->isPaused = false;
     STATE->isPlayerDead = false;
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;

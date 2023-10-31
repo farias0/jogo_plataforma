@@ -1,12 +1,14 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include "math.h"
+#include <string.h>
 
 #include "overworld.h"
 #include "core.h"
 #include "assets.h"
 #include "camera.h"
 #include "render.h"
+#include "persistence.h"
 
 
 typedef struct CursorState {
@@ -154,10 +156,10 @@ static void overworldLoad() {
     OverworldEntity *dot3    = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
 
 
-    dot1->levelName = "level_1.lvl";
-    dot2->levelName = "level_2.lvl";
-    dot3->levelName = "level_3.lvl";
-
+    strncpy(dot1->levelName, "level_1.lvl", LEVEL_NAME_BUFFER_SIZE);
+    strncpy(dot2->levelName, "level_2.lvl", LEVEL_NAME_BUFFER_SIZE);
+    strncpy(dot3->levelName, "level_3.lvl", LEVEL_NAME_BUFFER_SIZE);
+    
 
     CURSOR_STATE.tileUnder = dot1;
 
@@ -169,11 +171,15 @@ void OverworldInitialize() {
     GameStateReset();
     STATE->mode = MODE_OVERWORLD;
 
-    LinkedListRemoveAll(&OW_LIST_HEAD);
+    if (!OW_LIST_HEAD) {
+        // LinkedListRemoveAll(&OW_LIST_HEAD);
 
-    initializeCursor();
-    overworldLoad();
-    updateCursorPosition();
+        initializeCursor();
+        overworldLoad();
+        updateCursorPosition();
+    }
+
+    STATE->dotToSetLevelTo = 0;
 
     EditorSync();
 
@@ -187,11 +193,8 @@ void OverworldLevelSelect() {
         return;
     }
 
-    if (!CURSOR_STATE.tileUnder->levelName) {
-        // TODO allow to associate dot with level
-        TraceLog(LOG_DEBUG, "Overworld dot has no level associated to it.");
-        RenderPrintSysMessage("Sem fase associada.");
-        return;
+    if (CURSOR_STATE.tileUnder->levelName[0] == '\0') {
+        STATE->dotToSetLevelTo = CURSOR_STATE.tileUnder;
     }
 
     LevelInitialize(CURSOR_STATE.tileUnder->levelName);
