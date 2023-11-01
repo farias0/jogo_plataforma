@@ -65,7 +65,7 @@ void LevelInitialize(char *levelName) {
         return;
     }
 
-    strncpy(STATE->loadedLevel, levelName, LEVEL_NAME_BUFFER_SIZE);
+    strcpy(STATE->loadedLevel, levelName);
 
     EditorSync();
 
@@ -141,7 +141,7 @@ void LevelSave() {
 
 void LevelLoadNew() {
     LevelInitialize(NEW_LEVEL_NAME);
-    strncpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME, LEVEL_NAME_BUFFER_SIZE);
+    strcpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
 }
 
 void LevelPlayerSetStartingPos(Vector2 pos) {

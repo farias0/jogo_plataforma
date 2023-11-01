@@ -3,5 +3,8 @@
     "cmake.debugConfig": {
         "cwd": "${workspaceFolder}\\build",
         "console": "integratedTerminal"
+    },
+    "files.associations": {
+        "render.h": "c"
     }
 }
