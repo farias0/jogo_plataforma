@@ -9,7 +9,8 @@
 #include "camera.h"
 
 #pragma GCC diagnostic push 
-#pragma GCC diagnostic ignored "-Wunused-parameter -Wunused-result" // Ignore warnings
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-result"
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
 #pragma GCC diagnostic pop
