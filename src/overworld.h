@@ -40,7 +40,7 @@ typedef struct OverworldEntity {
     Sprite sprite;
     int layer;
     
-    char levelName[LEVEL_NAME_BUFFER_SIZE];
+    char levelName[LEVEL_NAME_BUFFER_SIZE + 1];
 
 } OverworldEntity;
 
