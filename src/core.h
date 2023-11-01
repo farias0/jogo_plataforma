@@ -25,7 +25,7 @@ typedef enum GameMode {
 typedef struct GameState {
     GameMode mode;
 
-    char loadedLevel[LEVEL_NAME_BUFFER_SIZE];
+    char loadedLevel[LEVEL_NAME_BUFFER_SIZE + 1];
 
     bool isPaused;
     bool isPlayerDead;
