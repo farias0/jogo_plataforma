@@ -146,9 +146,9 @@ static void overworldLoad() {
     OverworldEntity *dot3    = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
 
 
-    strncpy(dot1->levelName, "level_1.lvl", LEVEL_NAME_BUFFER_SIZE);
-    strncpy(dot2->levelName, "level_2.lvl", LEVEL_NAME_BUFFER_SIZE);
-    strncpy(dot3->levelName, "level_3.lvl", LEVEL_NAME_BUFFER_SIZE);
+    strcpy(dot1->levelName, "level_1.lvl");
+    strcpy(dot2->levelName, "level_2.lvl");
+    strcpy(dot3->levelName, "level_3.lvl");
     
 
     STATE->tileUnderCursor = dot1;

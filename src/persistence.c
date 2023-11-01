@@ -13,7 +13,9 @@
 #define LEVELS_DIR "../" LEVELS_DIR_NAME "/"
 #define LEVEL_FILE_EXTENSION ".lvl"
 
-#define LEVEL_PATH_BUFFER_SIZE LEVEL_NAME_BUFFER_SIZE + 20
+// currently it's all '../levels/', but if we start working with absolute paths this will have to change
+#define LEVEL_DIR_BUFFER_SIZE   20
+#define LEVEL_PATH_BUFFER_SIZE  LEVEL_NAME_BUFFER_SIZE + LEVEL_DIR_BUFFER_SIZE
 
 
 typedef enum LevelEntityType {
@@ -173,7 +175,7 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
             goto return_result;
     }
 
-    strncpy(nameBuffer, fileName, LEVEL_NAME_BUFFER_SIZE);
+    strcpy(nameBuffer, fileName);
     result = true;
 
 return_result:
