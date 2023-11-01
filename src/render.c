@@ -250,9 +250,9 @@ skip_debug_grid:
 
         if (tile->tileType == OW_LEVEL_DOT) {
 
-            char levelName[LEVEL_NAME_BUFFER_SIZE];
-            if (tile->levelName[0] != '\0') strncpy(levelName, tile->levelName, LEVEL_NAME_BUFFER_SIZE);
-            else strncpy(levelName, "[sem fase]", LEVEL_NAME_BUFFER_SIZE);
+            char levelName[LEVEL_NAME_BUFFER_SIZE + 1];
+            if (tile->levelName[0] != '\0') strcpy(levelName, tile->levelName);
+            else strcpy(levelName, "[sem fase]");
             DrawText(levelName,
                         tile->gridPos.x - 20,
                         tile->gridPos.y + (tile->sprite.sprite.height * tile->sprite.scale),
@@ -389,7 +389,7 @@ void Render() {
 void RenderPrintSysMessage(char *msg) {
 
     char *msgCopy = MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
-    strncpy(msgCopy, msg, SYS_MSG_BUFFER_SIZE); 
+    strcpy(msgCopy, msg); 
 
     SysMessage *newMsg = MemAlloc(sizeof(SysMessage));
     newMsg->msg = msgCopy;

@@ -103,7 +103,7 @@ void handleDroppedFile() {
         
         if (STATE->expectingLevelAssociation) {
 
-            strncpy(STATE->tileUnderCursor->levelName, levelName, LEVEL_NAME_BUFFER_SIZE);
+            strcpy(STATE->tileUnderCursor->levelName, levelName);
 
             TraceLog(LOG_INFO, "Dot on x=%.1f, y=%.1f associated with level %s.",
                         STATE->tileUnderCursor->gridPos.x, STATE->tileUnderCursor->gridPos.y, levelName);
