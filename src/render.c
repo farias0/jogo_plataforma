@@ -250,7 +250,7 @@ skip_debug_grid:
 
         if (tile->tileType == OW_LEVEL_DOT) {
 
-            char levelName[LEVEL_NAME_BUFFER_SIZE + 1];
+            char levelName[LEVEL_NAME_BUFFER_SIZE];
             if (tile->levelName[0] != '\0') strcpy(levelName, tile->levelName);
             else strcpy(levelName, "[sem fase]");
             DrawText(levelName,
