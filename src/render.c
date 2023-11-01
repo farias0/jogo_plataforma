@@ -249,14 +249,12 @@ skip_debug_grid:
 
         if (tile->tileType == OW_LEVEL_DOT) {
 
+            Vector2 pos = PosInSceneToScreen((Vector2){ tile->gridPos.x - 20,
+                                tile->gridPos.y + (tile->sprite.sprite.height * tile->sprite.scale) });
             char levelName[LEVEL_NAME_BUFFER_SIZE];
             if (tile->levelName[0] != '\0') strncpy(levelName, tile->levelName, LEVEL_NAME_BUFFER_SIZE);
             else strncpy(levelName, "[sem fase]", LEVEL_NAME_BUFFER_SIZE);
-            DrawText(levelName,
-                        tile->gridPos.x - 20,
-                        tile->gridPos.y + (tile->sprite.sprite.height * tile->sprite.scale),
-                        20,
-                        RAYWHITE);
+            DrawText(levelName, pos.x, pos.y, 20, RAYWHITE);
         }
 
     }
