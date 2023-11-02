@@ -11,23 +11,19 @@
 MyCamera *CAMERA = 0;
 
 
-void CameraInitialize() {
-    CAMERA = MemAlloc(sizeof(MyCamera));
+static void tickOverworldCamera() {
 
-    CAMERA->pos = (Vector2) { 0, 0 };
+    Dimensions dimensions = SpriteScaledDimensions(STATE->tileUnderCursor->sprite);
 
-    TraceLog(LOG_INFO, "Camera initialized.");
+    CAMERA->pos.x = STATE->tileUnderCursor->gridPos.x
+                    - (SCREEN_WIDTH/2) + (dimensions.width/2);
+    CAMERA->pos.y = STATE->tileUnderCursor->gridPos.y
+                    - (SCREEN_HEIGHT/2) + (dimensions.height/2);
 }
 
-void CameraTick() {
-    
-    // TODO camera only ticks if player isn't moving
-    // A way to do this might be to check player's velocity in a PLAYER_STATE global
+static void tickLevelCamera() {
 
-    // TODO implement camera for other game modes
-    if (STATE->mode != MODE_IN_LEVEL || !LEVEL_PLAYER) {
-        return;
-    }
+    if (!LEVEL_PLAYER) return;
 
     if (LEVEL_PLAYER->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT_X) {
         CAMERA->pos.x = LEVEL_PLAYER->hitbox.x - CAMERA_FOLLOW_LEFT_X;
@@ -38,6 +34,28 @@ void CameraTick() {
 
     if (LEVEL_PLAYER->hitbox.y) {
         // TODO camera's vertical movement
+    }
+}
+
+void CameraInitialize() {
+    CAMERA = MemAlloc(sizeof(MyCamera));
+
+    CAMERA->pos = (Vector2) { 0, 0 };
+
+    TraceLog(LOG_INFO, "Camera initialized.");
+}
+
+void CameraTick() {
+
+    switch (STATE->mode)
+    {
+    case MODE_OVERWORLD:
+        tickOverworldCamera();
+        break;
+
+    case MODE_IN_LEVEL:
+        tickLevelCamera();
+        break;
     }
 }
 

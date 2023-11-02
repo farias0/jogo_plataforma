@@ -84,15 +84,6 @@ void handleEditorInput() {
     }
 }
 
-void handleCameraInput() {
-
-    // TODO move camera code to camera.c
-    if (IsKeyDown(KEY_A)) CAMERA->pos.x -= CAMERA_SPEED;
-    if (IsKeyDown(KEY_D)) CAMERA->pos.x += CAMERA_SPEED;
-    if (IsKeyDown(KEY_W)) CAMERA->pos.y -= CAMERA_SPEED;
-    if (IsKeyDown(KEY_S)) CAMERA->pos.y += CAMERA_SPEED;
-}
-
 void handleDroppedFile() {
 
     char *levelName = MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
@@ -136,8 +127,6 @@ void InputHandle() {
     else if (STATE->mode == MODE_OVERWORLD) {
         handleOverworldInput();
     }
-
-    handleCameraInput(); // debug
 }
 
 void InputEditorEntitySelect(EditorEntityItem *item) {
