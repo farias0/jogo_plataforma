@@ -123,6 +123,10 @@ void CameraPanningReset() {
     TraceLog(LOG_TRACE, "Camera panning reset.");
 }
 
+bool CameraIsPanned() {
+    return isPanned;
+}
+
 Vector2 PosInScreenToScene(Vector2 pos) {
     return (Vector2){
         pos.x + CAMERA->pos.x,

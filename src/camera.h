@@ -29,6 +29,9 @@ void CameraPanningStop();
 // Reset the camera to its original position after panning
 void CameraPanningReset();
 
+// If the camera is offset from being panned
+bool CameraIsPanned();
+
 // Converts position from the screen coordinates to in game coordinates
 Vector2 PosInScreenToScene(Vector2 pos);
 
