@@ -260,6 +260,11 @@ skip_debug_grid:
 
     }
 
+    if (STATE->isEditorEnabled) {
+
+        if (CameraIsPanned()) DrawText("Câmera deslocada",
+                                    SCREEN_WIDTH - 300, SCREEN_HEIGHT - 45, 30, RAYWHITE);
+    }
 
     if (STATE->showDebugHUD) {
 
