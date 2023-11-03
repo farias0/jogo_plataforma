@@ -11,9 +11,6 @@
 #include "render.h"
 
 
-#define CAMERA_SPEED 8.0f;
-
-
 void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
@@ -49,13 +46,14 @@ void handleOverworldInput() {
 
 void handleEditorInput() {
 
-    if      (IsKeyPressed(KEY_F1))           { EditorEnabledToggle(); return; }
-
-    // Debug
+    if      (IsKeyPressed(KEY_F1))          { EditorEnabledToggle(); return; }
     if      (IsKeyPressed(KEY_F2))          STATE->showDebugHUD = !STATE->showDebugHUD;
     if      (IsKeyPressed(KEY_F3))          STATE->showDebugGrid = !STATE->showDebugGrid;
 
     if (!STATE->isEditorEnabled) return;
+
+
+    if      (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))        CameraLevelCentralizeOnPlayer();
 
 
     Vector2 mousePosInScreen = GetMousePosition();

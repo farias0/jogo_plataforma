@@ -6,6 +6,7 @@
 #include "level.h"
 #include "../core.h"
 #include "../assets.h"
+#include "../camera.h"
 
 
 #define PLAYERS_UPPERBODY_PROPORTION 0.90f // What % of the player's height is upperbody, for hitboxes
@@ -248,6 +249,8 @@ void LevelPlayerContinue() {
     Vector2 pos = LevelGetPlayerStartingPosition();
     LEVEL_PLAYER->hitbox.x = pos.x;
     LEVEL_PLAYER->hitbox.y = pos.y;
+
+    CameraLevelCentralizeOnPlayer();
 
     TraceLog(LOG_DEBUG, "Player continue.");
 }
