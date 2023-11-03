@@ -90,6 +90,13 @@ void EditorSync();
 // Empties all editor itens, keeping it from being used.
 void EditorEmpty();
 
+void EditorEnable();
+
+void EditorDisable();
+
+// Enables and disables editor
+void EditorEnabledToggle();
+
 // Calculates and returns an editor entity buttons' coordinates,
 // alongside its dimensions
 Rectangle EditorEntityButtonRect(int buttonNumber);

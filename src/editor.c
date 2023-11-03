@@ -97,6 +97,32 @@ void EditorEmpty() {
     TraceLog(LOG_TRACE, "Editor emptied.");
 }
 
+void EditorEnable() {
+
+    STATE->isEditorEnabled = true;
+
+    SetWindowSize(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+    ShowCursor();
+
+    TraceLog(LOG_TRACE, "Editor enabled.");
+}
+
+void EditorDisable() {
+
+    STATE->isEditorEnabled = false;
+
+    SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    HideCursor();
+
+    TraceLog(LOG_TRACE, "Editor disabled.");
+}
+
+void EditorEnabledToggle() {
+
+    if (STATE->isEditorEnabled) EditorDisable();
+    else EditorEnable();
+}
+
 Rectangle EditorEntityButtonRect(int buttonNumber) {
 
     float itemX = EDITOR_ENTITIES_AREA.x + ENTITY_BUTTON_WALL_SPACING;

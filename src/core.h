@@ -56,9 +56,6 @@ void GameStateReset();
 // Toggles between paused and unpaused game
 void PausedGameToggle();
 
-// Enables and disables editor
-void EditorEnabledToggle();
-
 // True if the given position is inside the game screen (doesn't include the editor)
 bool IsInPlayArea(Vector2 pos);
 
