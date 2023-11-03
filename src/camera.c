@@ -21,6 +21,8 @@ static Vector2 panningCursorLastFrame;
 
 static void tickOverworldCamera() {
 
+    if (isPanned) return;
+
     Dimensions tileDimensions = SpriteScaledDimensions(STATE->tileUnderCursor->sprite);
 
     CAMERA->pos.x = STATE->tileUnderCursor->gridPos.x
@@ -33,19 +35,17 @@ static void tickLevelCamera() {
 
     if (!LEVEL_PLAYER) return;
 
-    bool _isPanning = isPanning || isPanned;
-
     // Camera follows player
-    if (!_isPanning && LEVEL_PLAYER->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT) {
+    if (!isPanned && LEVEL_PLAYER->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT) {
         CAMERA->pos.x = LEVEL_PLAYER->hitbox.x - CAMERA_FOLLOW_LEFT;
     }
-    else if (!_isPanning && LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width > CAMERA->pos.x + CAMERA_FOLLOW_RIGHT) {
+    else if (!isPanned && LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width > CAMERA->pos.x + CAMERA_FOLLOW_RIGHT) {
         CAMERA->pos.x = LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width - CAMERA_FOLLOW_RIGHT;
     }
-    if (!_isPanning && LEVEL_PLAYER->hitbox.y < CAMERA->pos.y + CAMERA_FOLLOW_UP) {
+    if (!isPanned && LEVEL_PLAYER->hitbox.y < CAMERA->pos.y + CAMERA_FOLLOW_UP) {
         CAMERA->pos.y = LEVEL_PLAYER->hitbox.y - CAMERA_FOLLOW_UP;
     }
-    else if (!_isPanning && LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height > CAMERA->pos.y + CAMERA_FOLLOW_DOWN) {
+    else if (!isPanned && LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height > CAMERA->pos.y + CAMERA_FOLLOW_DOWN) {
         CAMERA->pos.y = LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height - CAMERA_FOLLOW_DOWN;
     }
 }
