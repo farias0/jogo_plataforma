@@ -5,6 +5,7 @@
 #include "level/level.h"
 #include "overworld.h"
 #include "linked_list.h"
+#include "camera.h"
 
 
 ListNode *EDITOR_ENTITIES_HEAD = 0;
@@ -113,6 +114,8 @@ void EditorDisable() {
 
     SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     HideCursor();
+
+    CameraPanningReset();
 
     TraceLog(LOG_TRACE, "Editor disabled.");
 }

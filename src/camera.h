@@ -20,6 +20,15 @@ void CameraTick();
 // Sets the Camera to the default position in level
 void CameraLevelCentralizeOnPlayer();
 
+// Pans the camera around
+void CameraPanningMove(Vector2 mousePos);
+
+// Stops the process of panning the camera
+void CameraPanningStop();
+
+// Reset the camera to its original position after panning
+void CameraPanningReset();
+
 // Converts position from the screen coordinates to in game coordinates
 Vector2 PosInScreenToScene(Vector2 pos);
 

@@ -13,6 +13,12 @@
 MyCamera *CAMERA = 0;
 
 
+static bool isPanning = false;
+static bool isPanned = false;
+static Vector2 panningCameraOrigin;
+static Vector2 panningCursorLastFrame;
+
+
 static void tickOverworldCamera() {
 
     Dimensions tileDimensions = SpriteScaledDimensions(STATE->tileUnderCursor->sprite);
@@ -27,17 +33,19 @@ static void tickLevelCamera() {
 
     if (!LEVEL_PLAYER) return;
 
-    if (LEVEL_PLAYER->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT) {
+    bool _isPanning = isPanning || isPanned;
+
+    // Camera follows player
+    if (!_isPanning && LEVEL_PLAYER->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT) {
         CAMERA->pos.x = LEVEL_PLAYER->hitbox.x - CAMERA_FOLLOW_LEFT;
     }
-    else if (LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width > CAMERA->pos.x + CAMERA_FOLLOW_RIGHT) {
+    else if (!_isPanning && LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width > CAMERA->pos.x + CAMERA_FOLLOW_RIGHT) {
         CAMERA->pos.x = LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width - CAMERA_FOLLOW_RIGHT;
     }
-
-    if (LEVEL_PLAYER->hitbox.y < CAMERA->pos.y + CAMERA_FOLLOW_UP) {
+    if (!_isPanning && LEVEL_PLAYER->hitbox.y < CAMERA->pos.y + CAMERA_FOLLOW_UP) {
         CAMERA->pos.y = LEVEL_PLAYER->hitbox.y - CAMERA_FOLLOW_UP;
     }
-    if (LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height > CAMERA->pos.y + CAMERA_FOLLOW_DOWN) {
+    else if (!_isPanning && LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height > CAMERA->pos.y + CAMERA_FOLLOW_DOWN) {
         CAMERA->pos.y = LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height - CAMERA_FOLLOW_DOWN;
     }
 }
@@ -75,6 +83,43 @@ void CameraLevelCentralizeOnPlayer() {
     CAMERA->pos.y = LEVEL_PLAYER->hitbox.y - (3*SCREEN_HEIGHT)/5;
 
     TraceLog(LOG_TRACE, "Camera centralized on Player.");
+}
+
+void CameraPanningMove(Vector2 mousePos) {
+
+    if (!isPanning) {
+
+        isPanning = true;
+        panningCursorLastFrame = mousePos;
+
+        if (!isPanned) panningCameraOrigin = CAMERA->pos;
+
+        TraceLog(LOG_TRACE, "Camera started panning.");
+        return;
+    }
+
+    CAMERA->pos.x -= mousePos.x - panningCursorLastFrame.x;
+    CAMERA->pos.y -= mousePos.y - panningCursorLastFrame.y;
+
+    panningCursorLastFrame = mousePos;
+    isPanned = true;
+}
+
+void CameraPanningStop() {
+
+    if (!isPanning) TraceLog(LOG_ERROR, "Camera is asked to stop panning, but panning flag is false.");
+
+    isPanning = false;
+    TraceLog(LOG_TRACE, "Camera stopped panning.");
+}
+
+void CameraPanningReset() {
+    
+    if (!isPanned) return;
+    
+    CAMERA->pos = panningCameraOrigin;
+    isPanned = false;
+    TraceLog(LOG_TRACE, "Camera panning reset.");
 }
 
 Vector2 PosInScreenToScene(Vector2 pos) {

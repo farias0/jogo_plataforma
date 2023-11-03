@@ -52,11 +52,12 @@ void handleEditorInput() {
 
     if (!STATE->isEditorEnabled) return;
 
-
-    if      (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))        CameraLevelCentralizeOnPlayer();
-
-
     Vector2 mousePosInScreen = GetMousePosition();
+
+    if      (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))         CameraPanningMove(mousePosInScreen);
+    if      (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))     CameraPanningStop();
+    if      (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))        CameraPanningReset();
+
 
     if (!IsInPlayArea(mousePosInScreen)) return;
 
