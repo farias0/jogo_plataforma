@@ -173,6 +173,8 @@ void OverworldInitialize() {
 
     EditorSync();
 
+    CameraPanningReset();
+
     TraceLog(LOG_INFO, "Overworld initialized.");
 }
 

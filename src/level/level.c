@@ -56,6 +56,7 @@ void LevelInitialize(char *levelName) {
 
     if (levelName[0] == '\0') {
         EditorEmpty();
+        CameraPanningReset();
         TraceLog(LOG_INFO, "Level waiting for file drop.");
         return;
     }
