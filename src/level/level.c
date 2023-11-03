@@ -69,6 +69,8 @@ void LevelInitialize(char *levelName) {
 
     EditorSync();
 
+    CameraLevelCentralizeOnPlayer();
+
     TraceLog(LOG_INFO, "Level initialized: %s.", levelName);
 }
 

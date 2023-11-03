@@ -11,9 +11,6 @@
 #include "render.h"
 
 
-#define CAMERA_SPEED 8.0f;
-
-
 void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
@@ -49,13 +46,14 @@ void handleOverworldInput() {
 
 void handleEditorInput() {
 
-    if      (IsKeyPressed(KEY_F1))           { EditorEnabledToggle(); return; }
-
-    // Debug
+    if      (IsKeyPressed(KEY_F1))          { EditorEnabledToggle(); return; }
     if      (IsKeyPressed(KEY_F2))          STATE->showDebugHUD = !STATE->showDebugHUD;
     if      (IsKeyPressed(KEY_F3))          STATE->showDebugGrid = !STATE->showDebugGrid;
 
     if (!STATE->isEditorEnabled) return;
+
+
+    if      (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))        CameraLevelCentralizeOnPlayer();
 
 
     Vector2 mousePosInScreen = GetMousePosition();
@@ -82,15 +80,6 @@ void handleEditorInput() {
         STATE->editorSelectedEntity->handler(
             PosInScreenToScene(mousePosInScreen));
     }
-}
-
-void handleCameraInput() {
-
-    // TODO move camera code to camera.c
-    if (IsKeyDown(KEY_A)) CAMERA->pos.x -= CAMERA_SPEED;
-    if (IsKeyDown(KEY_D)) CAMERA->pos.x += CAMERA_SPEED;
-    if (IsKeyDown(KEY_W)) CAMERA->pos.y -= CAMERA_SPEED;
-    if (IsKeyDown(KEY_S)) CAMERA->pos.y += CAMERA_SPEED;
 }
 
 void handleDroppedFile() {
@@ -136,8 +125,6 @@ void InputHandle() {
     else if (STATE->mode == MODE_OVERWORLD) {
         handleOverworldInput();
     }
-
-    handleCameraInput(); // debug
 }
 
 void InputEditorEntitySelect(EditorEntityItem *item) {

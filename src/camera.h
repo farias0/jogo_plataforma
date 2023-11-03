@@ -17,6 +17,9 @@ void CameraInitialize();
 
 void CameraTick();
 
+// Sets the Camera to the default position in level
+void CameraLevelCentralizeOnPlayer();
+
 // Converts position from the screen coordinates to in game coordinates
 Vector2 PosInScreenToScene(Vector2 pos);
 
