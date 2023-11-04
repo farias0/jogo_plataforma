@@ -8,6 +8,8 @@ void RenderInitialize();
 
 void Render();
 
+void RenderResizeWindow(int width, int height);
+
 // Prints a system message in the screen
 void RenderPrintSysMessage(char *msg);
 

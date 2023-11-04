@@ -416,6 +416,14 @@ void Render() {
     EndDrawing();
 }
 
+void RenderResizeWindow(int width, int height) {
+
+    SetWindowSize(width, height);
+
+    UnloadRenderTexture(gameScene);
+    gameScene = LoadRenderTexture(width, height);
+}
+
 void RenderPrintSysMessage(char *msg) {
 
     char *msgCopy = MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
