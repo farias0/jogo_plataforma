@@ -38,6 +38,10 @@ extern Sprite NightclubSprite;
 extern Sprite BGHouseSprite;
 
 
+// Shaders
+extern Shader ShaderDefault;
+
+
 void AssetsInitialize();
 
 // Get a Sprite's dimensions, scaled

@@ -30,6 +30,10 @@ Sprite NightclubSprite;
 Sprite BGHouseSprite;
 
 
+// Shaders
+Shader ShaderDefault;
+
+
 static inline Sprite defaultSprite(Texture2D texture) {
     return (Sprite) {
         texture,
@@ -64,6 +68,12 @@ void AssetsInitialize() {
     NightclubSprite = defaultSprite(LoadTexture("../assets/nightclub_1.png"));
     BGHouseSprite = defaultSprite(LoadTexture("../assets/bg_house_1.png"));
 
+
+    // Shaders
+    ShaderDefault = LoadShader(0, "../assets/shaders/default_shader.fs"); // TODO
+    while (!IsShaderReady(ShaderDefault)) {
+        TraceLog(LOG_DEBUG, "Waiting for shader to be ready...");
+    }
 
     TraceLog(LOG_INFO, "Assets initialized.");
 }

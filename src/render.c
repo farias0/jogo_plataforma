@@ -30,6 +30,8 @@ typedef struct SysMessage {
 
 ListNode *SYS_MESSAGES_HEAD = 0;
 
+static RenderTexture2D gameScene;
+
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
 
@@ -376,17 +378,42 @@ static void renderEditor() {
     renderEditorControl();
 }
 
+void RenderInitialize() {
+
+    gameScene = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
 void Render() {
-    ClearBackground(BLACK);
 
-    renderBackground();
+    BeginTextureMode(gameScene);
 
-    renderEntities();
+        ClearBackground(BLACK);
 
-    if (STATE->isEditorEnabled)
-        renderEditor();
+        renderBackground();
 
-    renderHUD();
+        renderEntities();
+
+    EndTextureMode();
+
+
+    BeginDrawing();
+
+        Shader *shader = &ShaderDefault;
+
+        BeginShaderMode(*shader);
+            // NOTE: Render texture must be y-flipped due to default OpenGL coordinates (left-bottom)
+            DrawTextureRec(gameScene.texture,
+                            (Rectangle){ 0, 0, (float)gameScene.texture.width, (float)-gameScene.texture.height },
+                            (Vector2){ 0, 0 },
+                            WHITE);
+        EndShaderMode();
+
+        if (STATE->isEditorEnabled)
+            renderEditor();
+
+        renderHUD();
+
+    EndDrawing();
 }
 
 void RenderPrintSysMessage(char *msg) {

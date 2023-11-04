@@ -35,6 +35,8 @@ int main() {
 
     CameraInitialize();
 
+    RenderInitialize();
+
     OverworldInitialize();
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -57,13 +59,7 @@ int main() {
         }
 
 render:
-        {
-            BeginDrawing();
-
-            Render();
-
-            EndDrawing();
-        }
+        Render();
     }
 
     CloseWindow();

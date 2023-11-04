@@ -4,6 +4,7 @@
 
 #define SYS_MSG_BUFFER_SIZE 1000
 
+void RenderInitialize();
 
 void Render();
 
