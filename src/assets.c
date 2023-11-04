@@ -16,6 +16,7 @@ Sprite EraserSprite;
 Sprite PlayerSprite;
 Sprite EnemySprite;
 Sprite BlockSprite;
+Sprite LevelEndOrbSprite;
 
 // Overworld
 Sprite OverworldCursorSprite;
@@ -45,6 +46,7 @@ void AssetsInitialize() {
     // In Level
     PlayerSprite = defaultSprite(LoadTexture("../assets/player_default_1.png"));
     EnemySprite = defaultSprite(LoadTexture("../assets/enemy_default_1.png"));
+    LevelEndOrbSprite = defaultSprite(LoadTexture("../assets/level_end_orb_1.png"));
     BlockSprite = (Sprite){
         LoadTexture("../assets/floor_tile_1.png"),
         FLOOR_TILE_SIZE,

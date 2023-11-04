@@ -14,8 +14,9 @@ void LevelEnemyAdd(Vector2 pos) {
 
     LevelEntity *newEnemy = MemAlloc(sizeof(LevelEntity));
 
-    newEnemy->components = LEVEL_IS_ENEMY;
-    newEnemy->hitbox = SpriteHitboxFromMiddle(EnemySprite, pos);
+    newEnemy->components = LEVEL_IS_ENEMY +
+                            LEVEL_IS_GROUND;
+    newEnemy->hitbox = SpriteHitboxFromEdge(EnemySprite, pos);
     newEnemy->sprite = EnemySprite;
     newEnemy->isFacingRight = false;
     newEnemy->isFallingDown = true;
@@ -60,7 +61,7 @@ void LevelEnemyCheckAndAdd(Vector2 pos) {
 
     }
 
-    LevelEnemyAdd(pos);
+    LevelEnemyAdd((Vector2){ hitbox.x, hitbox.y });
 }
 
 void LevelEnemyTick(ListNode *enemyNode) {
