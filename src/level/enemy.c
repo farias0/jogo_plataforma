@@ -16,7 +16,7 @@ void LevelEnemyAdd(Vector2 pos) {
 
     newEnemy->components = LEVEL_IS_ENEMY +
                             LEVEL_IS_GROUND;
-    newEnemy->hitbox = SpriteHitboxFromMiddle(EnemySprite, pos);
+    newEnemy->hitbox = SpriteHitboxFromEdge(EnemySprite, pos);
     newEnemy->sprite = EnemySprite;
     newEnemy->isFacingRight = false;
     newEnemy->isFallingDown = true;
@@ -61,7 +61,7 @@ void LevelEnemyCheckAndAdd(Vector2 pos) {
 
     }
 
-    LevelEnemyAdd(pos);
+    LevelEnemyAdd((Vector2){ hitbox.x, hitbox.y });
 }
 
 void LevelEnemyTick(ListNode *enemyNode) {
