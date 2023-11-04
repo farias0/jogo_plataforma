@@ -225,6 +225,14 @@ void LevelPlayerTick() {
                 // TODO maybe ground check should be here as well
             }
 
+            else if (entity->components & LEVEL_IS_EXIT &&
+                        CheckCollisionRecs(entity->hitbox, LEVEL_PLAYER->hitbox)) {
+
+                // Player exit level
+
+                OverworldInitialize();
+            }
+
 next_entity:
             node = node->next;
         }

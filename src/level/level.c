@@ -26,8 +26,8 @@ static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 static ListNode *levelExitNode = 0;
 
 
-// Searches for an entity that's not the player
-// in a given position and returns its node, or 0 if not found.
+// Searches for an entity in a given position
+// and returns its node, or 0 if not found.
 static ListNode *getNodeOfEntityOn(Vector2 pos) {
 
     ListNode *node = LEVEL_LIST_HEAD;
@@ -36,8 +36,7 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
 
         LevelEntity *entity = (LevelEntity *) node->item;
 
-        if (!(entity->components & LEVEL_IS_PLAYER) &&
-            CheckCollisionPointRec(pos, entity->hitbox)) {
+        if (CheckCollisionPointRec(pos, entity->hitbox)) {
 
                 return node;
             }
@@ -82,7 +81,7 @@ void LevelExitAdd(Vector2 pos) {
     LevelEntity *newExit = MemAlloc(sizeof(LevelEntity));
 
     Sprite sprite = LevelEndOrbSprite;
-    Rectangle hitbox = SpriteHitboxFromMiddle(sprite, pos);
+    Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
     newExit->components = LEVEL_IS_EXIT;
     newExit->hitbox = hitbox;
@@ -123,7 +122,7 @@ void LevelExitCheckAndAdd(Vector2 pos) {
     // Currently only one level exit is supported, but this should change in the future.
     if (levelExitNode) LinkedListRemove(&LEVEL_LIST_HEAD, levelExitNode);
     
-    LevelExitAdd(pos);
+    LevelExitAdd((Vector2){ hitbox.x, hitbox.y });
 }
 
 Vector2 LevelGetPlayerStartingPosition() {
@@ -164,10 +163,16 @@ void LevelEntityRemoveAt(Vector2 pos) {
 
     ListNode *node = getNodeOfEntityOn(pos);
 
-    if (node) {
-        LinkedListRemove(&LEVEL_LIST_HEAD, node);
-        TraceLog(LOG_TRACE, "Removed level entity.");
-    }
+    if (!node) return;
+
+    LevelEntity *entity = (LevelEntity *) node->item;
+
+    if (entity->components & LEVEL_IS_PLAYER) return;
+
+    if (node == levelExitNode) levelExitNode = 0;
+
+    LinkedListRemove(&LEVEL_LIST_HEAD, node);
+    TraceLog(LOG_TRACE, "Removed level entity.");
 }
 
 void LevelTick() {
