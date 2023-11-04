@@ -28,6 +28,8 @@ typedef enum LevelEntityComponent {
     LEVEL_IS_PLAYER         = 1,
     LEVEL_IS_ENEMY          = 2,
     LEVEL_IS_SCENARIO       = 4,
+    LEVEL_IS_EXIT           = 8,
+    LEVEL_IS_GROUND         = 16
 } LevelEntityComponent;
 
 typedef struct LevelEntity {
@@ -51,6 +53,10 @@ extern LevelEntity *LEVEL_PLAYER;
 
 
 void LevelInitialize(char *levelName);
+
+void LevelExitAdd(Vector2 pos);
+
+void LevelExitCheckAndAdd(Vector2 pos);
 
 // Returns the player's starting position for the currently loaded level
 Vector2 LevelGetPlayerStartingPosition();

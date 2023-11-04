@@ -48,6 +48,7 @@ void loadInLevelEditor() {
     STATE->editorSelectedEntity =
         loadEditorEntityItem(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
     loadEditorEntityItem(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    loadEditorEntityItem(EDITOR_ENTITY_EXIT, LevelEndOrbSprite, &LevelExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
     loadEditorControlItem(EDITOR_CONTROL_SAVE, "Salvar fase", &LevelSave);
 

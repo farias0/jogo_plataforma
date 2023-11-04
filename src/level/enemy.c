@@ -14,7 +14,8 @@ void LevelEnemyAdd(Vector2 pos) {
 
     LevelEntity *newEnemy = MemAlloc(sizeof(LevelEntity));
 
-    newEnemy->components = LEVEL_IS_ENEMY;
+    newEnemy->components = LEVEL_IS_ENEMY +
+                            LEVEL_IS_GROUND;
     newEnemy->hitbox = SpriteHitboxFromMiddle(EnemySprite, pos);
     newEnemy->sprite = EnemySprite;
     newEnemy->isFacingRight = false;

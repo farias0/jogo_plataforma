@@ -11,7 +11,8 @@ void LevelBlockAdd(Vector2 pos) {
     pos.x = SnapToGrid(pos.x, LEVEL_GRID.width);
     pos.y = SnapToGrid(pos.y, LEVEL_GRID.height);
 
-    newBlock->components = LEVEL_IS_SCENARIO;
+    newBlock->components = LEVEL_IS_SCENARIO +
+                            LEVEL_IS_GROUND;
     newBlock->hitbox = SpriteHitboxFromEdge(BlockSprite, pos);
     newBlock->sprite = BlockSprite;
 
