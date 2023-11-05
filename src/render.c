@@ -30,7 +30,8 @@ typedef struct SysMessage {
 
 ListNode *SYS_MESSAGES_HEAD = 0;
 
-static RenderTexture2D gameScene;
+// Texture covering the whole screen, used to render shaders
+static RenderTexture2D shaderRenderTexture;
 
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
@@ -380,12 +381,14 @@ static void renderEditor() {
 
 void RenderInitialize() {
 
-    gameScene = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+    shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+
+    TraceLog(LOG_INFO, "Render initialized.");
 }
 
 void Render() {
 
-    BeginTextureMode(gameScene);
+    BeginDrawing();
 
         ClearBackground(BLACK);
 
@@ -393,25 +396,26 @@ void Render() {
 
         renderEntities();
 
-    EndTextureMode();
+        renderHUD();
 
+        Shader *shader = &ShaderLevelTransition;
 
-    BeginDrawing();
-
-        Shader *shader = &ShaderDefault;
+        ShaderLevelTransitionSetUniforms(
+            (Vector2){ GetScreenWidth(), GetScreenHeight() },
+            (Vector2){ GetScreenWidth() / 2, GetScreenHeight() / 2  },
+            1.3,
+            GetTime(),
+            0
+        );
 
         BeginShaderMode(*shader);
-            // NOTE: Render texture must be y-flipped due to default OpenGL coordinates (left-bottom)
-            DrawTextureRec(gameScene.texture,
-                            (Rectangle){ 0, 0, (float)gameScene.texture.width, (float)-gameScene.texture.height },
-                            (Vector2){ 0, 0 },
-                            WHITE);
+            DrawTextureRec(shaderRenderTexture.texture,
+                            (Rectangle) { 0, 0, (float)shaderRenderTexture.texture.width, (float)-shaderRenderTexture.texture.height },
+                            (Vector2) { 0, 0 },
+                            WHITE );
         EndShaderMode();
 
-        if (STATE->isEditorEnabled)
-            renderEditor();
-
-        renderHUD();
+        if (STATE->isEditorEnabled) renderEditor();
 
     EndDrawing();
 }
@@ -419,9 +423,6 @@ void Render() {
 void RenderResizeWindow(int width, int height) {
 
     SetWindowSize(width, height);
-
-    UnloadRenderTexture(gameScene);
-    gameScene = LoadRenderTexture(width, height);
 }
 
 void RenderPrintSysMessage(char *msg) {
