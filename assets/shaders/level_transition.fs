@@ -13,8 +13,7 @@ void main() {
     float time_normalized = u_current_time / u_duration;
     if (u_is_close == 1) time_normalized = 1.0 - time_normalized;
 
-    // I don't know why the x2 is needed here
-    float current_radius = u_resolution.y * time_normalized * 2.0;  
+    float current_radius = u_resolution.y * time_normalized;  
 
     float distance_from_focus = sqrt(pow(gl_FragCoord.y - u_focus_point.y, 2.0) +
                                     pow(gl_FragCoord.x - u_focus_point.x, 2.0));

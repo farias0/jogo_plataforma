@@ -21,7 +21,7 @@
 
 #define SYS_MESSAGE_SECONDS 2
 
-#define LEVEL_TRANSITION_SHADER_DURATION 1.3 // in seconds
+#define LEVEL_TRANSITION_SHADER_DURATION 0.7 // in seconds
 
 typedef struct SysMessage {
     char *msg;
