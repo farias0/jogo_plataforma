@@ -13,5 +13,6 @@ void RenderResizeWindow(int width, int height);
 // Prints a system message in the screen
 void RenderPrintSysMessage(char *msg);
 
+void RenderStartLevelTransitionShader(Vector2 focusPoint, bool isClose);
 
 #endif // _RENDER_H_INCLUDED_

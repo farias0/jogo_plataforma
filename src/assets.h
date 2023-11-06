@@ -39,7 +39,6 @@ extern Sprite BGHouseSprite;
 
 
 // Shaders
-extern Shader ShaderDefault;
 extern Shader ShaderLevelTransition;
 
 

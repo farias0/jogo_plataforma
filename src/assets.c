@@ -28,7 +28,6 @@ Sprite BGHouseSprite;
 
 
 // Shaders
-Shader ShaderDefault;
 Shader ShaderLevelTransition;
 
 
@@ -67,7 +66,7 @@ void AssetsInitialize() {
     BGHouseSprite = defaultSprite(LoadTexture("../assets/bg_house_1.png"));
 
     // Shaders
-    ShaderDefault = (Shader) { rlGetShaderIdDefault(), rlGetShaderLocsDefault() };
+    // ShaderDefault = (Shader) { rlGetShaderIdDefault(), rlGetShaderLocsDefault() };
     ShaderLevelTransition = LoadShader(0, "../assets/shaders/level_transition.fs");
     while (!IsShaderReady(ShaderLevelTransition)) {
         TraceLog(LOG_INFO, "Waiting for ShaderLevelTransition...");

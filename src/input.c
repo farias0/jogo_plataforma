@@ -46,6 +46,10 @@ void handleOverworldInput() {
 
 void handleEditorInput() {
 
+    // TEST TODO remove
+    if (IsKeyPressed(KEY_Q)) RenderStartLevelTransitionShader((Vector2) {SCREEN_WIDTH/2, SCREEN_HEIGHT/2}, true);
+    if (IsKeyPressed(KEY_W)) RenderStartLevelTransitionShader((Vector2) {SCREEN_WIDTH/2, SCREEN_HEIGHT/2}, false);
+
     if      (IsKeyPressed(KEY_F1))          { EditorEnabledToggle(); return; }
     if      (IsKeyPressed(KEY_F2))          STATE->showDebugHUD = !STATE->showDebugHUD;
     if      (IsKeyPressed(KEY_F3))          STATE->showDebugGrid = !STATE->showDebugGrid;
