@@ -9,6 +9,7 @@
 #include "../camera.h"
 #include "../persistence.h"
 #include "../overworld.h"
+#include "../render.h"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
@@ -72,6 +73,12 @@ void LevelInitialize(char *levelName) {
     EditorSync();
 
     CameraLevelCentralizeOnPlayer();
+
+    CameraFollow();
+
+    RenderLevelTransitionEffectStart(
+        SpritePosMiddlePoint(
+            (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), false);
 
     TraceLog(LOG_INFO, "Level initialized: %s.", levelName);
 }

@@ -175,6 +175,11 @@ void OverworldInitialize() {
 
     CameraPanningReset();
 
+    CameraFollow();
+
+    RenderLevelTransitionEffectStart(
+        SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), false);
+
     TraceLog(LOG_INFO, "Overworld initialized.");
 }
 

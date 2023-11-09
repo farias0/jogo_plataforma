@@ -18,10 +18,7 @@ static bool isPanned = false;
 static Vector2 panningCameraOrigin;
 static Vector2 panningCursorLastFrame;
 
-
-static void tickOverworldCamera() {
-
-    if (isPanned) return;
+static void followOverworldCamera() {
 
     Dimensions tileDimensions = SpriteScaledDimensions(STATE->tileUnderCursor->sprite);
 
@@ -31,23 +28,39 @@ static void tickOverworldCamera() {
                     - (SCREEN_HEIGHT/2) + (tileDimensions.height/2);
 }
 
+static void followLevelCamera() {
+
+    if (!LEVEL_PLAYER) {
+        TraceLog(LOG_WARNING, "Camera can't follow player, no reference to them.");
+        return;
+    }
+
+    if (LEVEL_PLAYER->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT) {
+        CAMERA->pos.x = LEVEL_PLAYER->hitbox.x - CAMERA_FOLLOW_LEFT;
+    }
+    else if (LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width > CAMERA->pos.x + CAMERA_FOLLOW_RIGHT) {
+        CAMERA->pos.x = LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width - CAMERA_FOLLOW_RIGHT;
+    }
+    if (LEVEL_PLAYER->hitbox.y < CAMERA->pos.y + CAMERA_FOLLOW_UP) {
+        CAMERA->pos.y = LEVEL_PLAYER->hitbox.y - CAMERA_FOLLOW_UP;
+    }
+    else if (LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height > CAMERA->pos.y + CAMERA_FOLLOW_DOWN) {
+        CAMERA->pos.y = LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height - CAMERA_FOLLOW_DOWN;
+    }
+}
+
+
+static void tickOverworldCamera() {
+
+    if (isPanned) return;
+    followOverworldCamera();
+}
+
 static void tickLevelCamera() {
 
     if (!LEVEL_PLAYER) return;
-
-    // Camera follows player
-    if (!isPanned && LEVEL_PLAYER->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT) {
-        CAMERA->pos.x = LEVEL_PLAYER->hitbox.x - CAMERA_FOLLOW_LEFT;
-    }
-    else if (!isPanned && LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width > CAMERA->pos.x + CAMERA_FOLLOW_RIGHT) {
-        CAMERA->pos.x = LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width - CAMERA_FOLLOW_RIGHT;
-    }
-    if (!isPanned && LEVEL_PLAYER->hitbox.y < CAMERA->pos.y + CAMERA_FOLLOW_UP) {
-        CAMERA->pos.y = LEVEL_PLAYER->hitbox.y - CAMERA_FOLLOW_UP;
-    }
-    else if (!isPanned && LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height > CAMERA->pos.y + CAMERA_FOLLOW_DOWN) {
-        CAMERA->pos.y = LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height - CAMERA_FOLLOW_DOWN;
-    }
+    if (isPanned) return;
+    followLevelCamera();
 }
 
 void CameraInitialize() {
@@ -68,6 +81,20 @@ void CameraTick() {
 
     case MODE_IN_LEVEL:
         tickLevelCamera();
+        break;
+    }
+}
+
+void CameraFollow() {
+
+    switch (STATE->mode)
+    {
+    case MODE_OVERWORLD:
+        followOverworldCamera();
+        break;
+
+    case MODE_IN_LEVEL:
+        followLevelCamera();
         break;
     }
 }

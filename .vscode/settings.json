@@ -5,6 +5,7 @@
         "console": "integratedTerminal"
     },
     "files.associations": {
-        "render.h": "c"
+        "render.h": "c",
+        "raylib.h": "c"
     }
 }

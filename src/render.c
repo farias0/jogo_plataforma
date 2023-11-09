@@ -462,11 +462,15 @@ void RenderPrintSysMessage(char *msg) {
     TraceLog(LOG_TRACE, "Added sys message to list: '%s'.", msg);
 }
 
-void RenderStartLevelTransitionShader(Vector2 focusPoint, bool isClose) {
+void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
     levelTransitionShaderControl.timer = GetTime();
-    levelTransitionShaderControl.focusPoint = focusPoint;
+    levelTransitionShaderControl.focusPoint = PosInSceneToScreen(sceneFocusPoint);
     levelTransitionShaderControl.isClose = isClose;
 
-    TraceLog(LOG_TRACE, "ShaderLevelTransition started.");
+    TraceLog(LOG_TRACE, "ShaderLevelTransition started from x=%.1f, y=%.1f.",
+        levelTransitionShaderControl.focusPoint.x, levelTransitionShaderControl.focusPoint.y);
+
+    // Fix for how GLSL works
+    levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
 }

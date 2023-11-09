@@ -83,6 +83,15 @@ Dimensions SpriteScaledDimensions(Sprite s) {
     };
 }
 
+Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite sprite) {
+    Dimensions dimensions = SpriteScaledDimensions(sprite);
+
+    return (Vector2) {
+        pos.x + (dimensions.width / 2),
+        pos.y + (dimensions.height / 2),
+    };
+}
+
 void SpriteRotate(Sprite *sprite, int degrees) {
     sprite->rotation += degrees;
     

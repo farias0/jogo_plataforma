@@ -47,6 +47,9 @@ void AssetsInitialize();
 // Get a Sprite's dimensions, scaled
 Dimensions SpriteScaledDimensions(Sprite sprite);
 
+// Get a sprite's middle point given its position
+Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite sprite);
+
 // Rotates sprite in a number of degrees
 void SpriteRotate(Sprite *sprite, int degrees);
 
