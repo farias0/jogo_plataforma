@@ -6,6 +6,7 @@
     },
     "files.associations": {
         "render.h": "c",
-        "raylib.h": "c"
+        "raylib.h": "c",
+        "persistence.h": "c"
     }
 }

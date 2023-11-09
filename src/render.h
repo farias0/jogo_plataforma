@@ -4,6 +4,9 @@
 
 #define SYS_MSG_BUFFER_SIZE 1000
 
+#define LEVEL_TRANSITION_ANIMATION_DURATION 0.7 // in seconds
+
+
 void RenderInitialize();
 
 void Render();
@@ -20,5 +23,6 @@ void RenderPrintSysMessage(char *msg);
     isClose: If the effect will close on the sceneFocusPont, or, if false, if it will open from it.
 */
 void RenderLevelTransitionEffectStart(Vector2 sceneFocusPont, bool isClose);
+
 
 #endif // _RENDER_H_INCLUDED_

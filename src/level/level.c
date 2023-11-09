@@ -22,6 +22,8 @@
 
 ListNode *LEVEL_LIST_HEAD = 0;
 
+double levelConcludedAgo = -1;
+
 static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
 static ListNode *levelExitNode = 0;
@@ -81,6 +83,15 @@ void LevelInitialize(char *levelName) {
             (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), false);
 
     TraceLog(LOG_INFO, "Level initialized: %s.", levelName);
+}
+
+void LevelGoToOverworld() {
+
+    RenderLevelTransitionEffectStart(
+        SpritePosMiddlePoint(
+            (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), true);
+
+    levelConcludedAgo = GetTime();
 }
 
 void LevelExitAdd(Vector2 pos) {
@@ -183,6 +194,15 @@ void LevelEntityRemoveAt(Vector2 pos) {
 }
 
 void LevelTick() {
+
+    // TODO check if having the first check before saves on processing,
+    // of if it's just redundant. 
+    if (levelConcludedAgo != -1 &&
+        GetTime() - levelConcludedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
+
+        levelConcludedAgo = -1;
+        OverworldInitialize();
+    }
 
     ListNode *node = LEVEL_LIST_HEAD;
     ListNode *next;

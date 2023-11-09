@@ -21,7 +21,6 @@
 
 #define SYS_MESSAGE_SECONDS 2
 
-#define LEVEL_TRANSITION_SHADER_DURATION 0.7 // in seconds
 
 typedef struct SysMessage {
     char *msg;
@@ -391,7 +390,8 @@ static void renderLevelTransitionShader() {
 
     double elapsedTime = GetTime() - levelTransitionShaderControl.timer;
 
-    if (elapsedTime >= LEVEL_TRANSITION_SHADER_DURATION) {
+                                                        // small buffer 
+    if (elapsedTime >= LEVEL_TRANSITION_ANIMATION_DURATION + 1) {
         TraceLog(LOG_TRACE, "ShaderLevelTransition finished.");
         levelTransitionShaderControl.timer = -1;
         return;
@@ -400,7 +400,7 @@ static void renderLevelTransitionShader() {
     ShaderLevelTransitionSetUniforms(
         (Vector2){ GetScreenWidth(), GetScreenHeight() },
         levelTransitionShaderControl.focusPoint,
-        LEVEL_TRANSITION_SHADER_DURATION,
+        LEVEL_TRANSITION_ANIMATION_DURATION,
         elapsedTime,
         (int) levelTransitionShaderControl.isClose
     );

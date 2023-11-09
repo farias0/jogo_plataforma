@@ -15,7 +15,7 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
 
-    if      (IsKeyPressed(KEY_BACKSPACE))   { OverworldInitialize(); return; }
+    if      (IsKeyPressed(KEY_BACKSPACE))   { LevelGoToOverworld(); return; }
 
     if      (IsKeyPressed(KEY_ENTER))       { PausedGameToggle(); return; }
 

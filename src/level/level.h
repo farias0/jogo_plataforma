@@ -51,8 +51,14 @@ extern ListNode *LEVEL_LIST_HEAD;
 
 extern LevelEntity *LEVEL_PLAYER; 
 
+// How long ago, in seconds, the level concluded, or -1 if it's not concluded
+extern double levelConcludedAgo;
+
 
 void LevelInitialize(char *levelName);
+
+// Starts "go to Overworld" routine
+void LevelGoToOverworld();
 
 void LevelExitAdd(Vector2 pos);
 
