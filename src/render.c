@@ -27,8 +27,18 @@ typedef struct SysMessage {
     float secondsUntilDisappear;
 } SysMessage;
 
+typedef struct LevelTransitionShaderControl {
+    double timer;
+    bool isClose;
+    Vector2 focusPoint;
+} LevelTransitionShaderControl;
+
 
 ListNode *SYS_MESSAGES_HEAD = 0;
+
+// Texture covering the whole screen, used to render shaders
+static RenderTexture2D shaderRenderTexture;
+static LevelTransitionShaderControl levelTransitionShaderControl;
 
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
@@ -376,17 +386,64 @@ static void renderEditor() {
     renderEditorControl();
 }
 
+static void renderLevelTransitionShader() {
+
+    double elapsedTime = GetTime() - levelTransitionShaderControl.timer;
+
+                                                            // small buffer 
+    if (elapsedTime >= LEVEL_TRANSITION_ANIMATION_DURATION + GetFrameTime()) {
+        TraceLog(LOG_TRACE, "ShaderLevelTransition finished.");
+        levelTransitionShaderControl.timer = -1;
+        return;
+    }
+
+    ShaderLevelTransitionSetUniforms(
+        (Vector2){ GetScreenWidth(), GetScreenHeight() },
+        levelTransitionShaderControl.focusPoint,
+        LEVEL_TRANSITION_ANIMATION_DURATION,
+        elapsedTime,
+        (int) levelTransitionShaderControl.isClose
+    );
+
+    BeginShaderMode(ShaderLevelTransition);
+        DrawTextureRec(shaderRenderTexture.texture,
+                        (Rectangle) { 0, 0, (float)shaderRenderTexture.texture.width, (float)-shaderRenderTexture.texture.height },
+                        (Vector2) { 0, 0 },
+                        WHITE );
+    EndShaderMode();
+}
+
+void RenderInitialize() {
+
+    shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+
+    levelTransitionShaderControl.timer = -1;
+
+    TraceLog(LOG_INFO, "Render initialized.");
+}
+
 void Render() {
-    ClearBackground(BLACK);
 
-    renderBackground();
+    BeginDrawing();
 
-    renderEntities();
+        ClearBackground(BLACK);
 
-    if (STATE->isEditorEnabled)
-        renderEditor();
+        renderBackground();
 
-    renderHUD();
+        renderEntities();
+
+        renderHUD();
+
+        if (levelTransitionShaderControl.timer != -1) renderLevelTransitionShader();
+
+        if (STATE->isEditorEnabled) renderEditor();
+
+    EndDrawing();
+}
+
+void RenderResizeWindow(int width, int height) {
+
+    SetWindowSize(width, height);
 }
 
 void RenderPrintSysMessage(char *msg) {
@@ -403,4 +460,17 @@ void RenderPrintSysMessage(char *msg) {
     LinkedListAdd(&SYS_MESSAGES_HEAD, node);
 
     TraceLog(LOG_TRACE, "Added sys message to list: '%s'.", msg);
+}
+
+void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
+
+    levelTransitionShaderControl.timer = GetTime();
+    levelTransitionShaderControl.focusPoint = PosInSceneToScreen(sceneFocusPoint);
+    levelTransitionShaderControl.isClose = isClose;
+
+    TraceLog(LOG_TRACE, "ShaderLevelTransition started from x=%.1f, y=%.1f.",
+        levelTransitionShaderControl.focusPoint.x, levelTransitionShaderControl.focusPoint.y);
+
+    // Fix for how GLSL works
+    levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
 }

@@ -13,7 +13,12 @@
 
 ListNode *OW_LIST_HEAD = 0;
 
+double overworldLevelSelectedAgo = -1;
+
+
 static OverworldEntity *OW_CURSOR = 0;
+
+static char *overworldLevelSelectedName = 0;
 
 
 static Rectangle getGridSquare(OverworldEntity *entity) {
@@ -175,6 +180,11 @@ void OverworldInitialize() {
 
     CameraPanningReset();
 
+    CameraFollow();
+
+    RenderLevelTransitionEffectStart(
+        SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), false);
+
     TraceLog(LOG_INFO, "Overworld initialized.");
 }
 
@@ -189,10 +199,17 @@ void OverworldLevelSelect() {
         STATE->expectingLevelAssociation = true;
     }
 
-    LevelInitialize(STATE->tileUnderCursor->levelName);
+    RenderLevelTransitionEffectStart(
+        SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), true);
+
+    overworldLevelSelectedAgo = GetTime();
+    overworldLevelSelectedName = STATE->tileUnderCursor->levelName;
 }
 
 void OverworldCursorMove(OverworldCursorDirection direction) {
+
+    if (overworldLevelSelectedAgo >= 0) return;
+    
 
     TraceLog(LOG_TRACE, "Overworld move to direction %d", direction);
 
@@ -350,6 +367,19 @@ void OverworldTileRemoveAt(Vector2 pos) {
 }
 
 void OverworldTick() {
+
+    // TODO check if having the first check before saves on processing,
+    // of if it's just redundant. 
+    if (overworldLevelSelectedAgo != -1 &&
+        GetTime() - overworldLevelSelectedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
+
+        LevelInitialize(overworldLevelSelectedName);
+
+        overworldLevelSelectedAgo = -1;
+        overworldLevelSelectedName = 0;
+
+        return;
+    }
 
     CameraTick();    
 }

@@ -48,9 +48,13 @@ typedef struct OverworldEntity {
 // The head of the linked list of all the overworld entities
 extern ListNode *OW_LIST_HEAD;
 
+// How long ago, in seconds, a level was selected in the OW, or -1 if it wasn't
+extern double overworldLevelSelectedAgo;
+
 
 void OverworldInitialize();
 
+// If the current tile contains a level, starts 'go to level' routine and select it
 void OverworldLevelSelect();
 
 void OverworldCursorMove(OverworldCursorDirection direction);

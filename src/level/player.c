@@ -134,6 +134,9 @@ void LevelPlayerTick() {
         sprintf(ySpeedTxt, "yVelocity: %f   y: %f", yVelocity, LEVEL_PLAYER->hitbox.y);
         DrawText(ySpeedTxt, 10, 40, 20, WHITE);
     }
+
+    if (levelConcludedAgo >= 0) return;
+
     
     LevelEntity *groundBeneath = LevelGetGroundBeneath(LEVEL_PLAYER); 
     if (groundBeneath) {
@@ -230,7 +233,7 @@ void LevelPlayerTick() {
 
                 // Player exit level
 
-                OverworldInitialize();
+                LevelGoToOverworld();
             }
 
 next_entity:

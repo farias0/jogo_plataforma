@@ -5,9 +5,6 @@
 #define DEFAULT_SPRITE_SCALE 2
 #define FLOOR_TILE_SIZE 1
 
-/*
-    TODO use hash map
-*/
 
 // Editor
 Sprite EraserSprite;
@@ -28,6 +25,10 @@ Sprite PathTileInLSprite;
 // Background
 Sprite NightclubSprite;
 Sprite BGHouseSprite;
+
+
+// Shaders
+Shader ShaderLevelTransition;
 
 
 static inline Sprite defaultSprite(Texture2D texture) {
@@ -64,6 +65,13 @@ void AssetsInitialize() {
     NightclubSprite = defaultSprite(LoadTexture("../assets/nightclub_1.png"));
     BGHouseSprite = defaultSprite(LoadTexture("../assets/bg_house_1.png"));
 
+    // Shaders
+    // ShaderDefault = (Shader) { rlGetShaderIdDefault(), rlGetShaderLocsDefault() };
+    ShaderLevelTransition = LoadShader(0, "../assets/shaders/level_transition.fs");
+    while (!IsShaderReady(ShaderLevelTransition)) {
+        TraceLog(LOG_INFO, "Waiting for ShaderLevelTransition...");
+    }
+
 
     TraceLog(LOG_INFO, "Assets initialized.");
 }
@@ -72,6 +80,15 @@ Dimensions SpriteScaledDimensions(Sprite s) {
     return (Dimensions) {
         s.sprite.width * s.scale,
         s.sprite.height * s.scale
+    };
+}
+
+Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite sprite) {
+    Dimensions dimensions = SpriteScaledDimensions(sprite);
+
+    return (Vector2) {
+        pos.x + (dimensions.width / 2),
+        pos.y + (dimensions.height / 2),
     };
 }
 
@@ -103,4 +120,44 @@ Rectangle SpriteHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
         dimensions.width,
         dimensions.height
     };
+}
+
+void ShaderLevelTransitionSetUniforms(
+    Vector2 resolution, Vector2 focusPoint, float duration, float currentTime, int isClose) {
+    
+
+    int resolutionLoc = GetShaderLocation(ShaderLevelTransition, "u_resolution");
+    if (resolutionLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_resolution in ShaderLevelTransition");
+        return;
+    }
+    SetShaderValue(ShaderLevelTransition, resolutionLoc, &resolution, SHADER_UNIFORM_VEC2);
+
+    int focusPointLoc = GetShaderLocation(ShaderLevelTransition, "u_focus_point");
+    if (focusPointLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_focus_point in ShaderLevelTransition");
+        return;
+    }
+    SetShaderValue(ShaderLevelTransition, focusPointLoc, &focusPoint, SHADER_UNIFORM_VEC2);
+
+    int durationLoc = GetShaderLocation(ShaderLevelTransition, "u_duration");
+    if (durationLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_duration in ShaderLevelTransition");
+        return;
+    }
+    SetShaderValue(ShaderLevelTransition, durationLoc, &duration, SHADER_UNIFORM_FLOAT);
+
+    int currentTimeLoc = GetShaderLocation(ShaderLevelTransition, "u_current_time");
+    if (currentTimeLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_current_time in ShaderLevelTransition");
+        return;
+    }
+    SetShaderValue(ShaderLevelTransition, currentTimeLoc, &currentTime, SHADER_UNIFORM_FLOAT);
+
+    int isCloseLoc = GetShaderLocation(ShaderLevelTransition, "u_is_close");
+    if (isCloseLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_is_close in ShaderLevelTransition");
+        return;
+    }
+    SetShaderValue(ShaderLevelTransition, isCloseLoc, &isClose, SHADER_UNIFORM_INT);
 }

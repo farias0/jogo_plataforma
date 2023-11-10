@@ -17,6 +17,9 @@ void CameraInitialize();
 
 void CameraTick();
 
+// Ask camera to follow the controlled entity
+void CameraFollow();
+
 // Sets the Camera to the default position in level
 void CameraLevelCentralizeOnPlayer();
 

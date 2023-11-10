@@ -9,6 +9,7 @@
 #include "../camera.h"
 #include "../persistence.h"
 #include "../overworld.h"
+#include "../render.h"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
@@ -20,6 +21,8 @@
 
 
 ListNode *LEVEL_LIST_HEAD = 0;
+
+double levelConcludedAgo = -1;
 
 static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
@@ -73,7 +76,27 @@ void LevelInitialize(char *levelName) {
 
     CameraLevelCentralizeOnPlayer();
 
+    CameraFollow();
+
+    RenderLevelTransitionEffectStart(
+        SpritePosMiddlePoint(
+            (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), false);
+
     TraceLog(LOG_INFO, "Level initialized: %s.", levelName);
+}
+
+void LevelGoToOverworld() {
+
+    if (!LEVEL_PLAYER) {
+        OverworldInitialize();
+        return;    
+    }
+
+    RenderLevelTransitionEffectStart(
+        SpritePosMiddlePoint(
+            (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), true);
+
+    levelConcludedAgo = GetTime();
 }
 
 void LevelExitAdd(Vector2 pos) {
@@ -176,6 +199,18 @@ void LevelEntityRemoveAt(Vector2 pos) {
 }
 
 void LevelTick() {
+
+    // TODO check if having the first check before saves on processing,
+    // of if it's just redundant. 
+    if (levelConcludedAgo != -1 &&
+        GetTime() - levelConcludedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
+
+        OverworldInitialize();
+
+        levelConcludedAgo = -1;
+
+        return;
+    }
 
     ListNode *node = LEVEL_LIST_HEAD;
     ListNode *next;

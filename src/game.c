@@ -18,7 +18,7 @@ void updateWindowTitle() {
 
 int main() {
 
-    SetTraceLogLevel(LOG_DEBUG);
+    SetTraceLogLevel(LOG_TRACE);
 
     // debug
     int gamepadIdx = 0;
@@ -34,6 +34,8 @@ int main() {
     GameStateInitialize();
 
     CameraInitialize();
+
+    RenderInitialize();
 
     OverworldInitialize();
 
@@ -57,13 +59,7 @@ int main() {
         }
 
 render:
-        {
-            BeginDrawing();
-
-            Render();
-
-            EndDrawing();
-        }
+        Render();
     }
 
     CloseWindow();

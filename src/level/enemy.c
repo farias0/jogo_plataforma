@@ -66,6 +66,9 @@ void LevelEnemyCheckAndAdd(Vector2 pos) {
 
 void LevelEnemyTick(ListNode *enemyNode) {
 
+    if (levelConcludedAgo >= 0) return;
+
+
     LevelEntity *enemy = (LevelEntity *)enemyNode->item;
 
     LevelEntity *groundBeneath = LevelGetGroundBeneath(enemy);

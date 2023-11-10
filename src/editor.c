@@ -6,6 +6,7 @@
 #include "overworld.h"
 #include "linked_list.h"
 #include "camera.h"
+#include "render.h"
 
 
 ListNode *EDITOR_ENTITIES_HEAD = 0;
@@ -103,7 +104,7 @@ void EditorEnable() {
 
     STATE->isEditorEnabled = true;
 
-    SetWindowSize(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+    RenderResizeWindow(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
     ShowCursor();
 
     TraceLog(LOG_TRACE, "Editor enabled.");
@@ -113,7 +114,7 @@ void EditorDisable() {
 
     STATE->isEditorEnabled = false;
 
-    SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    RenderResizeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
     HideCursor();
 
     CameraPanningReset();
