@@ -57,6 +57,7 @@ void LevelInitialize(char *levelName) {
 
     LinkedListRemoveAll(&LEVEL_LIST_HEAD);
     LEVEL_PLAYER = 0;
+    levelExitNode = 0;
 
     if (levelName[0] == '\0') {
         EditorEmpty();
