@@ -18,7 +18,7 @@ void updateWindowTitle() {
 
 int main() {
 
-    SetTraceLogLevel(LOG_TRACE);
+    SetTraceLogLevel(LOG_DEBUG);
 
     // debug
     int gamepadIdx = 0;
