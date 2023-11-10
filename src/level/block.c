@@ -16,9 +16,7 @@ void LevelBlockAdd(Vector2 pos) {
     newBlock->hitbox = SpriteHitboxFromEdge(BlockSprite, pos);
     newBlock->sprite = BlockSprite;
 
-    ListNode *node = MemAlloc(sizeof(ListNode));
-    node->item = newBlock;
-    LinkedListAdd(&LEVEL_LIST_HEAD, node);
+    LinkedListAdd(&LEVEL_LIST_HEAD, newBlock);
 
     TraceLog(LOG_TRACE, "Added block to level (x=%.1f, y=%.1f)",
                 newBlock->hitbox.x, newBlock->hitbox.y);

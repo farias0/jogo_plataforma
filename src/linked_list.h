@@ -10,8 +10,8 @@ typedef struct ListNode {
 } ListNode;
 
 
-// Adds node to a linked list.
-void LinkedListAdd(ListNode **head, ListNode *node);
+// Adds new node containing 'item' to a linked list. Returns the new node.
+ListNode *LinkedListAdd(ListNode **head, void *item);
 
 // Removes and destroys node from a linked list.
 void LinkedListRemove(ListNode **head, ListNode *node);

@@ -60,9 +60,7 @@ static void initializeCursor() {
     newCursor->sprite = OverworldCursorSprite;
     newCursor->layer = 1;
 
-    ListNode *node = MemAlloc(sizeof(ListNode));
-    node->item = newCursor;
-    LinkedListAdd(&OW_LIST_HEAD, node);
+    LinkedListAdd(&OW_LIST_HEAD, newCursor);
 
     OW_CURSOR = newCursor;
 
@@ -106,9 +104,7 @@ static OverworldEntity *addTileToOverworld(Vector2 pos, OverworldTileType type, 
         TraceLog(LOG_ERROR, "Could not find sprite for overworld tile type %d.", type);
     }
 
-    ListNode *node = MemAlloc(sizeof(ListNode));
-    node->item = newTile;
-    LinkedListAdd(&OW_LIST_HEAD, node);
+    LinkedListAdd(&OW_LIST_HEAD, newTile);
 
     TraceLog(LOG_TRACE, "Added tile to overworld (x=%.1f, y=%.1f)",
                 newTile->gridPos.x, newTile->gridPos.y);

@@ -78,9 +78,7 @@ void LevelPlayerInitialize(Vector2 pos) {
 
     calculatePlayersHitboxes();
 
-    ListNode *node = MemAlloc(sizeof(ListNode));
-    node->item = newPlayer;
-    LinkedListAdd(&LEVEL_LIST_HEAD, node);
+    LinkedListAdd(&LEVEL_LIST_HEAD, newPlayer);
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);

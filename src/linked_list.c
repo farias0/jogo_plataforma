@@ -3,7 +3,11 @@
 #include "linked_list.h"
 
 
-void LinkedListAdd(ListNode **head, ListNode *node) {
+ListNode *LinkedListAdd(ListNode **head, void *item) {
+
+    ListNode *node = MemAlloc(sizeof(ListNode));
+
+    node->item = item;
 
     ListNode *lastItem = *head;
 
@@ -23,6 +27,8 @@ void LinkedListAdd(ListNode **head, ListNode *node) {
     node->next = 0;
 
     TraceLog(LOG_TRACE, "Added item to linked list.");
+
+    return node;
 }
 
 void LinkedListRemove(ListNode **head, ListNode *node) {

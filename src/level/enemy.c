@@ -21,9 +21,7 @@ void LevelEnemyAdd(Vector2 pos) {
     newEnemy->isFacingRight = false;
     newEnemy->isFallingDown = true;
 
-    ListNode *node = MemAlloc(sizeof(ListNode));
-    node->item = newEnemy;
-    LinkedListAdd(&LEVEL_LIST_HEAD, node);
+    LinkedListAdd(&LEVEL_LIST_HEAD, newEnemy);
 
     TraceLog(LOG_TRACE, "Added enemy to level (x=%.1f, y=%.1f)",
                 newEnemy->hitbox.x, newEnemy->hitbox.y);

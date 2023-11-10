@@ -111,11 +111,7 @@ void LevelExitAdd(Vector2 pos) {
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
-    ListNode *node = MemAlloc(sizeof(ListNode));
-    node->item = newExit;
-    LinkedListAdd(&LEVEL_LIST_HEAD, node);
-
-    levelExitNode = node;
+    levelExitNode = LinkedListAdd(&LEVEL_LIST_HEAD, newExit);
 
     TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
                 newExit->hitbox.x, newExit->hitbox.y);

@@ -22,9 +22,7 @@ EditorEntityItem *loadEditorEntityItem(
         newItem->sprite = sprite;
         newItem->interaction = interaction;
 
-        ListNode *node = MemAlloc(sizeof(ListNode));
-        node->item = newItem;
-        LinkedListAdd(&EDITOR_ENTITIES_HEAD, node);
+        LinkedListAdd(&EDITOR_ENTITIES_HEAD, newItem);
 
         return newItem;
 }
@@ -36,9 +34,7 @@ EditorControlItem *loadEditorControlItem(EditorControlType type, char *label, vo
     newItem->handler = handler;
     newItem->label = label;
 
-    ListNode *node = MemAlloc(sizeof(ListNode));
-    node->item = newItem;
-    LinkedListAdd(&EDITOR_CONTROL_HEAD, node);
+    LinkedListAdd(&EDITOR_CONTROL_HEAD, newItem);
 
     return newItem;
 }

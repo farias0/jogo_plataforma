@@ -462,9 +462,7 @@ void RenderPrintSysMessage(char *msg) {
     newMsg->msg = msgCopy;
     newMsg->secondsUntilDisappear = SYS_MESSAGE_SECONDS;
     
-    ListNode *node = MemAlloc(sizeof(ListNode));
-    node->item = newMsg;
-    LinkedListAdd(&SYS_MESSAGES_HEAD, node);
+    LinkedListAdd(&SYS_MESSAGES_HEAD, newMsg);
 
     TraceLog(LOG_TRACE, "Added sys message to list: '%s'.", msg);
 }
