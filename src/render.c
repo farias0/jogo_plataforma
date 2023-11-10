@@ -390,8 +390,8 @@ static void renderLevelTransitionShader() {
 
     double elapsedTime = GetTime() - levelTransitionShaderControl.timer;
 
-                                                        // small buffer 
-    if (elapsedTime >= LEVEL_TRANSITION_ANIMATION_DURATION + 1) {
+                                                            // small buffer 
+    if (elapsedTime >= LEVEL_TRANSITION_ANIMATION_DURATION + GetFrameTime()) {
         TraceLog(LOG_TRACE, "ShaderLevelTransition finished.");
         levelTransitionShaderControl.timer = -1;
         return;

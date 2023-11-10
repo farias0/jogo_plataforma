@@ -87,6 +87,11 @@ void LevelInitialize(char *levelName) {
 
 void LevelGoToOverworld() {
 
+    if (!LEVEL_PLAYER) {
+        OverworldInitialize();
+        return;    
+    }
+
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
             (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), true);
@@ -200,8 +205,11 @@ void LevelTick() {
     if (levelConcludedAgo != -1 &&
         GetTime() - levelConcludedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
 
-        levelConcludedAgo = -1;
         OverworldInitialize();
+
+        levelConcludedAgo = -1;
+
+        return;
     }
 
     ListNode *node = LEVEL_LIST_HEAD;
