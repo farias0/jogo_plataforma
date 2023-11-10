@@ -42,6 +42,16 @@ static void updateCursorPosition() {
                     cursorDimensions.height;
 }
 
+static void destroyEntityOverworld(ListNode *node) {
+
+    OverworldEntity *entity = (OverworldEntity *) node->item;
+    MemFree(entity->levelName);
+
+    LinkedListRemove(&OW_LIST_HEAD, node);
+
+    TraceLog(LOG_TRACE, "Destroyed overworld entity.");
+}
+
 static void initializeCursor() {
 
     OverworldEntity *newCursor = MemAlloc(sizeof(OverworldEntity));
@@ -69,6 +79,7 @@ static OverworldEntity *addTileToOverworld(Vector2 pos, OverworldTileType type, 
 
     newTile->tileType = type;
     newTile->gridPos = pos;
+    newTile->levelName = MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
 
     switch (newTile->tileType)
     {
@@ -192,6 +203,11 @@ void OverworldLevelSelect() {
 
     if (!(STATE->tileUnderCursor->components & OW_IS_LEVEL_DOT)) {
         TraceLog(LOG_TRACE, "Overworld tried to enter level, but not a dot.");
+        return;
+    }
+
+    if (!STATE->tileUnderCursor->levelName) {
+        TraceLog(LOG_ERROR, "tileUnderCursor has no levelName reference.");
         return;
     }
 
@@ -362,8 +378,8 @@ void OverworldTileRemoveAt(Vector2 pos) {
         return;
     }
 
-    LinkedListRemove(&OW_LIST_HEAD, node);
-    TraceLog(LOG_TRACE, "Removed overworld tile.");
+    
+    destroyEntityOverworld(node);
 }
 
 void OverworldTick() {

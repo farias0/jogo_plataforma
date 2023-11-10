@@ -262,9 +262,16 @@ skip_debug_grid:
 
             Vector2 pos = PosInSceneToScreen((Vector2){ tile->gridPos.x - 20,
                                 tile->gridPos.y + (tile->sprite.sprite.height * tile->sprite.scale) });
+
             char levelName[LEVEL_NAME_BUFFER_SIZE];
+
+            if (!tile->levelName)
+                TraceLog(LOG_ERROR, "Overworld level dot to be rendered has no levelName referenced.");
+
             if (tile->levelName[0] != '\0') strcpy(levelName, tile->levelName);
+
             else strcpy(levelName, "[sem fase]");
+
             DrawText(levelName, pos.x, pos.y, 20, RAYWHITE);
         }
 
