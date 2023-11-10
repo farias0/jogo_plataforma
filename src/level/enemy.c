@@ -71,6 +71,8 @@ void LevelEnemyTick(ListNode *enemyNode) {
 
     LevelEntity *groundBeneath = LevelGetGroundBeneath(enemy);
 
+    if (!groundBeneath) enemy->isFallingDown = true;
+
     if (enemy->isFallingDown) {
         
         if (groundBeneath &&
