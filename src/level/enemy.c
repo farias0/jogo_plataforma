@@ -18,7 +18,7 @@ void LevelEnemyAdd(Vector2 pos) {
                             LEVEL_IS_GROUND;
     newEnemy->hitbox = SpriteHitboxFromEdge(EnemySprite, pos);
     newEnemy->sprite = EnemySprite;
-    newEnemy->isFacingRight = false;
+    newEnemy->isFacingRight = true;
     newEnemy->isFallingDown = true;
 
     LinkedListAdd(&LEVEL_LIST_HEAD, newEnemy);
@@ -71,6 +71,8 @@ void LevelEnemyTick(ListNode *enemyNode) {
 
     LevelEntity *groundBeneath = LevelGetGroundBeneath(enemy);
 
+    if (!groundBeneath) enemy->isFallingDown = true;
+
     if (enemy->isFallingDown) {
         
         if (groundBeneath &&
@@ -97,15 +99,16 @@ void LevelEnemyTick(ListNode *enemyNode) {
         return;
     }
 
-    int x_back = enemy->hitbox.x;
-    if (enemy->isFacingRight) enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
-    else enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
-    
-    // TODO use groundBeneath -- currently it breaks the AI when it goes to the edge of the ground
-    if (!LevelGetGroundBeneath(enemy)) {
+    if (!groundBeneath || 
+            (enemy->isFacingRight &&
+                ((enemy->hitbox.x + enemy->hitbox.width) > (groundBeneath->hitbox.x + groundBeneath->hitbox.width))) ||
+            (!enemy->isFacingRight && (enemy->hitbox.x < groundBeneath->hitbox.x))
+    ) {
         
         // Turn around
-        enemy->hitbox.x = x_back;
         enemy->isFacingRight = !(enemy->isFacingRight);
     }
+
+    if (enemy->isFacingRight) enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
+    else enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
 }

@@ -154,6 +154,8 @@ LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
 
     ListNode *node = LEVEL_LIST_HEAD;
 
+    LevelEntity *foundGround = 0; 
+
     while (node != 0) {
 
         LevelEntity *possibleGround = (LevelEntity *)node->item;
@@ -166,16 +168,28 @@ LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
             entity->hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&
 
             // If y is RIGHT above the possible ground
-            abs((int) (possibleGround->hitbox.y - entitysFoot)) <= 
-                ON_THE_GROUND_Y_TOLERANCE) {
+            abs((int) (possibleGround->hitbox.y - entitysFoot)) <= ON_THE_GROUND_Y_TOLERANCE) {
                 
-                return possibleGround;
+                // Is on a ground
+
+                if (foundGround) {
+
+                    if (
+                        (entity->isFacingRight && (possibleGround->hitbox.x > foundGround->hitbox.x)) ||
+                        (!entity->isFacingRight && (possibleGround->hitbox.x < foundGround->hitbox.x))
+                    ) {
+                        
+                        foundGround = possibleGround;
+
+                    }
+                }
+                else foundGround = possibleGround;
             } 
 
         node = node->next;
     }
 
-    return 0;    
+    return foundGround;    
 }
 
 void LevelEntityRemoveAt(Vector2 pos) {

@@ -67,7 +67,8 @@ void LevelExitCheckAndAdd(Vector2 pos);
 // Returns the player's starting position for the currently loaded level
 Vector2 LevelGetPlayerStartingPosition();
 
-// The ground beneath the entity, or 0 if not on the ground
+// The ground beneath the entity, or 0 if not on the ground.
+// Gives priority to the tile in the direction the player is looking at.
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity);
 
 // Searches for level entity in position;
