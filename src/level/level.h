@@ -60,6 +60,10 @@ typedef struct PlayerState {
     float yVelocityTarget;
     float xVelocity;
 
+    PlayerMovementSpeed speed;
+
+    bool isDead;
+
 } PlayerState;
 
 

@@ -20,8 +20,8 @@ void handleInLevelInput() {
     if      (IsKeyPressed(KEY_ENTER))       { PausedGameToggle(); return; }
 
 
-    if (STATE->isPlayerDead) return;
     if (!LEVEL_PLAYER) return;
+    if (LEVEL_PLAYER_STATE->isDead) return;
 
 
     if      (IsKeyDown(KEY_Z))              LevelPlayStartRunning();

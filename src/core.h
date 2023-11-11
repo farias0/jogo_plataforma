@@ -28,9 +28,6 @@ typedef struct GameState {
     char loadedLevel[LEVEL_NAME_BUFFER_SIZE];
 
     bool isPaused;
-    bool isPlayerDead;
-
-    PlayerMovementSpeed playerMovementSpeed;
 
     EditorEntityItem *editorSelectedEntity;
     bool isEditorEnabled;

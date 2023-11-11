@@ -38,6 +38,8 @@ static void resetPlayerState() {
     LEVEL_PLAYER_STATE = MemAlloc(sizeof(PlayerState));
 
     LEVEL_PLAYER_STATE->isJumping = false;
+    LEVEL_PLAYER_STATE->isDead = false;
+    LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
 
     TraceLog(LOG_DEBUG, "Player state reset.");
 }
@@ -46,7 +48,7 @@ static void resetPlayerState() {
 // propulsion of a jump
 inline static float jumpStartVelocity() {
 
-    if (STATE->playerMovementSpeed == PLAYER_MOVEMENT_RUNNING)
+    if (LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
         return JUMP_START_VELOCITY_RUNNING;
     else
         return JUMP_START_VELOCITY_DEFAULT;
@@ -72,7 +74,7 @@ static void syncPlayersHitboxes() {
 }
 
 static void die() {
-    STATE->isPlayerDead = true;
+    LEVEL_PLAYER_STATE->isDead = true;
     STATE->isPaused = true;
 
     TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isJumping=%d",
@@ -103,7 +105,7 @@ void LevelPlayerInitialize(Vector2 pos) {
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
 
     float amount = PLAYER_SPEED_DEFAULT;
-    if (STATE->playerMovementSpeed == PLAYER_MOVEMENT_RUNNING) amount = PLAYER_SPEED_FAST;
+    if (LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) amount = PLAYER_SPEED_FAST;
 
     if (direction == PLAYER_MOVEMENT_LEFT) {
         LEVEL_PLAYER->isFacingRight = false;
@@ -126,12 +128,12 @@ void LevelPlayStartRunning() {
 
     if (!LEVEL_PLAYER_STATE->groundBeneath) return;
 
-    STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
+    LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_RUNNING;
 }
 
 void LevelPlayerStopRunning() {
 
-    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
+    LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
 }
 
 void LevelPlayerJump() {
@@ -286,8 +288,6 @@ next_entity:
 void LevelPlayerContinue() {
 
     STATE->isPaused = false;
-    STATE->isPlayerDead = false;
-    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
     resetPlayerState();
 
     Vector2 pos = LevelGetPlayerStartingPosition();

@@ -25,21 +25,25 @@ void GameStateInitialize() {
 void GameStateReset() {
     strcpy(STATE->loadedLevel, "");
     STATE->isPaused = false;
-    STATE->isPlayerDead = false;
-    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
     STATE->mode = MODE_IN_LEVEL;
 
     TraceLog(LOG_DEBUG, "Game state reset.");
 }
 
 void PausedGameToggle() {
+    
     if (STATE->isPaused) {
 
-        if (STATE->isPlayerDead) {
-            LevelPlayerContinue();
-        } else {
-            STATE->isPaused = false;
+        if (STATE->mode == MODE_IN_LEVEL) {
+
+            if (LEVEL_PLAYER_STATE) {
+                if (LEVEL_PLAYER_STATE->isDead) LevelPlayerContinue();
+            } else {
+                TraceLog(LOG_ERROR, "Pause toggle in level has no reference to player's state.");
+            }
         }
+
+        STATE->isPaused = false;
 
     } else {
         STATE->isPaused = true;
