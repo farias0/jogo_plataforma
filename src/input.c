@@ -24,8 +24,8 @@ void handleInLevelInput() {
     if (!LEVEL_PLAYER) return;
 
 
-    if      (IsKeyDown(KEY_Z))              STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
-    else                                    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
+    if      (IsKeyDown(KEY_Z))              LevelPlayStartRunning();
+    else                                    LevelPlayerStopRunning();
 
     if      (IsKeyDown(KEY_RIGHT))          LevelPlayerMoveHorizontal(PLAYER_MOVEMENT_RIGHT);
     else if (IsKeyDown(KEY_LEFT))           LevelPlayerMoveHorizontal(PLAYER_MOVEMENT_LEFT);

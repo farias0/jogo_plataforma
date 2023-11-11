@@ -89,6 +89,10 @@ void LevelPlayerInitialize(Vector2 pos);
 
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction);
 
+void LevelPlayStartRunning();
+
+void LevelPlayerStopRunning();
+
 void LevelPlayerJump();
 
 void LevelPlayerTick();

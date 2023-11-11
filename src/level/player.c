@@ -22,7 +22,12 @@
 #define JUMP_ACCELERATION 0.4f
 #define Y_VELOCITY_TARGET_TOLERANCE 1
 
+
 LevelEntity *LEVEL_PLAYER = 0;
+
+// The ground beneath the player, updated every frame
+static LevelEntity* groundBeneath;
+
 
 // TODO PlayerState
 /*
@@ -106,6 +111,18 @@ void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
     calculatePlayersHitboxes();
 }
 
+void LevelPlayStartRunning() {
+
+    if (!groundBeneath) return;
+
+    STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
+}
+
+void LevelPlayerStopRunning() {
+
+    STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
+}
+
 void LevelPlayerJump() {
 
     /*
@@ -118,7 +135,7 @@ void LevelPlayerJump() {
         pressed a few milliseconds before.
     */
 
-    if (LevelGetGroundBeneath(LEVEL_PLAYER)) {
+    if (groundBeneath) {
         isJumping = true;
         yVelocity = JUMP_START_VELOCITY;
         yVelocityTarget = 0.0f;
@@ -136,7 +153,7 @@ void LevelPlayerTick() {
     if (levelConcludedAgo >= 0) return;
 
     
-    LevelEntity *groundBeneath = LevelGetGroundBeneath(LEVEL_PLAYER); 
+    groundBeneath = LevelGetGroundBeneath(LEVEL_PLAYER); 
     if (groundBeneath) {
 
         if (STATE->showDebugHUD) DrawText("On the ground!", 10, 60, 20, WHITE);
