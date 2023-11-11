@@ -56,9 +56,12 @@ inline static float jumpStartVelocity() {
 
 // Syncs the player state's hitbox with the player entity's data 
 static void syncPlayersHitboxes() {
+
     LEVEL_PLAYER_STATE->upperbody = (Rectangle){
-        LEVEL_PLAYER->hitbox.x + 1,       LEVEL_PLAYER->hitbox.y - 1,
-        LEVEL_PLAYER->hitbox.width + 2,   LEVEL_PLAYER->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
+        LEVEL_PLAYER->hitbox.x + 1,
+        LEVEL_PLAYER->hitbox.y - 1,
+        LEVEL_PLAYER->hitbox.width + 2,
+        LEVEL_PLAYER->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
     };
 
     /*
@@ -68,12 +71,15 @@ static void syncPlayersHitboxes() {
         This is something that should not be needed in a more robust implementation.
     */
     LEVEL_PLAYER_STATE->lowerbody = (Rectangle){
-        LEVEL_PLAYER->hitbox.x - 1,       LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER_STATE->upperbody.height,
-        LEVEL_PLAYER->hitbox.width + 2,   LEVEL_PLAYER->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
+        LEVEL_PLAYER->hitbox.x - 1,
+        LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER_STATE->upperbody.height,
+        LEVEL_PLAYER->hitbox.width + 2,
+        LEVEL_PLAYER->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
     };
 }
 
 static void die() {
+
     LEVEL_PLAYER_STATE->isDead = true;
     STATE->isPaused = true;
 
@@ -105,16 +111,15 @@ void LevelPlayerInitialize(Vector2 pos) {
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
 
     float amount = PLAYER_SPEED_DEFAULT;
-    if (LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) amount = PLAYER_SPEED_FAST;
+    if (LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
+        amount = PLAYER_SPEED_FAST;
 
     if (direction == PLAYER_MOVEMENT_LEFT) {
         LEVEL_PLAYER->isFacingRight = false;
-
         LEVEL_PLAYER_STATE->xVelocity = -amount;
     }
     else if (direction == PLAYER_MOVEMENT_RIGHT) {
         LEVEL_PLAYER->isFacingRight = true;
-
         LEVEL_PLAYER_STATE->xVelocity = amount;
     }
     else {
@@ -187,7 +192,10 @@ void LevelPlayerTick() {
         }
     }
 
-    bool yVelocityWithinTarget = abs((int) (pState->yVelocity - pState->yVelocityTarget)) < Y_VELOCITY_TARGET_TOLERANCE;
+
+    bool yVelocityWithinTarget =
+        abs((int) (pState->yVelocity - pState->yVelocityTarget)) < Y_VELOCITY_TARGET_TOLERANCE;
+    
     if (yVelocityWithinTarget) {
         pState->isJumping = false;
 
@@ -238,8 +246,14 @@ void LevelPlayerTick() {
                         CheckCollisionRecs(entity->hitbox, LEVEL_PLAYER->hitbox)) {
 
                 // Player hit wall
-                if ((abs((int) (LEVEL_PLAYER->hitbox.x - entity->hitbox.x - entity->hitbox.width)) < 10.0f) ||
-                        (abs((int) (LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width - entity->hitbox.x)) < 10.0f)) {
+
+                bool hitLeftWall =
+                    abs((int) (LEVEL_PLAYER->hitbox.x - entity->hitbox.x - entity->hitbox.width)) < 10.0f;
+
+                bool hitRightWall =
+                    abs((int) (LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width - entity->hitbox.x)) < 10.0f;
+
+                if (hitLeftWall || hitRightWall) {
 
                     if (STATE->showDebugHUD) DrawText("Hit wall", 10, 80, 20, WHITE);
 
@@ -249,7 +263,12 @@ void LevelPlayerTick() {
                 }
 
                 // Player hit ceiling
-                if ((abs((int) (LEVEL_PLAYER->hitbox.y - (entity->hitbox.y + entity->hitbox.height))) < 15.0f) && pState->isJumping) {
+
+                bool hitCeiling =
+                    (abs((int) (LEVEL_PLAYER->hitbox.y - (entity->hitbox.y + entity->hitbox.height))) < 15.0f) &&
+                    pState->isJumping;
+
+                if (hitCeiling) {
 
                     if (STATE->showDebugHUD) DrawText("Hit ceiling", 10, 100, 20, WHITE);
 
@@ -278,11 +297,12 @@ next_entity:
 
 
     // Accelerates jump's vertical movement
-    if (pState->yVelocity > pState->yVelocityTarget) {
-        pState->yVelocity -= Y_ACCELERATION_RATE; // Upwards
-    } else if (pState->yVelocity < pState->yVelocityTarget) {
-        pState->yVelocity += Y_ACCELERATION_RATE; // Downwards
-    }
+
+    if (pState->yVelocity > pState->yVelocityTarget)
+            pState->yVelocity -= Y_ACCELERATION_RATE; // Upwards
+
+    else if (pState->yVelocity < pState->yVelocityTarget)
+            pState->yVelocity += Y_ACCELERATION_RATE; // Downwards
 }
 
 void LevelPlayerContinue() {
