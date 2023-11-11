@@ -13,17 +13,6 @@
 #define LEVEL_GRID (Dimensions){ 32, 32 }
 
 
-typedef enum PlayerMovementSpeed {
-    PLAYER_MOVEMENT_DEFAULT,
-    PLAYER_MOVEMENT_RUNNING
-} PlayerMovementSpeed;
-
-typedef enum PlayerHorizontalMovementType {
-    PLAYER_MOVEMENT_STOP,
-    PLAYER_MOVEMENT_LEFT,
-    PLAYER_MOVEMENT_RIGHT
-} PlayerHorizontalMovementType;
-
 typedef enum LevelEntityComponent {
     LEVEL_IS_PLAYER         = 1,
     LEVEL_IS_ENEMY          = 2,
@@ -45,11 +34,41 @@ typedef struct LevelEntity {
     
 } LevelEntity;
 
+typedef enum PlayerMovementSpeed {
+    PLAYER_MOVEMENT_DEFAULT,
+    PLAYER_MOVEMENT_RUNNING
+} PlayerMovementSpeed;
+
+typedef enum PlayerHorizontalMovementType {
+    PLAYER_MOVEMENT_STOP,
+    PLAYER_MOVEMENT_LEFT,
+    PLAYER_MOVEMENT_RIGHT
+} PlayerHorizontalMovementType;
+
+typedef struct PlayerState {
+
+    // The ground beneath the player, updated every frame, or 0 if there's no ground beneath
+    LevelEntity* groundBeneath;
+
+    // TODO maybe add multiple hitboxes support for every entity
+    Rectangle upperbody, lowerbody;
+
+    // If the player is on the ascension phase of the jump
+    bool isJumping;
+
+    float yVelocity;
+    float yVelocityTarget;
+    float xVelocity;
+
+} PlayerState;
+
 
 // The head of the linked list of all the level entities
 extern ListNode *LEVEL_LIST_HEAD;
 
 extern LevelEntity *LEVEL_PLAYER; 
+
+extern PlayerState *LEVEL_PLAYER_STATE;
 
 // How long ago, in seconds, the level concluded, or -1 if it's not concluded
 extern double levelConcludedAgo;
