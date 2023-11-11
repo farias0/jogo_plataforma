@@ -23,25 +23,42 @@
 #define Y_ACCELERATION_RATE             0.4f
 
 
+typedef struct PlayerState {
+
+    // The ground beneath the player, updated every frame, or 0 if there's no ground beneath
+    LevelEntity* groundBeneath;
+
+    // TODO maybe add multiple hitboxes support for every entity
+    Rectangle upperbody, lowerbody;
+
+    // If the player is on the ascension phase of the jump
+    bool isJumping;
+
+    float yVelocity;
+    float yVelocityTarget;
+    float xVelocity;
+
+} PlayerState;
+
+
 LevelEntity *LEVEL_PLAYER = 0;
 
-// The ground beneath the player, updated every frame
-static LevelEntity* groundBeneath;
+static PlayerState *playerState = 0;
 
 
-// TODO PlayerState
-/*
-    TODO: Currently only the player has more than one hitbox,
-        but eventually every entity should support multiple hitboxes.
-*/
+static void resetPlayerState() {
 
-static Rectangle playersUpperbody, playersLowerbody;
-// If the player is on the ascension phase of the jump
-static bool isJumping = false;
-static float yVelocity = 0;
-static float yVelocityTarget = 0;
-static float xVelocity = 0;
+    if (playerState) {
+        MemFree(playerState);
+        TraceLog(LOG_TRACE, "Player state destroyed.");
+    }
 
+    playerState = MemAlloc(sizeof(PlayerState));
+
+    playerState->isJumping = false;
+
+    TraceLog(LOG_DEBUG, "Player state reset.");
+}
 
 // The vertical velocity that works as the initial
 // propulsion of a jump
@@ -53,8 +70,9 @@ inline static float jumpStartVelocity() {
         return JUMP_START_VELOCITY_DEFAULT;
 }
 
-static void calculatePlayersHitboxes() {
-    playersUpperbody = (Rectangle){
+// Syncs the playerState hitbox data with the player entity's data 
+static void syncPlayersHitboxes() {
+    playerState->upperbody = (Rectangle){
         LEVEL_PLAYER->hitbox.x + 1,       LEVEL_PLAYER->hitbox.y - 1,
         LEVEL_PLAYER->hitbox.width + 2,   LEVEL_PLAYER->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
     };
@@ -65,8 +83,8 @@ static void calculatePlayersHitboxes() {
         (this seems to be related with the use of raylib's CheckCollisionRecs for player-enemy collision).
         This is something that should not be needed in a more robust implementation.
     */
-    playersLowerbody = (Rectangle){
-        LEVEL_PLAYER->hitbox.x - 1,       LEVEL_PLAYER->hitbox.y + playersUpperbody.height,
+    playerState->lowerbody = (Rectangle){
+        LEVEL_PLAYER->hitbox.x - 1,       LEVEL_PLAYER->hitbox.y + playerState->upperbody.height,
         LEVEL_PLAYER->hitbox.width + 2,   LEVEL_PLAYER->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
     };
 }
@@ -76,24 +94,25 @@ static void die() {
     STATE->isPaused = true;
 
     TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isJumping=%d",
-                LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y, isJumping);
+                LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y, playerState->isJumping);
 }
 
 void LevelPlayerInitialize(Vector2 pos) {
 
     LevelEntity *newPlayer = MemAlloc(sizeof(LevelEntity));
     LEVEL_PLAYER = newPlayer;
-
+    LinkedListAdd(&LEVEL_LIST_HEAD, newPlayer);
+    
     newPlayer->components = LEVEL_IS_PLAYER;
     newPlayer->hitbox = SpriteHitboxFromEdge(PlayerSprite, pos);
     newPlayer->sprite = PlayerSprite;
     newPlayer->isFacingRight = true;
 
+    resetPlayerState();
+    
+    syncPlayersHitboxes();
+
     LevelPlayerSetStartingPos(pos); // TODO replace it with entity origin
-
-    calculatePlayersHitboxes();
-
-    LinkedListAdd(&LEVEL_LIST_HEAD, newPlayer);
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
@@ -107,23 +126,23 @@ void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
     if (direction == PLAYER_MOVEMENT_LEFT) {
         LEVEL_PLAYER->isFacingRight = false;
 
-        xVelocity = -amount;
+        playerState->xVelocity = -amount;
     }
     else if (direction == PLAYER_MOVEMENT_RIGHT) {
         LEVEL_PLAYER->isFacingRight = true;
 
-        xVelocity = amount;
+        playerState->xVelocity = amount;
     }
     else {
-        xVelocity = 0;
+        playerState->xVelocity = 0;
     }
 
-    calculatePlayersHitboxes();
+    syncPlayersHitboxes();
 }
 
 void LevelPlayStartRunning() {
 
-    if (!groundBeneath) return;
+    if (!playerState->groundBeneath) return;
 
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_RUNNING;
 }
@@ -145,12 +164,12 @@ void LevelPlayerJump() {
         pressed a few milliseconds before.
     */
 
-    if (groundBeneath) {
+    if (playerState->groundBeneath) {
 
         // Starts jumping
-        isJumping = true;
-        yVelocity = jumpStartVelocity();
-        yVelocityTarget = 0.0f;
+        playerState->isJumping = true;
+        playerState->yVelocity = jumpStartVelocity();
+        playerState->yVelocityTarget = 0.0f;
     }
 }
 
@@ -158,42 +177,43 @@ void LevelPlayerTick() {
 
     if (STATE->showDebugHUD) {
         char ySpeedTxt[100];
-        sprintf(ySpeedTxt, "yVelocity: %f   y: %f", yVelocity, LEVEL_PLAYER->hitbox.y);
+        sprintf(ySpeedTxt, "yVelocity: %f   y: %f", playerState->yVelocity, LEVEL_PLAYER->hitbox.y);
         DrawText(ySpeedTxt, 10, 40, 20, WHITE);
     }
 
+
     if (levelConcludedAgo >= 0) return;
 
-    
-    groundBeneath = LevelGetGroundBeneath(LEVEL_PLAYER); 
-    if (groundBeneath) {
+
+    playerState->groundBeneath = LevelGetGroundBeneath(LEVEL_PLAYER); 
+
+
+    if (playerState->groundBeneath) {
 
         if (STATE->showDebugHUD) DrawText("On the ground!", 10, 60, 20, WHITE);
 
-        if (!isJumping) {
+        if (!playerState->isJumping) {
             // Is on the ground
-            LEVEL_PLAYER->hitbox.y = groundBeneath->hitbox.y - LEVEL_PLAYER->hitbox.height;
-            yVelocity = 0;
-            yVelocityTarget = 0;
+            LEVEL_PLAYER->hitbox.y = playerState->groundBeneath->hitbox.y - LEVEL_PLAYER->hitbox.height;
+            playerState->yVelocity = 0;
+            playerState->yVelocityTarget = 0;
         }
     }
 
-    bool yVelocityWithinTarget =
-        abs((int) (yVelocity - yVelocityTarget)) < Y_VELOCITY_TARGET_TOLERANCE;
-        
+    bool yVelocityWithinTarget = abs((int) (playerState->yVelocity - playerState->yVelocityTarget)) < Y_VELOCITY_TARGET_TOLERANCE;
     if (yVelocityWithinTarget) {
-        isJumping = false;
+        playerState->isJumping = false;
 
-        if (!groundBeneath) {
-            // Is falling down
-            yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
+        if (!playerState->groundBeneath) {
+            // Starts falling down
+            playerState->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
         }
     }
 
-    LEVEL_PLAYER->hitbox.y -= yVelocity;
-    LEVEL_PLAYER->hitbox.x += xVelocity;
 
-    calculatePlayersHitboxes();
+    LEVEL_PLAYER->hitbox.y -= playerState->yVelocity;
+    LEVEL_PLAYER->hitbox.x += playerState->xVelocity;
+    syncPlayersHitboxes();
 
 
     // Collision checking
@@ -212,13 +232,13 @@ void LevelPlayerTick() {
             if (entity->components & LEVEL_IS_ENEMY) {
 
                 // Enemy hit player
-                if (CheckCollisionRecs(entity->hitbox, playersUpperbody)) {
+                if (CheckCollisionRecs(entity->hitbox, playerState->upperbody)) {
                     die();
                     break;
                 }
 
                 // Player hit enemy
-                if (CheckCollisionRecs(entity->hitbox, playersLowerbody)) {
+                if (CheckCollisionRecs(entity->hitbox, playerState->lowerbody)) {
                     ListNode *enemyNode = node;
                     node = node->next;
                     LinkedListRemove(&LEVEL_LIST_HEAD, enemyNode);
@@ -236,19 +256,19 @@ void LevelPlayerTick() {
 
                     if (STATE->showDebugHUD) DrawText("Hit wall", 10, 80, 20, WHITE);
 
-                    LEVEL_PLAYER->hitbox.x -= xVelocity;
+                    LEVEL_PLAYER->hitbox.x -= playerState->xVelocity;
 
                     goto next_entity;
                 }
 
                 // Player hit ceiling
-                if ((abs((int) (LEVEL_PLAYER->hitbox.y - (entity->hitbox.y + entity->hitbox.height))) < 15.0f) && isJumping) {
+                if ((abs((int) (LEVEL_PLAYER->hitbox.y - (entity->hitbox.y + entity->hitbox.height))) < 15.0f) && playerState->isJumping) {
 
                     if (STATE->showDebugHUD) DrawText("Hit ceiling", 10, 100, 20, WHITE);
 
-                    isJumping = false;
-                    yVelocity = -(1/yVelocity);
-                    yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
+                    playerState->isJumping = false;
+                    playerState->yVelocity = -(1/playerState->yVelocity);
+                    playerState->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
 
                     goto next_entity;
                 }
@@ -271,10 +291,10 @@ next_entity:
 
 
     // Accelerates jump's vertical movement
-    if (yVelocity > yVelocityTarget) {
-        yVelocity -= Y_ACCELERATION_RATE; // Upwards
-    } else if (yVelocity < yVelocityTarget) {
-        yVelocity += Y_ACCELERATION_RATE; // Downwards
+    if (playerState->yVelocity > playerState->yVelocityTarget) {
+        playerState->yVelocity -= Y_ACCELERATION_RATE; // Upwards
+    } else if (playerState->yVelocity < playerState->yVelocityTarget) {
+        playerState->yVelocity += Y_ACCELERATION_RATE; // Downwards
     }
 }
 
@@ -282,13 +302,13 @@ void LevelPlayerContinue() {
 
     STATE->isPaused = false;
     STATE->isPlayerDead = false;
-
     STATE->playerMovementSpeed = PLAYER_MOVEMENT_DEFAULT;
+    resetPlayerState();
 
     Vector2 pos = LevelGetPlayerStartingPosition();
     LEVEL_PLAYER->hitbox.x = pos.x;
     LEVEL_PLAYER->hitbox.y = pos.y;
-
+    syncPlayersHitboxes();
     CameraLevelCentralizeOnPlayer();
 
     TraceLog(LOG_DEBUG, "Player continue.");
