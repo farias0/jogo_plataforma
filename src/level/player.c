@@ -9,18 +9,18 @@
 #include "../camera.h"
 
 
-#define PLAYERS_UPPERBODY_PROPORTION 0.90f // What % of the player's height is upperbody, for hitboxes
+#define PLAYERS_UPPERBODY_PROPORTION    0.90f // What % of the player's height is upperbody, for hitboxes
 
-#define PLAYER_SPEED_DEFAULT 5.5f
-#define PLAYER_SPEED_FAST 9.0f
+#define PLAYER_SPEED_DEFAULT            5.5f
+#define PLAYER_SPEED_FAST               9.0f
 
-#define PLAYER_JUMP_DURATION 0.75f // In seconds
-#define PLAYER_JUMP_HEIGHT 64.0f
-#define PLAYER_END_JUMP_DISTANCE_GROUND 1 // Distance from the ground to end the jump when descending 
+#define JUMP_START_VELOCITY_DEFAULT     10.0f
+#define JUMP_START_VELOCITY_RUNNING     12.0f
 
-#define JUMP_START_VELOCITY 10.0f
-#define JUMP_ACCELERATION 0.4f
-#define Y_VELOCITY_TARGET_TOLERANCE 1
+#define DOWNWARDS_VELOCITY_TARGET       -10.0f
+#define Y_VELOCITY_TARGET_TOLERANCE     1
+
+#define Y_ACCELERATION_RATE             0.4f
 
 
 LevelEntity *LEVEL_PLAYER = 0;
@@ -42,6 +42,16 @@ static float yVelocity = 0;
 static float yVelocityTarget = 0;
 static float xVelocity = 0;
 
+
+// The vertical velocity that works as the initial
+// propulsion of a jump
+inline static float jumpStartVelocity() {
+
+    if (STATE->playerMovementSpeed == PLAYER_MOVEMENT_RUNNING)
+        return JUMP_START_VELOCITY_RUNNING;
+    else
+        return JUMP_START_VELOCITY_DEFAULT;
+}
 
 static void calculatePlayersHitboxes() {
     playersUpperbody = (Rectangle){
@@ -136,8 +146,10 @@ void LevelPlayerJump() {
     */
 
     if (groundBeneath) {
+
+        // Starts jumping
         isJumping = true;
-        yVelocity = JUMP_START_VELOCITY;
+        yVelocity = jumpStartVelocity();
         yVelocityTarget = 0.0f;
     }
 }
@@ -168,12 +180,13 @@ void LevelPlayerTick() {
 
     bool yVelocityWithinTarget =
         abs((int) (yVelocity - yVelocityTarget)) < Y_VELOCITY_TARGET_TOLERANCE;
+        
     if (yVelocityWithinTarget) {
         isJumping = false;
 
         if (!groundBeneath) {
             // Is falling down
-            yVelocityTarget = -JUMP_START_VELOCITY;
+            yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
         }
     }
 
@@ -235,7 +248,7 @@ void LevelPlayerTick() {
 
                     isJumping = false;
                     yVelocity = -(1/yVelocity);
-                    yVelocityTarget = -JUMP_START_VELOCITY;
+                    yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
 
                     goto next_entity;
                 }
@@ -259,9 +272,9 @@ next_entity:
 
     // Accelerates jump's vertical movement
     if (yVelocity > yVelocityTarget) {
-        yVelocity -= JUMP_ACCELERATION; // Upwards
+        yVelocity -= Y_ACCELERATION_RATE; // Upwards
     } else if (yVelocity < yVelocityTarget) {
-        yVelocity += JUMP_ACCELERATION; // Downwards
+        yVelocity += Y_ACCELERATION_RATE; // Downwards
     }
 }
 
