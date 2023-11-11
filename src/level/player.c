@@ -54,7 +54,7 @@ inline static float jumpStartVelocity() {
         return JUMP_START_VELOCITY_DEFAULT;
 }
 
-// Syncs the LEVEL_PLAYER_STATE hitbox data with the player entity's data 
+// Syncs the player state's hitbox with the player entity's data 
 static void syncPlayersHitboxes() {
     LEVEL_PLAYER_STATE->upperbody = (Rectangle){
         LEVEL_PLAYER->hitbox.x + 1,       LEVEL_PLAYER->hitbox.y - 1,
