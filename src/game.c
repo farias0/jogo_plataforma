@@ -1,5 +1,4 @@
 #include <raylib.h>
-#include <stdio.h>
 
 #include "core.h"
 #include "level/level.h"

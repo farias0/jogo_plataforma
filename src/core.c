@@ -1,4 +1,5 @@
 #include "math.h"
+#include <stdio.h>
 
 #include "core.h"
 #include "overworld.h"
