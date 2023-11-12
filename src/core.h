@@ -59,6 +59,9 @@ bool IsInPlayArea(Vector2 pos);
 // Returns the entity list's head for the current selected game mode
 ListNode *GetEntityListHead();
 
+// Updates the window title bar message
+void WindowTitleUpdate();
+
 // Snaps a coordinate (x or y) to a grid.
 float SnapToGrid(float value, float length);
 

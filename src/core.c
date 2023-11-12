@@ -57,6 +57,17 @@ ListNode *GetEntityListHead() {
     else return 0;
 }
 
+void WindowTitleUpdate() {
+    char title[LEVEL_NAME_BUFFER_SIZE + 20];
+
+    if (STATE->loadedLevel[0] == '\0')
+        sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());    
+    else
+        sprintf(title, "%s - %d FPS", STATE->loadedLevel, GetFPS());
+
+    SetWindowTitle(title);
+}
+
 bool IsInPlayArea(Vector2 pos) {
     return pos.x >= 0 &&
             pos.x <= SCREEN_WIDTH &&

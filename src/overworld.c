@@ -189,6 +189,8 @@ void OverworldInitialize() {
 
     CameraFollow();
 
+    memset(STATE->loadedLevel, 0, sizeof(STATE->loadedLevel));
+
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), false);
 

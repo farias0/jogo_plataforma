@@ -10,12 +10,6 @@
 #include "overworld.h"
 
 
-void updateWindowTitle() {
-    char title[50];
-    sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());
-    SetWindowTitle(title);
-}
-
 int main() {
 
     SetTraceLogLevel(LOG_DEBUG);
@@ -55,7 +49,7 @@ int main() {
             else if (STATE->mode == MODE_OVERWORLD) OverworldTick();
             if (STATE->isPaused) goto render;
 
-            updateWindowTitle();
+            WindowTitleUpdate();
         }
 
 render:
