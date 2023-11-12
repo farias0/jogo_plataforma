@@ -7,6 +7,7 @@
 #include "../core.h"
 #include "../assets.h"
 #include "../camera.h"
+#include "../render.h"
 
 
 #define PLAYERS_UPPERBODY_PROPORTION    0.90f // What % of the player's height is upperbody, for hitboxes
@@ -21,6 +22,10 @@
 #define Y_VELOCITY_TARGET_TOLERANCE     1
 
 #define Y_ACCELERATION_RATE             0.4f
+
+// How much of the Y velocity is preserved when the ceiling is hit
+// and the trajectory vector is inverted (from upwards to downwards)
+#define CEILING_VELOCITY_FACTOR         0.4f
 
 
 LevelEntity *LEVEL_PLAYER = 0;
@@ -167,13 +172,6 @@ void LevelPlayerTick() {
     PlayerState *pState = LEVEL_PLAYER_STATE;
 
 
-    if (STATE->showDebugHUD) {
-        char ySpeedTxt[100];
-        sprintf(ySpeedTxt, "yVelocity: %f   y: %f", pState->yVelocity, LEVEL_PLAYER->hitbox.y);
-        DrawText(ySpeedTxt, 10, 40, 20, WHITE);
-    }
-
-
     if (levelConcludedAgo >= 0) return;
 
 
@@ -181,8 +179,6 @@ void LevelPlayerTick() {
 
 
     if (pState->groundBeneath) {
-
-        if (STATE->showDebugHUD) DrawText("On the ground!", 10, 60, 20, WHITE);
 
         if (!pState->isJumping) {
             // Is on the ground
@@ -242,41 +238,46 @@ void LevelPlayerTick() {
                 }
             }
 
-            else if (entity->components & LEVEL_IS_SCENARIO &&
-                        CheckCollisionRecs(entity->hitbox, LEVEL_PLAYER->hitbox)) {
+            else if (entity->components & LEVEL_IS_SCENARIO) {
+                
 
-                // Player hit wall
+                Rectangle collisionRec = GetCollisionRec(entity->hitbox, LEVEL_PLAYER->hitbox);
+                if (collisionRec.width == 0 || collisionRec.height == 0) goto next_entity;
+            
+                const bool isAWall = collisionRec.width <= collisionRec.height;
+                const bool isACeiling = (collisionRec.width >= collisionRec.height) &&
+                                    (entity->hitbox.y < LEVEL_PLAYER->hitbox.y);
 
-                bool hitLeftWall =
-                    abs((int) (LEVEL_PLAYER->hitbox.x - entity->hitbox.x - entity->hitbox.width)) < 10.0f;
 
-                bool hitRightWall =
-                    abs((int) (LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width - entity->hitbox.x)) < 10.0f;
+                if (isAWall && collisionRec.width > 0) {
 
-                if (hitLeftWall || hitRightWall) {
+                    const bool isEntitysRightWall = collisionRec.x > entity->hitbox.x; 
+                    const bool isEntitysLeftWall = !isEntitysRightWall;
 
-                    if (STATE->showDebugHUD) DrawText("Hit wall", 10, 80, 20, WHITE);
+                    const bool isEntityToTheLeft = entity->hitbox.x < LEVEL_PLAYER->hitbox.x;
+                    const bool isEntityToTheRight = !isEntityToTheLeft;
 
-                    LEVEL_PLAYER->hitbox.x -= pState->xVelocity;
+                    // So when the player hits the entity to its left,
+                    // he can only collide with its left wall.
+                    if ((isEntitysRightWall && isEntityToTheLeft) ||
+                        (isEntitysLeftWall && isEntityToTheRight)) {
 
-                    goto next_entity;
+
+                        if (STATE->showDebugHUD) RenderPrintSysMessage("Hit wall");
+
+                        LEVEL_PLAYER->hitbox.x -= pState->xVelocity;
+
+                    }
                 }
 
-                // Player hit ceiling
 
-                bool hitCeiling =
-                    (abs((int) (LEVEL_PLAYER->hitbox.y - (entity->hitbox.y + entity->hitbox.height))) < 15.0f) &&
-                    pState->isJumping;
+                if (isACeiling && pState->isJumping) {
 
-                if (hitCeiling) {
-
-                    if (STATE->showDebugHUD) DrawText("Hit ceiling", 10, 100, 20, WHITE);
+                    if (STATE->showDebugHUD) RenderPrintSysMessage("Hit ceiling");
 
                     pState->isJumping = false;
-                    pState->yVelocity = -(1/pState->yVelocity);
+                    pState->yVelocity = (pState->yVelocity * -1) * CEILING_VELOCITY_FACTOR;
                     pState->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
-
-                    goto next_entity;
                 }
 
                 // TODO maybe ground check should be here as well
