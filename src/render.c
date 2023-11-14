@@ -305,7 +305,10 @@ skip_debug_grid:
                                                 levelEntityShowInfo->hitbox.y
                                             });
 
-            DrawRectangleLines(pos.x, pos.y, levelEntityShowInfo->hitbox.width, levelEntityShowInfo->hitbox.height, GREEN);
+            DrawRectangle(pos.x, pos.y,
+                    levelEntityShowInfo->hitbox.width, levelEntityShowInfo->hitbox.height, (Color){ GREEN.r, GREEN.g, GREEN.b, 128 });
+            DrawRectangleLines(pos.x, pos.y,
+                    levelEntityShowInfo->hitbox.width, levelEntityShowInfo->hitbox.height, GREEN);
 
             char buffer[500];
             sprintf(buffer, "X=%.1f\nY=%.1f",

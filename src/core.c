@@ -86,8 +86,6 @@ void DebugHudDisable() {
 
     CameraPanningReset();
 
-    RenderShowEntityInfoStop();
-
     TraceLog(LOG_TRACE, "Debug hud disabled.");
 }
 

@@ -87,7 +87,7 @@ void handleEditorInput() {
 
     if (STATE->showDebugHUD) {
 
-        if      (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))      RenderShowEntityInfo(
+        if      (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))      RenderShowEntityInfo(
                                                                     LevelEntityGetAt(mousePosInScene));
     }
 }
