@@ -27,10 +27,17 @@
 // and the trajectory vector is inverted (from upwards to downwards)
 #define CEILING_VELOCITY_FACTOR         0.4f
 
+// How many seconds before landing on the ground the jump command
+// still works 
+#define JUMP_BUFFER_SIZE                0.15f                
+
 
 LevelEntity *LEVEL_PLAYER = 0;
 
 PlayerState *LEVEL_PLAYER_STATE = 0;
+
+
+static double lastPressedJumpTimestamp = -1;
 
 
 static void resetPlayerState() {
@@ -148,23 +155,7 @@ void LevelPlayerStopRunning() {
 
 void LevelPlayerJump() {
 
-    /*
-        TODO: Instead of checking if there is ground beneath, check if the last time
-        there was is within a LAST_GROUND_BENEATH_TOLERANCE.
-        
-        It will need to check and update a "lastGroundBeneath" timestamp every frame.
-        
-        This will allow the player to jump even if the jump button was
-        pressed a few milliseconds before.
-    */
-
-    if (LEVEL_PLAYER_STATE->groundBeneath) {
-
-        // Starts jumping
-        LEVEL_PLAYER_STATE->isJumping = true;
-        LEVEL_PLAYER_STATE->yVelocity = jumpStartVelocity();
-        LEVEL_PLAYER_STATE->yVelocityTarget = 0.0f;
-    }
+    lastPressedJumpTimestamp = GetTime();
 }
 
 void LevelPlayerTick() {
@@ -175,7 +166,7 @@ void LevelPlayerTick() {
     if (levelConcludedAgo >= 0) return;
 
 
-    pState->groundBeneath = LevelGetGroundBeneath(LEVEL_PLAYER); 
+    pState->groundBeneath = LevelGetGroundBeneath(LEVEL_PLAYER);
 
 
     if (pState->groundBeneath) {
@@ -296,6 +287,15 @@ next_entity:
         }
     }
 
+    // TODO check if groundBeneath is within time window
+    if ((GetTime() - lastPressedJumpTimestamp < JUMP_BUFFER_SIZE)
+        && LEVEL_PLAYER_STATE->groundBeneath) {
+
+        // Starts jumping
+        pState->isJumping = true;
+        pState->yVelocity = jumpStartVelocity();
+        pState->yVelocityTarget = 0.0f;
+    }
 
     // Accelerates jump's vertical movement
 
