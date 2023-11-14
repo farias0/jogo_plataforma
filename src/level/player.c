@@ -29,7 +29,11 @@
 
 // How many seconds before landing on the ground the jump command
 // still works 
-#define JUMP_BUFFER_SIZE                0.15f                
+#define JUMP_BUFFER_BACKWARDS_SIZE      0.10f         
+
+// How many seconds after having left the ground the jump command
+// still works
+#define JUMP_BUFFER_FORWARDS_SIZE       0.05f
 
 
 LevelEntity *LEVEL_PLAYER = 0;
@@ -37,7 +41,9 @@ LevelEntity *LEVEL_PLAYER = 0;
 PlayerState *LEVEL_PLAYER_STATE = 0;
 
 
+// for jump buffers
 static double lastPressedJumpTimestamp = -1;
+static double lastGroundBeneathTimestamp = -1;
 
 
 static void resetPlayerState() {
@@ -171,6 +177,8 @@ void LevelPlayerTick() {
 
     if (pState->groundBeneath) {
 
+        lastGroundBeneathTimestamp = GetTime();
+
         if (!pState->isJumping) {
             // Is on the ground
             LEVEL_PLAYER->hitbox.y = pState->groundBeneath->hitbox.y - LEVEL_PLAYER->hitbox.height;
@@ -221,6 +229,7 @@ void LevelPlayerTick() {
 
                 // Player hit enemy
                 if (CheckCollisionRecs(entity->hitbox, pState->lowerbody)) {
+                    lastGroundBeneathTimestamp = GetTime();
                     ListNode *enemyNode = node;
                     node = node->next;
                     LinkedListRemove(&LEVEL_LIST_HEAD, enemyNode);
@@ -288,8 +297,13 @@ next_entity:
     }
 
     // TODO check if groundBeneath is within time window
-    if ((GetTime() - lastPressedJumpTimestamp < JUMP_BUFFER_SIZE)
-        && LEVEL_PLAYER_STATE->groundBeneath) {
+    const double now = GetTime();
+    if ( !pState->isJumping &&
+        (now - lastPressedJumpTimestamp < JUMP_BUFFER_BACKWARDS_SIZE) &&
+        (now - lastGroundBeneathTimestamp < JUMP_BUFFER_FORWARDS_SIZE)) {
+
+        if (now - lastPressedJumpTimestamp > 0.02f) RenderPrintSysMessage("backwards!!");
+        if (now - lastGroundBeneathTimestamp > 0.02f) RenderPrintSysMessage("forwards!!");
 
         // Starts jumping
         pState->isJumping = true;
