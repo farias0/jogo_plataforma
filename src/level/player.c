@@ -296,16 +296,12 @@ next_entity:
         }
     }
 
-    // TODO check if groundBeneath is within time window
     const double now = GetTime();
-    if ( !pState->isJumping &&
+    if (!pState->isJumping &&
         (now - lastPressedJumpTimestamp < JUMP_BUFFER_BACKWARDS_SIZE) &&
         (now - lastGroundBeneathTimestamp < JUMP_BUFFER_FORWARDS_SIZE)) {
 
-        if (now - lastPressedJumpTimestamp > 0.02f) RenderPrintSysMessage("backwards!!");
-        if (now - lastGroundBeneathTimestamp > 0.02f) RenderPrintSysMessage("forwards!!");
-
-        // Starts jumping
+        // Starts jump
         pState->isJumping = true;
         pState->yVelocity = jumpStartVelocity();
         pState->yVelocityTarget = 0.0f;
