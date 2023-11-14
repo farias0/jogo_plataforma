@@ -7,6 +7,7 @@
 #include "level/level.h"
 #include "editor.h"
 #include "string.h"
+#include "render.h"
 
 
 GameState *STATE = 0;
@@ -84,6 +85,8 @@ void DebugHudDisable() {
     HideCursor();
 
     CameraPanningReset();
+
+    RenderShowEntityInfoStop();
 
     TraceLog(LOG_TRACE, "Debug hud disabled.");
 }
