@@ -101,7 +101,7 @@ void EditorEnable() {
     STATE->isEditorEnabled = true;
 
     RenderResizeWindow(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
-    ShowCursor();
+    MouseCursorEnable();
 
     TraceLog(LOG_TRACE, "Editor enabled.");
 }
@@ -111,7 +111,7 @@ void EditorDisable() {
     STATE->isEditorEnabled = false;
 
     RenderResizeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
-    HideCursor();
+    MouseCursorDisable();
 
     CameraPanningReset();
 

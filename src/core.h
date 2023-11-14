@@ -69,6 +69,12 @@ void DebugHudEnable();
 // Disables the debug HUD
 void DebugHudDisable();
 
+// Disables mouse cursor, if not in use
+void MouseCursorDisable();
+
+// Enables the mouse cursor
+void MouseCursorEnable();
+
 // Toggles the debug HUD between 'enabled' and 'disabled'
 void DebugHudToggle();
 

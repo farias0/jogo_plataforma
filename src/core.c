@@ -12,6 +12,9 @@
 
 GameState *STATE = 0;
 
+static size_t mouseEnabledReferences = 0;
+
+
 void GameStateInitialize() {
     STATE = MemAlloc(sizeof(GameState));
 
@@ -73,20 +76,30 @@ void WindowTitleUpdate() {
 void DebugHudEnable() {
 
     STATE->showDebugHUD = true;
-    ShowCursor();
-
+    MouseCursorEnable();
     TraceLog(LOG_TRACE, "Debug hud enabled.");
 }
 
 void DebugHudDisable() {
 
     STATE->showDebugHUD = false;
-    
-    HideCursor();
-
+    MouseCursorDisable();
     CameraPanningReset();
-
     TraceLog(LOG_TRACE, "Debug hud disabled.");
+}
+
+void MouseCursorDisable() {
+
+    if (mouseEnabledReferences > 0) mouseEnabledReferences--;
+    if (mouseEnabledReferences == 0) HideCursor();
+    TraceLog(LOG_TRACE, "Mouse enabled references down to %d.", mouseEnabledReferences);
+}
+
+void MouseCursorEnable() {
+
+    mouseEnabledReferences++;
+    ShowCursor();
+    TraceLog(LOG_TRACE, "Mouse enabled references increased to %d.", mouseEnabledReferences);
 }
 
 void DebugHudToggle() {
