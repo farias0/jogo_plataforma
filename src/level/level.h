@@ -94,6 +94,8 @@ Vector2 LevelGetPlayerStartingPosition();
 // Gives priority to the tile in the direction the player is looking at.
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity);
 
+void LevelEntityDestroy(ListNode *node);
+
 // Searches for level entity in position
 LevelEntity *LevelEntityGetAt(Vector2 pos);
 

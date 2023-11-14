@@ -50,17 +50,6 @@ static ListNode *getNodeOfEntityOn(Vector2 pos) {
     return 0;
 }
 
-void destroyEntityLevel(ListNode *node) {
-
-    if (node == levelExitNode) levelExitNode = 0;
-
-    RenderShowEntityInfoStop(); // gambiarra
-
-    LinkedListRemove(&LEVEL_LIST_HEAD, node);
-
-    TraceLog(LOG_TRACE, "Destroyed level entity.");
-}
-
 void LevelInitialize(char *levelName) {
 
     GameStateReset();
@@ -204,6 +193,17 @@ LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
     return foundGround;    
 }
 
+void LevelEntityDestroy(ListNode *node) {
+
+    if (node == levelExitNode) levelExitNode = 0;
+
+    RenderShowEntityInfoStop(); // gambiarra
+
+    LinkedListRemove(&LEVEL_LIST_HEAD, node);
+
+    TraceLog(LOG_TRACE, "Destroyed level entity.");
+}
+
 LevelEntity *LevelEntityGetAt(Vector2 pos) {
 
     ListNode *node = getNodeOfEntityOn(pos);
@@ -221,7 +221,7 @@ void LevelEntityRemoveAt(Vector2 pos) {
     LevelEntity *entity = (LevelEntity *) node->item;
     if (entity->components & LEVEL_IS_PLAYER) return;
 
-    destroyEntityLevel(node);
+    LevelEntityDestroy(node);
 }
 
 void LevelTick() {

@@ -33,7 +33,7 @@
 
 // How many seconds after having left the ground the jump command
 // still works
-#define JUMP_BUFFER_FORWARDS_SIZE       0.05f
+#define JUMP_BUFFER_FORWARDS_SIZE       0.10f
 
 
 LevelEntity *LEVEL_PLAYER = 0;
@@ -232,7 +232,7 @@ void LevelPlayerTick() {
                     lastGroundBeneathTimestamp = GetTime();
                     ListNode *enemyNode = node;
                     node = node->next;
-                    LinkedListRemove(&LEVEL_LIST_HEAD, enemyNode);
+                    LevelEntityDestroy(enemyNode);
                     TraceLog(LOG_TRACE, "Player murdered an enemy in cold blood.");
                     continue;
                 }
