@@ -47,39 +47,48 @@ void handleOverworldInput() {
 void handleEditorInput() {
 
     if      (IsKeyPressed(KEY_F1))          { EditorEnabledToggle(); return; }
-    if      (IsKeyPressed(KEY_F2))          STATE->showDebugHUD = !STATE->showDebugHUD;
+    if      (IsKeyPressed(KEY_F2))          DebugHudToggle();
     if      (IsKeyPressed(KEY_F3))          STATE->showDebugGrid = !STATE->showDebugGrid;
 
-    if (!STATE->isEditorEnabled) return;
+
+    if (IsCursorHidden()) return;
 
     Vector2 mousePosInScreen = GetMousePosition();
+    Vector2 mousePosInScene = PosInScreenToScene(mousePosInScreen);
 
     if      (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))         CameraPanningMove(mousePosInScreen);
     if      (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))     CameraPanningStop();
     if      (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))        CameraPanningReset();
 
+    if      (!IsInPlayArea(mousePosInScreen)) return;
 
-    if (!IsInPlayArea(mousePosInScreen)) return;
+    if (STATE->isEditorEnabled) {
 
-    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-        // TODO use a timer to not keep checking it every frame
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            // TODO use a timer to not keep checking it every frame
 
-        if (STATE->editorSelectedEntity == 0) return;
+            if (STATE->editorSelectedEntity == 0) return;
 
-        if (STATE->editorSelectedEntity->handler == 0) {
-            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-                TraceLog(LOG_WARNING, "No code to handle selected editor entity.");
-            return;
-        }
-
-        // so holding doesn't keep activating the item
-        if (STATE->editorSelectedEntity->interaction == EDITOR_INTERACTION_CLICK &&
-            !IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            if (STATE->editorSelectedEntity->handler == 0) {
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                    TraceLog(LOG_WARNING, "No code to handle selected editor entity.");
                 return;
+            }
+
+            // so holding doesn't keep activating the item
+            if (STATE->editorSelectedEntity->interaction == EDITOR_INTERACTION_CLICK &&
+                !IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                    return;
 
 
-        STATE->editorSelectedEntity->handler(
-            PosInScreenToScene(mousePosInScreen));
+            STATE->editorSelectedEntity->handler(mousePosInScene);
+        }
+    }
+
+    if (STATE->showDebugHUD) {
+
+        if      (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))      RenderShowEntityInfo(
+                                                                    LevelEntityGetAt(mousePosInScene));
     }
 }
 

@@ -69,6 +69,31 @@ void WindowTitleUpdate() {
     SetWindowTitle(title);
 }
 
+void DebugHudEnable() {
+
+    STATE->showDebugHUD = true;
+    ShowCursor();
+
+    TraceLog(LOG_TRACE, "Debug hud enabled.");
+}
+
+void DebugHudDisable() {
+
+    STATE->showDebugHUD = false;
+    
+    HideCursor();
+
+    CameraPanningReset();
+
+    TraceLog(LOG_TRACE, "Debug hud disabled.");
+}
+
+void DebugHudToggle() {
+
+    if (STATE->showDebugHUD) DebugHudDisable();
+    else DebugHudEnable();
+}
+
 bool IsInPlayArea(Vector2 pos) {
     return pos.x >= 0 &&
             pos.x <= SCREEN_WIDTH &&

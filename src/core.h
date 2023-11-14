@@ -39,6 +39,7 @@ typedef struct GameState {
 
     bool showDebugHUD;
     bool showDebugGrid;
+    bool showDebugEntity;
     bool showBackground;
 } GameState;
 
@@ -61,6 +62,15 @@ ListNode *GetEntityListHead();
 
 // Updates the window title bar message
 void WindowTitleUpdate();
+
+// Enables the debug HUD
+void DebugHudEnable();
+
+// Disables the debug HUD
+void DebugHudDisable();
+
+// Toggles the debug HUD between 'enabled' and 'disabled'
+void DebugHudToggle();
 
 // Snaps a coordinate (x or y) to a grid.
 float SnapToGrid(float value, float length);

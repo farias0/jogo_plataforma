@@ -193,6 +193,15 @@ LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
     return foundGround;    
 }
 
+LevelEntity *LevelEntityGetAt(Vector2 pos) {
+
+    ListNode *node = getNodeOfEntityOn(pos);
+
+    if (!node) return 0;
+
+    return (LevelEntity *) node->item;
+}
+
 void LevelEntityRemoveAt(Vector2 pos) {
 
     ListNode *node = getNodeOfEntityOn(pos);

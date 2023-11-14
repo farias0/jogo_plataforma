@@ -40,6 +40,9 @@ ListNode *SYS_MESSAGES_HEAD = 0;
 static RenderTexture2D shaderRenderTexture;
 static LevelTransitionShaderControl levelTransitionShaderControl;
 
+// Debugging
+static LevelEntity *levelEntityShowInfo = 0;
+
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
 
@@ -277,26 +280,36 @@ skip_debug_grid:
 
     }
 
-    if (STATE->isEditorEnabled) {
-
-        if (CameraIsPanned()) DrawText("Câmera deslocada",
+    if (CameraIsPanned()) DrawText("Câmera deslocada",
                                     SCREEN_WIDTH - 300, SCREEN_HEIGHT - 45, 30, RAYWHITE);
-    }
 
     if (STATE->showDebugHUD) {
 
         ListNode *listHead = GetEntityListHead();
         if (listHead) {
-            char entity_count[50];
-            sprintf(entity_count, "%d entities", LinkedListCountNodes(listHead));
-            DrawText(entity_count, 10, 20, 20, WHITE);
+            char buffer[50];
+            sprintf(buffer, "Debug ligado\n%d entidades", LinkedListCountNodes(listHead));
+            DrawText(buffer, 10, 20, 20, WHITE);
         }
 
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             Vector2 mousePos = GetMousePosition();
-            char mousePosTxt[50];
-            sprintf(mousePosTxt, "Left click: x=%.0f, y=%.0f", mousePos.x, mousePos.y);
-            DrawText(mousePosTxt, 600, 20, 20, WHITE);
+            char buffer[50];
+            sprintf(buffer, "Left click: x=%.0f, y=%.0f", mousePos.x, mousePos.y);
+            DrawText(buffer, 600, 20, 20, WHITE);
+        }
+
+        if (levelEntityShowInfo) {
+            Vector2 pos = PosInSceneToScreen((Vector2) {
+                                                levelEntityShowInfo->hitbox.x,
+                                                levelEntityShowInfo->hitbox.y
+                                            });
+
+            DrawRectangleLines(pos.x, pos.y, levelEntityShowInfo->hitbox.width, levelEntityShowInfo->hitbox.height, GREEN);
+
+            char buffer[500];
+            sprintf(buffer, "X=%.1f\nY=%.1f", pos.x, pos.y);
+            DrawText(buffer, pos.x, pos.y, 25, WHITE);
         }
     }
 
@@ -426,6 +439,9 @@ void RenderInitialize() {
 
     levelTransitionShaderControl.timer = -1;
 
+    // Line spacing of DrawText() 's containing line break
+    SetTextLineSpacing(30);
+
     TraceLog(LOG_INFO, "Render initialized.");
 }
 
@@ -478,4 +494,12 @@ void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
     // Fix for how GLSL works
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
+}
+
+void RenderShowEntityInfo(LevelEntity *entity) {
+    levelEntityShowInfo = entity;
+}
+
+void RenderShowEntityInfoStop() {
+    levelEntityShowInfo = 0;
 }

@@ -1,6 +1,8 @@
 #ifndef _RENDER_H_INCLUDED_
 #define _RENDER_H_INCLUDED_
 
+#include "level/level.h"
+
 
 #define SYS_MSG_BUFFER_SIZE 1000
 
@@ -23,6 +25,12 @@ void RenderPrintSysMessage(char *msg);
     isClose: If the effect will close on the sceneFocusPont, or, if false, if it will open from it.
 */
 void RenderLevelTransitionEffectStart(Vector2 sceneFocusPont, bool isClose);
+
+// Starts showing info about the provided level entity, for debugging
+void RenderShowEntityInfo(LevelEntity *entity);
+
+// Stops showing info about level entity
+void RenderShowEntityInfoStop();
 
 
 #endif // _RENDER_H_INCLUDED_
