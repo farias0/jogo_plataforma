@@ -7,6 +7,7 @@
 #include "level/level.h"
 #include "editor.h"
 #include "string.h"
+#include "render.h"
 
 
 GameState *STATE = 0;
@@ -67,6 +68,31 @@ void WindowTitleUpdate() {
         sprintf(title, "%s - %d FPS", STATE->loadedLevel, GetFPS());
 
     SetWindowTitle(title);
+}
+
+void DebugHudEnable() {
+
+    STATE->showDebugHUD = true;
+    ShowCursor();
+
+    TraceLog(LOG_TRACE, "Debug hud enabled.");
+}
+
+void DebugHudDisable() {
+
+    STATE->showDebugHUD = false;
+    
+    HideCursor();
+
+    CameraPanningReset();
+
+    TraceLog(LOG_TRACE, "Debug hud disabled.");
+}
+
+void DebugHudToggle() {
+
+    if (STATE->showDebugHUD) DebugHudDisable();
+    else DebugHudEnable();
 }
 
 bool IsInPlayArea(Vector2 pos) {
