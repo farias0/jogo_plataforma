@@ -112,7 +112,7 @@ static OverworldEntity *addTileToOverworld(Vector2 pos, OverworldTileType type, 
 
 // Searches for an entity that's not the cursor
 // in a given position and returns its node, or 0 if not found.
-static ListNode *getNodeOfEntityOn(Vector2 pos) {
+static ListNode *getEntityOnScene(Vector2 pos) {
 
     ListNode *node = OW_LIST_HEAD;
 
@@ -363,7 +363,7 @@ next_entity:
 
 void OverworldTileRemoveAt(Vector2 pos) {
 
-    ListNode *node = getNodeOfEntityOn(pos);
+    ListNode *node = getEntityOnScene(pos);
 
     if (!node) {
 

@@ -31,7 +31,7 @@ static ListNode *levelExitNode = 0;
 
 // Searches for an entity in a given position
 // and returns its node, or 0 if not found.
-static ListNode *getNodeOfEntityOn(Vector2 pos) {
+static ListNode *getEntityOnScene(Vector2 pos) {
 
     ListNode *node = LEVEL_LIST_HEAD;
 
@@ -205,7 +205,7 @@ void LevelEntityDestroy(ListNode *node) {
 
 LevelEntity *LevelEntityGetAt(Vector2 pos) {
 
-    ListNode *node = getNodeOfEntityOn(pos);
+    ListNode *node = getEntityOnScene(pos);
 
     if (!node) return 0;
 
@@ -214,11 +214,29 @@ LevelEntity *LevelEntityGetAt(Vector2 pos) {
 
 void LevelEntityRemoveAt(Vector2 pos) {
 
-    ListNode *node = getNodeOfEntityOn(pos);
-    if (!node) return;
+    ListNode *node = LEVEL_LIST_HEAD;
+    while (node != 0) {
 
-    LevelEntity *entity = (LevelEntity *) node->item;
-    if (entity->components & LEVEL_IS_PLAYER) return;
+        LevelEntity *entity = (LevelEntity *) node->item;
+
+        if (entity->components & LEVEL_IS_PLAYER) goto next_node;
+
+        if (CheckCollisionPointRec(pos, (Rectangle) {
+                                                entity->origin.x,       entity->origin.y,
+                                                entity->hitbox.width,   entity->hitbox.height
+                                            })) {
+            break;
+        }
+
+        if (CheckCollisionPointRec(pos, entity->hitbox)) {
+            break;
+        }
+
+next_node:
+        node = node->next;
+    };
+
+    if (!node) return;
 
     LevelEntityDestroy(node);
 }
