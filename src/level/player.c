@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "level.h"
 #include "../core.h"
