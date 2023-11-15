@@ -27,11 +27,11 @@
 
 // How many seconds before landing on the ground the jump command
 // still works 
-#define JUMP_BUFFER_BACKWARDS_SIZE      0.10f         
+#define JUMP_BUFFER_BACKWARDS_SIZE      0.05f         
 
 // How many seconds after having left the ground the jump command
 // still works
-#define JUMP_BUFFER_FORWARDS_SIZE       0.10f
+#define JUMP_BUFFER_FORWARDS_SIZE       0.06f
 
 
 LevelEntity *LEVEL_PLAYER = 0;
@@ -201,11 +201,34 @@ void LevelPlayerTick() {
         }
     }
 
+    const double now = GetTime();
+    if (!pState->isJumping &&
+        (now - lastPressedJumpTimestamp < JUMP_BUFFER_BACKWARDS_SIZE) &&
+        (now - lastGroundBeneathTimestamp < JUMP_BUFFER_FORWARDS_SIZE)) {
 
-    LEVEL_PLAYER->hitbox.y -= pState->yVelocity;
+        // Starts jump
+        pState->isJumping = true;
+        pState->yVelocity = jumpStartVelocity();
+        pState->yVelocityTarget = 0.0f;
+
+        // Player hit enemy
+        // -- this check is for the case the player jumps off the enemy,
+        // and only in the case the enemy wasn't already destroyed in the previous frame.
+        if (pState->groundBeneath &&
+            pState->groundBeneath->components & LEVEL_IS_ENEMY) {
+
+            lastGroundBeneathTimestamp = GetTime();
+            LevelEntityDestroy(LinkedListGetNode(LEVEL_LIST_HEAD, pState->groundBeneath));
+            pState->groundBeneath = 0;
+            TraceLog(LOG_TRACE, "Player leaped off an enemy, rad!");
+        }
+    }
+
+    float oldX = LEVEL_PLAYER->hitbox.x;
+    float oldY = LEVEL_PLAYER->hitbox.y;
     LEVEL_PLAYER->hitbox.x += pState->xVelocity;
+    LEVEL_PLAYER->hitbox.y -= pState->yVelocity;
     syncPlayersHitboxes();
-
 
     // Collision checking
     {
@@ -266,7 +289,7 @@ void LevelPlayerTick() {
 
                         if (STATE->showDebugHUD) RenderPrintSysMessage("Hit wall");
 
-                        LEVEL_PLAYER->hitbox.x -= pState->xVelocity;
+                        LEVEL_PLAYER->hitbox.x = oldX;
 
                     }
                 }
@@ -277,6 +300,7 @@ void LevelPlayerTick() {
                     if (STATE->showDebugHUD) RenderPrintSysMessage("Hit ceiling");
 
                     pState->isJumping = false;
+                    LEVEL_PLAYER->hitbox.y = oldY;
                     pState->yVelocity = (pState->yVelocity * -1) * CEILING_VELOCITY_FACTOR;
                     pState->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
                 }
@@ -295,17 +319,6 @@ void LevelPlayerTick() {
 next_entity:
             node = node->next;
         }
-    }
-
-    const double now = GetTime();
-    if (!pState->isJumping &&
-        (now - lastPressedJumpTimestamp < JUMP_BUFFER_BACKWARDS_SIZE) &&
-        (now - lastGroundBeneathTimestamp < JUMP_BUFFER_FORWARDS_SIZE)) {
-
-        // Starts jump
-        pState->isJumping = true;
-        pState->yVelocity = jumpStartVelocity();
-        pState->yVelocityTarget = 0.0f;
     }
 
     // Accelerates jump's vertical movement
