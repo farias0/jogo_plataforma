@@ -15,19 +15,23 @@
 // THe name of a new level
 #define DEFAULT_NEW_LEVEL_NAME "new_level.lvl"
 
+// The players origin for all new levels, unchangeably.
+// -- This allows us to set the player's origin via code for all new levels,
+// untying it from the default new level's data.
+// TODO allow to drag and modify the player's origin in the editor
+#define PLAYERS_ORIGIN (Vector2){ 344, 200 };
+
 
 ListNode *LEVEL_LIST_HEAD = 0;
 
 double levelConcludedAgo = -1;
-
-static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
 
 static ListNode *levelExitNode = 0;
 
 
 // Searches for an entity in a given position
 // and returns its node, or 0 if not found.
-static ListNode *getNodeOfEntityOn(Vector2 pos) {
+static ListNode *getEntityOnScene(Vector2 pos) {
 
     ListNode *node = LEVEL_LIST_HEAD;
 
@@ -107,6 +111,7 @@ void LevelExitAdd(Vector2 pos) {
 
     newExit->components = LEVEL_IS_EXIT;
     newExit->hitbox = hitbox;
+    newExit->origin = pos;
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
@@ -141,10 +146,6 @@ void LevelExitCheckAndAdd(Vector2 pos) {
     if (levelExitNode) LinkedListRemove(&LEVEL_LIST_HEAD, levelExitNode);
     
     LevelExitAdd((Vector2){ hitbox.x, hitbox.y });
-}
-
-Vector2 LevelGetPlayerStartingPosition() {
-    return playersStartingPosition;
 }
 
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
@@ -204,7 +205,7 @@ void LevelEntityDestroy(ListNode *node) {
 
 LevelEntity *LevelEntityGetAt(Vector2 pos) {
 
-    ListNode *node = getNodeOfEntityOn(pos);
+    ListNode *node = getEntityOnScene(pos);
 
     if (!node) return 0;
 
@@ -213,11 +214,29 @@ LevelEntity *LevelEntityGetAt(Vector2 pos) {
 
 void LevelEntityRemoveAt(Vector2 pos) {
 
-    ListNode *node = getNodeOfEntityOn(pos);
-    if (!node) return;
+    ListNode *node = LEVEL_LIST_HEAD;
+    while (node != 0) {
 
-    LevelEntity *entity = (LevelEntity *) node->item;
-    if (entity->components & LEVEL_IS_PLAYER) return;
+        LevelEntity *entity = (LevelEntity *) node->item;
+
+        if (entity->components & LEVEL_IS_PLAYER) goto next_node;
+
+        if (CheckCollisionPointRec(pos, (Rectangle) {
+                                                entity->origin.x,       entity->origin.y,
+                                                entity->hitbox.width,   entity->hitbox.height
+                                            })) {
+            break;
+        }
+
+        if (CheckCollisionPointRec(pos, entity->hitbox)) {
+            break;
+        }
+
+next_node:
+        node = node->next;
+    };
+
+    if (!node) return;
 
     LevelEntityDestroy(node);
 }
@@ -262,9 +281,10 @@ void LevelSave() {
 
 void LevelLoadNew() {
     LevelInitialize(NEW_LEVEL_NAME);
-    strcpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
-}
 
-void LevelPlayerSetStartingPos(Vector2 pos) {
-    playersStartingPosition = pos;
+    LEVEL_PLAYER->origin = PLAYERS_ORIGIN;
+    LEVEL_PLAYER->hitbox.x = LEVEL_PLAYER->origin.x;
+    LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER->origin.y;
+
+    strcpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
 }
