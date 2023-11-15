@@ -75,6 +75,8 @@ void LevelInitialize(char *levelName) {
 
     CameraFollow();
 
+    RenderShowEntityInfoStop();
+
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
             (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), false);
