@@ -17,7 +17,7 @@ static size_t mouseEnabledReferences = 0;
 void GameStateInitialize() {
     STATE = MemAlloc(sizeof(GameState));
 
-    STATE->showBackground = true;
+    STATE->showBackground = false;
     STATE->showDebugHUD = false;
 
     EditorDisable();
