@@ -46,6 +46,17 @@ void LinkedListRemove(ListNode **head, ListNode *node) {
     TraceLog(LOG_TRACE, "Removed item from linked list and destroyed it.");
 }
 
+ListNode *LinkedListGetNode(ListNode *head, void *item) {
+
+    while (head != 0 && head->item != item) {
+        head = head->next;
+    }
+
+    TraceLog(LOG_TRACE, "Linked list get node returning %x.", head);
+
+    return head;
+}
+
 void LinkedListRemoveAll(ListNode **head) {
 
     while (*head) {

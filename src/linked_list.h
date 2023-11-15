@@ -13,6 +13,9 @@ typedef struct ListNode {
 // Adds new node containing 'item' to a linked list. Returns the new node.
 ListNode *LinkedListAdd(ListNode **head, void *item);
 
+// Returns list node containing item, or 0 if not found.
+ListNode *LinkedListGetNode(ListNode *head, void *item);
+
 // Removes and destroys node from a linked list.
 void LinkedListRemove(ListNode **head, ListNode *node);
 
