@@ -31,7 +31,7 @@
 
 // How many seconds after having left the ground the jump command
 // still works
-#define JUMP_BUFFER_FORWARDS_SIZE       0.05f
+#define JUMP_BUFFER_FORWARDS_SIZE       0.06f
 
 
 LevelEntity *LEVEL_PLAYER = 0;
