@@ -15,6 +15,12 @@
 // THe name of a new level
 #define DEFAULT_NEW_LEVEL_NAME "new_level.lvl"
 
+// The players origin for all new levels, unchangeably.
+// -- This allows us to set the player's origin via code for all new levels,
+// untying it from the default new level's data.
+// TODO allow to drag and modify the player's origin in the editor
+#define PLAYERS_ORIGIN (Vector2){ 344, 200 };
+
 
 ListNode *LEVEL_LIST_HEAD = 0;
 
@@ -256,5 +262,10 @@ void LevelSave() {
 
 void LevelLoadNew() {
     LevelInitialize(NEW_LEVEL_NAME);
+
+    LEVEL_PLAYER->origin = PLAYERS_ORIGIN;
+    LEVEL_PLAYER->hitbox.x = LEVEL_PLAYER->origin.x;
+    LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER->origin.y;
+
     strcpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
 }
