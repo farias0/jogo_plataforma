@@ -3,8 +3,6 @@
 #include "../linked_list.h"
 #include "../core.h"
 #include "level.h"
-#include "../render.h"
-#include "../assets.h"
 
 #define ENEMY_SPEED_DEFAULT 4.0f
 #define ENEMY_FALL_RATE 7.0f

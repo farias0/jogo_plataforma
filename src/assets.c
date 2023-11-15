@@ -1,6 +1,5 @@
 #include "assets.h"
 #include <raylib.h>
-#include "string.h"
 
 #define DEFAULT_SPRITE_SCALE 2
 #define FLOOR_TILE_SIZE 1

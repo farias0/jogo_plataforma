@@ -1,6 +1,4 @@
 #include <raylib.h>
-#include <stdlib.h>
-#include "math.h"
 #include <string.h>
 
 #include "overworld.h"

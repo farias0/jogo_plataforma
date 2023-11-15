@@ -7,7 +7,6 @@
 #include "level/level.h"
 #include "editor.h"
 #include "string.h"
-#include "render.h"
 
 
 GameState *STATE = 0;

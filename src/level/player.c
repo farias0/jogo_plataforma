@@ -1,11 +1,8 @@
 #include <raylib.h>
 #include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 #include "level.h"
 #include "../core.h"
-#include "../assets.h"
 #include "../camera.h"
 #include "../render.h"
 

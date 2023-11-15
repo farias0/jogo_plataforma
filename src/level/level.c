@@ -1,14 +1,10 @@
 #include <raylib.h>
 #include "stdlib.h"
-#include <stdio.h>
 #include <string.h>
 
 #include "level.h"
-#include "../linked_list.h"
 #include "../core.h"
 #include "../camera.h"
-#include "../persistence.h"
-#include "../overworld.h"
 #include "../render.h"
 
 
