@@ -323,7 +323,7 @@ static void drawHud() {
 
     if      (STATE->showDebugHUD)               drawDebugHud();
 
-                                                drawSysMessages();
+     drawSysMessages();
 }
 
 // Render editor buttons of game entities
