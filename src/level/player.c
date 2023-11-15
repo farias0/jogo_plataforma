@@ -280,10 +280,13 @@ void LevelPlayerTick() {
                     const bool isEntityToTheLeft = entity->hitbox.x < LEVEL_PLAYER->hitbox.x;
                     const bool isEntityToTheRight = !isEntityToTheLeft;
 
+                    const bool isPlayerMovingToTheLeft = LEVEL_PLAYER->hitbox.x < oldX;
+                    const bool isPlayerMovingToTheRight = LEVEL_PLAYER->hitbox.x > oldX;
+
                     // So when the player hits the entity to its left,
                     // he can only collide with its left wall.
-                    if ((isEntitysRightWall && isEntityToTheLeft) ||
-                        (isEntitysLeftWall && isEntityToTheRight)) {
+                    if ((isEntitysRightWall && isEntityToTheLeft && isPlayerMovingToTheLeft) ||
+                        (isEntitysLeftWall && isEntityToTheRight && isPlayerMovingToTheRight)) {
 
 
                         if (STATE->showDebugHUD) RenderPrintSysMessage("Hit wall");
