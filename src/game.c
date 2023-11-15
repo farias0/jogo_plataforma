@@ -34,24 +34,13 @@ int main() {
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        { // Game Update
+        InputHandle();
 
-            /*
-                IMPORTANT: Input handling must be done before ticking -- otheriwise
-                collision checking, which is done in the tick functions, might break. 
-            */
+        if (STATE->mode == MODE_IN_LEVEL) LevelTick();
+        else if (STATE->mode == MODE_OVERWORLD) OverworldTick();
 
-            InputHandle();
-            if (STATE->isPaused) goto render;
+        WindowTitleUpdate();
 
-            if (STATE->mode == MODE_IN_LEVEL) LevelTick();
-            else if (STATE->mode == MODE_OVERWORLD) OverworldTick();
-            if (STATE->isPaused) goto render;
-
-            WindowTitleUpdate();
-        }
-
-render:
         Render();
     }
 

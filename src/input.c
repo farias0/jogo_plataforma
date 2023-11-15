@@ -21,7 +21,7 @@ void handleInLevelInput() {
 
 
     if (!LEVEL_PLAYER) return;
-    if (LEVEL_PLAYER_STATE->isDead) return;
+    if (STATE->isPaused || LEVEL_PLAYER_STATE->isDead) return;
 
 
     if      (IsKeyDown(KEY_Z))              LevelPlayStartRunning();
@@ -44,7 +44,7 @@ void handleOverworldInput() {
     else if (IsKeyPressed(KEY_RIGHT))       OverworldCursorMove(OW_CURSOR_RIGHT);
 }
 
-void handleEditorInput() {
+void handleDevInput() {
 
     if      (IsKeyPressed(KEY_F1))          { EditorEnabledToggle(); return; }
     if      (IsKeyPressed(KEY_F2))          DebugHudToggle();
@@ -121,7 +121,7 @@ void handleDroppedFile() {
 
 void InputHandle() {
 
-    handleEditorInput();
+    handleDevInput();
 
     if (IsFileDropped()) {
         handleDroppedFile();
@@ -130,7 +130,6 @@ void InputHandle() {
 
     if (STATE->mode == MODE_IN_LEVEL) {
         handleInLevelInput();
-        if (STATE->isPaused) return;
     }
     else if (STATE->mode == MODE_OVERWORLD) {
         handleOverworldInput();

@@ -234,6 +234,8 @@ void LevelTick() {
         return;
     }
 
+    if (STATE->isPaused) return;
+
     ListNode *node = LEVEL_LIST_HEAD;
     ListNode *next;
 
