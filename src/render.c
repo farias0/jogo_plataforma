@@ -91,7 +91,7 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
 }
 
 // Draws sprite in the background, with effects applied.
-static void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
+static void drawSpriteInBackground(Sprite sprite, Vector2 pos, int layer) {
 
     float scale = 1;
     Color tint = (Color){ 0xFF, 0xFF, 0xFF, 0xFF };
@@ -125,7 +125,7 @@ static void drawInBackground(Sprite sprite, Vector2 pos, int layer) {
     DrawTextureEx(sprite.sprite, pos, 0, (scale * sprite.scale), tint);
 }
 
-static void renderBackground() {
+static void drawBackground() {
 
     if (STATE->mode == MODE_OVERWORLD) {
         DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 39, 39, 54, 255 }); 
@@ -137,12 +137,12 @@ static void renderBackground() {
 
         if (!STATE->showBackground) return; 
 
-        drawInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);
-        drawInBackground(BGHouseSprite,     (Vector2){ 600, 300 },  -2);
+        drawSpriteInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);
+        drawSpriteInBackground(BGHouseSprite,     (Vector2){ 600, 300 },  -2);
     }
 }
 
-static void renderOverworldEntity(OverworldEntity *entity) {
+static void drawOverworldEntity(OverworldEntity *entity) {
 
     Vector2 pos = PosInSceneToScreen((Vector2){
                                         entity->gridPos.x,
@@ -151,7 +151,7 @@ static void renderOverworldEntity(OverworldEntity *entity) {
     drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, false);
 }
 
-static void renderLevelEntity(LevelEntity *entity) {
+static void drawLevelEntity(LevelEntity *entity) {
 
     Vector2 pos = PosInSceneToScreen((Vector2){
                                         entity->hitbox.x,
@@ -160,7 +160,7 @@ static void renderLevelEntity(LevelEntity *entity) {
     drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, !entity->isFacingRight);
 }
 
-static void renderEntities() {
+static void drawEntities() {
 
     for (int layer = FIRST_LAYER; layer <= LAST_LAYER; layer++) {
 
@@ -171,13 +171,13 @@ static void renderEntities() {
             if (STATE->mode == MODE_IN_LEVEL) {
                 LevelEntity *entity = (LevelEntity *) node->item;
                 if (entity->layer != layer) goto next_entity;
-                renderLevelEntity(entity);
+                drawLevelEntity(entity);
             }
 
             else if (STATE->mode == MODE_OVERWORLD) {
                 OverworldEntity *entity = (OverworldEntity *) node->item;
                 if (entity->layer != layer) goto next_entity;
-                renderOverworldEntity((OverworldEntity *) node->item);
+                drawOverworldEntity((OverworldEntity *) node->item);
             }
 
             else return;
@@ -188,7 +188,7 @@ next_entity:
     }
 }
 
-static void renderSysMsgs() {
+static void drawSysMessages() {
 
     ListNode *node = SYS_MESSAGES_HEAD;
     ListNode *nextNode;
@@ -221,107 +221,113 @@ next_node:
     } 
 }
 
-static void renderHUD() {
+static void drawDebugGrid() {
 
-    if (STATE->showDebugGrid) {
-        Dimensions gridSquareDim;
-        if (STATE->mode == MODE_OVERWORLD) gridSquareDim = OW_GRID;
-        else if (STATE->mode == MODE_IN_LEVEL) gridSquareDim = LEVEL_GRID;
-        else {
-            // maybe write something to the screen?
-            goto skip_debug_grid;
-        }
+    Dimensions gridSquareDim;
+    if (STATE->mode == MODE_OVERWORLD) gridSquareDim = OW_GRID;
+    else if (STATE->mode == MODE_IN_LEVEL) gridSquareDim = LEVEL_GRID;
+    else return;
 
-        Vector2 offset = (Vector2){
-            PushOnGrid(CAMERA->pos.x, gridSquareDim.width),
-            PushOnGrid(CAMERA->pos.y, gridSquareDim.height),
-        };
+    Vector2 offset = (Vector2){
+        PushOnGrid(CAMERA->pos.x, gridSquareDim.width),
+        PushOnGrid(CAMERA->pos.y, gridSquareDim.height),
+    };
 
-        for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += gridSquareDim.width) {
-            DrawLine(lineX, 0, lineX, SCREEN_HEIGHT, BLUE);
-        }
-        for (float lineY = offset.y; lineY <= SCREEN_HEIGHT; lineY += gridSquareDim.height) {
-            DrawLine(0, lineY, SCREEN_WIDTH, lineY, BLUE);
-        }
+    for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += gridSquareDim.width) {
+        DrawLine(lineX, 0, lineX, SCREEN_HEIGHT, BLUE);
     }
-skip_debug_grid:
 
+    for (float lineY = offset.y; lineY <= SCREEN_HEIGHT; lineY += gridSquareDim.height) {
+        DrawLine(0, lineY, SCREEN_WIDTH, lineY, BLUE);
+    }
+}
 
-    if (STATE->mode == MODE_IN_LEVEL) {
+static void drawLevelHud() {
 
-        if (STATE->isPaused && !LEVEL_PLAYER_STATE->isDead) DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
+    if (STATE->isPaused && !LEVEL_PLAYER_STATE->isDead) DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
         
-        if (LEVEL_PLAYER_STATE->isDead) DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
-        
-        if (STATE->loadedLevel[0] == '\0')
-            DrawText("Arraste uma fase para cá", 400, 350, 40, RAYWHITE);
+    if (LEVEL_PLAYER_STATE->isDead) DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
+    
+    if (STATE->loadedLevel[0] == '\0')
+        DrawText("Arraste uma fase para cá", 400, 350, 40, RAYWHITE);
+}
 
+static void drawOverworldHud() {
+
+    OverworldEntity *tile = STATE->tileUnderCursor;
+
+    if (tile->tileType == OW_LEVEL_DOT) {
+
+        // Draw level name
+
+        Vector2 pos = PosInSceneToScreen((Vector2){ tile->gridPos.x - 20,
+                            tile->gridPos.y + (tile->sprite.sprite.height * tile->sprite.scale) });
+
+        char levelName[LEVEL_NAME_BUFFER_SIZE];
+
+        if (!tile->levelName)
+            TraceLog(LOG_ERROR, "Overworld level dot to be rendered has no levelName referenced.");
+
+        if (tile->levelName[0] != '\0') strcpy(levelName, tile->levelName);
+
+        else strcpy(levelName, "[sem fase]");
+
+        DrawText(levelName, pos.x, pos.y, 20, RAYWHITE);
     }
-    else if (STATE->mode == MODE_OVERWORLD) {
+}
 
-        OverworldEntity *tile = STATE->tileUnderCursor;
-
-        if (tile->tileType == OW_LEVEL_DOT) {
-
-            Vector2 pos = PosInSceneToScreen((Vector2){ tile->gridPos.x - 20,
-                                tile->gridPos.y + (tile->sprite.sprite.height * tile->sprite.scale) });
-
-            char levelName[LEVEL_NAME_BUFFER_SIZE];
-
-            if (!tile->levelName)
-                TraceLog(LOG_ERROR, "Overworld level dot to be rendered has no levelName referenced.");
-
-            if (tile->levelName[0] != '\0') strcpy(levelName, tile->levelName);
-
-            else strcpy(levelName, "[sem fase]");
-
-            DrawText(levelName, pos.x, pos.y, 20, RAYWHITE);
-        }
-
-    }
+static void drawDebugHud() {
 
     if (CameraIsPanned()) DrawText("Câmera deslocada",
                                     SCREEN_WIDTH - 300, SCREEN_HEIGHT - 45, 30, RAYWHITE);
 
-    if (STATE->showDebugHUD) {
-
-        ListNode *listHead = GetEntityListHead();
-        if (listHead) {
-            char buffer[50];
-            sprintf(buffer, "Debug ligado\n%d entidades", LinkedListCountNodes(listHead));
-            DrawText(buffer, 10, 20, 20, WHITE);
-        }
-
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-            Vector2 mousePos = GetMousePosition();
-            char buffer[50];
-            sprintf(buffer, "Left click: x=%.0f, y=%.0f", mousePos.x, mousePos.y);
-            DrawText(buffer, 600, 20, 20, WHITE);
-        }
-
-        if (levelEntityShowInfo) {
-            Vector2 pos = PosInSceneToScreen((Vector2) {
-                                                levelEntityShowInfo->hitbox.x,
-                                                levelEntityShowInfo->hitbox.y
-                                            });
-
-            DrawRectangle(pos.x, pos.y,
-                    levelEntityShowInfo->hitbox.width, levelEntityShowInfo->hitbox.height, (Color){ GREEN.r, GREEN.g, GREEN.b, 128 });
-            DrawRectangleLines(pos.x, pos.y,
-                    levelEntityShowInfo->hitbox.width, levelEntityShowInfo->hitbox.height, GREEN);
-
-            char buffer[500];
-            sprintf(buffer, "X=%.1f\nY=%.1f",
-                        levelEntityShowInfo->hitbox.x,
-                        levelEntityShowInfo->hitbox.y);
-            DrawText(buffer, pos.x, pos.y, 25, WHITE);
-        }
+    ListNode *listHead = GetEntityListHead();
+    if (listHead) {
+        char buffer[50];
+        sprintf(buffer, "Debug ligado\n%d entidades", LinkedListCountNodes(listHead));
+        DrawText(buffer, 10, 20, 20, WHITE);
     }
 
-    renderSysMsgs();
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        Vector2 mousePos = GetMousePosition();
+        char buffer[50];
+        sprintf(buffer, "Botão esquerdo: x=%.0f, y=%.0f", mousePos.x, mousePos.y);
+        DrawText(buffer, 600, 20, 20, WHITE);
+    }
+
+    if (levelEntityShowInfo) {
+        Vector2 pos = PosInSceneToScreen((Vector2) {
+                                            levelEntityShowInfo->hitbox.x,
+                                            levelEntityShowInfo->hitbox.y
+                                        });
+
+        DrawRectangle(pos.x, pos.y,
+                levelEntityShowInfo->hitbox.width, levelEntityShowInfo->hitbox.height, (Color){ GREEN.r, GREEN.g, GREEN.b, 128 });
+        DrawRectangleLines(pos.x, pos.y,
+                levelEntityShowInfo->hitbox.width, levelEntityShowInfo->hitbox.height, GREEN);
+
+        char buffer[500];
+        sprintf(buffer, "X=%.1f\nY=%.1f",
+                    levelEntityShowInfo->hitbox.x,
+                    levelEntityShowInfo->hitbox.y);
+        DrawText(buffer, pos.x, pos.y, 25, WHITE);
+    }
 }
 
-static void renderEditorEntities() {
+static void drawHud() {
+
+    if      (STATE->showDebugGrid)              drawDebugGrid();
+
+    if      (STATE->mode == MODE_IN_LEVEL)      drawLevelHud();
+    else if (STATE->mode == MODE_OVERWORLD)     drawOverworldHud();
+
+    if      (STATE->showDebugHUD)               drawDebugHud();
+
+                                                drawSysMessages();
+}
+
+// Render editor buttons of game entities
+static void drawEditorButtonsEntities() {
 
     DrawRectangle(EDITOR_ENTITIES_AREA.x,
                     EDITOR_ENTITIES_AREA.y,
@@ -355,7 +361,8 @@ static void renderEditorEntities() {
     }
 }
 
-static void renderEditorControl() {
+// Render editor buttons related to control functions
+static void drawEditorButtonsControl() {
 
     DrawRectangle(EDITOR_CONTROL_AREA.x,
                     EDITOR_CONTROL_AREA.y,
@@ -392,7 +399,7 @@ next_button:
     }
 }
 
-static void renderEditor() {
+static void drawEditor() {
 
     DrawLine(SCREEN_WIDTH,
                 0,
@@ -400,7 +407,7 @@ static void renderEditor() {
                 SCREEN_HEIGHT,
                 RAYWHITE);
 
-    renderEditorEntities();
+    drawEditorButtonsEntities();
 
     DrawLine(SCREEN_WIDTH,
                 EDITOR_ENTITIES_AREA.height,
@@ -408,10 +415,10 @@ static void renderEditor() {
                 EDITOR_ENTITIES_AREA.height,
                 RAYWHITE); // Separator
 
-    renderEditorControl();
+    drawEditorButtonsControl();
 }
 
-static void renderLevelTransitionShader() {
+static void drawLevelTransitionShader() {
 
     double elapsedTime = GetTime() - levelTransitionShaderControl.timer;
 
@@ -456,15 +463,15 @@ void Render() {
 
         ClearBackground(BLACK);
 
-        renderBackground();
+        drawBackground();
 
-        renderEntities();
+        drawEntities();
 
-        renderHUD();
+        drawHud();
 
-        if (levelTransitionShaderControl.timer != -1) renderLevelTransitionShader();
+        if (levelTransitionShaderControl.timer != -1) drawLevelTransitionShader();
 
-        if (STATE->isEditorEnabled) renderEditor();
+        if (STATE->isEditorEnabled) drawEditor();
 
     EndDrawing();
 }
