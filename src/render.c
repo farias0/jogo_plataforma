@@ -131,12 +131,17 @@ static void drawBackground() {
         DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 39, 39, 54, 255 }); 
     }
 
+
     else if (STATE->mode == MODE_IN_LEVEL) {
+        if (STATE->loadedLevel[0] == '\0') {
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
+            return;
+        }
+
         Vector2 levelBottomOnScreen = PosInSceneToScreen((Vector2){ 0, FLOOR_DEATH_HEIGHT });
         DrawRectangle(0, 0, SCREEN_WIDTH, levelBottomOnScreen.y, (Color){ 15, 15, 20, 255 });
 
         if (!STATE->showBackground) return; 
-
         drawSpriteInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);
         drawSpriteInBackground(BGHouseSprite,     (Vector2){ 600, 300 },  -2);
     }
