@@ -8,13 +8,14 @@
 #define ENEMY_FALL_RATE 7.0f
 
 
-void LevelEnemyAdd(Vector2 pos) {
+void LevelEnemyAdd(Vector2 origin) {
 
     LevelEntity *newEnemy = MemAlloc(sizeof(LevelEntity));
 
     newEnemy->components = LEVEL_IS_ENEMY +
                             LEVEL_IS_GROUND;
-    newEnemy->hitbox = SpriteHitboxFromEdge(EnemySprite, pos);
+    newEnemy->origin = origin;
+    newEnemy->hitbox = SpriteHitboxFromEdge(EnemySprite, origin);
     newEnemy->sprite = EnemySprite;
     newEnemy->isFacingRight = true;
     newEnemy->isFallingDown = true;
@@ -25,9 +26,9 @@ void LevelEnemyAdd(Vector2 pos) {
                 newEnemy->hitbox.x, newEnemy->hitbox.y);
 }
 
-void LevelEnemyCheckAndAdd(Vector2 pos) {    
+void LevelEnemyCheckAndAdd(Vector2 origin) {    
 
-    Rectangle hitbox = SpriteHitboxFromMiddle(EnemySprite, pos);
+    Rectangle hitbox = SpriteHitboxFromMiddle(EnemySprite, origin);
 
     ListNode *node = LEVEL_LIST_HEAD;
 

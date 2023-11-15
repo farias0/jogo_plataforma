@@ -27,8 +27,8 @@ typedef enum LevelEntityType {
 
 typedef struct PersistenceLevelEntity {
     uint16_t entityType;
-    uint32_t x;
-    uint32_t y;
+    uint32_t originX;
+    uint32_t originY;
 } PersistenceLevelEntity;
 
 
@@ -63,8 +63,8 @@ void PersistenceLevelSave(char *levelName) {
             goto skip_entity; 
         }
         
-        data[i].x = (uint32_t) entity->hitbox.x;
-        data[i].y = (uint32_t) entity->hitbox.y;
+        data[i].originX = (uint32_t) entity->origin.x;
+        data[i].originY = (uint32_t) entity->origin.y;
 
         i++;
 
@@ -108,21 +108,21 @@ bool PersistenceLevelLoad(char *levelName) {
 
     for (size_t i = 0; i < filedata.itemCount; i++) {
 
-        Vector2 pos = (Vector2){
-            (float) data[i].x,
-            (float) data[i].y    
+        Vector2 origin = (Vector2){
+            (float) data[i].originX,
+            (float) data[i].originY    
         };
 
         switch (data[i].entityType) {
         
         case LEVEL_ENTITY_PLAYER:
-            LevelPlayerInitialize(pos); break;
+            LevelPlayerInitialize(origin); break;
         case LEVEL_ENTITY_ENEMY:
-            LevelEnemyAdd(pos); break;
+            LevelEnemyAdd(origin); break;
         case LEVEL_ENTITY_BLOCK:
-            LevelBlockAdd(pos); break;
+            LevelBlockAdd(origin); break;
         case LEVEL_ENTITY_EXIT:
-            LevelExitAdd(pos); break;
+            LevelExitAdd(origin); break;
         default:
             TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, type=%d.", data[i].entityType); 
         }

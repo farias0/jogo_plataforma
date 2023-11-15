@@ -20,8 +20,6 @@ ListNode *LEVEL_LIST_HEAD = 0;
 
 double levelConcludedAgo = -1;
 
-static Vector2 playersStartingPosition =  { SCREEN_WIDTH/5, 300 };
-
 static ListNode *levelExitNode = 0;
 
 
@@ -143,10 +141,6 @@ void LevelExitCheckAndAdd(Vector2 pos) {
     LevelExitAdd((Vector2){ hitbox.x, hitbox.y });
 }
 
-Vector2 LevelGetPlayerStartingPosition() {
-    return playersStartingPosition;
-}
-
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
 
     int entitysFoot = entity->hitbox.y + entity->hitbox.height;
@@ -263,8 +257,4 @@ void LevelSave() {
 void LevelLoadNew() {
     LevelInitialize(NEW_LEVEL_NAME);
     strcpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
-}
-
-void LevelPlayerSetStartingPos(Vector2 pos) {
-    playersStartingPosition = pos;
 }

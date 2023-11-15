@@ -24,6 +24,7 @@ typedef enum LevelEntityComponent {
 typedef struct LevelEntity {
 
     unsigned long int components;
+    Vector2 origin;
     Rectangle hitbox;
 
     Sprite sprite;
@@ -87,9 +88,6 @@ void LevelExitAdd(Vector2 pos);
 
 void LevelExitCheckAndAdd(Vector2 pos);
 
-// Returns the player's starting position for the currently loaded level
-Vector2 LevelGetPlayerStartingPosition();
-
 // The ground beneath the entity, or 0 if not on the ground.
 // Gives priority to the tile in the direction the player is looking at.
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity);
@@ -112,7 +110,7 @@ void LevelSave();
 void LevelLoadNew();
 
 
-void LevelPlayerInitialize(Vector2 pos);
+void LevelPlayerInitialize(Vector2 origin);
 
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction);
 
@@ -127,25 +125,22 @@ void LevelPlayerTick();
 // Continues the game after dying.
 void LevelPlayerContinue();
 
-// TODO remove it and use entity origin instead
-void LevelPlayerSetStartingPos(Vector2 pos);
 
+// Initializes and adds an enemy to the level in the given origin
+void LevelEnemyAdd(Vector2 origin);
 
-// Initializes and adds an enemy to the level in the given pos
-void LevelEnemyAdd(Vector2 pos);
-
-// Initializes and adds an enemy to the level in the given pos,
+// Initializes and adds an enemy to the level in the given origin,
 // if there are not other elements there already.
-void LevelEnemyCheckAndAdd(Vector2 pos);
+void LevelEnemyCheckAndAdd(Vector2 origin);
 
 void LevelEnemyTick(ListNode *enemyNode);
 
 
-void LevelBlockAdd(Vector2 pos);
+void LevelBlockAdd(Vector2 origin);
 
-// Initializes and adds a block to the level in the given pos,
+// Initializes and adds a block to the level in the given origin,
 // if there are no other blocks there already.
-void LevelBlockCheckAndAdd(Vector2 pos);
+void LevelBlockCheckAndAdd(Vector2 origin);
 
 
 #endif // _LEVEL_H_INCLUDED_

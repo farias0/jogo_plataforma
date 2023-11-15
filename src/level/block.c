@@ -4,16 +4,17 @@
 #include "../core.h"
 
 
-void LevelBlockAdd(Vector2 pos) {
+void LevelBlockAdd(Vector2 origin) {
 
     LevelEntity *newBlock = MemAlloc(sizeof(LevelEntity));
 
-    pos.x = SnapToGrid(pos.x, LEVEL_GRID.width);
-    pos.y = SnapToGrid(pos.y, LEVEL_GRID.height);
+    origin.x = SnapToGrid(origin.x, LEVEL_GRID.width);
+    origin.y = SnapToGrid(origin.y, LEVEL_GRID.height);
 
     newBlock->components = LEVEL_IS_SCENARIO +
                             LEVEL_IS_GROUND;
-    newBlock->hitbox = SpriteHitboxFromEdge(BlockSprite, pos);
+    newBlock->origin = origin;
+    newBlock->hitbox = SpriteHitboxFromEdge(BlockSprite, origin);
     newBlock->sprite = BlockSprite;
 
     LinkedListAdd(&LEVEL_LIST_HEAD, newBlock);
@@ -22,7 +23,7 @@ void LevelBlockAdd(Vector2 pos) {
                 newBlock->hitbox.x, newBlock->hitbox.y);
 }
 
-void LevelBlockCheckAndAdd(Vector2 pos) {
+void LevelBlockCheckAndAdd(Vector2 origin) {
 
     ListNode *node = LEVEL_LIST_HEAD;
 
@@ -31,7 +32,7 @@ void LevelBlockCheckAndAdd(Vector2 pos) {
         LevelEntity *possibleBlock = (LevelEntity *)node->item;
 
         if (possibleBlock->components & LEVEL_IS_SCENARIO &&
-                CheckCollisionPointRec(pos, possibleBlock->hitbox)) {
+                CheckCollisionPointRec(origin, possibleBlock->hitbox)) {
 
             return;
         }
@@ -39,5 +40,5 @@ void LevelBlockCheckAndAdd(Vector2 pos) {
         node = node->next;
     }
 
-    LevelBlockAdd(pos);
+    LevelBlockAdd(origin);
 }

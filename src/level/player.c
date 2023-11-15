@@ -27,7 +27,7 @@
 
 // How many seconds before landing on the ground the jump command
 // still works 
-#define JUMP_BUFFER_BACKWARDS_SIZE      0.06f         
+#define JUMP_BUFFER_BACKWARDS_SIZE      0.08f         
 
 // How many seconds after having left the ground the jump command
 // still works
@@ -103,22 +103,21 @@ static void die() {
                 LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y, LEVEL_PLAYER_STATE->isJumping);
 }
 
-void LevelPlayerInitialize(Vector2 pos) {
+void LevelPlayerInitialize(Vector2 origin) {
 
     LevelEntity *newPlayer = MemAlloc(sizeof(LevelEntity));
     LEVEL_PLAYER = newPlayer;
     LinkedListAdd(&LEVEL_LIST_HEAD, newPlayer);
     
     newPlayer->components = LEVEL_IS_PLAYER;
-    newPlayer->hitbox = SpriteHitboxFromEdge(PlayerSprite, pos);
+    newPlayer->origin = origin;
+    newPlayer->hitbox = SpriteHitboxFromEdge(PlayerSprite, origin);
     newPlayer->sprite = PlayerSprite;
     newPlayer->isFacingRight = true;
 
     resetPlayerState();
     
     syncPlayersHitboxes();
-
-    LevelPlayerSetStartingPos(pos); // TODO replace it with entity origin
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
@@ -335,9 +334,17 @@ void LevelPlayerContinue() {
     STATE->isPaused = false;
     resetPlayerState();
 
-    Vector2 pos = LevelGetPlayerStartingPosition();
-    LEVEL_PLAYER->hitbox.x = pos.x;
-    LEVEL_PLAYER->hitbox.y = pos.y;
+    // Reset all the alive entities to their origins
+    ListNode *node = LEVEL_LIST_HEAD;
+    while (node) {
+
+        LevelEntity *entity = (LevelEntity *) node->item;
+        entity->hitbox.x = entity->origin.x;
+        entity->hitbox.y = entity->origin.y;
+
+        node = node->next;
+    }
+
     syncPlayersHitboxes();
     CameraLevelCentralizeOnPlayer();
 
