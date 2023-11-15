@@ -111,6 +111,7 @@ void LevelExitAdd(Vector2 pos) {
 
     newExit->components = LEVEL_IS_EXIT;
     newExit->hitbox = hitbox;
+    newExit->origin = pos;
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 

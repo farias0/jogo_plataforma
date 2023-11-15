@@ -160,6 +160,17 @@ static void drawLevelEntity(LevelEntity *entity) {
     drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, !entity->isFacingRight);
 }
 
+
+static void drawLevelEntityOrigin(LevelEntity *entity) {
+
+    Vector2 pos = PosInSceneToScreen((Vector2){
+                                        entity->origin.x,
+                                        entity->origin.y });
+
+    drawTexture(entity->sprite, (Vector2){ pos.x, pos.y },
+                (Color) { WHITE.r, WHITE.g, WHITE.b, 30 }, false);
+}
+
 static void drawEntities() {
 
     for (int layer = FIRST_LAYER; layer <= LAST_LAYER; layer++) {
@@ -171,7 +182,9 @@ static void drawEntities() {
             if (STATE->mode == MODE_IN_LEVEL) {
                 LevelEntity *entity = (LevelEntity *) node->item;
                 if (entity->layer != layer) goto next_entity;
+
                 drawLevelEntity(entity);
+                if (STATE->isEditorEnabled) drawLevelEntityOrigin(entity);
             }
 
             else if (STATE->mode == MODE_OVERWORLD) {
