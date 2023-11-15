@@ -199,6 +199,9 @@ void OverworldInitialize() {
 
 void OverworldLevelSelect() {
 
+    if (overworldLevelSelectedAgo >= 0) return;
+    
+
     if (!(STATE->tileUnderCursor->components & OW_IS_LEVEL_DOT)) {
         TraceLog(LOG_TRACE, "Overworld tried to enter level, but not a dot.");
         return;

@@ -128,6 +128,9 @@ void LevelPlayerInitialize(Vector2 pos) {
 
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
 
+    if (levelConcludedAgo >= 0) return;
+    
+
     float amount = PLAYER_SPEED_DEFAULT;
     if (LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
         amount = PLAYER_SPEED_FAST;
