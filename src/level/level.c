@@ -257,7 +257,8 @@ void LevelTick() {
         return;
     }
 
-    if (STATE->isPaused) return;
+    if (STATE->isPaused) goto skip_entities_tick;
+    if (STATE->isEditorEnabled) goto skip_entities_tick;
 
     ListNode *node = LEVEL_LIST_HEAD;
     ListNode *next;
@@ -273,6 +274,7 @@ void LevelTick() {
 
         node = next;
     }
+skip_entities_tick:
 
     CameraTick();
 }

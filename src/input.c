@@ -21,7 +21,8 @@ void handleInLevelInput() {
 
 
     if (!LEVEL_PLAYER) return;
-    if (STATE->isPaused || LEVEL_PLAYER->isDead) return;
+    if (STATE->isPaused || LEVEL_PLAYER->isDead || STATE->isEditorEnabled)
+        return;
 
 
     if      (IsKeyDown(KEY_Z))              LevelPlayStartRunning();
