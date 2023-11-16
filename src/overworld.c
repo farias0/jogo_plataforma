@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "overworld.h"
 #include "core.h"
