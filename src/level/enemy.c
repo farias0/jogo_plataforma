@@ -111,3 +111,9 @@ void LevelEnemyTick(ListNode *enemyNode) {
     if (enemy->isFacingRight) enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
     else enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
 }
+
+void LevelEnemyKill(LevelEntity *entity) {
+
+    entity->isDead = true;
+    TraceLog(LOG_TRACE, "Player murdered an enemy in cold blood.");
+}

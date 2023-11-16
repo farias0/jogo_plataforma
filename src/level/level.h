@@ -30,6 +30,8 @@ typedef struct LevelEntity {
     Sprite sprite;
     int layer;
 
+    bool isDead;
+
     bool isFacingRight;
     bool isFallingDown;
     
@@ -135,6 +137,7 @@ void LevelEnemyCheckAndAdd(Vector2 origin);
 
 void LevelEnemyTick(ListNode *enemyNode);
 
+void LevelEnemyKill(LevelEntity *entity);
 
 void LevelBlockAdd(Vector2 origin);
 
