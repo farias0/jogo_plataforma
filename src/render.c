@@ -338,18 +338,6 @@ static void drawDebugHud() {
     }
 }
 
-static void drawHud() {
-
-    if      (STATE->showDebugGrid)              drawDebugGrid();
-
-    if      (STATE->mode == MODE_IN_LEVEL)      drawLevelHud();
-    else if (STATE->mode == MODE_OVERWORLD)     drawOverworldHud();
-
-    if      (STATE->showDebugHUD)               drawDebugHud();
-
-     drawSysMessages();
-}
-
 // Render editor buttons of game entities
 static void drawEditorButtonsEntities() {
 
@@ -491,9 +479,16 @@ void Render() {
 
         drawEntities();
 
-        drawHud();
+        if      (STATE->mode == MODE_IN_LEVEL)          drawLevelHud();
+        else if (STATE->mode == MODE_OVERWORLD)         drawOverworldHud();
 
-        if (levelTransitionShaderControl.timer != -1) drawLevelTransitionShader();
+        if      (STATE->showDebugGrid)                  drawDebugGrid();
+
+        if (levelTransitionShaderControl.timer != -1)   drawLevelTransitionShader();
+
+        if      (STATE->showDebugHUD)                   drawDebugHud();
+
+        drawSysMessages();
 
         if (STATE->isEditorEnabled) drawEditor();
 
