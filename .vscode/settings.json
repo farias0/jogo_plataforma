@@ -8,6 +8,11 @@
         "render.h": "c",
         "raylib.h": "c",
         "persistence.h": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "vector": "c",
+        "xstring": "c",
+        "xutility": "c",
+        "stdlib.h": "c",
+        "string.h": "c"
     }
 }

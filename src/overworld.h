@@ -38,7 +38,7 @@ typedef struct OverworldEntity {
     
     Vector2 gridPos;
     Sprite sprite;
-    int layer;
+    int layer; // currently, only used to put the cursor in front of the tiles
     
     char *levelName;
 
@@ -54,6 +54,10 @@ extern double overworldLevelSelectedAgo;
 
 void OverworldInitialize();
 
+// Initializes and adds a new tile to the overworld,
+// and returns it.
+OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degrees);
+
 // If the current tile contains a level, starts 'go to level' routine and select it
 void OverworldLevelSelect();
 
@@ -67,6 +71,9 @@ void OverworldTileAddOrInteract(Vector2 pos);
 void OverworldTileRemoveAt(Vector2 pos);
 
 void OverworldTick();
+
+// Saves overworld's state to persistence.
+void OverworldSave();
 
 
 #endif // _OVERWORLD_H_INCLUDED_
