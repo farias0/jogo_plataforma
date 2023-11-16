@@ -65,8 +65,6 @@ typedef struct PlayerState {
 
     PlayerMovementSpeed speed;
 
-    bool isDead;
-
 } PlayerState;
 
 

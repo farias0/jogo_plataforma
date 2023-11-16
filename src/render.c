@@ -266,9 +266,11 @@ static void drawDebugGrid() {
 
 static void drawLevelHud() {
 
-    if (STATE->isPaused && !LEVEL_PLAYER_STATE->isDead) DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
+    if (STATE->isPaused && LEVEL_PLAYER && !LEVEL_PLAYER->isDead)
+        DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
         
-    if (LEVEL_PLAYER_STATE->isDead) DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
+    if (LEVEL_PLAYER && LEVEL_PLAYER->isDead)
+        DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
     
     if (STATE->loadedLevel[0] == '\0')
         DrawText("Arraste uma fase para cá", 400, 350, 40, RAYWHITE);

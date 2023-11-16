@@ -52,9 +52,7 @@ static void resetPlayerState() {
     }
 
     LEVEL_PLAYER_STATE = MemAlloc(sizeof(PlayerState));
-
     LEVEL_PLAYER_STATE->isJumping = false;
-    LEVEL_PLAYER_STATE->isDead = false;
     LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
 
     TraceLog(LOG_DEBUG, "Player state reset.");
@@ -96,7 +94,7 @@ static void syncPlayersHitboxes() {
 
 static void die() {
 
-    LEVEL_PLAYER_STATE->isDead = true;
+    LEVEL_PLAYER->isDead = true;
     STATE->isPaused = true;
 
     TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isJumping=%d",
