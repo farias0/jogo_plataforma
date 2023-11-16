@@ -90,8 +90,7 @@ void LevelEnemyTick(ListNode *enemyNode) {
 
         if  (enemy->hitbox.y + enemy->hitbox.height > FLOOR_DEATH_HEIGHT) {
 
-            TraceLog(LOG_DEBUG, "Enemy fell off level (x=%.1f, y=%.1f).", enemy->hitbox.x, enemy->hitbox.y);
-            LinkedListRemove(&LEVEL_LIST_HEAD, enemyNode);
+            LevelEnemyKill(enemy);
             return;
         }
 
@@ -115,5 +114,5 @@ void LevelEnemyTick(ListNode *enemyNode) {
 void LevelEnemyKill(LevelEntity *entity) {
 
     entity->isDead = true;
-    TraceLog(LOG_TRACE, "Player murdered an enemy in cold blood.");
+    TraceLog(LOG_TRACE, "Enemy died.");
 }
