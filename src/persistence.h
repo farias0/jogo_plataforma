@@ -21,7 +21,7 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer);
 
 void PersistenceOverworldSave();
 
-void PersistenceOverworldLoad();
+bool PersistenceOverworldLoad();
 
 
 #endif // _PERSISTENCE_H_INCLUDED_

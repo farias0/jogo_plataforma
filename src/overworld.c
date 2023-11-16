@@ -96,7 +96,12 @@ void OverworldInitialize() {
     if (!OW_LIST_HEAD) {
 
         initializeCursor();
-        PersistenceOverworldLoad();
+
+        if (!PersistenceOverworldLoad()) {
+            TraceLog(LOG_ERROR, "Could not initialize overworld; error reading persistence.");
+            exit(1);
+        }
+
         STATE->tileUnderCursor = (OverworldEntity *) OW_LIST_HEAD->next->item; // TODO unacceptable
         updateCursorPosition();
     }

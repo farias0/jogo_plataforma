@@ -228,7 +228,7 @@ void PersistenceOverworldSave() {
         if (entity->levelName) {
             strncpy( data[i].levelName,      entity->levelName, LEVEL_NAME_BUFFER_SIZE);
         } else {
-            data[i].levelName[0] == '\0';
+            data[i].levelName[0] = '\0';
         }
 
         i++;
@@ -256,7 +256,7 @@ skip_entity:
     return;
 }
 
-void PersistenceOverworldLoad() {
+bool PersistenceOverworldLoad() {
 
     char *filePath = MemAlloc(OW_PATH_BUFFER_SIZE);
     getLevelPath(filePath, OW_DIR_NAME);
