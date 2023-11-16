@@ -216,6 +216,8 @@ void OverworldLevelSelect() {
         STATE->expectingLevelAssociation = true;
     }
 
+    CameraPanningReset();
+
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), true);
 

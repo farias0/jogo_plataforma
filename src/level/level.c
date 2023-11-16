@@ -95,6 +95,8 @@ void LevelGoToOverworld() {
         return;    
     }
 
+    CameraPanningReset();
+
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
             (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), true);
