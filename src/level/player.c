@@ -283,7 +283,7 @@ void LevelPlayerTick() {
                         (isEntitysLeftWall && isEntityToTheRight && isPlayerMovingToTheRight)) {
 
 
-                        if (STATE->showDebugHUD) RenderPrintSysMessage("Hit wall");
+                        // if (STATE->showDebugHUD) RenderPrintSysMessage("Hit wall");
 
                         LEVEL_PLAYER->hitbox.x = oldX;
 
@@ -293,7 +293,7 @@ void LevelPlayerTick() {
 
                 if (isACeiling && pState->isJumping) {
 
-                    if (STATE->showDebugHUD) RenderPrintSysMessage("Hit ceiling");
+                    // if (STATE->showDebugHUD) RenderPrintSysMessage("Hit ceiling");
 
                     pState->isJumping = false;
                     LEVEL_PLAYER->hitbox.y = oldY;
