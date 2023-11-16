@@ -52,14 +52,12 @@ static void followLevelCamera() {
 
 static void tickOverworldCamera() {
 
-    if (isPanned) return;
     followOverworldCamera();
 }
 
 static void tickLevelCamera() {
 
     if (!LEVEL_PLAYER) return;
-    if (isPanned) return;
     followLevelCamera();
 }
 
@@ -72,6 +70,9 @@ void CameraInitialize() {
 }
 
 void CameraTick() {
+
+    if (isPanned) return;
+    if (STATE->isEditorEnabled) return;
 
     switch (STATE->mode)
     {
