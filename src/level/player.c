@@ -52,9 +52,7 @@ static void resetPlayerState() {
     }
 
     LEVEL_PLAYER_STATE = MemAlloc(sizeof(PlayerState));
-
     LEVEL_PLAYER_STATE->isJumping = false;
-    LEVEL_PLAYER_STATE->isDead = false;
     LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
 
     TraceLog(LOG_DEBUG, "Player state reset.");
@@ -96,7 +94,7 @@ static void syncPlayersHitboxes() {
 
 static void die() {
 
-    LEVEL_PLAYER_STATE->isDead = true;
+    LEVEL_PLAYER->isDead = true;
     STATE->isPaused = true;
 
     TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isJumping=%d",
@@ -217,9 +215,8 @@ void LevelPlayerTick() {
             pState->groundBeneath->components & LEVEL_IS_ENEMY) {
 
             lastGroundBeneathTimestamp = GetTime();
-            LevelEntityDestroy(LinkedListGetNode(LEVEL_LIST_HEAD, pState->groundBeneath));
+            LevelEnemyKill(pState->groundBeneath);
             pState->groundBeneath = 0;
-            TraceLog(LOG_TRACE, "Player leaped off an enemy, rad!");
         }
     }
 
@@ -242,7 +239,7 @@ void LevelPlayerTick() {
 
             LevelEntity *entity = (LevelEntity *) node->item;
 
-            if (entity->components & LEVEL_IS_ENEMY) {
+            if ((entity->components & LEVEL_IS_ENEMY) && !entity->isDead) {
 
                 // Enemy hit player
                 if (CheckCollisionRecs(entity->hitbox, pState->upperbody)) {
@@ -253,11 +250,8 @@ void LevelPlayerTick() {
                 // Player hit enemy
                 if (CheckCollisionRecs(entity->hitbox, pState->lowerbody)) {
                     lastGroundBeneathTimestamp = GetTime();
-                    ListNode *enemyNode = node;
-                    node = node->next;
-                    LevelEntityDestroy(enemyNode);
-                    TraceLog(LOG_TRACE, "Player murdered an enemy in cold blood.");
-                    continue;
+                    LevelEnemyKill(entity);
+                    goto next_entity;
                 }
             }
 
@@ -289,7 +283,7 @@ void LevelPlayerTick() {
                         (isEntitysLeftWall && isEntityToTheRight && isPlayerMovingToTheRight)) {
 
 
-                        if (STATE->showDebugHUD) RenderPrintSysMessage("Hit wall");
+                        // if (STATE->showDebugHUD) RenderPrintSysMessage("Hit wall");
 
                         LEVEL_PLAYER->hitbox.x = oldX;
 
@@ -299,7 +293,7 @@ void LevelPlayerTick() {
 
                 if (isACeiling && pState->isJumping) {
 
-                    if (STATE->showDebugHUD) RenderPrintSysMessage("Hit ceiling");
+                    // if (STATE->showDebugHUD) RenderPrintSysMessage("Hit ceiling");
 
                     pState->isJumping = false;
                     LEVEL_PLAYER->hitbox.y = oldY;
@@ -337,11 +331,12 @@ void LevelPlayerContinue() {
     STATE->isPaused = false;
     resetPlayerState();
 
-    // Reset all the alive entities to their origins
+    // Reset all the entities to their origins
     ListNode *node = LEVEL_LIST_HEAD;
     while (node) {
 
         LevelEntity *entity = (LevelEntity *) node->item;
+        entity->isDead = false;
         entity->hitbox.x = entity->origin.x;
         entity->hitbox.y = entity->origin.y;
 

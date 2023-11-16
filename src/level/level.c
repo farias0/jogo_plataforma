@@ -163,6 +163,8 @@ LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
         if (possibleGround != entity &&
             possibleGround->components & LEVEL_IS_GROUND &&
 
+            !(possibleGround->isDead) &&
+
             // If x is within the possible ground
             possibleGround->hitbox.x < (entity->hitbox.x + entity->hitbox.width) &&
             entity->hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&

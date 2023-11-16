@@ -39,10 +39,10 @@ void PausedGameToggle() {
 
         if (STATE->mode == MODE_IN_LEVEL) {
 
-            if (LEVEL_PLAYER_STATE) {
-                if (LEVEL_PLAYER_STATE->isDead) LevelPlayerContinue();
+            if (LEVEL_PLAYER) {
+                if (LEVEL_PLAYER->isDead) LevelPlayerContinue();
             } else {
-                TraceLog(LOG_ERROR, "Pause toggle in level has no reference to player's state.");
+                TraceLog(LOG_ERROR, "Pause toggle in level has no reference to player.");
             }
         }
 

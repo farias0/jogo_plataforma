@@ -187,9 +187,13 @@ static void drawEntities() {
             if (STATE->mode == MODE_IN_LEVEL) {
                 LevelEntity *entity = (LevelEntity *) node->item;
                 if (entity->layer != layer) goto next_entity;
+                
+                if (!(entity->components & LEVEL_IS_ENEMY) ||
+                    !entity->isDead)
+                        drawLevelEntity(entity);
 
-                drawLevelEntity(entity);
-                if (STATE->isEditorEnabled) drawLevelEntityOrigin(entity);
+                if (STATE->isEditorEnabled)
+                        drawLevelEntityOrigin(entity);
             }
 
             else if (STATE->mode == MODE_OVERWORLD) {
@@ -262,9 +266,11 @@ static void drawDebugGrid() {
 
 static void drawLevelHud() {
 
-    if (STATE->isPaused && !LEVEL_PLAYER_STATE->isDead) DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
+    if (STATE->isPaused && LEVEL_PLAYER && !LEVEL_PLAYER->isDead)
+        DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
         
-    if (LEVEL_PLAYER_STATE->isDead) DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
+    if (LEVEL_PLAYER && LEVEL_PLAYER->isDead)
+        DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
     
     if (STATE->loadedLevel[0] == '\0')
         DrawText("Arraste uma fase para cá", 400, 350, 40, RAYWHITE);
