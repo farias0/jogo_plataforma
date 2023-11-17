@@ -36,12 +36,12 @@ typedef struct LevelTransitionShaderControl {
 
 ListNode *SYS_MESSAGES_HEAD = 0;
 
+ListNode *DEBUG_ENTITY_INFO_HEAD = 0;
+
+
 // Texture covering the whole screen, used to render shaders
 static RenderTexture2D shaderRenderTexture;
 static LevelTransitionShaderControl levelTransitionShaderControl;
-
-// Debugging
-static LevelEntity *levelEntityShowInfo = 0;
 
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
@@ -226,7 +226,7 @@ static void drawSysMessages() {
 
         if (msg->secondsUntilDisappear <= 0) {
             MemFree(msg->msg);
-            LinkedListRemove(&SYS_MESSAGES_HEAD, node);
+            LinkedListDestroyNode(&SYS_MESSAGES_HEAD, node);
             goto next_node;
         }        
 
@@ -319,22 +319,35 @@ static void drawDebugHud() {
         DrawText(buffer, 600, 20, 20, WHITE);
     }
 
-    if (levelEntityShowInfo) {
+    ListNode *node = DEBUG_ENTITY_INFO_HEAD;
+    while (node != 0) {
+        LevelEntity *entity = (LevelEntity *) node->item;
+        ListNode *nextNode = node->next;
+
+        if (!entity) { // Destroyed
+            LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, node);
+            TraceLog(LOG_TRACE, "Debug entity info stopped showing entity.");
+            goto next_node;
+        }
+
         Vector2 pos = PosInSceneToScreen((Vector2) {
-                                            levelEntityShowInfo->hitbox.x,
-                                            levelEntityShowInfo->hitbox.y
+                                            entity->hitbox.x,
+                                            entity->hitbox.y
                                         });
 
         DrawRectangle(pos.x, pos.y,
-                levelEntityShowInfo->hitbox.width, levelEntityShowInfo->hitbox.height, (Color){ GREEN.r, GREEN.g, GREEN.b, 128 });
+                entity->hitbox.width, entity->hitbox.height, (Color){ GREEN.r, GREEN.g, GREEN.b, 128 });
         DrawRectangleLines(pos.x, pos.y,
-                levelEntityShowInfo->hitbox.width, levelEntityShowInfo->hitbox.height, GREEN);
+                entity->hitbox.width, entity->hitbox.height, GREEN);
 
         char buffer[500];
         sprintf(buffer, "X=%.1f\nY=%.1f",
-                    levelEntityShowInfo->hitbox.x,
-                    levelEntityShowInfo->hitbox.y);
+                    entity->hitbox.x,
+                    entity->hitbox.y);
         DrawText(buffer, pos.x, pos.y, 25, WHITE);
+
+next_node:
+        node = nextNode;
     }
 }
 
@@ -527,10 +540,28 @@ void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
 }
 
-void RenderShowEntityInfo(LevelEntity *entity) {
-    levelEntityShowInfo = entity;
+void RenderDebugEntityToggle(LevelEntity *entity) {
+    
+    ListNode *entitysNode = LinkedListGetNode(DEBUG_ENTITY_INFO_HEAD, entity);
+
+    if (entitysNode) {
+        LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
+        TraceLog(LOG_TRACE, "Debug entity info removed entity;");
+    } else {
+        LinkedListAdd(&DEBUG_ENTITY_INFO_HEAD, entity);
+        TraceLog(LOG_TRACE, "Debug entity info added entity;");
+    }
 }
 
-void RenderShowEntityInfoStop() {
-    levelEntityShowInfo = 0;
+void RenderDebugEntityStop(LevelEntity *entity) {
+    ListNode *entitysNode = LinkedListGetNode(DEBUG_ENTITY_INFO_HEAD, entity);
+    if (entitysNode) {
+        LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
+        TraceLog(LOG_TRACE, "Debug entity info stopped showing entity.");
+    }
+}
+
+void RenderDebugEntityStopAll() {
+    LinkedListRemoveAll(&DEBUG_ENTITY_INFO_HEAD);
+    TraceLog(LOG_TRACE, "Debug entity info stopped showing all entities.");
 }

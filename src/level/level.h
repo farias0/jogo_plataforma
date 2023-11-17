@@ -135,6 +135,10 @@ void LevelEnemyCheckAndAdd(Vector2 origin);
 
 void LevelEnemyTick(ListNode *enemyNode);
 
+// Checks for collision between a rectangle and any other entity in the level,
+// including its origin.
+bool LevelCheckCollisionWithAnythingElse(Rectangle hitbox);
+
 void LevelEnemyKill(LevelEntity *entity);
 
 void LevelBlockAdd(Vector2 origin);

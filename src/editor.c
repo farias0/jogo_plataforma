@@ -70,8 +70,8 @@ void loadOverworldEditor() {
 
 void EditorSync() {
 
-    LinkedListRemoveAll(&EDITOR_ENTITIES_HEAD);
-    LinkedListRemoveAll(&EDITOR_CONTROL_HEAD);
+    LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
+    LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
 
     switch (STATE->mode) {
     
@@ -90,8 +90,8 @@ void EditorSync() {
 
 void EditorEmpty() {
 
-    LinkedListRemoveAll(&EDITOR_ENTITIES_HEAD);
-    LinkedListRemoveAll(&EDITOR_CONTROL_HEAD);
+    LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
+    LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
 
     STATE->editorSelectedEntity = 0;
 

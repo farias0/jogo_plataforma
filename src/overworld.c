@@ -46,7 +46,7 @@ static void destroyEntityOverworld(ListNode *node) {
     OverworldEntity *entity = (OverworldEntity *) node->item;
     MemFree(entity->levelName);
 
-    LinkedListRemove(&OW_LIST_HEAD, node);
+    LinkedListDestroyNode(&OW_LIST_HEAD, node);
 
     TraceLog(LOG_TRACE, "Destroyed overworld entity.");
 }
