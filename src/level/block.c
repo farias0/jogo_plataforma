@@ -8,8 +8,7 @@ void LevelBlockAdd(Vector2 origin) {
 
     LevelEntity *newBlock = MemAlloc(sizeof(LevelEntity));
 
-    origin.x = SnapToGrid(origin.x, LEVEL_GRID.width);
-    origin.y = SnapToGrid(origin.y, LEVEL_GRID.height);
+    origin = SnapToGrid(origin, LEVEL_GRID);
 
     newBlock->components = LEVEL_IS_SCENARIO +
                             LEVEL_IS_GROUND;
