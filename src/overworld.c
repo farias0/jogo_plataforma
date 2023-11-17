@@ -103,7 +103,6 @@ void OverworldInitialize() {
             exit(1);
         }
 
-        STATE->tileUnderCursor = (OverworldEntity *) OW_LIST_HEAD->next->item; // TODO unacceptable
         updateCursorPosition();
     }
 

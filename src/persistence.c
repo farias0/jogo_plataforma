@@ -8,6 +8,7 @@
 #include "files.h"
 #include "render.h"
 #include "overworld.h"
+#include "core.h"
 
 
 #define PERSISTENCE_DIR_NAME            "levels"
@@ -40,6 +41,7 @@ typedef struct PersistenceOverworldEntity {
     uint32_t    posY;
     uint16_t    tileType;
     int32_t     rotation;
+    char        isTileUnderCursor;
 } PersistenceOverworldEntity;
 
 
@@ -230,6 +232,8 @@ void PersistenceOverworldSave() {
             data[i].levelName[0] = '\0';
         }
 
+        if (entity == STATE->tileUnderCursor) data[i].isTileUnderCursor = 1;
+
         i++;
 
 skip_entity:
@@ -284,6 +288,8 @@ bool PersistenceOverworldLoad() {
             newTile->levelName = MemAlloc(LEVEL_NAME_BUFFER_SIZE);
             strncpy(newTile->levelName, data[i].levelName, LEVEL_NAME_BUFFER_SIZE);
         }
+
+        if (data[i].isTileUnderCursor) STATE->tileUnderCursor = newTile;
     }
 
     MemFree(data);
