@@ -7,15 +7,19 @@
 #include "level/level.h"
 #include "files.h"
 #include "render.h"
+#include "overworld.h"
+#include "core.h"
 
 
-#define LEVELS_DIR_NAME "levels"
-#define LEVELS_DIR "../" LEVELS_DIR_NAME "/"
-#define LEVEL_FILE_EXTENSION ".lvl"
+#define PERSISTENCE_DIR_NAME            "levels"
+#define PERSISTENCE_DIR                 "../" PERSISTENCE_DIR_NAME "/"
+#define PERSISTENCE_DIR_BUFFER_SIZE     20
 
-// currently it's all '../levels/', but if we start working with absolute paths this will have to change
-#define LEVEL_DIR_BUFFER_SIZE   20
-#define LEVEL_PATH_BUFFER_SIZE  LEVEL_NAME_BUFFER_SIZE + LEVEL_DIR_BUFFER_SIZE
+#define LEVEL_FILE_EXTENSION            ".lvl"
+#define LEVEL_PATH_BUFFER_SIZE          LEVEL_NAME_BUFFER_SIZE + PERSISTENCE_DIR_BUFFER_SIZE
+
+#define OW_FILE_NAME                    "overworld.ow"
+#define OW_PATH_BUFFER_SIZE             20 + PERSISTENCE_DIR_BUFFER_SIZE
 
 
 typedef enum LevelEntityType {
@@ -31,11 +35,20 @@ typedef struct PersistenceLevelEntity {
     uint32_t originY;
 } PersistenceLevelEntity;
 
+typedef struct PersistenceOverworldEntity {
+    char        levelName[LEVEL_NAME_BUFFER_SIZE];
+    uint32_t    posX;
+    uint32_t    posY;
+    uint16_t    tileType;
+    int32_t     rotation;
+    char        isTileUnderCursor;
+} PersistenceOverworldEntity;
 
-static void getLevelPath(char *pathBuffer, char *levelName) {
+
+static void getFilePath(char *pathBuffer, size_t bufferSize, char *fileName) {
     
-    strncat(pathBuffer, LEVELS_DIR, LEVEL_PATH_BUFFER_SIZE);
-    strncat(pathBuffer, levelName, LEVEL_PATH_BUFFER_SIZE);
+    strncat(pathBuffer, PERSISTENCE_DIR, bufferSize);
+    strncat(pathBuffer, fileName, bufferSize);
 }
 
 void PersistenceLevelSave(char *levelName) {
@@ -49,7 +62,7 @@ void PersistenceLevelSave(char *levelName) {
                         levelName, entitySize, levelItemCount);
 
     ListNode *node = LEVEL_LIST_HEAD;
-    for (size_t i = 0; i < levelItemCount; ) {
+    for (size_t i = 0; i < saveItemCount; ) {
 
         LevelEntity *entity = (LevelEntity *) node->item;
 
@@ -74,8 +87,8 @@ skip_entity:
 
     FileData filedata = (FileData){ data, entitySize, saveItemCount };
 
-    char *levelPath = MemAlloc(sizeof(char) * LEVEL_PATH_BUFFER_SIZE);
-    getLevelPath(levelPath, levelName);
+    char *levelPath = MemAlloc(LEVEL_PATH_BUFFER_SIZE);
+    getFilePath(levelPath, LEVEL_PATH_BUFFER_SIZE, levelName);
 
     if (FileSave(levelPath, filedata)) {
         TraceLog(LOG_INFO, "Level saved: %s.", levelName);
@@ -93,8 +106,8 @@ skip_entity:
 
 bool PersistenceLevelLoad(char *levelName) {
 
-    char *levelPath = MemAlloc(sizeof(char) * LEVEL_PATH_BUFFER_SIZE);
-    getLevelPath(levelPath, levelName);
+    char *levelPath = MemAlloc(LEVEL_PATH_BUFFER_SIZE);
+    getFilePath(levelPath, LEVEL_PATH_BUFFER_SIZE, levelName);
 
     FileData filedata = FileLoad(levelPath, sizeof(PersistenceLevelEntity));
 
@@ -154,7 +167,7 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
     const char *fileDir = GetDirectoryPath(filePath);
     const char *projectRootPath = GetPrevDirectoryPath(GetWorkingDirectory());
     if (strcmp(projectRootPath, GetPrevDirectoryPath(fileDir)) != 0 ||
-        strcmp(GetFileName(fileDir), LEVELS_DIR_NAME) != 0) {
+        strcmp(GetFileName(fileDir), PERSISTENCE_DIR_NAME) != 0) {
 
             TraceLog(LOG_ERROR, "Dropped file is not on 'levels' directory.");
             RenderPrintSysMessage("Arquivo não é parte do jogo");
@@ -185,4 +198,104 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
 return_result:
     UnloadDroppedFiles(fileList);
     return result;
+}
+
+void PersistenceOverworldSave() {
+
+    size_t owItemCount = LinkedListCountNodes(OW_LIST_HEAD);
+    size_t saveItemCount = owItemCount;
+    size_t entitySize = sizeof(PersistenceOverworldEntity);
+    PersistenceOverworldEntity *data = MemAlloc(entitySize * saveItemCount);
+
+    TraceLog(LOG_DEBUG, "Saving overworld... (struct size=%d, level item count=%d)",
+                        entitySize, owItemCount);
+
+    ListNode *node = OW_LIST_HEAD;
+    for (size_t i = 0; i < saveItemCount; ) {
+
+        OverworldEntity *entity = (OverworldEntity *) node->item;
+
+        // Saves only OW_NOT_TILEs
+        if (entity->tileType == OW_NOT_TILE) {
+            saveItemCount--;
+            goto skip_entity;
+        }
+        
+        data[i].tileType =          entity->tileType;
+        data[i].posX =              (uint32_t) entity->gridPos.x;
+        data[i].posY =              (uint32_t) entity->gridPos.y;
+        data[i].rotation =          (int32_t) entity->sprite.rotation;
+
+        if (entity->levelName) {
+            strcpy(data[i].levelName, entity->levelName);
+        } else {
+            data[i].levelName[0] = '\0';
+        }
+
+        if (entity == STATE->tileUnderCursor) data[i].isTileUnderCursor = 1;
+
+        i++;
+
+skip_entity:
+        node = node->next;
+    }
+
+    FileData filedata = (FileData){ data, entitySize, saveItemCount };
+
+    char *filePath = MemAlloc(OW_PATH_BUFFER_SIZE);
+    getFilePath(filePath, OW_PATH_BUFFER_SIZE, OW_FILE_NAME);
+
+    if (FileSave(filePath, filedata)) {
+        TraceLog(LOG_INFO, "Overworld saved.");
+        RenderPrintSysMessage("Mundo salvo.");
+    } else {
+        TraceLog(LOG_ERROR, "Could not save overworld.");
+        RenderPrintSysMessage("Erro salvando mundo.");
+    }
+
+    MemFree(data);
+    MemFree(filePath);
+
+    return;
+}
+
+bool PersistenceOverworldLoad() {
+
+    char *filePath = MemAlloc(OW_PATH_BUFFER_SIZE);
+    getFilePath(filePath, OW_PATH_BUFFER_SIZE, OW_FILE_NAME);
+
+    FileData fileData = FileLoad(filePath, sizeof(PersistenceOverworldEntity));
+
+    if (!fileData.itemCount) {
+        TraceLog(LOG_ERROR, "Could not overworld.");
+        RenderPrintSysMessage("Erro carregando mundo.");
+        return false;
+    }
+
+    PersistenceOverworldEntity *data = (PersistenceOverworldEntity *) fileData.data;
+
+    for (size_t i = 0; i < fileData.itemCount; i++) {
+
+        Vector2 pos = (Vector2){
+            (float) data[i].posX,
+            (float) data[i].posY    
+        };
+
+        OverworldEntity *newTile = 
+            OverworldTileAdd(pos, (OverworldTileType) data[i].tileType, (int) data[i].rotation);
+
+        if (data[i].levelName[0] != '\0') {
+            newTile->levelName = MemAlloc(LEVEL_NAME_BUFFER_SIZE);
+            strncpy(newTile->levelName, data[i].levelName, LEVEL_NAME_BUFFER_SIZE);
+        }
+
+        if (data[i].isTileUnderCursor) STATE->tileUnderCursor = newTile;
+    }
+
+    MemFree(data);
+    MemFree(filePath);
+
+    TraceLog(LOG_TRACE, "Overworld loaded.");
+
+    return true;
 }

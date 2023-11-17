@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "overworld.h"
 #include "core.h"
@@ -66,7 +67,62 @@ static void initializeCursor() {
                 newCursor->gridPos.x, newCursor->gridPos.y);
 }
 
-static OverworldEntity *addTileToOverworld(Vector2 pos, OverworldTileType type, int degrees) {
+// Searches for an entity that's not the cursor
+// in a given position and returns its node, or 0 if not found.
+static ListNode *getEntityOnScene(Vector2 pos) {
+
+    ListNode *node = OW_LIST_HEAD;
+
+    while (node != 0) {
+
+        OverworldEntity *entity = (OverworldEntity *) node->item;
+
+        if (!(entity->components & OW_IS_CURSOR) &&
+            CheckCollisionPointRec(pos, getGridSquare(entity))) {
+
+                return node;
+            }
+
+        node = node->next;
+    };
+
+    return 0;
+}
+
+void OverworldInitialize() {
+
+    GameStateReset();
+    STATE->mode = MODE_OVERWORLD;
+
+    if (!OW_LIST_HEAD) {
+
+        initializeCursor();
+
+        if (!PersistenceOverworldLoad()) {
+            TraceLog(LOG_ERROR, "Could not initialize overworld; error reading persistence.");
+            exit(1);
+        }
+
+        updateCursorPosition();
+    }
+
+    STATE->expectingLevelAssociation = false;
+
+    EditorSync();
+
+    CameraPanningReset();
+
+    CameraFollow();
+
+    memset(STATE->loadedLevel, 0, sizeof(STATE->loadedLevel));
+
+    RenderLevelTransitionEffectStart(
+        SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), false);
+
+    TraceLog(LOG_INFO, "Overworld initialized.");
+}
+
+OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degrees) {
 
     OverworldEntity *newTile = MemAlloc(sizeof(OverworldEntity));
 
@@ -108,91 +164,6 @@ static OverworldEntity *addTileToOverworld(Vector2 pos, OverworldTileType type, 
                 newTile->gridPos.x, newTile->gridPos.y);
 
     return newTile;
-}
-
-// Searches for an entity that's not the cursor
-// in a given position and returns its node, or 0 if not found.
-static ListNode *getEntityOnScene(Vector2 pos) {
-
-    ListNode *node = OW_LIST_HEAD;
-
-    while (node != 0) {
-
-        OverworldEntity *entity = (OverworldEntity *) node->item;
-
-        if (!(entity->components & OW_IS_CURSOR) &&
-            CheckCollisionPointRec(pos, getGridSquare(entity))) {
-
-                return node;
-            }
-
-        node = node->next;
-    };
-
-    return 0;
-}
-
-static void overworldLoad() {
-
-    // ATTENTION: Using dot sprite dimension to all tilings
-    Dimensions tileDimension = SpriteScaledDimensions(LevelDotSprite);
-
-    float dotX = SCREEN_WIDTH/2;
-    float dotY = SCREEN_HEIGHT/2;
-
-
-    OverworldEntity *dot1    = addTileToOverworld    ((Vector2){ dotX, dotY },                               OW_LEVEL_DOT,      0);
-
-    // Path to the right
-    addTileToOverworld    ((Vector2){ dotX + tileDimension.width,     dotY },     OW_JOIN_PATH,      270);
-    addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 2, dotY },     OW_STRAIGHT_PATH,  90);
-    addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 3, dotY },     OW_JOIN_PATH,      90);
-    OverworldEntity *dot2    = addTileToOverworld    ((Vector2){ dotX + tileDimension.width * 4, dotY },     OW_LEVEL_DOT,      0);
-
-    // Path up
-    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height },      OW_JOIN_PATH,      180);
-    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 2},   OW_STRAIGHT_PATH,  0);
-    addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 3},   OW_JOIN_PATH,      0);
-    OverworldEntity *dot3    = addTileToOverworld    ((Vector2){ dotX,   dotY - tileDimension.height * 4},   OW_LEVEL_DOT,      0);
-
-
-    strcpy(dot1->levelName, "level_1.lvl");
-    strcpy(dot2->levelName, "level_2.lvl");
-    strcpy(dot3->levelName, "level_3.lvl");
-    
-
-    STATE->tileUnderCursor = dot1;
-
-    TraceLog(LOG_TRACE, "Overworld loaded.");
-}
-
-void OverworldInitialize() {
-
-    GameStateReset();
-    STATE->mode = MODE_OVERWORLD;
-
-    if (!OW_LIST_HEAD) {
-        // LinkedListRemoveAll(&OW_LIST_HEAD);
-
-        initializeCursor();
-        overworldLoad();
-        updateCursorPosition();
-    }
-
-    STATE->expectingLevelAssociation = false;
-
-    EditorSync();
-
-    CameraPanningReset();
-
-    CameraFollow();
-
-    memset(STATE->loadedLevel, 0, sizeof(STATE->loadedLevel));
-
-    RenderLevelTransitionEffectStart(
-        SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), false);
-
-    TraceLog(LOG_INFO, "Overworld initialized.");
 }
 
 void OverworldLevelSelect() {
@@ -339,6 +310,7 @@ next_entity:
 
     OverworldTileType typeToAdd;
 
+    // This is highly gambiarra, the selected item should be received as a param
     switch (STATE->editorSelectedEntity->type) {
         case EDITOR_ENTITY_LEVEL_DOT:
             typeToAdd = OW_LEVEL_DOT; break;
@@ -355,7 +327,7 @@ next_entity:
             return;
     }
 
-    addTileToOverworld(pos, typeToAdd, 0);
+    OverworldTileAdd(pos, typeToAdd, 0);
 
     TraceLog(LOG_TRACE, "Added tile of type %d to the overworld (x=%.1f, y=%.1f).",
                 typeToAdd, pos.x, pos.y);
@@ -399,4 +371,8 @@ void OverworldTick() {
     }
 
     CameraTick();    
+}
+
+void OverworldSave() {
+    PersistenceOverworldSave();
 }
