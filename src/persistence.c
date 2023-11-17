@@ -10,16 +10,15 @@
 #include "overworld.h"
 
 
-#define LEVELS_DIR_NAME "levels"
-#define LEVELS_DIR "../" LEVELS_DIR_NAME "/"
-#define LEVEL_FILE_EXTENSION ".lvl"
+#define PERSISTENCE_DIR_NAME            "levels"
+#define PERSISTENCE_DIR                 "../" PERSISTENCE_DIR_NAME "/"
+#define PERSISTENCE_DIR_BUFFER_SIZE     20
 
-// currently it's all '../levels/', but if we start working with absolute paths this will have to change
-#define LEVEL_DIR_BUFFER_SIZE   20
-#define LEVEL_PATH_BUFFER_SIZE  LEVEL_NAME_BUFFER_SIZE + LEVEL_DIR_BUFFER_SIZE
+#define LEVEL_FILE_EXTENSION            ".lvl"
+#define LEVEL_PATH_BUFFER_SIZE          LEVEL_NAME_BUFFER_SIZE + PERSISTENCE_DIR_BUFFER_SIZE
 
-#define OW_DIR_NAME "overworld.ow"
-#define OW_PATH_BUFFER_SIZE 40 // path + name, levels/overworld.ow for now
+#define OW_FILE_NAME                    "overworld.ow"
+#define OW_PATH_BUFFER_SIZE             20 + PERSISTENCE_DIR_BUFFER_SIZE
 
 
 typedef enum LevelEntityType {
@@ -44,10 +43,10 @@ typedef struct PersistenceOverworldEntity {
 } PersistenceOverworldEntity;
 
 
-static void getLevelPath(char *pathBuffer, char *levelName) {
+static void getFilePath(char *pathBuffer, size_t bufferSize, char *fileName) {
     
-    strncat(pathBuffer, LEVELS_DIR, LEVEL_PATH_BUFFER_SIZE);
-    strncat(pathBuffer, levelName, LEVEL_PATH_BUFFER_SIZE);
+    strncat(pathBuffer, PERSISTENCE_DIR, bufferSize);
+    strncat(pathBuffer, fileName, bufferSize);
 }
 
 void PersistenceLevelSave(char *levelName) {
@@ -87,7 +86,7 @@ skip_entity:
     FileData filedata = (FileData){ data, entitySize, saveItemCount };
 
     char *levelPath = MemAlloc(LEVEL_PATH_BUFFER_SIZE);
-    getLevelPath(levelPath, levelName);
+    getFilePath(levelPath, LEVEL_PATH_BUFFER_SIZE, levelName);
 
     if (FileSave(levelPath, filedata)) {
         TraceLog(LOG_INFO, "Level saved: %s.", levelName);
@@ -106,7 +105,7 @@ skip_entity:
 bool PersistenceLevelLoad(char *levelName) {
 
     char *levelPath = MemAlloc(LEVEL_PATH_BUFFER_SIZE);
-    getLevelPath(levelPath, levelName);
+    getFilePath(levelPath, LEVEL_PATH_BUFFER_SIZE, levelName);
 
     FileData filedata = FileLoad(levelPath, sizeof(PersistenceLevelEntity));
 
@@ -166,7 +165,7 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
     const char *fileDir = GetDirectoryPath(filePath);
     const char *projectRootPath = GetPrevDirectoryPath(GetWorkingDirectory());
     if (strcmp(projectRootPath, GetPrevDirectoryPath(fileDir)) != 0 ||
-        strcmp(GetFileName(fileDir), LEVELS_DIR_NAME) != 0) {
+        strcmp(GetFileName(fileDir), PERSISTENCE_DIR_NAME) != 0) {
 
             TraceLog(LOG_ERROR, "Dropped file is not on 'levels' directory.");
             RenderPrintSysMessage("Arquivo não é parte do jogo");
@@ -240,7 +239,7 @@ skip_entity:
     FileData filedata = (FileData){ data, entitySize, saveItemCount };
 
     char *filePath = MemAlloc(OW_PATH_BUFFER_SIZE);
-    getLevelPath(filePath, OW_DIR_NAME);
+    getFilePath(filePath, OW_PATH_BUFFER_SIZE, OW_FILE_NAME);
 
     if (FileSave(filePath, filedata)) {
         TraceLog(LOG_INFO, "Overworld saved.");
@@ -259,7 +258,7 @@ skip_entity:
 bool PersistenceOverworldLoad() {
 
     char *filePath = MemAlloc(OW_PATH_BUFFER_SIZE);
-    getLevelPath(filePath, OW_DIR_NAME);
+    getFilePath(filePath, OW_PATH_BUFFER_SIZE, OW_FILE_NAME);
 
     FileData fileData = FileLoad(filePath, sizeof(PersistenceOverworldEntity));
 
