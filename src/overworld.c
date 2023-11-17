@@ -117,8 +117,6 @@ void OverworldInitialize() {
 
     memset(STATE->loadedLevel, 0, sizeof(STATE->loadedLevel));
 
-    RenderShowEntityInfoStop();
-
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), false);
 
