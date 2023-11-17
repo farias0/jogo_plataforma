@@ -3,6 +3,7 @@
 #include "../linked_list.h"
 #include "../core.h"
 #include "level.h"
+#include "../render.h"
 
 #define ENEMY_SPEED_DEFAULT 4.0f
 #define ENEMY_FALL_RATE 7.0f
@@ -65,8 +66,9 @@ void LevelEnemyTick(ListNode *enemyNode) {
 
     if (levelConcludedAgo >= 0) return;
 
-
     LevelEntity *enemy = (LevelEntity *)enemyNode->item;
+    if (enemy->isDead) return;
+
 
     LevelEntity *groundBeneath = LevelGetGroundBeneath(enemy);
 
@@ -114,5 +116,9 @@ void LevelEnemyTick(ListNode *enemyNode) {
 void LevelEnemyKill(LevelEntity *entity) {
 
     entity->isDead = true;
+
+    RenderShowEntityInfoStop(); // gambiarra
+
+
     TraceLog(LOG_TRACE, "Enemy died.");
 }
