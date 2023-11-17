@@ -225,7 +225,7 @@ void PersistenceOverworldSave() {
         data[i].rotation =          (int32_t) entity->sprite.rotation;
 
         if (entity->levelName) {
-            strncpy( data[i].levelName,      entity->levelName, LEVEL_NAME_BUFFER_SIZE);
+            strcpy(data[i].levelName, entity->levelName);
         } else {
             data[i].levelName[0] = '\0';
         }
