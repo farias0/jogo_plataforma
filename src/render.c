@@ -550,7 +550,7 @@ void RenderDebugEntityToggle(LevelEntity *entity) {
     ListNode *entitysNode = LinkedListGetNode(DEBUG_ENTITY_INFO_HEAD, entity);
 
     if (entitysNode) {
-        LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, entity);
+        LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
         TraceLog(LOG_TRACE, "Debug entity info removed entity;");
     } else {
         LinkedListAdd(&DEBUG_ENTITY_INFO_HEAD, entity);
