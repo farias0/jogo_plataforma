@@ -125,7 +125,6 @@ void LevelExitAdd(Vector2 pos) {
 
 void LevelExitCheckAndAdd(Vector2 pos) {
     
-    ListNode *node = LEVEL_LIST_HEAD;
     Rectangle hitbox = SpriteHitboxFromMiddle(LevelEndOrbSprite, pos);
 
     if (LevelCheckCollisionWithAnythingElse(hitbox)) {
