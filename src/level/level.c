@@ -55,7 +55,7 @@ void LevelInitialize(char *levelName) {
     GameStateReset();
     STATE->mode = MODE_IN_LEVEL;
 
-    LinkedListRemoveAll(&LEVEL_LIST_HEAD);
+    LinkedListDestroyAll(&LEVEL_LIST_HEAD);
     LEVEL_PLAYER = 0;
     levelExitNode = 0;
 
@@ -79,8 +79,6 @@ void LevelInitialize(char *levelName) {
 
     CameraFollow();
 
-    RenderShowEntityInfoStop();
-
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
             (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), false);
@@ -100,6 +98,8 @@ void LevelGoToOverworld() {
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
             (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), true);
+
+    RenderDebugEntityStopAll();
 
     levelConcludedAgo = GetTime();
 }
@@ -145,7 +145,7 @@ void LevelExitCheckAndAdd(Vector2 pos) {
     }
 
     // Currently only one level exit is supported, but this should change in the future.
-    if (levelExitNode) LinkedListRemove(&LEVEL_LIST_HEAD, levelExitNode);
+    if (levelExitNode) LinkedListDestroyNode(&LEVEL_LIST_HEAD, levelExitNode);
     
     LevelExitAdd((Vector2){ hitbox.x, hitbox.y });
 }
@@ -200,9 +200,9 @@ void LevelEntityDestroy(ListNode *node) {
 
     if (node == levelExitNode) levelExitNode = 0;
 
-    RenderShowEntityInfoStop(); // gambiarra
+    RenderDebugEntityStop((LevelEntity *) node->item);
 
-    LinkedListRemove(&LEVEL_LIST_HEAD, node);
+    LinkedListDestroyNode(&LEVEL_LIST_HEAD, node);
 
     TraceLog(LOG_TRACE, "Destroyed level entity.");
 }

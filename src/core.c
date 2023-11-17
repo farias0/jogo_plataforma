@@ -7,6 +7,7 @@
 #include "level/level.h"
 #include "editor.h"
 #include "string.h"
+#include "render.h"
 
 
 GameState *STATE = 0;
@@ -102,8 +103,13 @@ void MouseCursorEnable() {
 
 void DebugHudToggle() {
 
-    if (STATE->showDebugHUD) DebugHudDisable();
-    else DebugHudEnable();
+    if (STATE->showDebugHUD) {
+        RenderDebugEntityStopAll();
+        DebugHudDisable();
+    }
+    else {
+        DebugHudEnable();
+    }
 }
 
 bool IsInPlayArea(Vector2 pos) {

@@ -31,7 +31,15 @@ ListNode *LinkedListAdd(ListNode **head, void *item) {
     return node;
 }
 
-void LinkedListRemove(ListNode **head, ListNode *node) {
+void LinkedListDestroyNode(ListNode **head, ListNode *node) {
+
+    MemFree(node->item);
+    LinkedListRemoveNode(head, node);
+
+    TraceLog(LOG_TRACE, "Destroyed node with item from linked list.");
+}
+
+void LinkedListRemoveNode(ListNode **head, ListNode *node) {
 
     if (*head == node) {
         *head = node->next;
@@ -39,11 +47,9 @@ void LinkedListRemove(ListNode **head, ListNode *node) {
 
     if (node->next) node->next->previous = node->previous;
     if (node->previous) node->previous->next = node->next;
-
-    if (node->item) MemFree(node->item);
     MemFree(node);
 
-    TraceLog(LOG_TRACE, "Removed item from linked list and destroyed it.");
+    TraceLog(LOG_TRACE, "Destroyed node from linked list.");
 }
 
 ListNode *LinkedListGetNode(ListNode *head, void *item) {
@@ -57,13 +63,27 @@ ListNode *LinkedListGetNode(ListNode *head, void *item) {
     return head;
 }
 
-void LinkedListRemoveAll(ListNode **head) {
+void LinkedListDestroyAll(ListNode **head) {
 
     while (*head) {
-        LinkedListRemove(head, *head);
+        LinkedListDestroyNode(head, *head);
     }
 
-    TraceLog(LOG_TRACE, "Removed all items from linked list and destroyed them.");
+    TraceLog(LOG_TRACE, "Destroyed a linked list.");
+}
+
+void LinkedListRemoveAll(ListNode **head) {
+
+    ListNode *node = *head;
+    while (node) {
+        ListNode *next = node->next;
+        MemFree(node);
+        node = next;
+    }
+
+    *head = 0;
+
+    TraceLog(LOG_TRACE, "Removed all items from a linked list.");
 }
 
 int LinkedListCountNodes(ListNode *head) {

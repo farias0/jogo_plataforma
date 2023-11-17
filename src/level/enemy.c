@@ -117,8 +117,7 @@ void LevelEnemyKill(LevelEntity *entity) {
 
     entity->isDead = true;
 
-    RenderShowEntityInfoStop(); // gambiarra
-
+    RenderDebugEntityStop(entity);
 
     TraceLog(LOG_TRACE, "Enemy died.");
 }
