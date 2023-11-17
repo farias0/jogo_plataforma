@@ -37,6 +37,9 @@ void handleInLevelInput() {
 
 void handleOverworldInput() {
 
+    if (STATE->isEditorEnabled) return;
+    
+
     if      (IsKeyPressed(KEY_X))           { OverworldLevelSelect(); return; };
 
     if      (IsKeyPressed(KEY_UP))          OverworldCursorMove(OW_CURSOR_UP);
