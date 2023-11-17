@@ -88,7 +88,7 @@ void handleDevInput() {
 
     if (STATE->showDebugHUD) {
 
-        if      (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))      RenderShowEntityInfo(
+        if      (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))      RenderDebugEntityToggle(
                                                                     LevelEntityGetAt(mousePosInScene));
     }
 }

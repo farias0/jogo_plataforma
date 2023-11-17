@@ -55,7 +55,7 @@ void LevelInitialize(char *levelName) {
     GameStateReset();
     STATE->mode = MODE_IN_LEVEL;
 
-    LinkedListRemoveAll(&LEVEL_LIST_HEAD);
+    LinkedListDestroyAll(&LEVEL_LIST_HEAD);
     LEVEL_PLAYER = 0;
     levelExitNode = 0;
 
@@ -79,8 +79,6 @@ void LevelInitialize(char *levelName) {
 
     CameraFollow();
 
-    RenderShowEntityInfoStop();
-
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
             (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), false);
@@ -100,6 +98,8 @@ void LevelGoToOverworld() {
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
             (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), true);
+
+    RenderDebugEntityStopAll();
 
     levelConcludedAgo = GetTime();
 }
@@ -125,27 +125,15 @@ void LevelExitAdd(Vector2 pos) {
 
 void LevelExitCheckAndAdd(Vector2 pos) {
     
-    ListNode *node = LEVEL_LIST_HEAD;
     Rectangle hitbox = SpriteHitboxFromMiddle(LevelEndOrbSprite, pos);
 
-    while (node != 0) {
-
-        LevelEntity *entity = (LevelEntity *) node->item;
-
-        if (entity->components & LEVEL_IS_SCENARIO &&
-            CheckCollisionRecs(hitbox, entity->hitbox)) {
-
-                TraceLog(LOG_DEBUG, "Couldn't place level exit, collision with entity on x=%1.f, y=%1.f.",
-                    entity->hitbox.x, entity->hitbox.y);
-                
-                return;
-            }
-
-        node = node->next;
+    if (LevelCheckCollisionWithAnythingElse(hitbox)) {
+        TraceLog(LOG_DEBUG, "Couldn't add level exit, collision with entity.");
+        return;
     }
 
     // Currently only one level exit is supported, but this should change in the future.
-    if (levelExitNode) LinkedListRemove(&LEVEL_LIST_HEAD, levelExitNode);
+    if (levelExitNode) LinkedListDestroyNode(&LEVEL_LIST_HEAD, levelExitNode);
     
     LevelExitAdd((Vector2){ hitbox.x, hitbox.y });
 }
@@ -200,9 +188,9 @@ void LevelEntityDestroy(ListNode *node) {
 
     if (node == levelExitNode) levelExitNode = 0;
 
-    RenderShowEntityInfoStop(); // gambiarra
+    RenderDebugEntityStop((LevelEntity *) node->item);
 
-    LinkedListRemove(&LEVEL_LIST_HEAD, node);
+    LinkedListDestroyNode(&LEVEL_LIST_HEAD, node);
 
     TraceLog(LOG_TRACE, "Destroyed level entity.");
 }
@@ -232,7 +220,7 @@ void LevelEntityRemoveAt(Vector2 pos) {
             break;
         }
 
-        if (CheckCollisionPointRec(pos, entity->hitbox)) {
+        if (!(entity->isDead) && CheckCollisionPointRec(pos, entity->hitbox)) {
             break;
         }
 
@@ -279,6 +267,32 @@ void LevelTick() {
 skip_entities_tick:
 
     CameraTick();
+}
+
+bool LevelCheckCollisionWithAnythingElse(Rectangle hitbox) {
+
+    ListNode *node = LEVEL_LIST_HEAD;
+
+    while (node != 0) {
+    
+        LevelEntity *entity = (LevelEntity *) node->item;
+
+        Rectangle entitysOrigin = (Rectangle) {
+                                                entity->origin.x,       entity->origin.y,
+                                                entity->hitbox.width,   entity->hitbox.height
+                                            };
+
+        if (CheckCollisionRecs(hitbox, entitysOrigin) ||
+            (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox))) {
+
+            return true;
+        }
+
+        node = node->next;
+
+    }
+
+    return false;
 }
 
 void LevelSave() {

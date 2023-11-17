@@ -45,7 +45,7 @@ static void destroyEntityOverworld(ListNode *node) {
     OverworldEntity *entity = (OverworldEntity *) node->item;
     MemFree(entity->levelName);
 
-    LinkedListRemove(&OW_LIST_HEAD, node);
+    LinkedListDestroyNode(&OW_LIST_HEAD, node);
 
     TraceLog(LOG_TRACE, "Destroyed overworld entity.");
 }
@@ -188,8 +188,6 @@ void OverworldInitialize() {
     CameraFollow();
 
     memset(STATE->loadedLevel, 0, sizeof(STATE->loadedLevel));
-
-    RenderShowEntityInfoStop();
 
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), false);

@@ -3,6 +3,7 @@
 #include "../linked_list.h"
 #include "../core.h"
 #include "level.h"
+#include "../render.h"
 
 #define ENEMY_SPEED_DEFAULT 4.0f
 #define ENEMY_FALL_RATE 7.0f
@@ -30,32 +31,9 @@ void LevelEnemyCheckAndAdd(Vector2 origin) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(EnemySprite, origin);
 
-    ListNode *node = LEVEL_LIST_HEAD;
-
-    while (node != 0) {
-    
-        LevelEntity *entity = (LevelEntity *) node->item;
-
-        if (CheckCollisionRecs(hitbox, entity->hitbox)) {
-
-            /*
-                TODO: Click closer to the ground and still place the enemy.
-                
-                If the collision is with a block (create a block component btw),
-                but the y of the block is below the mouse, change the hitbox
-                to be right above the ground.
-
-                It will need to check for collisions again, and be careful about
-                not entering infinite loops.
-            */
-
-            TraceLog(LOG_DEBUG, "Couldn't add enemy to level, collision with entity on x=%.1f, y=%.1f.",
-                entity->hitbox.x, entity->hitbox.y);
-            return;
-        }
-
-        node = node->next;
-
+    if (LevelCheckCollisionWithAnythingElse(hitbox)) {
+        TraceLog(LOG_DEBUG, "Couldn't add enemy to level, collision with entity.");
+        return;
     }
 
     LevelEnemyAdd((Vector2){ hitbox.x, hitbox.y });
@@ -65,8 +43,9 @@ void LevelEnemyTick(ListNode *enemyNode) {
 
     if (levelConcludedAgo >= 0) return;
 
-
     LevelEntity *enemy = (LevelEntity *)enemyNode->item;
+    if (enemy->isDead) return;
+
 
     LevelEntity *groundBeneath = LevelGetGroundBeneath(enemy);
 
@@ -114,5 +93,8 @@ void LevelEnemyTick(ListNode *enemyNode) {
 void LevelEnemyKill(LevelEntity *entity) {
 
     entity->isDead = true;
+
+    RenderDebugEntityStop(entity);
+
     TraceLog(LOG_TRACE, "Enemy died.");
 }

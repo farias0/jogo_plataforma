@@ -25,20 +25,7 @@ void LevelBlockAdd(Vector2 origin) {
 
 void LevelBlockCheckAndAdd(Vector2 origin) {
 
-    ListNode *node = LEVEL_LIST_HEAD;
-
-    while (node != 0) {
-        
-        LevelEntity *possibleBlock = (LevelEntity *)node->item;
-
-        if (possibleBlock->components & LEVEL_IS_SCENARIO &&
-                CheckCollisionPointRec(origin, possibleBlock->hitbox)) {
-
-            return;
-        }
-
-        node = node->next;
-    }
-
+    Rectangle hitbox = SpriteHitboxFromMiddle(BlockSprite, origin);
+    if (LevelCheckCollisionWithAnythingElse(hitbox)) return;
     LevelBlockAdd(origin);
 }
