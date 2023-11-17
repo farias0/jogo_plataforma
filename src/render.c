@@ -250,7 +250,7 @@ static void drawDebugGrid() {
     else if (STATE->mode == MODE_IN_LEVEL) grid = LEVEL_GRID;
     else return;
 
-    Vector2 offset = PushOnGrid(CAMERA->pos, grid);
+    Vector2 offset = DistanceFromGrid(CAMERA->pos, grid);
 
     for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += grid.width) {
         DrawLine(lineX, 0, lineX, SCREEN_HEIGHT, BLUE);

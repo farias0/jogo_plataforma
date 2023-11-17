@@ -81,8 +81,8 @@ void DebugHudToggle();
 // Snaps a point to its place (top-left) in a grid.
 Vector2 SnapToGrid(Vector2 coords, Dimensions grid);
 
-// Pushes a point away from its place (top=left) in a grid.
-Vector2 PushOnGrid(Vector2 coords, Dimensions grid);
+// The distance between a point and the closest (bottom-right) point of a grid.
+Vector2 DistanceFromGrid(Vector2 coords, Dimensions grid);
 
 
 #endif // _CORE_H_INCLUDED_

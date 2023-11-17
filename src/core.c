@@ -24,7 +24,7 @@ static inline float snapToGrid(float value, float length) {
     }
 }
 
-static inline float pushOnGrid(float value, float length) {
+static inline float distanceFromGrid(float value, float length) {
 
     if (value >= 0) {
         return length - fmod(value, length);
@@ -145,10 +145,10 @@ Vector2 SnapToGrid(Vector2 coords, Dimensions grid) {
     };
 }
 
-Vector2 PushOnGrid(Vector2 coords, Dimensions grid) {
+Vector2 DistanceFromGrid(Vector2 coords, Dimensions grid) {
 
     return (Vector2) {
-        pushOnGrid(coords.x, grid.width),
-        pushOnGrid(coords.y, grid.height)
+        distanceFromGrid(coords.x, grid.width),
+        distanceFromGrid(coords.y, grid.height)
     };
 }
