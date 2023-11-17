@@ -8,9 +8,6 @@ void LevelBlockAdd(Vector2 origin) {
 
     LevelEntity *newBlock = MemAlloc(sizeof(LevelEntity));
 
-    origin.x = SnapToGrid(origin.x, LEVEL_GRID.width);
-    origin.y = SnapToGrid(origin.y, LEVEL_GRID.height);
-
     newBlock->components = LEVEL_IS_SCENARIO +
                             LEVEL_IS_GROUND;
     newBlock->origin = origin;
@@ -25,7 +22,10 @@ void LevelBlockAdd(Vector2 origin) {
 
 void LevelBlockCheckAndAdd(Vector2 origin) {
 
-    Rectangle hitbox = SpriteHitboxFromMiddle(BlockSprite, origin);
+    origin = SnapToGrid(origin, LEVEL_GRID);
+
+    Rectangle hitbox = SpriteHitboxFromEdge(BlockSprite, origin);
     if (LevelCheckCollisionWithAnythingElse(hitbox)) return;
+    
     LevelBlockAdd(origin);
 }

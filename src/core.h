@@ -78,11 +78,11 @@ void MouseCursorEnable();
 // Toggles the debug HUD between 'enabled' and 'disabled'
 void DebugHudToggle();
 
-// Snaps a coordinate (x or y) to a grid.
-float SnapToGrid(float value, float length);
+// Snaps a point to its place (top-left) in a grid.
+Vector2 SnapToGrid(Vector2 coords, Dimensions grid);
 
-// Pushes a coordinate (x or y) according to a grid.
-float PushOnGrid(float value, float length);
+// The distance between a point and the closest (bottom-right) point of a grid.
+Vector2 DistanceFromGrid(Vector2 coords, Dimensions grid);
 
 
 #endif // _CORE_H_INCLUDED_

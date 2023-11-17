@@ -126,11 +126,8 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
 
     OverworldEntity *newTile = MemAlloc(sizeof(OverworldEntity));
 
-    pos.x = SnapToGrid(pos.x, OW_GRID.width);
-    pos.y = SnapToGrid(pos.y, OW_GRID.height);
-
     newTile->tileType = type;
-    newTile->gridPos = pos;
+    newTile->gridPos = SnapToGrid(pos, OW_GRID);
     newTile->levelName = MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
 
     switch (newTile->tileType)
@@ -277,8 +274,9 @@ next_entity:
 
 void OverworldTileAddOrInteract(Vector2 pos) {
 
-    Rectangle testHitbox = (Rectangle){ SnapToGrid(pos.x, OW_GRID.width),
-                                    SnapToGrid(pos.y, OW_GRID.height),
+    pos = SnapToGrid(pos, OW_GRID);
+    Rectangle testHitbox = (Rectangle){ pos.x,
+                                    pos.y,
                                     OW_GRID.width,
                                     OW_GRID.width };
 

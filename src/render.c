@@ -245,21 +245,18 @@ next_node:
 
 static void drawDebugGrid() {
 
-    Dimensions gridSquareDim;
-    if (STATE->mode == MODE_OVERWORLD) gridSquareDim = OW_GRID;
-    else if (STATE->mode == MODE_IN_LEVEL) gridSquareDim = LEVEL_GRID;
+    Dimensions grid;
+    if (STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
+    else if (STATE->mode == MODE_IN_LEVEL) grid = LEVEL_GRID;
     else return;
 
-    Vector2 offset = (Vector2){
-        PushOnGrid(CAMERA->pos.x, gridSquareDim.width),
-        PushOnGrid(CAMERA->pos.y, gridSquareDim.height),
-    };
+    Vector2 offset = DistanceFromGrid(CAMERA->pos, grid);
 
-    for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += gridSquareDim.width) {
+    for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += grid.width) {
         DrawLine(lineX, 0, lineX, SCREEN_HEIGHT, BLUE);
     }
 
-    for (float lineY = offset.y; lineY <= SCREEN_HEIGHT; lineY += gridSquareDim.height) {
+    for (float lineY = offset.y; lineY <= SCREEN_HEIGHT; lineY += grid.height) {
         DrawLine(0, lineY, SCREEN_WIDTH, lineY, BLUE);
     }
 }

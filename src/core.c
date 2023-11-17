@@ -15,6 +15,24 @@ GameState *STATE = 0;
 static size_t mouseEnabledReferences = 0;
 
 
+static inline float snapToGrid(float value, float length) {
+
+    if (value >= 0) {
+        return value - fmod(value, length);
+    } else {
+        return value - length - fmod(value, length);
+    }
+}
+
+static inline float distanceFromGrid(float value, float length) {
+
+    if (value >= 0) {
+        return length - fmod(value, length);
+    } else {
+        return - length - fmod(value, length);
+    }
+}
+
 void GameStateInitialize() {
     STATE = MemAlloc(sizeof(GameState));
 
@@ -119,20 +137,18 @@ bool IsInPlayArea(Vector2 pos) {
             pos.y <= SCREEN_HEIGHT;
 }
 
-float SnapToGrid(float value, float length) {
+Vector2 SnapToGrid(Vector2 coords, Dimensions grid) {
 
-    if (value >= 0) {
-        return value - fmod(value, length);
-    } else {
-        return value - length - fmod(value, length);
-    }
+    return (Vector2) {
+        snapToGrid(coords.x, grid.width),
+        snapToGrid(coords.y, grid.height)
+    };
 }
 
-float PushOnGrid(float value, float length) {
+Vector2 DistanceFromGrid(Vector2 coords, Dimensions grid) {
 
-    if (value >= 0) {
-        return length - fmod(value, length);
-    } else {
-        return - length - fmod(value, length);
-    }
+    return (Vector2) {
+        distanceFromGrid(coords.x, grid.width),
+        distanceFromGrid(coords.y, grid.height)
+    };
 }
