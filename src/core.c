@@ -33,7 +33,20 @@ static inline float distanceFromGrid(float value, float length) {
     }
 }
 
+void windowTitleUpdate() {
+
+    char title[LEVEL_NAME_BUFFER_SIZE + 20];
+
+    if (STATE->loadedLevel[0] == '\0')
+        sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());    
+    else
+        sprintf(title, "%s - %d FPS", STATE->loadedLevel, GetFPS());
+
+    SetWindowTitle(title);
+}
+
 void GameStateInitialize() {
+
     STATE = MemAlloc(sizeof(GameState));
 
     STATE->showBackground = false;
@@ -45,11 +58,22 @@ void GameStateInitialize() {
 }
 
 void GameStateReset() {
+
     strcpy(STATE->loadedLevel, "");
     STATE->isPaused = false;
     STATE->mode = MODE_IN_LEVEL;
 
     TraceLog(LOG_DEBUG, "Game state reset.");
+}
+
+void GameUpdate() {
+
+    if (STATE->mode == MODE_IN_LEVEL)
+        LevelTick();
+    else if (STATE->mode == MODE_OVERWORLD)
+        OverworldTick();
+
+    windowTitleUpdate();
 }
 
 void PausedGameToggle() {
@@ -77,17 +101,6 @@ ListNode *GetEntityListHead() {
     if (STATE->mode == MODE_IN_LEVEL) return LEVEL_LIST_HEAD;
     else if (STATE->mode == MODE_OVERWORLD) return OW_LIST_HEAD;
     else return 0;
-}
-
-void WindowTitleUpdate() {
-    char title[LEVEL_NAME_BUFFER_SIZE + 20];
-
-    if (STATE->loadedLevel[0] == '\0')
-        sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());    
-    else
-        sprintf(title, "%s - %d FPS", STATE->loadedLevel, GetFPS());
-
-    SetWindowTitle(title);
 }
 
 void DebugHudEnable() {
@@ -131,6 +144,7 @@ void DebugHudToggle() {
 }
 
 bool IsInPlayArea(Vector2 pos) {
+    
     return pos.x >= 0 &&
             pos.x <= SCREEN_WIDTH &&
             pos.y >= 0 &&

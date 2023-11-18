@@ -51,6 +51,9 @@ void GameStateInitialize();
 
 void GameStateReset();
 
+// Updates the logic of the game. To be called once every frame.
+void GameUpdate();
+
 // Toggles between paused and unpaused game
 void PausedGameToggle();
 
@@ -59,9 +62,6 @@ bool IsInPlayArea(Vector2 pos);
 
 // Returns the entity list's head for the current selected game mode
 ListNode *GetEntityListHead();
-
-// Updates the window title bar message
-void WindowTitleUpdate();
 
 // Enables the debug HUD
 void DebugHudEnable();
