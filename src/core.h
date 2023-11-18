@@ -51,6 +51,9 @@ void GameStateInitialize();
 
 void GameStateReset();
 
+// Initialize the game's core systems
+void SystemsInitialize();
+
 // Updates the logic of the game. To be called once every frame.
 void GameUpdate();
 

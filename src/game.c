@@ -7,15 +7,6 @@
 #include "assets.h"
 #include "overworld.h"
 
-static inline void initializeSystems() {
-
-    AssetsInitialize();
-    GameStateInitialize();
-    CameraInitialize();
-    RenderInitialize();
-    OverworldInitialize();
-}
-
 int main() {
 
     SetTraceLogLevel(LOG_DEBUG);
@@ -29,7 +20,9 @@ int main() {
     
     SetTargetFPS(60);
 
-    initializeSystems();
+    SystemsInitialize();
+
+    OverworldInitialize();
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {

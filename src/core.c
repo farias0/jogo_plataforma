@@ -66,6 +66,14 @@ void GameStateReset() {
     TraceLog(LOG_DEBUG, "Game state reset.");
 }
 
+void SystemsInitialize() {
+
+    AssetsInitialize();
+    GameStateInitialize();
+    CameraInitialize();
+    RenderInitialize();
+}
+
 void GameUpdate() {
 
     if (STATE->mode == MODE_IN_LEVEL)
