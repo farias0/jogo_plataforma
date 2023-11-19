@@ -14,7 +14,8 @@ void LevelEnemyAdd(Vector2 origin) {
     LevelEntity *newEnemy = MemAlloc(sizeof(LevelEntity));
 
     newEnemy->components = LEVEL_IS_ENEMY +
-                            LEVEL_IS_GROUND;
+                            LEVEL_IS_GROUND +
+                            LEVEL_IS_DANGER;
     newEnemy->origin = origin;
     newEnemy->hitbox = SpriteHitboxFromEdge(EnemySprite, origin);
     newEnemy->sprite = EnemySprite;

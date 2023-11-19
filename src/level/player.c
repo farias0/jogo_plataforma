@@ -253,9 +253,19 @@ void LevelPlayerTick() {
             }
 
             else if (entity->components & LEVEL_IS_SCENARIO) {
-                
+
+                // Check for collision with level geometry
 
                 Rectangle collisionRec = GetCollisionRec(entity->hitbox, LEVEL_PLAYER->hitbox);
+
+                if (entity->components & LEVEL_IS_DANGER &&
+                    (collisionRec.width > 0 || collisionRec.height > 0 || pState->groundBeneath == entity)) {
+                    
+                    // Player hit dangerous level element
+                    die();
+                    break;
+                }
+
                 if (collisionRec.width == 0 || collisionRec.height == 0) goto next_entity;
             
                 const bool isAWall = collisionRec.width <= collisionRec.height;
@@ -362,6 +372,8 @@ void LevelPlayerContinue() {
 
         node = node->next;
     }
+
+    LEVEL_PLAYER_STATE->isAscending = false;
 
     syncPlayersHitboxes();
     CameraLevelCentralizeOnPlayer();

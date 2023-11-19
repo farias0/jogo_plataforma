@@ -26,6 +26,7 @@ extern Sprite PlayerGlideOnSprite;
 extern Sprite PlayerGlideFallingSprite;
 extern Sprite EnemySprite;
 extern Sprite BlockSprite;
+extern Sprite AcidSprite;
 extern Sprite LevelEndOrbSprite;
 
 // Overworld

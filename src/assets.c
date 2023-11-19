@@ -14,6 +14,7 @@ Sprite PlayerGlideOnSprite;
 Sprite PlayerGlideFallingSprite;
 Sprite EnemySprite;
 Sprite BlockSprite;
+Sprite AcidSprite;
 Sprite LevelEndOrbSprite;
 
 // Overworld
@@ -32,10 +33,18 @@ Sprite BGHouseSprite;
 Shader ShaderLevelTransition;
 
 
-static inline Sprite defaultSprite(Texture2D texture) {
+static inline Sprite defaultSprite(char *texturePath) {
     return (Sprite) {
-        texture,
+        LoadTexture(texturePath),
         DEFAULT_SPRITE_SCALE,
+        0
+    };
+}
+
+static inline Sprite tileSprite(char *texturePath) {
+    return (Sprite) {
+        LoadTexture(texturePath),
+        FLOOR_TILE_SIZE,
         0
     };
 }
@@ -43,30 +52,27 @@ static inline Sprite defaultSprite(Texture2D texture) {
 void AssetsInitialize() {
 
     // Editor
-    EraserSprite = defaultSprite(LoadTexture("../assets/eraser_1.png"));
+    EraserSprite = defaultSprite("../assets/eraser_1.png");
 
     // In Level
-    PlayerDefaultSprite = defaultSprite(LoadTexture("../assets/player_default_1.png"));
-    PlayerGlideOnSprite = defaultSprite(LoadTexture("../assets/player_glide_on.png"));
-    PlayerGlideFallingSprite = defaultSprite(LoadTexture("../assets/player_glide_falling.png"));
-    EnemySprite = defaultSprite(LoadTexture("../assets/enemy_default_1.png"));
-    LevelEndOrbSprite = defaultSprite(LoadTexture("../assets/level_end_orb_1.png"));
-    BlockSprite = (Sprite){
-        LoadTexture("../assets/floor_tile_1.png"),
-        FLOOR_TILE_SIZE,
-        0
-    };
+    PlayerDefaultSprite = defaultSprite("../assets/player_default_1.png");
+    PlayerGlideOnSprite = defaultSprite("../assets/player_glide_on.png");
+    PlayerGlideFallingSprite = defaultSprite("../assets/player_glide_falling.png");
+    EnemySprite = defaultSprite("../assets/enemy_default_1.png");
+    LevelEndOrbSprite = defaultSprite("../assets/level_end_orb_1.png");
+    BlockSprite = tileSprite("../assets/floor_tile_1.png");
+    AcidSprite = tileSprite("../assets/acid_tile_1.png");
 
     // Overworld
-    OverworldCursorSprite = defaultSprite(LoadTexture("../assets/cursor_default_1.png"));
-    LevelDotSprite = defaultSprite(LoadTexture("../assets/level_dot_1.png"));
-    PathTileJoinSprite = defaultSprite(LoadTexture("../assets/path_tile_join_vertical.png"));
-    PathTileStraightSprite = defaultSprite(LoadTexture("../assets/path_tile_straight_vertical.png"));
-    PathTileInLSprite = defaultSprite(LoadTexture("../assets/path_tile_L.png"));
+    OverworldCursorSprite = defaultSprite("../assets/cursor_default_1.png");
+    LevelDotSprite = defaultSprite("../assets/level_dot_1.png");
+    PathTileJoinSprite = defaultSprite("../assets/path_tile_join_vertical.png");
+    PathTileStraightSprite = defaultSprite("../assets/path_tile_straight_vertical.png");
+    PathTileInLSprite = defaultSprite("../assets/path_tile_L.png");
 
     // Background
-    NightclubSprite = defaultSprite(LoadTexture("../assets/nightclub_1.png"));
-    BGHouseSprite = defaultSprite(LoadTexture("../assets/bg_house_1.png"));
+    NightclubSprite = defaultSprite("../assets/nightclub_1.png");
+    BGHouseSprite = defaultSprite("../assets/bg_house_1.png");
 
     // Shaders
     // ShaderDefault = (Shader) { rlGetShaderIdDefault(), rlGetShaderLocsDefault() };
