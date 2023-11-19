@@ -153,6 +153,8 @@ void LevelEnemyKill(LevelEntity *entity);
 
 void LevelBlockAdd(Vector2 origin);
 
+void LevelAcidAdd(Vector2 origin);
+
 // Initializes and adds a block to the level in the given origin,
 // if there are no other blocks there already.
 void LevelBlockCheckAndAdd(Vector2 origin);

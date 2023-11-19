@@ -26,6 +26,7 @@ typedef enum LevelEntityType {
     LEVEL_ENTITY_PLAYER,
     LEVEL_ENTITY_ENEMY,
     LEVEL_ENTITY_BLOCK,
+    LEVEL_ENTITY_ACID,
     LEVEL_ENTITY_EXIT,
 } LevelEntityType;
 
@@ -68,7 +69,13 @@ void PersistenceLevelSave(char *levelName) {
 
         if (entity->components & LEVEL_IS_PLAYER)           data[i].entityType = LEVEL_ENTITY_PLAYER;
         else if (entity->components & LEVEL_IS_ENEMY)       data[i].entityType = LEVEL_ENTITY_ENEMY;
-        else if (entity->components & LEVEL_IS_SCENARIO)    data[i].entityType = LEVEL_ENTITY_BLOCK;
+
+        else if (entity->components & LEVEL_IS_SCENARIO && entity->components & LEVEL_IS_DANGER)
+                                                            data[i].entityType = LEVEL_ENTITY_ACID;
+
+        else if (entity->components & LEVEL_IS_SCENARIO && !(entity->components & LEVEL_IS_DANGER))
+                                                            data[i].entityType = LEVEL_ENTITY_BLOCK;
+
         else if (entity->components & LEVEL_IS_EXIT)        data[i].entityType = LEVEL_ENTITY_EXIT;
         else { 
             TraceLog(LOG_WARNING, "Unknow entity type found when serializing level, components=%d. Skipping it...");
@@ -134,6 +141,8 @@ bool PersistenceLevelLoad(char *levelName) {
             LevelEnemyAdd(origin); break;
         case LEVEL_ENTITY_BLOCK:
             LevelBlockAdd(origin); break;
+        case LEVEL_ENTITY_ACID:
+            LevelAcidAdd(origin); break;
         case LEVEL_ENTITY_EXIT:
             LevelExitAdd(origin); break;
         default:
