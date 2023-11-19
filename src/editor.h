@@ -42,6 +42,7 @@ typedef enum {
 
     // In level
     EDITOR_ENTITY_BLOCK,
+    EDITOR_ENTITY_ACID,
     EDITOR_ENTITY_ENEMY,
     EDITOR_ENTITY_EXIT,
 

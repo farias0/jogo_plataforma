@@ -18,7 +18,8 @@ typedef enum LevelEntityComponent {
     LEVEL_IS_ENEMY          = 2,
     LEVEL_IS_SCENARIO       = 4,
     LEVEL_IS_EXIT           = 8,
-    LEVEL_IS_GROUND         = 16
+    LEVEL_IS_GROUND         = 16,
+    LEVEL_IS_DANGER         = 32,
 } LevelEntityComponent;
 
 typedef struct LevelEntity {
@@ -155,6 +156,10 @@ void LevelBlockAdd(Vector2 origin);
 // Initializes and adds a block to the level in the given origin,
 // if there are no other blocks there already.
 void LevelBlockCheckAndAdd(Vector2 origin);
+
+// Initializes and adds an acid block to the level in the given origin,
+// if there are no other blocks there already.
+void LevelAcidCheckAndAdd(Vector2 origin);
 
 
 #endif // _LEVEL_H_INCLUDED_
