@@ -10,6 +10,7 @@ Sprite EraserSprite;
 
 // In Level
 Sprite PlayerSprite;
+Sprite PlayerGlidingSprite;
 Sprite EnemySprite;
 Sprite BlockSprite;
 Sprite LevelEndOrbSprite;
@@ -45,6 +46,7 @@ void AssetsInitialize() {
 
     // In Level
     PlayerSprite = defaultSprite(LoadTexture("../assets/player_default_1.png"));
+    PlayerGlidingSprite = defaultSprite(LoadTexture("../assets/player_gliding_1.png"));
     EnemySprite = defaultSprite(LoadTexture("../assets/enemy_default_1.png"));
     LevelEndOrbSprite = defaultSprite(LoadTexture("../assets/level_end_orb_1.png"));
     BlockSprite = (Sprite){

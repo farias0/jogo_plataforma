@@ -22,6 +22,7 @@ extern Sprite EraserSprite;
 
 // In Level
 extern Sprite PlayerSprite;
+extern Sprite PlayerGlidingSprite;
 extern Sprite EnemySprite;
 extern Sprite BlockSprite;
 extern Sprite LevelEndOrbSprite;

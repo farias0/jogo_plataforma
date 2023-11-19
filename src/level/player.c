@@ -33,7 +33,7 @@
 // still works
 #define JUMP_BUFFER_FORWARDS_SIZE       0.06f
 
-#define Y_VELOCITY_GLIDING              -2.0f
+#define Y_VELOCITY_GLIDING              -1.5f
 
 
 LevelEntity *LEVEL_PLAYER = 0;
@@ -319,6 +319,8 @@ next_entity:
 
     // Accelerates jump's vertical movement
 
+    bool isGliding = false;
+
     if (pState->yVelocity > pState->yVelocityTarget) {
         
         if (LEVEL_PLAYER_STATE->mode == PLAYER_MODE_DEFAULT) {
@@ -331,12 +333,17 @@ next_entity:
                 LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
             
                 pState->yVelocity = Y_VELOCITY_GLIDING;
+                isGliding = true;
                 
             } else {
                 pState->yVelocity -= Y_ACCELERATION_RATE;
             }
         }
     }
+
+    // "Animation"
+    if (isGliding) LEVEL_PLAYER->sprite.sprite = PlayerGlidingSprite.sprite;
+    else LEVEL_PLAYER->sprite.sprite = PlayerSprite.sprite;
 }
 
 void LevelPlayerContinue() {
