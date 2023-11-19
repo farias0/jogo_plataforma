@@ -27,11 +27,11 @@
 
 // How many seconds before landing on the ground the jump command
 // still works 
-#define JUMP_BUFFER_BACKWARDS_SIZE      0.08f         
+#define JUMP_BUFFER_BACKWARDS_SIZE      0.12f         
 
 // How many seconds after having left the ground the jump command
 // still works
-#define JUMP_BUFFER_FORWARDS_SIZE       0.06f
+#define JUMP_BUFFER_FORWARDS_SIZE       0.12f
 
 #define Y_VELOCITY_GLIDING              -1.5f
 
