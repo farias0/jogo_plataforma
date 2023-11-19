@@ -33,6 +33,8 @@
 // still works
 #define JUMP_BUFFER_FORWARDS_SIZE       0.06f
 
+#define Y_VELOCITY_GLIDING              -2.0f
+
 
 LevelEntity *LEVEL_PLAYER = 0;
 
@@ -146,8 +148,6 @@ void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
 }
 
 void LevelPlayStartRunning() {
-
-    if (!LEVEL_PLAYER_STATE->groundBeneath) return;
 
     LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_RUNNING;
 }
@@ -319,11 +319,24 @@ next_entity:
 
     // Accelerates jump's vertical movement
 
-    if (pState->yVelocity > pState->yVelocityTarget)
-            pState->yVelocity -= Y_ACCELERATION_RATE; // Upwards
+    if (pState->yVelocity > pState->yVelocityTarget) {
+        
+        if (LEVEL_PLAYER_STATE->mode == PLAYER_MODE_DEFAULT) {
 
-    else if (pState->yVelocity < pState->yVelocityTarget)
-            pState->yVelocity += Y_ACCELERATION_RATE; // Downwards
+            pState->yVelocity -= Y_ACCELERATION_RATE;
+        }
+        else if (LEVEL_PLAYER_STATE->mode == PLAYER_MODE_GLIDE) {
+
+            if (!(LEVEL_PLAYER_STATE->isJumping) &&
+                LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
+            
+                pState->yVelocity = Y_VELOCITY_GLIDING;
+                
+            } else {
+                pState->yVelocity -= Y_ACCELERATION_RATE;
+            }
+        }
+    }
 }
 
 void LevelPlayerContinue() {
@@ -347,4 +360,11 @@ void LevelPlayerContinue() {
     CameraLevelCentralizeOnPlayer();
 
     TraceLog(LOG_DEBUG, "Player continue.");
+}
+
+void LevelPlayerSetMode(PlayerMode mode) {
+
+    LEVEL_PLAYER_STATE->mode = mode;
+
+    TraceLog(LOG_DEBUG, "Player set mode %d.", mode);
 }

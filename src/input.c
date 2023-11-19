@@ -33,6 +33,10 @@ void handleInLevelInput() {
     else                                    LevelPlayerMoveHorizontal(PLAYER_MOVEMENT_STOP);
 
     if      (IsKeyPressed(KEY_X))           LevelPlayerJump();
+
+    // For power up debugging
+    if      (IsKeyPressed(KEY_ONE))         LevelPlayerSetMode(PLAYER_MODE_DEFAULT);
+    if      (IsKeyPressed(KEY_TWO))         LevelPlayerSetMode(PLAYER_MODE_GLIDE);
 }
 
 void handleOverworldInput() {
