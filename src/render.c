@@ -138,8 +138,10 @@ static void drawBackground() {
             return;
         }
 
+        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 15, 15, 20, 255 });
+
         Vector2 levelBottomOnScreen = PosInSceneToScreen((Vector2){ 0, FLOOR_DEATH_HEIGHT });
-        DrawRectangle(0, 0, SCREEN_WIDTH, levelBottomOnScreen.y, (Color){ 15, 15, 20, 255 });
+        DrawRectangle(0, levelBottomOnScreen.y, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
 
         if (!STATE->showBackground) return; 
         drawSpriteInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);

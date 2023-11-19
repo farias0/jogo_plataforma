@@ -48,6 +48,11 @@ typedef enum PlayerHorizontalMovementType {
     PLAYER_MOVEMENT_RIGHT
 } PlayerHorizontalMovementType;
 
+typedef enum PlayerMode {
+    PLAYER_MODE_DEFAULT,
+    PLAYER_MODE_GLIDE
+} PlayerMode;
+
 typedef struct PlayerState {
 
     // The ground beneath the player, updated every frame, or 0 if there's no ground beneath
@@ -56,14 +61,16 @@ typedef struct PlayerState {
     // TODO maybe add multiple hitboxes support for every entity
     Rectangle upperbody, lowerbody;
 
-    // If the player is on the ascension phase of the jump
-    bool isJumping;
+    // If the player is on the "going up" phase of the jump
+    bool isAscending;
 
     float yVelocity;
     float yVelocityTarget;
     float xVelocity;
 
     PlayerMovementSpeed speed;
+
+    PlayerMode mode;
 
 } PlayerState;
 
@@ -124,6 +131,8 @@ void LevelPlayerTick();
 
 // Continues the game after dying.
 void LevelPlayerContinue();
+
+void LevelPlayerSetMode(PlayerMode mode);
 
 
 // Initializes and adds an enemy to the level in the given origin
