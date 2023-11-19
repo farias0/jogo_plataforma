@@ -61,8 +61,8 @@ typedef struct PlayerState {
     // TODO maybe add multiple hitboxes support for every entity
     Rectangle upperbody, lowerbody;
 
-    // If the player is on the ascension phase of the jump
-    bool isJumping;
+    // If the player is on the "going up" phase of the jump
+    bool isAscending;
 
     float yVelocity;
     float yVelocityTarget;

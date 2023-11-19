@@ -54,7 +54,7 @@ static void resetPlayerState() {
     }
 
     LEVEL_PLAYER_STATE = MemAlloc(sizeof(PlayerState));
-    LEVEL_PLAYER_STATE->isJumping = false;
+    LEVEL_PLAYER_STATE->isAscending = false;
     LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
 
     TraceLog(LOG_DEBUG, "Player state reset.");
@@ -99,8 +99,8 @@ static void die() {
     LEVEL_PLAYER->isDead = true;
     STATE->isPaused = true;
 
-    TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isJumping=%d",
-                LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y, LEVEL_PLAYER_STATE->isJumping);
+    TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isAscending=%d",
+                LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y, LEVEL_PLAYER_STATE->isAscending);
 }
 
 void LevelPlayerInitialize(Vector2 origin) {
@@ -108,11 +108,11 @@ void LevelPlayerInitialize(Vector2 origin) {
     LevelEntity *newPlayer = MemAlloc(sizeof(LevelEntity));
     LEVEL_PLAYER = newPlayer;
     LinkedListAdd(&LEVEL_LIST_HEAD, newPlayer);
-    
+ 
     newPlayer->components = LEVEL_IS_PLAYER;
     newPlayer->origin = origin;
-    newPlayer->hitbox = SpriteHitboxFromEdge(PlayerSprite, origin);
-    newPlayer->sprite = PlayerSprite;
+    newPlayer->sprite = PlayerDefaultSprite;
+    newPlayer->hitbox = SpriteHitboxFromEdge(newPlayer->sprite, newPlayer->origin);
     newPlayer->isFacingRight = true;
 
     resetPlayerState();
@@ -177,7 +177,7 @@ void LevelPlayerTick() {
 
         lastGroundBeneathTimestamp = GetTime();
 
-        if (!pState->isJumping) {
+        if (!pState->isAscending) {
             // Is on the ground
             LEVEL_PLAYER->hitbox.y = pState->groundBeneath->hitbox.y - LEVEL_PLAYER->hitbox.height;
             pState->yVelocity = 0;
@@ -190,7 +190,7 @@ void LevelPlayerTick() {
         abs((int) (pState->yVelocity - pState->yVelocityTarget)) < Y_VELOCITY_TARGET_TOLERANCE;
     
     if (yVelocityWithinTarget) {
-        pState->isJumping = false;
+        pState->isAscending = false;
 
         if (!pState->groundBeneath) {
             // Starts falling down
@@ -199,12 +199,12 @@ void LevelPlayerTick() {
     }
 
     const double now = GetTime();
-    if (!pState->isJumping &&
+    if (!pState->isAscending &&
         (now - lastPressedJumpTimestamp < JUMP_BUFFER_BACKWARDS_SIZE) &&
         (now - lastGroundBeneathTimestamp < JUMP_BUFFER_FORWARDS_SIZE)) {
 
         // Starts jump
-        pState->isJumping = true;
+        pState->isAscending = true;
         pState->yVelocity = jumpStartVelocity();
         pState->yVelocityTarget = 0.0f;
 
@@ -291,11 +291,11 @@ void LevelPlayerTick() {
                 }
 
 
-                if (isACeiling && pState->isJumping) {
+                if (isACeiling && pState->isAscending) {
 
                     // if (STATE->showDebugHUD) RenderPrintSysMessage("Hit ceiling");
 
-                    pState->isJumping = false;
+                    pState->isAscending = false;
                     LEVEL_PLAYER->hitbox.y = oldY;
                     pState->yVelocity = (pState->yVelocity * -1) * CEILING_VELOCITY_FACTOR;
                     pState->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
@@ -317,36 +317,37 @@ next_entity:
         }
     }
 
-    // Accelerates jump's vertical movement
 
     bool isGliding = false;
 
     if (pState->yVelocity > pState->yVelocityTarget) {
-        
-        if (LEVEL_PLAYER_STATE->mode == PLAYER_MODE_DEFAULT) {
 
+        if (LEVEL_PLAYER_STATE->mode == PLAYER_MODE_GLIDE &&
+                !LEVEL_PLAYER_STATE->isAscending &&
+                LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
+
+            // Is gliding
+            pState->yVelocity = Y_VELOCITY_GLIDING;
+            isGliding = true;
+
+        } else {
+
+            // Accelerates jump's vertical movement
             pState->yVelocity -= Y_ACCELERATION_RATE;
         }
-        else if (LEVEL_PLAYER_STATE->mode == PLAYER_MODE_GLIDE) {
-
-            if (!(LEVEL_PLAYER_STATE->isJumping) &&
-                LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
-            
-                pState->yVelocity = Y_VELOCITY_GLIDING;
-                isGliding = true;
-                
-            } else {
-                pState->yVelocity -= Y_ACCELERATION_RATE;
-            }
-        }
     }
+
 
     // "Animation"
+    Sprite currentSprite;
+
     if (LEVEL_PLAYER_STATE->mode == PLAYER_MODE_GLIDE) {
-        if (isGliding) LEVEL_PLAYER->sprite.sprite = PlayerGlideFallingSprite.sprite;
-        else LEVEL_PLAYER->sprite.sprite = PlayerGlideOnSprite.sprite;
+        if (isGliding) currentSprite =      PlayerGlideFallingSprite;
+        else currentSprite =                PlayerGlideOnSprite;
     }
-    else LEVEL_PLAYER->sprite.sprite = PlayerSprite.sprite;
+    else currentSprite =                    PlayerDefaultSprite;
+
+    LEVEL_PLAYER->sprite.sprite = currentSprite.sprite;
 }
 
 void LevelPlayerContinue() {
@@ -376,5 +377,5 @@ void LevelPlayerSetMode(PlayerMode mode) {
 
     LEVEL_PLAYER_STATE->mode = mode;
 
-    TraceLog(LOG_DEBUG, "Player set mode %d.", mode);
+    TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
 }

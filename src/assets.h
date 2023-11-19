@@ -21,7 +21,7 @@ typedef struct Dimensions {
 extern Sprite EraserSprite;
 
 // In Level
-extern Sprite PlayerSprite;
+extern Sprite PlayerDefaultSprite;
 extern Sprite PlayerGlideOnSprite;
 extern Sprite PlayerGlideFallingSprite;
 extern Sprite EnemySprite;
