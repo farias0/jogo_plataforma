@@ -45,19 +45,16 @@ PlayerState *LEVEL_PLAYER_STATE = 0;
 static double lastPressedJumpTimestamp = -1;
 static double lastGroundBeneathTimestamp = -1;
 
+static void initializePlayerState() {
 
-static void resetPlayerState() {
-
-    if (LEVEL_PLAYER_STATE) {
-        MemFree(LEVEL_PLAYER_STATE);
-        TraceLog(LOG_TRACE, "Player state destroyed.");
-    }
-
+    MemFree(LEVEL_PLAYER_STATE);
     LEVEL_PLAYER_STATE = MemAlloc(sizeof(PlayerState));
+
     LEVEL_PLAYER_STATE->isAscending = false;
     LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
+    LEVEL_PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
 
-    TraceLog(LOG_DEBUG, "Player state reset.");
+    TraceLog(LOG_DEBUG, "Player state initialized.");
 }
 
 // The vertical velocity that works as the initial
@@ -115,7 +112,7 @@ void LevelPlayerInitialize(Vector2 origin) {
     newPlayer->hitbox = SpriteHitboxFromEdge(newPlayer->sprite, newPlayer->origin);
     newPlayer->isFacingRight = true;
 
-    resetPlayerState();
+    initializePlayerState();
     
     syncPlayersHitboxes();
 
@@ -353,7 +350,6 @@ next_entity:
 void LevelPlayerContinue() {
 
     STATE->isPaused = false;
-    resetPlayerState();
 
     // Reset all the entities to their origins
     ListNode *node = LEVEL_LIST_HEAD;
