@@ -342,7 +342,10 @@ next_entity:
     }
 
     // "Animation"
-    if (isGliding) LEVEL_PLAYER->sprite.sprite = PlayerGlidingSprite.sprite;
+    if (LEVEL_PLAYER_STATE->mode == PLAYER_MODE_GLIDE) {
+        if (isGliding) LEVEL_PLAYER->sprite.sprite = PlayerGlideFallingSprite.sprite;
+        else LEVEL_PLAYER->sprite.sprite = PlayerGlideOnSprite.sprite;
+    }
     else LEVEL_PLAYER->sprite.sprite = PlayerSprite.sprite;
 }
 
