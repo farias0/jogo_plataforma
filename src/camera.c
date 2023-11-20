@@ -3,6 +3,8 @@
 #include "camera.h"
 #include "level/level.h"
 #include "core.h"
+#include "overworld.h"
+
 
 #define CAMERA_FOLLOW_LEFT      SCREEN_WIDTH/4
 #define CAMERA_FOLLOW_RIGHT     (3*SCREEN_WIDTH)/5

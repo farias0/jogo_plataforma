@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "render.h"
 #include "persistence.h"
+#include "editor.h"
 
 
 ListNode *OW_LIST_HEAD = 0;

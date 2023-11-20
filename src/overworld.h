@@ -5,6 +5,7 @@
 #include "assets.h"
 #include "linked_list.h"
 #include "persistence.h"
+#include "core.h"
 
 
 #define OW_GRID (Dimensions){ 64, 64 }

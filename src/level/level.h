@@ -6,6 +6,7 @@
 
 #include "../linked_list.h"
 #include "../assets.h"
+#include "../core.h"
 
 
 #define NEW_LEVEL_NAME "default_new_level.lvl"
