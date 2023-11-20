@@ -60,6 +60,8 @@ void handleDevInput() {
     if      (IsKeyPressed(KEY_F3))          STATE->showDebugGrid = !STATE->showDebugGrid;
 
 
+    /* Mouse functionalities */
+
     if (IsCursorHidden()) return;
 
     Vector2 mousePosInScreen = GetMousePosition();
@@ -73,13 +75,26 @@ void handleDevInput() {
 
     if (STATE->showDebugHUD || STATE->isEditorEnabled) {
 
-        if (IsKeyDown(KEY_SPACE) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        if (IsKeyDown(KEY_SPACE) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && LEVEL_PLAYER) {
             LevelPlayerCheckAndSetPos(mousePosInScene);
             return;
         }
     }
 
+    if (STATE->showDebugHUD) {
+
+        if  (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            RenderDebugEntityToggle(LevelEntityGetAt(mousePosInScene));
+            return;
+        }
+    }
+
     if (STATE->isEditorEnabled) {
+
+        if (IsKeyDown(KEY_O) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && LEVEL_PLAYER) {
+            LevelPlayerCheckAndSetOrigin(mousePosInScene);
+            return;
+        }
 
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             // TODO use a timer to not keep checking it every frame
@@ -99,13 +114,8 @@ void handleDevInput() {
 
 
             STATE->editorSelectedEntity->handler(mousePosInScene);
+            return;
         }
-    }
-
-    if (STATE->showDebugHUD) {
-
-        if      (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))      RenderDebugEntityToggle(
-                                                                    LevelEntityGetAt(mousePosInScene));
     }
 }
 

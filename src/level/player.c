@@ -41,18 +41,10 @@ LevelEntity *LEVEL_PLAYER = 0;
 PlayerState *LEVEL_PLAYER_STATE = 0;
 
 
-// for jump buffers
+// for jump buffers // TODO move to PlayerState
 static double lastPressedJumpTimestamp = -1;
 static double lastGroundBeneathTimestamp = -1;
 
-// for debugging
-static Vector2 respawnFlag;
-
-
-static void setRespawnFlag() {
-
-    respawnFlag = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y };
-}
 
 static void initializePlayerState() {
 
@@ -62,6 +54,7 @@ static void initializePlayerState() {
     LEVEL_PLAYER_STATE->isAscending = false;
     LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
     LEVEL_PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
+    LEVEL_PLAYER_STATE->respawnFlagSet = false;
 
     TraceLog(LOG_DEBUG, "Player state initialized.");
 }
@@ -109,6 +102,7 @@ static void die() {
                 LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y, LEVEL_PLAYER_STATE->isAscending);
 }
 
+
 void LevelPlayerInitialize(Vector2 origin) {
 
     LevelEntity *newPlayer = MemAlloc(sizeof(LevelEntity));
@@ -125,10 +119,55 @@ void LevelPlayerInitialize(Vector2 origin) {
     
     syncPlayersHitboxes();
 
-    setRespawnFlag();
-
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
+}
+
+void LevelPlayerCheckAndSetOrigin(Vector2 pos) {
+
+    Rectangle hitbox = SpriteHitboxFromMiddle(PlayerDefaultSprite, pos);
+    
+    if (LevelCheckCollisionWithAnyEntity(hitbox)) {
+        TraceLog(LOG_DEBUG,
+            "Player's origin couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
+        RenderPrintSysMessage("Origem iria colidir.");
+        return;
+    }
+
+    LEVEL_PLAYER->origin = (Vector2){ hitbox.x, hitbox.y };
+
+    TraceLog(LOG_DEBUG, "Player's origin set to x=%.1f, y=%.1f.", LEVEL_PLAYER->origin.x, LEVEL_PLAYER->origin.y);
+}
+
+void LevelPlayerCheckAndSetPos(Vector2 pos) {
+
+    Rectangle hitbox = SpriteHitboxFromMiddle(LEVEL_PLAYER->sprite, pos);
+    
+    if (LevelCheckCollisionWithAnyEntity(hitbox)) {
+        TraceLog(LOG_DEBUG,
+            "Player couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
+        RenderPrintSysMessage("Jogador iria colidir.");
+        return;
+    }
+    
+    LEVEL_PLAYER->hitbox = hitbox;
+    syncPlayersHitboxes();
+    TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y);
+}
+
+void LevelPlayerSetMode(PlayerMode mode) {
+
+    LEVEL_PLAYER_STATE->mode = mode;
+
+    TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
+}
+
+void LevelPlayerSetRespawn() {
+
+    LEVEL_PLAYER_STATE->respawnFlag = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y };
+    LEVEL_PLAYER_STATE->respawnFlagSet = true;
+    TraceLog(LOG_DEBUG, "Respawn set to %.1f, %.1f.", LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y);
+    RenderPrintSysMessage("Atualizado ponto de renascimento.");
 }
 
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
@@ -384,41 +423,17 @@ void LevelPlayerContinue() {
         node = node->next;
     }
 
-    LEVEL_PLAYER->hitbox.x = respawnFlag.x;
-    LEVEL_PLAYER->hitbox.y = respawnFlag.y;
+    if (LEVEL_PLAYER_STATE->respawnFlagSet) {
+        LEVEL_PLAYER->hitbox.x = LEVEL_PLAYER_STATE->respawnFlag.x;
+        LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER_STATE->respawnFlag.y;
+    } else {
+        LEVEL_PLAYER->hitbox.x = LEVEL_PLAYER->origin.x;
+        LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER->origin.y;
+    }
     LEVEL_PLAYER_STATE->isAscending = false;
 
     syncPlayersHitboxes();
     CameraLevelCentralizeOnPlayer();
 
     TraceLog(LOG_DEBUG, "Player continue.");
-}
-
-void LevelPlayerSetMode(PlayerMode mode) {
-
-    LEVEL_PLAYER_STATE->mode = mode;
-
-    TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
-}
-
-void LevelPlayerSetRespawn() {
-
-    setRespawnFlag();
-    TraceLog(LOG_INFO, "Player set respawn to x=%.1f, y=%.1f.", respawnFlag.x, respawnFlag.y);
-    RenderPrintSysMessage("[debug] Definido ponto de renascimento.");
-}
-
-void LevelPlayerCheckAndSetPos(Vector2 pos) {
-
-    Rectangle hitbox = SpriteHitboxFromMiddle(LEVEL_PLAYER->sprite, pos);
-    
-    if (LevelCheckCollisionWithAnyEntity(hitbox)) {
-        TraceLog(LOG_DEBUG, "Player couldn't be set to pos x=%.1f, y=%.1f; would collide with a different entity.");
-        RenderPrintSysMessage("[debug] Jogador iria colidir.");
-        return;
-    }
-    
-    LEVEL_PLAYER->hitbox = hitbox;
-    syncPlayersHitboxes();
-    TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.");
 }
