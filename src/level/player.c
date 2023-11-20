@@ -38,20 +38,20 @@
 
 LevelEntity *LEVEL_PLAYER = 0;
 
-PlayerState *LEVEL_PLAYER_STATE = 0;
+PlayerState *PLAYER_STATE = 0;
 
 
 static void initializePlayerState() {
 
-    MemFree(LEVEL_PLAYER_STATE);
-    LEVEL_PLAYER_STATE = MemAlloc(sizeof(PlayerState));
+    MemFree(PLAYER_STATE);
+    PLAYER_STATE = MemAlloc(sizeof(PlayerState));
 
-    LEVEL_PLAYER_STATE->isAscending = false;
-    LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
-    LEVEL_PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
-    LEVEL_PLAYER_STATE->respawnFlagSet = false;
-    LEVEL_PLAYER_STATE->lastPressedJump = -1;
-    LEVEL_PLAYER_STATE->lastGroundBeneath = -1;
+    PLAYER_STATE->isAscending = false;
+    PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
+    PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
+    PLAYER_STATE->respawnFlagSet = false;
+    PLAYER_STATE->lastPressedJump = -1;
+    PLAYER_STATE->lastGroundBeneath = -1;
 
     TraceLog(LOG_DEBUG, "Player state initialized.");
 }
@@ -60,7 +60,7 @@ static void initializePlayerState() {
 // propulsion of a jump
 inline static float jumpStartVelocity() {
 
-    if (LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
+    if (PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
         return JUMP_START_VELOCITY_RUNNING;
     else
         return JUMP_START_VELOCITY_DEFAULT;
@@ -69,7 +69,7 @@ inline static float jumpStartVelocity() {
 // Syncs the player state's hitbox with the player entity's data 
 static void syncPlayersHitboxes() {
 
-    LEVEL_PLAYER_STATE->upperbody = (Rectangle){
+    PLAYER_STATE->upperbody = (Rectangle){
         LEVEL_PLAYER->hitbox.x + 1,
         LEVEL_PLAYER->hitbox.y - 1,
         LEVEL_PLAYER->hitbox.width + 2,
@@ -82,9 +82,9 @@ static void syncPlayersHitboxes() {
         (this seems to be related with the use of raylib's CheckCollisionRecs for player-enemy collision).
         This is something that should not be needed in a more robust implementation.
     */
-    LEVEL_PLAYER_STATE->lowerbody = (Rectangle){
+    PLAYER_STATE->lowerbody = (Rectangle){
         LEVEL_PLAYER->hitbox.x - 1,
-        LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER_STATE->upperbody.height,
+        LEVEL_PLAYER->hitbox.y + PLAYER_STATE->upperbody.height,
         LEVEL_PLAYER->hitbox.width + 2,
         LEVEL_PLAYER->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
     };
@@ -96,7 +96,7 @@ static void die() {
     STATE->isPaused = true;
 
     TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isAscending=%d",
-                LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y, LEVEL_PLAYER_STATE->isAscending);
+                LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y, PLAYER_STATE->isAscending);
 }
 
 
@@ -154,15 +154,15 @@ void LevelPlayerCheckAndSetPos(Vector2 pos) {
 
 void LevelPlayerSetMode(PlayerMode mode) {
 
-    LEVEL_PLAYER_STATE->mode = mode;
+    PLAYER_STATE->mode = mode;
 
     TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
 }
 
 void LevelPlayerSetRespawn() {
 
-    LEVEL_PLAYER_STATE->respawnFlag = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y };
-    LEVEL_PLAYER_STATE->respawnFlagSet = true;
+    PLAYER_STATE->respawnFlag = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y };
+    PLAYER_STATE->respawnFlagSet = true;
     TraceLog(LOG_DEBUG, "Respawn set to %.1f, %.1f.", LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y);
     RenderPrintSysMessage("Atualizado ponto de renascimento.");
 }
@@ -173,19 +173,19 @@ void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
     
 
     float amount = PLAYER_SPEED_DEFAULT;
-    if (LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
+    if (PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
         amount = PLAYER_SPEED_FAST;
 
     if (direction == PLAYER_MOVEMENT_LEFT) {
         LEVEL_PLAYER->isFacingRight = false;
-        LEVEL_PLAYER_STATE->xVelocity = -amount;
+        PLAYER_STATE->xVelocity = -amount;
     }
     else if (direction == PLAYER_MOVEMENT_RIGHT) {
         LEVEL_PLAYER->isFacingRight = true;
-        LEVEL_PLAYER_STATE->xVelocity = amount;
+        PLAYER_STATE->xVelocity = amount;
     }
     else {
-        LEVEL_PLAYER_STATE->xVelocity = 0;
+        PLAYER_STATE->xVelocity = 0;
     }
 
     syncPlayersHitboxes();
@@ -193,22 +193,22 @@ void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
 
 void LevelPlayStartRunning() {
 
-    LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_RUNNING;
+    PLAYER_STATE->speed = PLAYER_MOVEMENT_RUNNING;
 }
 
 void LevelPlayerStopRunning() {
 
-    LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
+    PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
 }
 
 void LevelPlayerJump() {
 
-    LEVEL_PLAYER_STATE->lastPressedJump = GetTime();
+    PLAYER_STATE->lastPressedJump = GetTime();
 }
 
 void LevelPlayerTick() {
 
-    PlayerState *pState = LEVEL_PLAYER_STATE;
+    PlayerState *pState = PLAYER_STATE;
 
 
     if (levelConcludedAgo >= 0) return;
@@ -219,7 +219,7 @@ void LevelPlayerTick() {
 
     if (pState->groundBeneath) {
 
-        LEVEL_PLAYER_STATE->lastGroundBeneath = GetTime();
+        PLAYER_STATE->lastGroundBeneath = GetTime();
 
         if (!pState->isAscending) {
             // Is on the ground
@@ -244,8 +244,8 @@ void LevelPlayerTick() {
 
     const double now = GetTime();
     if (!pState->isAscending &&
-        (now - LEVEL_PLAYER_STATE->lastPressedJump < JUMP_BUFFER_BACKWARDS_SIZE) &&
-        (now - LEVEL_PLAYER_STATE->lastGroundBeneath < JUMP_BUFFER_FORWARDS_SIZE)) {
+        (now - PLAYER_STATE->lastPressedJump < JUMP_BUFFER_BACKWARDS_SIZE) &&
+        (now - PLAYER_STATE->lastGroundBeneath < JUMP_BUFFER_FORWARDS_SIZE)) {
 
         // Starts jump
         pState->isAscending = true;
@@ -258,7 +258,7 @@ void LevelPlayerTick() {
         if (pState->groundBeneath &&
             pState->groundBeneath->components & LEVEL_IS_ENEMY) {
 
-            LEVEL_PLAYER_STATE->lastGroundBeneath = GetTime();
+            PLAYER_STATE->lastGroundBeneath = GetTime();
             LevelEnemyKill(pState->groundBeneath);
             pState->groundBeneath = 0;
         }
@@ -293,7 +293,7 @@ void LevelPlayerTick() {
 
                 // Player hit enemy
                 if (CheckCollisionRecs(entity->hitbox, pState->lowerbody)) {
-                    LEVEL_PLAYER_STATE->lastGroundBeneath = GetTime();
+                    PLAYER_STATE->lastGroundBeneath = GetTime();
                     LevelEnemyKill(entity);
                     goto next_entity;
                 }
@@ -376,9 +376,9 @@ next_entity:
 
     if (pState->yVelocity > pState->yVelocityTarget) {
 
-        if (LEVEL_PLAYER_STATE->mode == PLAYER_MODE_GLIDE &&
-                !LEVEL_PLAYER_STATE->isAscending &&
-                LEVEL_PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
+        if (PLAYER_STATE->mode == PLAYER_MODE_GLIDE &&
+                !PLAYER_STATE->isAscending &&
+                PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
 
             // Is gliding
             pState->yVelocity = Y_VELOCITY_GLIDING;
@@ -395,7 +395,7 @@ next_entity:
     // "Animation"
     Sprite currentSprite;
 
-    if (LEVEL_PLAYER_STATE->mode == PLAYER_MODE_GLIDE) {
+    if (PLAYER_STATE->mode == PLAYER_MODE_GLIDE) {
         if (isGliding) currentSprite =      PlayerGlideFallingSprite;
         else currentSprite =                PlayerGlideOnSprite;
     }
@@ -420,14 +420,14 @@ void LevelPlayerContinue() {
         node = node->next;
     }
 
-    if (LEVEL_PLAYER_STATE->respawnFlagSet) {
-        LEVEL_PLAYER->hitbox.x = LEVEL_PLAYER_STATE->respawnFlag.x;
-        LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER_STATE->respawnFlag.y;
+    if (PLAYER_STATE->respawnFlagSet) {
+        LEVEL_PLAYER->hitbox.x = PLAYER_STATE->respawnFlag.x;
+        LEVEL_PLAYER->hitbox.y = PLAYER_STATE->respawnFlag.y;
     } else {
         LEVEL_PLAYER->hitbox.x = LEVEL_PLAYER->origin.x;
         LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER->origin.y;
     }
-    LEVEL_PLAYER_STATE->isAscending = false;
+    PLAYER_STATE->isAscending = false;
 
     syncPlayersHitboxes();
     CameraLevelCentralizeOnPlayer();

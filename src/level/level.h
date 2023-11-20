@@ -88,7 +88,7 @@ extern ListNode *LEVEL_LIST_HEAD;
 
 extern LevelEntity *LEVEL_PLAYER; 
 
-extern PlayerState *LEVEL_PLAYER_STATE;
+extern PlayerState *PLAYER_STATE;
 
 // How long ago, in seconds, the level concluded, or -1 if it's not concluded
 extern double levelConcludedAgo;
