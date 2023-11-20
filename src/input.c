@@ -25,7 +25,7 @@ void handleInLevelInput() {
         return;
 
 
-    if      (IsKeyDown(KEY_Z))              LevelPlayStartRunning();
+    if      (IsKeyDown(KEY_Z))              LevelPlayerStartRunning();
     else                                    LevelPlayerStopRunning();
 
     if      (IsKeyDown(KEY_RIGHT))          LevelPlayerMoveHorizontal(PLAYER_MOVEMENT_RIGHT);

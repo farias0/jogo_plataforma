@@ -191,7 +191,7 @@ void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
     syncPlayersHitboxes();
 }
 
-void LevelPlayStartRunning() {
+void LevelPlayerStartRunning() {
 
     PLAYER_STATE->speed = PLAYER_MOVEMENT_RUNNING;
 }

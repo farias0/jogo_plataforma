@@ -140,7 +140,7 @@ void LevelPlayerSetRespawn();
 
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction);
 
-void LevelPlayStartRunning();
+void LevelPlayerStartRunning();
 
 void LevelPlayerStopRunning();
 
