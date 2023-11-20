@@ -135,6 +135,9 @@ void LevelPlayerContinue();
 
 void LevelPlayerSetMode(PlayerMode mode);
 
+// For debugging -- Sets a respawn flag in the level. Will respawn there.
+void LevelPlayerSetRespawn();
+
 
 // Initializes and adds an enemy to the level in the given origin
 void LevelEnemyAdd(Vector2 origin);

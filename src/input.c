@@ -34,7 +34,8 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_X))           LevelPlayerJump();
 
-    // For power up debugging
+    // For debugging
+    if      (IsKeyPressed(KEY_R))           LevelPlayerSetRespawn();
     if      (IsKeyPressed(KEY_ONE))         LevelPlayerSetMode(PLAYER_MODE_DEFAULT);
     if      (IsKeyPressed(KEY_TWO))         LevelPlayerSetMode(PLAYER_MODE_GLIDE);
 }

@@ -31,7 +31,7 @@
 
 // How many seconds after having left the ground the jump command
 // still works
-#define JUMP_BUFFER_FORWARDS_SIZE       0.12f
+#define JUMP_BUFFER_FORWARDS_SIZE       0.15f
 
 #define Y_VELOCITY_GLIDING              -1.5f
 
@@ -44,6 +44,15 @@ PlayerState *LEVEL_PLAYER_STATE = 0;
 // for jump buffers
 static double lastPressedJumpTimestamp = -1;
 static double lastGroundBeneathTimestamp = -1;
+
+// for debugging
+static Vector2 respawnFlag;
+
+
+static void setRespawnFlag() {
+
+    respawnFlag = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y };
+}
 
 static void initializePlayerState() {
 
@@ -115,6 +124,8 @@ void LevelPlayerInitialize(Vector2 origin) {
     initializePlayerState();
     
     syncPlayersHitboxes();
+
+    setRespawnFlag();
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
@@ -373,6 +384,8 @@ void LevelPlayerContinue() {
         node = node->next;
     }
 
+    LEVEL_PLAYER->hitbox.x = respawnFlag.x;
+    LEVEL_PLAYER->hitbox.y = respawnFlag.y;
     LEVEL_PLAYER_STATE->isAscending = false;
 
     syncPlayersHitboxes();
@@ -386,4 +399,11 @@ void LevelPlayerSetMode(PlayerMode mode) {
     LEVEL_PLAYER_STATE->mode = mode;
 
     TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
+}
+
+void LevelPlayerSetRespawn() {
+
+    setRespawnFlag();
+    TraceLog(LOG_INFO, "Player set respawn to x=%.1f, y=%.1f.", respawnFlag.x, respawnFlag.y);
+    RenderPrintSysMessage("[debug] Definido ponto de renascimento.");
 }
