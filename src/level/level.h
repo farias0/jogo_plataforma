@@ -74,6 +74,8 @@ typedef struct PlayerState {
 
     PlayerMode mode;
 
+    bool respawnFlagSet;
+    Vector2 respawnFlag;
 } PlayerState;
 
 
@@ -129,7 +131,7 @@ void LevelPlayerCheckAndSetPos(Vector2 pos);
 
 void LevelPlayerSetMode(PlayerMode mode);
 
-// For debugging -- Sets a respawn flag in the level. Will respawn there.
+// Sets player to respawn in the current position during this level session.
 void LevelPlayerSetRespawn();
 
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction);

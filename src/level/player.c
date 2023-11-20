@@ -41,18 +41,10 @@ LevelEntity *LEVEL_PLAYER = 0;
 PlayerState *LEVEL_PLAYER_STATE = 0;
 
 
-// for jump buffers
+// for jump buffers // TODO move to PlayerState
 static double lastPressedJumpTimestamp = -1;
 static double lastGroundBeneathTimestamp = -1;
 
-// for debugging
-static Vector2 respawnFlag;
-
-
-static void setRespawnFlag() {
-
-    respawnFlag = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y };
-}
 
 static void initializePlayerState() {
 
@@ -62,6 +54,7 @@ static void initializePlayerState() {
     LEVEL_PLAYER_STATE->isAscending = false;
     LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
     LEVEL_PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
+    LEVEL_PLAYER_STATE->respawnFlagSet = false;
 
     TraceLog(LOG_DEBUG, "Player state initialized.");
 }
@@ -126,8 +119,6 @@ void LevelPlayerInitialize(Vector2 origin) {
     
     syncPlayersHitboxes();
 
-    setRespawnFlag();
-
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
 }
@@ -173,9 +164,10 @@ void LevelPlayerSetMode(PlayerMode mode) {
 
 void LevelPlayerSetRespawn() {
 
-    setRespawnFlag();
-    TraceLog(LOG_INFO, "Player set respawn to x=%.1f, y=%.1f.", respawnFlag.x, respawnFlag.y);
-    RenderPrintSysMessage("[debug] Definido ponto de renascimento.");
+    LEVEL_PLAYER_STATE->respawnFlag = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y };
+    LEVEL_PLAYER_STATE->respawnFlagSet = true;
+    TraceLog(LOG_DEBUG, "Respawn set to %.1f, %.1f.", LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y);
+    RenderPrintSysMessage("Atualizado ponto de renascimento.");
 }
 
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
@@ -431,8 +423,13 @@ void LevelPlayerContinue() {
         node = node->next;
     }
 
-    LEVEL_PLAYER->hitbox.x = respawnFlag.x;
-    LEVEL_PLAYER->hitbox.y = respawnFlag.y;
+    if (LEVEL_PLAYER_STATE->respawnFlagSet) {
+        LEVEL_PLAYER->hitbox.x = LEVEL_PLAYER_STATE->respawnFlag.x;
+        LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER_STATE->respawnFlag.y;
+    } else {
+        LEVEL_PLAYER->hitbox.x = LEVEL_PLAYER->origin.x;
+        LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER->origin.y;
+    }
     LEVEL_PLAYER_STATE->isAscending = false;
 
     syncPlayersHitboxes();
