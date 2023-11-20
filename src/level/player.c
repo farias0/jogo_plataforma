@@ -41,11 +41,6 @@ LevelEntity *LEVEL_PLAYER = 0;
 PlayerState *LEVEL_PLAYER_STATE = 0;
 
 
-// for jump buffers // TODO move to PlayerState
-static double lastPressedJumpTimestamp = -1;
-static double lastGroundBeneathTimestamp = -1;
-
-
 static void initializePlayerState() {
 
     MemFree(LEVEL_PLAYER_STATE);
@@ -55,6 +50,8 @@ static void initializePlayerState() {
     LEVEL_PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
     LEVEL_PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
     LEVEL_PLAYER_STATE->respawnFlagSet = false;
+    LEVEL_PLAYER_STATE->lastPressedJump = -1;
+    LEVEL_PLAYER_STATE->lastGroundBeneath = -1;
 
     TraceLog(LOG_DEBUG, "Player state initialized.");
 }
@@ -206,7 +203,7 @@ void LevelPlayerStopRunning() {
 
 void LevelPlayerJump() {
 
-    lastPressedJumpTimestamp = GetTime();
+    LEVEL_PLAYER_STATE->lastPressedJump = GetTime();
 }
 
 void LevelPlayerTick() {
@@ -222,7 +219,7 @@ void LevelPlayerTick() {
 
     if (pState->groundBeneath) {
 
-        lastGroundBeneathTimestamp = GetTime();
+        LEVEL_PLAYER_STATE->lastGroundBeneath = GetTime();
 
         if (!pState->isAscending) {
             // Is on the ground
@@ -247,8 +244,8 @@ void LevelPlayerTick() {
 
     const double now = GetTime();
     if (!pState->isAscending &&
-        (now - lastPressedJumpTimestamp < JUMP_BUFFER_BACKWARDS_SIZE) &&
-        (now - lastGroundBeneathTimestamp < JUMP_BUFFER_FORWARDS_SIZE)) {
+        (now - LEVEL_PLAYER_STATE->lastPressedJump < JUMP_BUFFER_BACKWARDS_SIZE) &&
+        (now - LEVEL_PLAYER_STATE->lastGroundBeneath < JUMP_BUFFER_FORWARDS_SIZE)) {
 
         // Starts jump
         pState->isAscending = true;
@@ -261,7 +258,7 @@ void LevelPlayerTick() {
         if (pState->groundBeneath &&
             pState->groundBeneath->components & LEVEL_IS_ENEMY) {
 
-            lastGroundBeneathTimestamp = GetTime();
+            LEVEL_PLAYER_STATE->lastGroundBeneath = GetTime();
             LevelEnemyKill(pState->groundBeneath);
             pState->groundBeneath = 0;
         }
@@ -296,7 +293,7 @@ void LevelPlayerTick() {
 
                 // Player hit enemy
                 if (CheckCollisionRecs(entity->hitbox, pState->lowerbody)) {
-                    lastGroundBeneathTimestamp = GetTime();
+                    LEVEL_PLAYER_STATE->lastGroundBeneath = GetTime();
                     LevelEnemyKill(entity);
                     goto next_entity;
                 }

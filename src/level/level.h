@@ -76,6 +76,10 @@ typedef struct PlayerState {
 
     bool respawnFlagSet;
     Vector2 respawnFlag;
+
+    // timestamps, for jump buffers
+    double lastPressedJump;
+    double lastGroundBeneath;
 } PlayerState;
 
 
