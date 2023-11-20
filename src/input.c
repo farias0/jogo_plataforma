@@ -71,6 +71,14 @@ void handleDevInput() {
 
     if      (!IsInPlayArea(mousePosInScreen)) return;
 
+    if (STATE->showDebugHUD || STATE->isEditorEnabled) {
+
+        if (IsKeyDown(KEY_SPACE) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            LevelPlayerCheckAndSetPos(mousePosInScene);
+            return;
+        }
+    }
+
     if (STATE->isEditorEnabled) {
 
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {

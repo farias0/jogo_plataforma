@@ -139,6 +139,9 @@ void LevelPlayerSetMode(PlayerMode mode);
 // For debugging -- Sets a respawn flag in the level. Will respawn there.
 void LevelPlayerSetRespawn();
 
+// Moves the player to pos, if there aren't other things there already.
+void LevelPlayerCheckAndSetPos(Vector2 pos);
+
 
 // Initializes and adds an enemy to the level in the given origin
 void LevelEnemyAdd(Vector2 origin);
@@ -149,9 +152,13 @@ void LevelEnemyCheckAndAdd(Vector2 origin);
 
 void LevelEnemyTick(ListNode *enemyNode);
 
-// Checks for collision between a rectangle and any other entity in the level,
-// including its origin.
-bool LevelCheckCollisionWithAnythingElse(Rectangle hitbox);
+// Checks for collision between a rectangle and any 
+// living entity in the level.
+bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox);
+
+// Checks for collision between a rectangle and any 
+// living entity in the level, including their origins.
+bool LevelCheckCollisionWithAnyEntityOrOrigin(Rectangle hitbox);
 
 void LevelEnemyKill(LevelEntity *entity);
 

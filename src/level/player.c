@@ -407,3 +407,18 @@ void LevelPlayerSetRespawn() {
     TraceLog(LOG_INFO, "Player set respawn to x=%.1f, y=%.1f.", respawnFlag.x, respawnFlag.y);
     RenderPrintSysMessage("[debug] Definido ponto de renascimento.");
 }
+
+void LevelPlayerCheckAndSetPos(Vector2 pos) {
+
+    Rectangle hitbox = SpriteHitboxFromMiddle(LEVEL_PLAYER->sprite, pos);
+    
+    if (LevelCheckCollisionWithAnyEntity(hitbox)) {
+        TraceLog(LOG_DEBUG, "Player couldn't be set to pos x=%.1f, y=%.1f; would collide with a different entity.");
+        RenderPrintSysMessage("[debug] Jogador iria colidir.");
+        return;
+    }
+    
+    LEVEL_PLAYER->hitbox = hitbox;
+    syncPlayersHitboxes();
+    TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.");
+}
