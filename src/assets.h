@@ -3,6 +3,7 @@
 
 
 #include <raylib.h>
+#include "core.h"
 
 
 typedef struct Sprite {
@@ -10,11 +11,6 @@ typedef struct Sprite {
     float scale;
     int rotation;
 } Sprite;
-
-typedef struct Dimensions {
-    float width;
-    float height;
-} Dimensions;
 
 
 // Editor

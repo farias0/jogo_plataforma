@@ -1,12 +1,9 @@
 #ifndef _CORE_H_INCLUDED_
 #define _CORE_H_INCLUDED_
 
-
-#include "level/level.h"
-#include "editor.h"
+#include <raylib.h>
 #include "linked_list.h"
 #include "persistence.h"
-#include "overworld.h"
 
 // Currently this represents the play space (not including editor)
 #define SCREEN_WIDTH 1280
@@ -17,22 +14,31 @@
 #define FLOOR_DEATH_HEIGHT 800 // Below this y in level the player dies
 
 
+struct EditorEntityItem;
+struct OverworldEntity;
+
+typedef struct Dimensions {
+    float width;
+    float height;
+} Dimensions;
+
 typedef enum GameMode {
     MODE_IN_LEVEL,
     MODE_OVERWORLD
 } GameMode;
 
 typedef struct GameState {
+
     GameMode mode;
 
     char loadedLevel[LEVEL_NAME_BUFFER_SIZE];
 
     bool isPaused;
 
-    EditorEntityItem *editorSelectedEntity;
+    struct EditorEntityItem *editorSelectedEntity;
     bool isEditorEnabled;
 
-    OverworldEntity *tileUnderCursor;
+    struct OverworldEntity *tileUnderCursor;
     
     // If selected a dot in the OW without an associated level
     bool expectingLevelAssociation;
