@@ -121,6 +121,17 @@ void LevelLoadNew();
 
 void LevelPlayerInitialize(Vector2 origin);
 
+// Sets the player's origin based on pos, if there aren't other things there already.
+void LevelPlayerCheckAndSetOrigin(Vector2 pos);
+
+// Moves the player to pos, if there aren't other things there already.
+void LevelPlayerCheckAndSetPos(Vector2 pos);
+
+void LevelPlayerSetMode(PlayerMode mode);
+
+// For debugging -- Sets a respawn flag in the level. Will respawn there.
+void LevelPlayerSetRespawn();
+
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction);
 
 void LevelPlayStartRunning();
@@ -133,14 +144,6 @@ void LevelPlayerTick();
 
 // Continues the game after dying.
 void LevelPlayerContinue();
-
-void LevelPlayerSetMode(PlayerMode mode);
-
-// For debugging -- Sets a respawn flag in the level. Will respawn there.
-void LevelPlayerSetRespawn();
-
-// Moves the player to pos, if there aren't other things there already.
-void LevelPlayerCheckAndSetPos(Vector2 pos);
 
 
 // Initializes and adds an enemy to the level in the given origin
