@@ -1,11 +1,13 @@
 #include <raylib.h>
-#include "stdlib.h"
+#include <stdlib.h>
 #include <string.h>
 
 #include "level.h"
 #include "../core.h"
 #include "../camera.h"
 #include "../render.h"
+#include "../editor.h"
+#include "../overworld.h"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
