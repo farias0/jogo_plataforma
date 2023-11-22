@@ -43,6 +43,7 @@
 
 
 typedef enum { 
+
     EDITOR_ENTITY_ERASER,
 
     // In level
@@ -56,21 +57,22 @@ typedef enum {
     EDITOR_ENTITY_STRAIGHT,
     EDITOR_ENTITY_PATH_JOIN,
     EDITOR_ENTITY_PATH_IN_L,
+    
 } EditorEntityType;
 
 typedef enum {
     EDITOR_INTERACTION_CLICK,
     EDITOR_INTERACTION_HOLD
-} EditorItemInteraction;
+} EditorInteractionType;
 
-typedef struct EditorEntityItem {
+typedef struct EditorEntityButton {
+
     EditorEntityType type;
-
-    void (*handler)(Vector2);
-
     Sprite sprite;
-    EditorItemInteraction interaction;
-} EditorEntityItem;
+    void (*handler)(Vector2); // Receives the click scene pos
+    EditorInteractionType interactionType;
+
+} EditorEntityButton;
 
 
 typedef enum { 
@@ -78,13 +80,13 @@ typedef enum {
     EDITOR_CONTROL_NEW_LEVEL
 } EditorControlType;
 
-typedef struct EditorControlItem {
-    EditorControlType type;
+typedef struct EditorControlButton {
 
+    EditorControlType type;
+    char *label;
     void (*handler)();
 
-    char *label;
-} EditorControlItem;
+} EditorControlButton;
 
 
 // A selection of entities in the screen by a cursor.
@@ -123,6 +125,8 @@ void EditorDisable();
 void EditorEnabledToggle();
 
 void EditorTick();
+
+void EditorEntityButtonSelect(EditorEntityButton *item);
 
 // Handles the selection of entities by a cursor dragging.
 void EditorSelectEntities(Vector2 cursorPos);
