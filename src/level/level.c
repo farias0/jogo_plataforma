@@ -43,8 +43,8 @@ static ListNode *getEntityOnScene(Vector2 pos) {
 
         if (CheckCollisionPointRec(pos, entity->hitbox)) {
 
-                return node;
-            }
+            return node;
+        }
 
         node = node->next;
     };
@@ -229,7 +229,33 @@ next_node:
 
     if (!node) return;
 
-    LevelEntityDestroy(node);
+    LevelEntity *entity = (LevelEntity *) node->item;
+
+    bool isPartOfSelection = EDITOR_ENTITY_SELECTION &&
+                                LinkedListGetNode(EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+    if (isPartOfSelection) {
+
+        ListNode *selectedNode = EDITOR_ENTITY_SELECTION->entitiesHead;
+        while (selectedNode) {
+
+            ListNode *next = selectedNode->next;
+            LevelEntity *selectedEntity = (LevelEntity *) selectedNode->item;
+
+            if (selectedEntity->components & LEVEL_IS_PLAYER) goto next_selected_node;
+
+            ListNode *nodeInLevel = LinkedListGetNode(LEVEL_LIST_HEAD, selectedEntity);
+            LevelEntityDestroy(nodeInLevel);
+
+next_selected_node:
+            selectedNode = next;
+        }
+
+        EditorSelectionCancel();
+
+    } else {
+
+        LevelEntityDestroy(node);
+    }
 }
 
 void LevelTick() {
