@@ -182,17 +182,20 @@ void EditorTick() {
 
 void EditorSelectEntities(Vector2 cursorPos) {
 
-    if (!EDITOR_ENTITY_SELECTION) {
+    EditorSelection *s = EDITOR_ENTITY_SELECTION;
+
+    if (!s) {
         EDITOR_ENTITY_SELECTION = MemAlloc(sizeof(EditorSelection));
-        EDITOR_ENTITY_SELECTION->origin = cursorPos;
+        s = EDITOR_ENTITY_SELECTION;
+        s->origin = cursorPos;
     }
 
-    if (!EDITOR_ENTITY_SELECTION->isSelecting) {
-        EDITOR_ENTITY_SELECTION->origin = cursorPos;
+    if (!s->isSelecting) {
+        s->origin = cursorPos;
     }
     
-    EDITOR_ENTITY_SELECTION->current = cursorPos;
-    EDITOR_ENTITY_SELECTION->isSelecting = true;
+    s->current = cursorPos;
+    s->isSelecting = true;
     selectedEntitiesThisFrame = true;
 }
 
