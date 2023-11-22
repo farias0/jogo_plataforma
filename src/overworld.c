@@ -43,6 +43,24 @@ static void destroyEntityOverworld(ListNode *node) {
     TraceLog(LOG_TRACE, "Destroyed overworld entity.");
 }
 
+// Removes overworld tile, if possible 
+static void checkAndRemoveTile(ListNode *node) {
+
+    OverworldEntity *entity = (OverworldEntity *) node->item;
+
+    // Ideally the game would support removing the tile under the player,
+    // but this would demand some logic to manage the tileUnder pointer.
+    // For now this is good enough.
+    if (entity == STATE->tileUnderCursor ||
+        entity->components & OW_IS_CURSOR) {
+
+            TraceLog(LOG_TRACE, "Won't remove tile, it's the cursor or it's under it.");
+            return;
+    }
+    
+    destroyEntityOverworld(node);
+}
+
 static void initializeCursor() {
 
     OverworldEntity *newCursor = MemAlloc(sizeof(OverworldEntity));
@@ -333,16 +351,26 @@ void OverworldTileRemoveAt(Vector2 pos) {
         return;
     }
 
-    // Ideally the game would support removing the tile under the player,
-    // but this would demand some logic to manage the tileUnder pointer.
-    // For now this is good enough.
-    if (node->item == STATE->tileUnderCursor) {
-        TraceLog(LOG_TRACE, "Won't remove tile, it's under the cursor.");
-        return;
-    }
+    OverworldEntity *entity = (OverworldEntity *) node->item;
 
-    
-    destroyEntityOverworld(node);
+    bool isPartOfSelection = EDITOR_ENTITY_SELECTION &&
+                                LinkedListGetNode(EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+    if (isPartOfSelection) {
+
+        ListNode *node = EDITOR_ENTITY_SELECTION->entitiesHead;
+        while (node) {
+            ListNode *next = node->next;
+            ListNode *nodeInOW = LinkedListGetNode(OW_LIST_HEAD, (OverworldEntity *) node->item);
+            checkAndRemoveTile(nodeInOW);
+            node = next;
+        }
+
+        EditorSelectionCancel();
+
+    } else {
+
+        checkAndRemoveTile(node);
+    }
 }
 
 void OverworldTick() {

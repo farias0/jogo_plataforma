@@ -71,16 +71,27 @@ void handleDevInput() {
     if      (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))     CameraPanningStop();
     if      (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))        CameraPanningReset();
 
+
+    // Entitiy selection
     if (STATE->isEditorEnabled && IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         EditorSelectEntities(mousePosInScene);
         return;
     }
     else if (STATE->isEditorEnabled && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && EDITOR_ENTITY_SELECTION) {
+
         // Actions available when entities are selected
+
+        if (STATE->editorSelectedEntity &&
+            STATE->editorSelectedEntity->type == EDITOR_ENTITY_ERASER &&
+            IsInPlayArea(mousePosInScreen))
+                    goto skip_to_button_handler;
+
         EditorSelectionCancel();
     }
 
+
     if      (!IsInPlayArea(mousePosInScreen)) return;
+
 
     if (STATE->showDebugHUD || STATE->isEditorEnabled) {
 
@@ -105,7 +116,9 @@ void handleDevInput() {
             return;
         }
 
+skip_to_button_handler:
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+
             // TODO use a timer to not keep checking it every frame
 
             if (STATE->editorSelectedEntity == 0) return;

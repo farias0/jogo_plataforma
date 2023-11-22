@@ -88,10 +88,11 @@ static void updateEntitySelectionList() {
 
         if (STATE->mode == MODE_IN_LEVEL) {
             LevelEntity *entity = (LevelEntity *) node->item;
-            if ((!entity->isDead && CheckCollisionRecs(selectionHitbox, entity->hitbox)) ||
-                CheckCollisionRecs(selectionHitbox, LevelEntityOriginHitbox(entity))) {
+            bool collisionWithEntity = !entity->isDead && CheckCollisionRecs(selectionHitbox, entity->hitbox);
+            bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, LevelEntityOriginHitbox(entity));
+            if (collisionWithEntity || collisionWithGhost) {
                 
-                    LinkedListAdd(&EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+                LinkedListAdd(&EDITOR_ENTITY_SELECTION->entitiesHead, entity);
             }
         }
         else if (STATE->mode == MODE_OVERWORLD) {
