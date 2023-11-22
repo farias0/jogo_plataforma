@@ -208,6 +208,9 @@ LevelEntity *LevelEntityGetAt(Vector2 pos) {
 
 void LevelEntityRemoveAt(Vector2 pos) {
 
+    // TODO This function is a monstruosity and should be broken up
+    // in at least two others ASAP
+
     ListNode *node = LEVEL_LIST_HEAD;
     while (node != 0) {
 
