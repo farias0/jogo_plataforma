@@ -11,6 +11,9 @@
 
 ListNode *EDITOR_ENTITIES_HEAD = 0;
 ListNode *EDITOR_CONTROL_HEAD = 0;
+EditorSelection *EDITOR_ENTITY_SELECTION = 0;
+
+static bool selectedEntitiesThisFrame = false;
 
 
 EditorEntityItem *loadEditorEntityItem(
@@ -69,10 +72,57 @@ void loadOverworldEditor() {
     TraceLog(LOG_TRACE, "Editor loaded overworld itens.");
 }
 
+static void updateEntitySelectionList() {
+
+    if (!EDITOR_ENTITY_SELECTION) {
+        TraceLog(LOG_ERROR, "Entity selection list tried to update, but there's no reference to selection.");
+        return;
+    }
+
+    LinkedListRemoveAll(&EDITOR_ENTITY_SELECTION->entitiesHead);
+
+    Rectangle selectionHitbox = EditorSelectionGetRect();
+
+    ListNode *node = GetEntityListHead();
+    while (node != 0) {
+
+        if (STATE->mode == MODE_IN_LEVEL) {
+            LevelEntity *entity = (LevelEntity *) node->item;
+            if ((!entity->isDead && CheckCollisionRecs(selectionHitbox, entity->hitbox)) ||
+                CheckCollisionRecs(selectionHitbox, LevelEntityOriginHitbox(entity))) {
+                
+                    LinkedListAdd(&EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+            }
+        }
+        else if (STATE->mode == MODE_OVERWORLD) {
+            OverworldEntity *entity = (OverworldEntity *) node->item;
+            if (CheckCollisionRecs(selectionHitbox, OverworldEntitySquare(entity))) {
+                
+                LinkedListAdd(&EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+            }
+        }
+
+        node = node->next;
+    }
+}
+
+static void clearEntitySelection() {
+
+    if (EDITOR_ENTITY_SELECTION) {
+        LinkedListRemoveAll(&EDITOR_ENTITY_SELECTION->entitiesHead);
+        MemFree(EDITOR_ENTITY_SELECTION);
+        EDITOR_ENTITY_SELECTION = 0;
+    }
+
+    TraceLog(LOG_TRACE, "Editor's entity selection cleared.");
+}
+
 void EditorSync() {
 
     LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
     LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
+    
+    clearEntitySelection();
 
     switch (STATE->mode) {
     
@@ -118,6 +168,8 @@ void EditorDisable() {
 
     CameraPanningReset();
 
+    clearEntitySelection();
+
     TraceLog(LOG_TRACE, "Editor disabled.");
 }
 
@@ -125,6 +177,29 @@ void EditorEnabledToggle() {
 
     if (STATE->isEditorEnabled) EditorDisable();
     else EditorEnable();
+}
+
+void EditorTick() {
+
+    // Entity selection
+    if (EDITOR_ENTITY_SELECTION) {
+        if (selectedEntitiesThisFrame)
+            updateEntitySelectionList();
+        else
+            clearEntitySelection();
+    }
+    selectedEntitiesThisFrame = false;
+}
+
+void EditorSelectEntities(Vector2 cursorPos) {
+
+    if (!EDITOR_ENTITY_SELECTION) {
+        EDITOR_ENTITY_SELECTION = MemAlloc(sizeof(EditorSelection));
+        EDITOR_ENTITY_SELECTION->origin = cursorPos;
+    }
+    
+    EDITOR_ENTITY_SELECTION->current = cursorPos;
+    selectedEntitiesThisFrame = true;
 }
 
 Rectangle EditorEntityButtonRect(int buttonNumber) {
@@ -147,4 +222,26 @@ Rectangle EditorControlButtonRect(int buttonNumber) {
     itemY += (CONTROL_BUTTON_HEIGHT + CONTROL_BUTTON_SPACING) * (buttonNumber / 2);
 
     return (Rectangle){ itemX, itemY, CONTROL_BUTTON_WIDTH, CONTROL_BUTTON_HEIGHT };
+}
+
+Rectangle EditorSelectionGetRect() {
+
+    EditorSelection *s = EDITOR_ENTITY_SELECTION;
+
+    float x         = s->origin.x;
+    float y         = s->origin.y;
+    float width     = s->current.x - s->origin.x;
+    float height    = s->current.y - s->origin.y;
+
+    if (s->current.x < s->origin.x) {
+        x       = s->current.x;
+        width   = s->origin.x - s->current.x;
+    }
+
+    if (s->current.y < s->origin.y) {
+        y       = s->current.y;
+        height  = s->origin.y - s->current.y;
+    }
+
+    return (Rectangle) { x, y, width, height };
 }

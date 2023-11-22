@@ -21,15 +21,6 @@ static OverworldEntity *OW_CURSOR = 0;
 static char *overworldLevelSelectedName = 0;
 
 
-static Rectangle getGridSquare(OverworldEntity *entity) {
-    return (Rectangle) {
-        entity->gridPos.x,
-        entity->gridPos.y,
-        OW_GRID.width,
-        OW_GRID.height,
-    };
-}
-
 // Updates the position for the cursor according to the tile under it
 static void updateCursorPosition() {
 
@@ -79,7 +70,7 @@ static ListNode *getEntityOnScene(Vector2 pos) {
         OverworldEntity *entity = (OverworldEntity *) node->item;
 
         if (!(entity->components & OW_IS_CURSOR) &&
-            CheckCollisionPointRec(pos, getGridSquare(entity))) {
+            CheckCollisionPointRec(pos, OverworldEntitySquare(entity))) {
 
                 return node;
             }
@@ -290,7 +281,7 @@ void OverworldTileAddOrInteract(Vector2 pos) {
 
         if (entity->components & OW_IS_CURSOR) goto next_entity;
 
-        if (!CheckCollisionRecs(testHitbox, getGridSquare(entity))) goto next_entity;
+        if (!CheckCollisionRecs(testHitbox, OverworldEntitySquare(entity))) goto next_entity;
 
         if (entity->components & OW_IS_LEVEL_DOT) {
             TraceLog(LOG_TRACE, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
@@ -374,4 +365,14 @@ void OverworldTick() {
 
 void OverworldSave() {
     PersistenceOverworldSave();
+}
+
+Rectangle OverworldEntitySquare(OverworldEntity *entity) {
+
+    return (Rectangle) {
+        entity->gridPos.x,
+        entity->gridPos.y,
+        OW_GRID.width,
+        OW_GRID.height,
+    };
 }

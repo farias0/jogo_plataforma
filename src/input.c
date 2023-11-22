@@ -71,6 +71,11 @@ void handleDevInput() {
     if      (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))     CameraPanningStop();
     if      (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))        CameraPanningReset();
 
+    if (STATE->isEditorEnabled && IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        EditorSelectEntities(mousePosInScene);
+        return;
+    }
+
     if      (!IsInPlayArea(mousePosInScreen)) return;
 
     if (STATE->showDebugHUD || STATE->isEditorEnabled) {

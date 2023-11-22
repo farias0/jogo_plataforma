@@ -215,10 +215,7 @@ void LevelEntityRemoveAt(Vector2 pos) {
 
         if (entity->components & LEVEL_IS_PLAYER) goto next_node;
 
-        if (CheckCollisionPointRec(pos, (Rectangle) {
-                                                entity->origin.x,       entity->origin.y,
-                                                entity->hitbox.width,   entity->hitbox.height
-                                            })) {
+        if (CheckCollisionPointRec(pos, LevelEntityOriginHitbox(entity))) {
             break;
         }
 
@@ -329,4 +326,12 @@ void LevelLoadNew() {
     LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER->origin.y;
 
     strcpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
+}
+
+Rectangle LevelEntityOriginHitbox(LevelEntity *entity) {
+
+    return (Rectangle){
+        entity->origin.x, entity->origin.y,
+        entity->hitbox.width, entity->hitbox.height
+    };
 }

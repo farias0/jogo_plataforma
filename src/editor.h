@@ -34,7 +34,12 @@
                                                 SCREEN_HEIGHT - EDITOR_ENTITIES_HEIGHT }
 
 // The background color of the editor
-#define EDITOR_BG_COLOR         (Color){ 0, 0, 0, 220 }
+#define EDITOR_BG_COLOR                 (Color){ 0, 0, 0, 220 }
+
+// The color of the entity selection
+#define EDITOR_SELECTION_RECT_COLOR     (Color){ BLUE.r, BLUE.g, BLUE.b, 64 }
+
+#define EDITOR_SELECTION_ENTITY_COLOR   (Color){ BLUE.r, BLUE.g, BLUE.b, 128 }
 
 
 typedef enum { 
@@ -82,11 +87,24 @@ typedef struct EditorControlItem {
 } EditorControlItem;
 
 
+// A selection of entities in the screen by a cursor.
+typedef struct EditorSelection {
+
+    Vector2 origin;
+    Vector2 current;
+    ListNode *entitiesHead;
+
+} EditorSelection;
+
+
 // The head of the linked list of all the loaded editor entity itens
 extern ListNode *EDITOR_ENTITIES_HEAD;
 
 // The head of the linked list of all the loaded editor control itens
 extern ListNode *EDITOR_CONTROL_HEAD;
+
+// Selection of entities in the screen by a cursor, if a selection is hapenning.
+extern EditorSelection *EDITOR_ENTITY_SELECTION;
 
 
 // Destroy any existing editor itens and then loads the items
@@ -103,6 +121,11 @@ void EditorDisable();
 // Enables and disables editor
 void EditorEnabledToggle();
 
+void EditorTick();
+
+// Handles the selection of entities by a cursor dragging.
+void EditorSelectEntities(Vector2 cursorPos);
+
 // Calculates and returns an editor entity buttons' coordinates,
 // alongside its dimensions
 Rectangle EditorEntityButtonRect(int buttonNumber);
@@ -110,5 +133,8 @@ Rectangle EditorEntityButtonRect(int buttonNumber);
 // Calculates and returns an editor entity buttons' coordinates,
 // alongside its dimensions
 Rectangle EditorControlButtonRect(int buttonNumber);
+
+// Gets the rectangle for the current editor's entity selection.
+Rectangle EditorSelectionGetRect();
 
 #endif // _EDITOR_H_INCLUDED_
