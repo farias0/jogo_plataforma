@@ -81,8 +81,8 @@ void handleDevInput() {
 
         // Actions available when entities are selected
 
-        if (STATE->editorSelectedEntity &&
-            STATE->editorSelectedEntity->type == EDITOR_ENTITY_ERASER &&
+        if (STATE->editorButtonToggled &&
+            STATE->editorButtonToggled->type == EDITOR_ENTITY_ERASER &&
             IsInPlayArea(mousePosInScreen))
                     goto skip_to_button_handler;
 
@@ -121,21 +121,21 @@ skip_to_button_handler:
 
             // TODO use a timer to not keep checking it every frame
 
-            if (STATE->editorSelectedEntity == 0) return;
+            if (!STATE->editorButtonToggled) return;
 
-            if (STATE->editorSelectedEntity->handler == 0) {
+            if (!STATE->editorButtonToggled->handler) {
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                     TraceLog(LOG_WARNING, "No code to handle selected editor entity.");
                 return;
             }
 
             // so holding doesn't keep activating the item
-            if (STATE->editorSelectedEntity->interaction == EDITOR_INTERACTION_CLICK &&
+            if (STATE->editorButtonToggled->interactionType == EDITOR_INTERACTION_CLICK &&
                 !IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                     return;
 
 
-            STATE->editorSelectedEntity->handler(mousePosInScene);
+            STATE->editorButtonToggled->handler(mousePosInScene);
             return;
         }
     }
@@ -183,9 +183,4 @@ void InputHandle() {
     else if (STATE->mode == MODE_OVERWORLD) {
         handleOverworldInput();
     }
-}
-
-void InputEditorEntitySelect(EditorEntityItem *item) {
-
-    STATE->editorSelectedEntity = item;
 }

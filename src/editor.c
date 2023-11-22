@@ -16,62 +16,64 @@ EditorSelection *EDITOR_ENTITY_SELECTION = 0;
 static bool selectedEntitiesThisFrame = false;
 
 
-EditorEntityItem *loadEditorEntityItem(
-    EditorEntityType type, Sprite sprite, void (*handler), EditorItemInteraction interaction) {
+static EditorEntityButton *addEntityButton(
+    EditorEntityType type, Sprite sprite, void (*handler), EditorInteractionType interaction) {
 
-        EditorEntityItem *newItem = MemAlloc(sizeof(EditorEntityItem));
-        newItem->type = type;
-        newItem->handler = handler;
-        newItem->sprite = sprite;
-        newItem->interaction = interaction;
+        EditorEntityButton *newButton = MemAlloc(sizeof(EditorEntityButton));
+        newButton->type = type;
+        newButton->handler = handler;
+        newButton->sprite = sprite;
+        newButton->interactionType = interaction;
 
-        LinkedListAdd(&EDITOR_ENTITIES_HEAD, newItem);
+        LinkedListAdd(&EDITOR_ENTITIES_HEAD, newButton);
 
-        return newItem;
+        return newButton;
 }
 
-EditorControlItem *loadEditorControlItem(EditorControlType type, char *label, void (*handler)) {
+EditorControlButton *addControlButton(EditorControlType type, char *label, void (*handler)) {
 
-    EditorControlItem *newItem = MemAlloc(sizeof(EditorControlItem));
-    newItem->type = type;
-    newItem->handler = handler;
-    newItem->label = label;
+    EditorControlButton *newButton = MemAlloc(sizeof(EditorControlButton));
+    newButton->type = type;
+    newButton->handler = handler;
+    newButton->label = label;
 
-    LinkedListAdd(&EDITOR_CONTROL_HEAD, newItem);
+    LinkedListAdd(&EDITOR_CONTROL_HEAD, newButton);
 
-    return newItem;
+    return newButton;
 }
 
 void loadInLevelEditor() {
 
-    loadEditorEntityItem(EDITOR_ENTITY_ERASER, EraserSprite, &LevelEntityRemoveAt, EDITOR_INTERACTION_HOLD);
-    loadEditorEntityItem(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
-    STATE->editorSelectedEntity =
-        loadEditorEntityItem(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
-    loadEditorEntityItem(EDITOR_ENTITY_ACID, AcidSprite, &LevelAcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
-    loadEditorEntityItem(EDITOR_ENTITY_EXIT, LevelEndOrbSprite, &LevelExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &LevelEntityRemoveAt, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    STATE->editorButtonToggled =
+        addEntityButton(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ACID, AcidSprite, &LevelAcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
+    addEntityButton(EDITOR_ENTITY_EXIT, LevelEndOrbSprite, &LevelExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
-    loadEditorControlItem(EDITOR_CONTROL_SAVE, "Salvar fase", &LevelSave);
-    loadEditorControlItem(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
+    addControlButton(EDITOR_CONTROL_SAVE, "Salvar fase", &LevelSave);
+    addControlButton(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded in level itens.");
 }
 
 void loadOverworldEditor() {
 
-    loadEditorEntityItem(EDITOR_ENTITY_ERASER, EraserSprite, &OverworldTileRemoveAt, EDITOR_INTERACTION_HOLD);
-    STATE->editorSelectedEntity =
-        loadEditorEntityItem(EDITOR_ENTITY_LEVEL_DOT, LevelDotSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
-    loadEditorEntityItem(EDITOR_ENTITY_PATH_JOIN, PathTileJoinSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
-    loadEditorEntityItem(EDITOR_ENTITY_STRAIGHT, PathTileStraightSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
-    loadEditorEntityItem(EDITOR_ENTITY_PATH_IN_L, PathTileInLSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &OverworldTileRemoveAt, EDITOR_INTERACTION_HOLD);
+    STATE->editorButtonToggled =
+        addEntityButton(EDITOR_ENTITY_LEVEL_DOT, LevelDotSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_PATH_JOIN, PathTileJoinSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_STRAIGHT, PathTileStraightSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_PATH_IN_L, PathTileInLSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
 
-    loadEditorControlItem(EDITOR_CONTROL_SAVE, "Salvar mundo", &OverworldSave);
-    loadEditorControlItem(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
+    addControlButton(EDITOR_CONTROL_SAVE, "Salvar mundo", &OverworldSave);
+    addControlButton(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded overworld itens.");
 }
 
+// Updates the entities part of the current loaded selection,
+// based on its origin and current cursor pos
 static void updateEntitySelectionList() {
 
     if (!EDITOR_ENTITY_SELECTION) {
@@ -134,7 +136,7 @@ void EditorEmpty() {
     LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
     LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
 
-    STATE->editorSelectedEntity = 0;
+    STATE->editorButtonToggled = 0;
 
     TraceLog(LOG_TRACE, "Editor emptied.");
 }
@@ -179,6 +181,11 @@ void EditorTick() {
             EDITOR_ENTITY_SELECTION->isSelecting = false;
     }
     selectedEntitiesThisFrame = false;
+}
+
+void EditorEntityButtonSelect(EditorEntityButton *item) {
+
+    STATE->editorButtonToggled = item;
 }
 
 void EditorSelectEntities(Vector2 cursorPos) {

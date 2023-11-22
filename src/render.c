@@ -359,7 +359,7 @@ next_node:
 }
 
 // Render editor buttons of game entities
-static void drawEditorButtonsEntities() {
+static void drawEditorEntityButtons() {
 
     DrawRectangle(EDITOR_ENTITIES_AREA.x,
                     EDITOR_ENTITIES_AREA.y,
@@ -367,16 +367,16 @@ static void drawEditorButtonsEntities() {
                     EDITOR_ENTITIES_AREA.height,
                     EDITOR_BG_COLOR);
 
-    int editorButtonsRendered = 0;
+    int renderedCount = 0;
     ListNode *node = EDITOR_ENTITIES_HEAD;
 
     while (node != 0) {
 
-        EditorEntityItem *item = (EditorEntityItem *) node->item;
+        EditorEntityButton *item = (EditorEntityButton *) node->item;
 
-        bool isItemSelected = STATE->editorSelectedEntity == item;
+        bool isItemSelected = STATE->editorButtonToggled == item;
 
-        Rectangle buttonRect = EditorEntityButtonRect(editorButtonsRendered);
+        Rectangle buttonRect = EditorEntityButtonRect(renderedCount);
 
         GuiToggleSprite(
             buttonRect,
@@ -385,16 +385,16 @@ static void drawEditorButtonsEntities() {
             &isItemSelected
         );
 
-        if (isItemSelected) InputEditorEntitySelect(item);
+        if (isItemSelected) EditorEntityButtonSelect(item);
 
-        editorButtonsRendered++;
+        renderedCount++;
 
         node = node->next;
     }
 }
 
 // Render editor buttons related to control functions
-static void drawEditorButtonsControl() {
+static void drawEditorControlButtons() {
 
     DrawRectangle(EDITOR_CONTROL_AREA.x,
                     EDITOR_CONTROL_AREA.y,
@@ -402,20 +402,20 @@ static void drawEditorButtonsControl() {
                     EDITOR_CONTROL_AREA.height,
                     EDITOR_BG_COLOR);
 
-    int editorButtonsRendered = 0;
+    int renderedCount = 0;
     ListNode *node = EDITOR_CONTROL_HEAD;
 
     while (node != 0) {
 
-        EditorControlItem *item = (EditorControlItem *) node->item;
+        EditorControlButton *item = (EditorControlButton *) node->item;
 
-        Rectangle buttonRect = EditorControlButtonRect(editorButtonsRendered);
+        Rectangle buttonRect = EditorControlButtonRect(renderedCount);
 
         if (GuiButton(buttonRect, item->label)) {
 
             if (!item->handler) {
                 TraceLog(LOG_WARNING, "No handler to editor control button #%d, '%s'.",
-                            editorButtonsRendered, item->label);
+                            renderedCount, item->label);
                 goto next_button;
             }
 
@@ -425,7 +425,7 @@ static void drawEditorButtonsControl() {
         }
 
 next_button:
-        editorButtonsRendered++;
+        renderedCount++;
 
         node = node->next;
     }
@@ -467,7 +467,7 @@ static void drawEditor() {
                 SCREEN_HEIGHT,
                 RAYWHITE);
 
-    drawEditorButtonsEntities();
+    drawEditorEntityButtons();
 
     DrawLine(SCREEN_WIDTH,
                 EDITOR_ENTITIES_AREA.height,
@@ -475,7 +475,7 @@ static void drawEditor() {
                 EDITOR_ENTITIES_AREA.height,
                 RAYWHITE); // Separator
 
-    drawEditorButtonsControl();
+    drawEditorControlButtons();
 }
 
 static void drawLevelTransitionShader() {
