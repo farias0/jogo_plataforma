@@ -212,24 +212,35 @@ void EditorSelectionCancel() {
 
 Rectangle EditorEntityButtonRect(int buttonNumber) {
 
-    float itemX = EDITOR_ENTITIES_AREA.x + ENTITY_BUTTON_WALL_SPACING;
-    if (buttonNumber % 2) itemX += ENTITY_BUTTON_SIZE + ENTITY_BUTTON_SPACING;
+    const Rectangle area        = EDITOR_ENTITIES_AREA;
+    const int buttonSize        = ENTITY_BUTTON_SIZE;
+    const int buttonSpacing     = ENTITY_BUTTON_SPACING;
+    const int wallSpacing       = ENTITY_BUTTON_WALL_SPACING;
 
-    float itemY = EDITOR_ENTITIES_AREA.y + ENTITY_BUTTON_WALL_SPACING;
-    itemY += (ENTITY_BUTTON_SIZE + ENTITY_BUTTON_SPACING) * (buttonNumber / 2);
+    float itemX = area.x + wallSpacing;
+    if (buttonNumber % 2) itemX += buttonSize + buttonSpacing;
 
-    return (Rectangle){ itemX, itemY, ENTITY_BUTTON_SIZE, ENTITY_BUTTON_SIZE };
+    float itemY = area.y + wallSpacing;
+    itemY += (buttonSize + buttonSpacing) * (buttonNumber / 2);
+
+    return (Rectangle){ itemX, itemY, buttonSize, buttonSize };
 }
 
 Rectangle EditorControlButtonRect(int buttonNumber) {
 
-    float itemX = EDITOR_CONTROL_AREA.x + CONTROL_BUTTON_WALL_SPACING;
-    if (buttonNumber % 2) itemX += CONTROL_BUTTON_WIDTH + CONTROL_BUTTON_SPACING;
+    const Rectangle area        = EDITOR_CONTROL_AREA;
+    const int buttonWidth       = CONTROL_BUTTON_WIDTH;
+    const int buttonHeight      = CONTROL_BUTTON_HEIGHT;
+    const int buttonSpacing     = CONTROL_BUTTON_SPACING;
+    const int wallSpacing       = CONTROL_BUTTON_WALL_SPACING;
 
-    float itemY = EDITOR_CONTROL_AREA.y + CONTROL_BUTTON_WALL_SPACING;
-    itemY += (CONTROL_BUTTON_HEIGHT + CONTROL_BUTTON_SPACING) * (buttonNumber / 2);
+    float itemX = area.x + wallSpacing;
+    if (buttonNumber % 2) itemX += buttonWidth + buttonSpacing;
 
-    return (Rectangle){ itemX, itemY, CONTROL_BUTTON_WIDTH, CONTROL_BUTTON_HEIGHT };
+    float itemY = area.y + wallSpacing;
+    itemY += (buttonHeight + buttonSpacing) * (buttonNumber / 2);
+
+    return (Rectangle){ itemX, itemY, buttonWidth, buttonHeight };
 }
 
 Rectangle EditorSelectionGetRect() {
