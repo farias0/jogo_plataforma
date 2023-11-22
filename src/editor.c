@@ -106,23 +106,12 @@ static void updateEntitySelectionList() {
     }
 }
 
-static void clearEntitySelection() {
-
-    if (EDITOR_ENTITY_SELECTION) {
-        LinkedListRemoveAll(&EDITOR_ENTITY_SELECTION->entitiesHead);
-        MemFree(EDITOR_ENTITY_SELECTION);
-        EDITOR_ENTITY_SELECTION = 0;
-    }
-
-    TraceLog(LOG_TRACE, "Editor's entity selection cleared.");
-}
-
 void EditorSync() {
 
     LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
     LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
     
-    clearEntitySelection();
+    EditorSelectionCancel();
 
     switch (STATE->mode) {
     
@@ -168,7 +157,7 @@ void EditorDisable() {
 
     CameraPanningReset();
 
-    clearEntitySelection();
+    EditorSelectionCancel();
 
     TraceLog(LOG_TRACE, "Editor disabled.");
 }
@@ -186,7 +175,7 @@ void EditorTick() {
         if (selectedEntitiesThisFrame)
             updateEntitySelectionList();
         else
-            clearEntitySelection();
+            EDITOR_ENTITY_SELECTION->isSelecting = false;
     }
     selectedEntitiesThisFrame = false;
 }
@@ -197,9 +186,25 @@ void EditorSelectEntities(Vector2 cursorPos) {
         EDITOR_ENTITY_SELECTION = MemAlloc(sizeof(EditorSelection));
         EDITOR_ENTITY_SELECTION->origin = cursorPos;
     }
+
+    if (!EDITOR_ENTITY_SELECTION->isSelecting) {
+        EDITOR_ENTITY_SELECTION->origin = cursorPos;
+    }
     
     EDITOR_ENTITY_SELECTION->current = cursorPos;
+    EDITOR_ENTITY_SELECTION->isSelecting = true;
     selectedEntitiesThisFrame = true;
+}
+
+void EditorSelectionCancel() {
+    
+    if (EDITOR_ENTITY_SELECTION) {
+        LinkedListRemoveAll(&EDITOR_ENTITY_SELECTION->entitiesHead);
+        MemFree(EDITOR_ENTITY_SELECTION);
+        EDITOR_ENTITY_SELECTION = 0;
+    }
+
+    TraceLog(LOG_TRACE, "Editor's entity selection canceled.");
 }
 
 Rectangle EditorEntityButtonRect(int buttonNumber) {

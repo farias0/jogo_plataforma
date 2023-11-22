@@ -433,19 +433,22 @@ next_button:
 
 static void drawEditorEntitySelection() {
 
-    drawSceneRectangle(EditorSelectionGetRect(), EDITOR_SELECTION_RECT_COLOR);
+    if (EDITOR_ENTITY_SELECTION->isSelecting)
+        drawSceneRectangle(EditorSelectionGetRect(), EDITOR_SELECTION_RECT_COLOR);
 
     ListNode *node = EDITOR_ENTITY_SELECTION->entitiesHead;
     while (node != 0) {
 
+        const Color color = EDITOR_SELECTION_ENTITY_COLOR;
+
         if (STATE->mode == MODE_IN_LEVEL) {
             LevelEntity *entity = (LevelEntity *) node->item;
-            drawSceneRectangle(entity->hitbox, EDITOR_SELECTION_ENTITY_COLOR);
-            drawSceneRectangle(LevelEntityOriginHitbox(entity), EDITOR_SELECTION_ENTITY_COLOR);
+            drawSceneRectangle(entity->hitbox, color);
+            drawSceneRectangle(LevelEntityOriginHitbox(entity), color);
         }
         else if (STATE->mode == MODE_OVERWORLD) {
             OverworldEntity *entity = (OverworldEntity *) node->item;
-            drawSceneRectangle(OverworldEntitySquare(entity), EDITOR_SELECTION_ENTITY_COLOR);
+            drawSceneRectangle(OverworldEntitySquare(entity), color);
         }
 
         node = node->next;

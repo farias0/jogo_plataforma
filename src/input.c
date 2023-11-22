@@ -75,6 +75,10 @@ void handleDevInput() {
         EditorSelectEntities(mousePosInScene);
         return;
     }
+    else if (STATE->isEditorEnabled && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && EDITOR_ENTITY_SELECTION) {
+        // Actions available when entities are selected
+        EditorSelectionCancel();
+    }
 
     if      (!IsInPlayArea(mousePosInScreen)) return;
 

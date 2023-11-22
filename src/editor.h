@@ -92,6 +92,7 @@ typedef struct EditorSelection {
 
     Vector2 origin;
     Vector2 current;
+    bool isSelecting;
     ListNode *entitiesHead;
 
 } EditorSelection;
@@ -125,6 +126,9 @@ void EditorTick();
 
 // Handles the selection of entities by a cursor dragging.
 void EditorSelectEntities(Vector2 cursorPos);
+
+// Cancels the selection of entities.
+void EditorSelectionCancel();
 
 // Calculates and returns an editor entity buttons' coordinates,
 // alongside its dimensions
