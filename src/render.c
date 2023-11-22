@@ -7,6 +7,7 @@
 #include "level/level.h"
 #include "overworld.h"
 #include "camera.h"
+#include "editor.h"
 
 #pragma GCC diagnostic push 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -43,6 +44,13 @@ ListNode *DEBUG_ENTITY_INFO_HEAD = 0;
 static RenderTexture2D shaderRenderTexture;
 static LevelTransitionShaderControl levelTransitionShaderControl;
 
+// Draws rectangle with scene-based position
+static void drawSceneRectangle(Rectangle rect, Color color) {
+
+    Vector2 scenePos = PosInSceneToScreen((Vector2){ rect.x, rect.y });
+    Rectangle screenRect = (Rectangle){ scenePos.x, scenePos.y, rect.width, rect.height };
+    DrawRectangleRec(screenRect, color);
+}
 
 static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
 
@@ -423,7 +431,35 @@ next_button:
     }
 }
 
+static void drawEditorEntitySelection() {
+
+    if (EDITOR_ENTITY_SELECTION->isSelecting)
+        drawSceneRectangle(EditorSelectionGetRect(), EDITOR_SELECTION_RECT_COLOR);
+
+    ListNode *node = EDITOR_ENTITY_SELECTION->entitiesHead;
+    while (node != 0) {
+
+        const Color color = EDITOR_SELECTION_ENTITY_COLOR;
+
+        if (STATE->mode == MODE_IN_LEVEL) {
+            LevelEntity *entity = (LevelEntity *) node->item;
+            drawSceneRectangle(entity->hitbox, color);
+            drawSceneRectangle(LevelEntityOriginHitbox(entity), color);
+        }
+        else if (STATE->mode == MODE_OVERWORLD) {
+            OverworldEntity *entity = (OverworldEntity *) node->item;
+            drawSceneRectangle(OverworldEntitySquare(entity), color);
+        }
+
+        node = node->next;
+    }
+}
+
 static void drawEditor() {
+
+    if (EDITOR_ENTITY_SELECTION)
+        drawEditorEntitySelection();
+
 
     DrawLine(SCREEN_WIDTH,
                 0,

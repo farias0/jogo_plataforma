@@ -76,5 +76,8 @@ void OverworldTick();
 // Saves overworld's state to persistence.
 void OverworldSave();
 
+// Returns the grid square for a given entity
+Rectangle OverworldEntitySquare(OverworldEntity *entity);
+
 
 #endif // _OVERWORLD_H_INCLUDED_

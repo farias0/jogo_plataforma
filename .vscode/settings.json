@@ -13,6 +13,7 @@
         "xstring": "c",
         "xutility": "c",
         "stdlib.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "editor.h": "c"
     }
 }

@@ -11,6 +11,9 @@
 
 ListNode *EDITOR_ENTITIES_HEAD = 0;
 ListNode *EDITOR_CONTROL_HEAD = 0;
+EditorSelection *EDITOR_ENTITY_SELECTION = 0;
+
+static bool selectedEntitiesThisFrame = false;
 
 
 EditorEntityItem *loadEditorEntityItem(
@@ -69,10 +72,47 @@ void loadOverworldEditor() {
     TraceLog(LOG_TRACE, "Editor loaded overworld itens.");
 }
 
+static void updateEntitySelectionList() {
+
+    if (!EDITOR_ENTITY_SELECTION) {
+        TraceLog(LOG_ERROR, "Entity selection list tried to update, but there's no reference to selection.");
+        return;
+    }
+
+    LinkedListRemoveAll(&EDITOR_ENTITY_SELECTION->entitiesHead);
+
+    Rectangle selectionHitbox = EditorSelectionGetRect();
+
+    ListNode *node = GetEntityListHead();
+    while (node != 0) {
+
+        if (STATE->mode == MODE_IN_LEVEL) {
+            LevelEntity *entity = (LevelEntity *) node->item;
+            bool collisionWithEntity = !entity->isDead && CheckCollisionRecs(selectionHitbox, entity->hitbox);
+            bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, LevelEntityOriginHitbox(entity));
+            if (collisionWithEntity || collisionWithGhost) {
+                
+                LinkedListAdd(&EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+            }
+        }
+        else if (STATE->mode == MODE_OVERWORLD) {
+            OverworldEntity *entity = (OverworldEntity *) node->item;
+            if (CheckCollisionRecs(selectionHitbox, OverworldEntitySquare(entity))) {
+                
+                LinkedListAdd(&EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+            }
+        }
+
+        node = node->next;
+    }
+}
+
 void EditorSync() {
 
     LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
     LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
+    
+    EditorSelectionCancel();
 
     switch (STATE->mode) {
     
@@ -118,6 +158,8 @@ void EditorDisable() {
 
     CameraPanningReset();
 
+    EditorSelectionCancel();
+
     TraceLog(LOG_TRACE, "Editor disabled.");
 }
 
@@ -127,24 +169,99 @@ void EditorEnabledToggle() {
     else EditorEnable();
 }
 
+void EditorTick() {
+
+    // Entity selection
+    if (EDITOR_ENTITY_SELECTION) {
+        if (selectedEntitiesThisFrame)
+            updateEntitySelectionList();
+        else
+            EDITOR_ENTITY_SELECTION->isSelecting = false;
+    }
+    selectedEntitiesThisFrame = false;
+}
+
+void EditorSelectEntities(Vector2 cursorPos) {
+
+    EditorSelection *s = EDITOR_ENTITY_SELECTION;
+
+    if (!s) {
+        EDITOR_ENTITY_SELECTION = MemAlloc(sizeof(EditorSelection));
+        s = EDITOR_ENTITY_SELECTION;
+        s->origin = cursorPos;
+    }
+
+    if (!s->isSelecting) {
+        s->origin = cursorPos;
+    }
+    
+    s->current = cursorPos;
+    s->isSelecting = true;
+    selectedEntitiesThisFrame = true;
+}
+
+void EditorSelectionCancel() {
+    
+    if (EDITOR_ENTITY_SELECTION) {
+        LinkedListRemoveAll(&EDITOR_ENTITY_SELECTION->entitiesHead);
+        MemFree(EDITOR_ENTITY_SELECTION);
+        EDITOR_ENTITY_SELECTION = 0;
+    }
+
+    TraceLog(LOG_TRACE, "Editor's entity selection canceled.");
+}
+
 Rectangle EditorEntityButtonRect(int buttonNumber) {
 
-    float itemX = EDITOR_ENTITIES_AREA.x + ENTITY_BUTTON_WALL_SPACING;
-    if (buttonNumber % 2) itemX += ENTITY_BUTTON_SIZE + ENTITY_BUTTON_SPACING;
+    const Rectangle area        = EDITOR_ENTITIES_AREA;
+    const int buttonSize        = ENTITY_BUTTON_SIZE;
+    const int buttonSpacing     = ENTITY_BUTTON_SPACING;
+    const int wallSpacing       = ENTITY_BUTTON_WALL_SPACING;
 
-    float itemY = EDITOR_ENTITIES_AREA.y + ENTITY_BUTTON_WALL_SPACING;
-    itemY += (ENTITY_BUTTON_SIZE + ENTITY_BUTTON_SPACING) * (buttonNumber / 2);
+    float itemX = area.x + wallSpacing;
+    if (buttonNumber % 2) itemX += buttonSize + buttonSpacing;
 
-    return (Rectangle){ itemX, itemY, ENTITY_BUTTON_SIZE, ENTITY_BUTTON_SIZE };
+    float itemY = area.y + wallSpacing;
+    itemY += (buttonSize + buttonSpacing) * (buttonNumber / 2);
+
+    return (Rectangle){ itemX, itemY, buttonSize, buttonSize };
 }
 
 Rectangle EditorControlButtonRect(int buttonNumber) {
 
-    float itemX = EDITOR_CONTROL_AREA.x + CONTROL_BUTTON_WALL_SPACING;
-    if (buttonNumber % 2) itemX += CONTROL_BUTTON_WIDTH + CONTROL_BUTTON_SPACING;
+    const Rectangle area        = EDITOR_CONTROL_AREA;
+    const int buttonWidth       = CONTROL_BUTTON_WIDTH;
+    const int buttonHeight      = CONTROL_BUTTON_HEIGHT;
+    const int buttonSpacing     = CONTROL_BUTTON_SPACING;
+    const int wallSpacing       = CONTROL_BUTTON_WALL_SPACING;
 
-    float itemY = EDITOR_CONTROL_AREA.y + CONTROL_BUTTON_WALL_SPACING;
-    itemY += (CONTROL_BUTTON_HEIGHT + CONTROL_BUTTON_SPACING) * (buttonNumber / 2);
+    float itemX = area.x + wallSpacing;
+    if (buttonNumber % 2) itemX += buttonWidth + buttonSpacing;
 
-    return (Rectangle){ itemX, itemY, CONTROL_BUTTON_WIDTH, CONTROL_BUTTON_HEIGHT };
+    float itemY = area.y + wallSpacing;
+    itemY += (buttonHeight + buttonSpacing) * (buttonNumber / 2);
+
+    return (Rectangle){ itemX, itemY, buttonWidth, buttonHeight };
+}
+
+Rectangle EditorSelectionGetRect() {
+
+    EditorSelection *s = EDITOR_ENTITY_SELECTION;
+
+    float x         = s->origin.x;
+    float y         = s->origin.y;
+    float width     = s->current.x - s->origin.x;
+    float height    = s->current.y - s->origin.y;
+
+    if (s->current.x < s->origin.x) {
+        x       = s->current.x;
+        width   = s->origin.x - s->current.x;
+    }
+
+    if (s->current.y < s->origin.y) {
+        y       = s->current.y;
+        height  = s->origin.y - s->current.y;
+    }
+
+    return (Rectangle) { x, y, width, height };
 }

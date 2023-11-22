@@ -124,6 +124,9 @@ void LevelSave();
 // Loads a new, default level
 void LevelLoadNew();
 
+// Get this entity's origin hitbox, based on the current hitbox.
+Rectangle LevelEntityOriginHitbox(LevelEntity *entity);
+
 
 void LevelPlayerInitialize(Vector2 origin);
 

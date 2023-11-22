@@ -43,8 +43,8 @@ static ListNode *getEntityOnScene(Vector2 pos) {
 
         if (CheckCollisionPointRec(pos, entity->hitbox)) {
 
-                return node;
-            }
+            return node;
+        }
 
         node = node->next;
     };
@@ -208,6 +208,9 @@ LevelEntity *LevelEntityGetAt(Vector2 pos) {
 
 void LevelEntityRemoveAt(Vector2 pos) {
 
+    // TODO This function is a monstruosity and should be broken up
+    // in at least two others ASAP
+
     ListNode *node = LEVEL_LIST_HEAD;
     while (node != 0) {
 
@@ -215,10 +218,7 @@ void LevelEntityRemoveAt(Vector2 pos) {
 
         if (entity->components & LEVEL_IS_PLAYER) goto next_node;
 
-        if (CheckCollisionPointRec(pos, (Rectangle) {
-                                                entity->origin.x,       entity->origin.y,
-                                                entity->hitbox.width,   entity->hitbox.height
-                                            })) {
+        if (CheckCollisionPointRec(pos, LevelEntityOriginHitbox(entity))) {
             break;
         }
 
@@ -232,7 +232,33 @@ next_node:
 
     if (!node) return;
 
-    LevelEntityDestroy(node);
+    LevelEntity *entity = (LevelEntity *) node->item;
+
+    bool isPartOfSelection = EDITOR_ENTITY_SELECTION &&
+                                LinkedListGetNode(EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+    if (isPartOfSelection) {
+
+        ListNode *selectedNode = EDITOR_ENTITY_SELECTION->entitiesHead;
+        while (selectedNode) {
+
+            ListNode *next = selectedNode->next;
+            LevelEntity *selectedEntity = (LevelEntity *) selectedNode->item;
+
+            if (selectedEntity->components & LEVEL_IS_PLAYER) goto next_selected_node;
+
+            ListNode *nodeInLevel = LinkedListGetNode(LEVEL_LIST_HEAD, selectedEntity);
+            LevelEntityDestroy(nodeInLevel);
+
+next_selected_node:
+            selectedNode = next;
+        }
+
+        EditorSelectionCancel();
+
+    } else {
+
+        LevelEntityDestroy(node);
+    }
 }
 
 void LevelTick() {
@@ -329,4 +355,12 @@ void LevelLoadNew() {
     LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER->origin.y;
 
     strcpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
+}
+
+Rectangle LevelEntityOriginHitbox(LevelEntity *entity) {
+
+    return (Rectangle){
+        entity->origin.x, entity->origin.y,
+        entity->hitbox.width, entity->hitbox.height
+    };
 }

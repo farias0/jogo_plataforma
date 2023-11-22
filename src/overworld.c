@@ -21,15 +21,6 @@ static OverworldEntity *OW_CURSOR = 0;
 static char *overworldLevelSelectedName = 0;
 
 
-static Rectangle getGridSquare(OverworldEntity *entity) {
-    return (Rectangle) {
-        entity->gridPos.x,
-        entity->gridPos.y,
-        OW_GRID.width,
-        OW_GRID.height,
-    };
-}
-
 // Updates the position for the cursor according to the tile under it
 static void updateCursorPosition() {
 
@@ -50,6 +41,24 @@ static void destroyEntityOverworld(ListNode *node) {
     LinkedListDestroyNode(&OW_LIST_HEAD, node);
 
     TraceLog(LOG_TRACE, "Destroyed overworld entity.");
+}
+
+// Removes overworld tile, if possible 
+static void checkAndRemoveTile(ListNode *node) {
+
+    OverworldEntity *entity = (OverworldEntity *) node->item;
+
+    // Ideally the game would support removing the tile under the player,
+    // but this would demand some logic to manage the tileUnder pointer.
+    // For now this is good enough.
+    if (entity == STATE->tileUnderCursor ||
+        entity->components & OW_IS_CURSOR) {
+
+            TraceLog(LOG_TRACE, "Won't remove tile, it's the cursor or it's under it.");
+            return;
+    }
+    
+    destroyEntityOverworld(node);
 }
 
 static void initializeCursor() {
@@ -79,7 +88,7 @@ static ListNode *getEntityOnScene(Vector2 pos) {
         OverworldEntity *entity = (OverworldEntity *) node->item;
 
         if (!(entity->components & OW_IS_CURSOR) &&
-            CheckCollisionPointRec(pos, getGridSquare(entity))) {
+            CheckCollisionPointRec(pos, OverworldEntitySquare(entity))) {
 
                 return node;
             }
@@ -290,7 +299,7 @@ void OverworldTileAddOrInteract(Vector2 pos) {
 
         if (entity->components & OW_IS_CURSOR) goto next_entity;
 
-        if (!CheckCollisionRecs(testHitbox, getGridSquare(entity))) goto next_entity;
+        if (!CheckCollisionRecs(testHitbox, OverworldEntitySquare(entity))) goto next_entity;
 
         if (entity->components & OW_IS_LEVEL_DOT) {
             TraceLog(LOG_TRACE, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
@@ -342,16 +351,26 @@ void OverworldTileRemoveAt(Vector2 pos) {
         return;
     }
 
-    // Ideally the game would support removing the tile under the player,
-    // but this would demand some logic to manage the tileUnder pointer.
-    // For now this is good enough.
-    if (node->item == STATE->tileUnderCursor) {
-        TraceLog(LOG_TRACE, "Won't remove tile, it's under the cursor.");
-        return;
-    }
+    OverworldEntity *entity = (OverworldEntity *) node->item;
 
-    
-    destroyEntityOverworld(node);
+    bool isPartOfSelection = EDITOR_ENTITY_SELECTION &&
+                                LinkedListGetNode(EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+    if (isPartOfSelection) {
+
+        ListNode *node = EDITOR_ENTITY_SELECTION->entitiesHead;
+        while (node) {
+            ListNode *next = node->next;
+            ListNode *nodeInOW = LinkedListGetNode(OW_LIST_HEAD, (OverworldEntity *) node->item);
+            checkAndRemoveTile(nodeInOW);
+            node = next;
+        }
+
+        EditorSelectionCancel();
+
+    } else {
+
+        checkAndRemoveTile(node);
+    }
 }
 
 void OverworldTick() {
@@ -374,4 +393,14 @@ void OverworldTick() {
 
 void OverworldSave() {
     PersistenceOverworldSave();
+}
+
+Rectangle OverworldEntitySquare(OverworldEntity *entity) {
+
+    return (Rectangle) {
+        entity->gridPos.x,
+        entity->gridPos.y,
+        OW_GRID.width,
+        OW_GRID.height,
+    };
 }
