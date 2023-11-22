@@ -273,6 +273,8 @@ static void drawDebugGrid() {
 
 static void drawLevelHud() {
 
+    if (STATE->isEditorEnabled) return;
+
     if (STATE->isPaused && LEVEL_PLAYER && !LEVEL_PLAYER->isDead)
         DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
         

@@ -15,14 +15,16 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
 
+
+    if (STATE->isEditorEnabled) return;
+
+
     if      (IsKeyPressed(KEY_BACKSPACE))   { LevelGoToOverworld(); return; }
 
     if      (IsKeyPressed(KEY_ENTER))       { PausedGameToggle(); return; }
 
 
-    if (!LEVEL_PLAYER) return;
-    if (STATE->isPaused || LEVEL_PLAYER->isDead || STATE->isEditorEnabled)
-        return;
+    if (STATE->isPaused || !LEVEL_PLAYER || LEVEL_PLAYER->isDead) return;
 
 
     if      (IsKeyDown(KEY_Z))              LevelPlayerStartRunning();
