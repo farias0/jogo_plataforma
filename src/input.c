@@ -85,13 +85,11 @@ void handleDevInput() {
 
         // Actions available when entities are selected
 
-        // if (CheckCollisionPointRec(mousePosInScene, EditorSelectionGetRect())) {
-        //     EditorSelectedEntitiesMove(mousePosInScene);
-        // }
-
         if (STATE->editorButtonToggled &&
             STATE->editorButtonToggled->type == EDITOR_ENTITY_ERASER)
                     goto skip_to_button_handler;
+
+        if (EditorSelectedEntitiesMove(mousePosInScene)) return;
 
         EditorSelectionCancel();
     }

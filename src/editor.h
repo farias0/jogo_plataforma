@@ -96,7 +96,10 @@ typedef struct EditorState {
     bool        selectedEntitiesThisFrame;
     Trajectory  entitySelectionCoords;
     ListNode *  selectedEntities;
+
+    // Moving selected entities
     bool        isMovingSelectedEntities;
+    bool        movedEntitiesThisFrame;
     Trajectory  selectedEntitiesDisplacement;
 
 } EditorState;
@@ -141,8 +144,9 @@ void EditorSelectEntities(Vector2 cursorPos);
 // Cancels the selection of entities.
 void EditorSelectionCancel();
 
-// Moves a cluster of selected entities.
-void EditorSelectedEntitiesMove(Vector2 cursorPos);
+// Moves a cluster of selected entities, if the cursor is above one.
+// Otherwise, returns false;
+bool EditorSelectedEntitiesMove(Vector2 cursorPos);
 
 // Calculates and returns an editor entity buttons' coordinates,
 // alongside its dimensions

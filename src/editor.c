@@ -14,6 +14,23 @@ ListNode *EDITOR_CONTROL_HEAD = 0;
 EditorState *EDITOR_STATE = 0;
 
 
+static void editorUseEraser(Vector2 cursorPos) {
+
+    switch (STATE->mode) {
+        
+    case MODE_IN_LEVEL:
+        LevelEntityRemoveAt(cursorPos);
+        break;
+    
+    case MODE_OVERWORLD:
+        OverworldTileRemoveAt(cursorPos);
+        break;
+    }
+
+
+    EditorSelectionCancel();
+}
+
 static EditorEntityButton *addEntityButton(
     EditorEntityType type, Sprite sprite, void (*handler), EditorInteractionType interaction) {
 
@@ -42,7 +59,7 @@ EditorControlButton *addControlButton(EditorControlType type, char *label, void 
 
 void loadInLevelEditor() {
 
-    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &LevelEntityRemoveAt, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &editorUseEraser, EDITOR_INTERACTION_HOLD);
     addEntityButton(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
     STATE->editorButtonToggled =
         addEntityButton(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
@@ -57,7 +74,7 @@ void loadInLevelEditor() {
 
 void loadOverworldEditor() {
 
-    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &OverworldTileRemoveAt, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &editorUseEraser, EDITOR_INTERACTION_HOLD);
     STATE->editorButtonToggled =
         addEntityButton(EDITOR_ENTITY_LEVEL_DOT, LevelDotSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_PATH_JOIN, PathTileJoinSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
@@ -192,6 +209,14 @@ void EditorTick() {
             s->isSelectingEntities = false;
     }
     s->selectedEntitiesThisFrame = false;
+
+    // Moving selected entities
+    if (s->isMovingSelectedEntities && !s->movedEntitiesThisFrame) {
+        // TODO apply displacement to entities
+        TraceLog(LOG_INFO, "test -- stopped moving entity"); // TODO remove it
+        s->isMovingSelectedEntities = false;
+    }
+    s->movedEntitiesThisFrame = false;
 }
 
 void EditorEntityButtonSelect(EditorEntityButton *item) {
@@ -225,23 +250,32 @@ void EditorSelectionCancel() {
     TraceLog(LOG_TRACE, "Editor's entity selection canceled.");
 }
 
-void EditorSelectedEntitiesMove(Vector2 cursorPos) {
+bool EditorSelectedEntitiesMove(Vector2 cursorPos) {
 
-    /*
-        Separar o conceito de 'seleção' do cluster de entidades selecionadas.
+    EditorState *s = EDITOR_STATE;
 
-        Existirão duas entidades, 'seleção' e 'movimentoSeleção'.
-        - Ambas possuem um componente 'movimentoMouse', que possui origem e posAtual
+    if (!s->selectedEntities) {
+        TraceLog(LOG_ERROR,
+                    "Editor tried to check selection move, but there are no entities selected.");
+        return false;
+    }
 
-        Quando o render ver uma 'seleção', ele vai renderizar o retângulo transparente.
-        Quando o render ver um 'movimentoSeleção', ele vai renderizar os itens do cluster
-            de entidade duas vezes, uma com transparência baseado na origem, e outra sólido
-            baseado na posAtual.
+    if (!s->isMovingSelectedEntities) {
 
-        Quando o 'movimentoSeleção' parar de existir, deverá aplicar a nova posição em todas
-            as entidades.
-    */
+        // Should actually check for collision with each selected entity,
+        // but this is good enough for now
+        if (!CheckCollisionPointRec(cursorPos, EditorSelectionGetRect())) {
+            return false;
+        }
 
+        s->selectedEntitiesDisplacement.start = cursorPos;
+    }
+
+    s->selectedEntitiesDisplacement.end = cursorPos;
+    s->isMovingSelectedEntities = true;
+    s->movedEntitiesThisFrame = true;
+
+    return true;
 }
 
 Rectangle EditorEntityButtonRect(int buttonNumber) {
