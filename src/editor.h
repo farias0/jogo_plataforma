@@ -41,6 +41,10 @@
 
 #define EDITOR_SELECTION_ENTITY_COLOR   (Color){ BLUE.r, BLUE.g, BLUE.b, 128 }
 
+// How transparent, compared to the original, the ghost of the
+// entities being moved will be
+#define EDITOR_SELECTION_MOVE_TRANSPARENCY      128
+
 
 typedef enum { 
 
@@ -100,7 +104,7 @@ typedef struct EditorState {
     // Moving selected entities
     bool        isMovingSelectedEntities;
     bool        movedEntitiesThisFrame;
-    Trajectory  selectedEntitiesDisplacement;
+    Trajectory  selectedEntitiesMoveCoords;
 
 } EditorState;
 
@@ -159,6 +163,10 @@ Rectangle EditorControlButtonRect(int buttonNumber);
 // Converts current editor's entity selection coordinates from
 // a trajectory to a rectangle (with positive dimensions, so missing direction).
 Rectangle EditorSelectionGetRect();
+
+// Calculates an entity's position according to the current move coordinates for
+// the selected entities, as well as parameters like the current game mode's grid.
+Vector2 EditorEntitySelectionCalcMove(Vector2 hitbox);
 
 
 #endif // _EDITOR_H_INCLUDED_

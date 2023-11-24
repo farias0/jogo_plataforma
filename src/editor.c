@@ -100,6 +100,9 @@ static void updateEntitySelectionList() {
 
         if (STATE->mode == MODE_IN_LEVEL) {
             LevelEntity *entity = (LevelEntity *) node->item;
+            
+            if (entity->components & LEVEL_IS_PLAYER) goto next_entity;
+
             bool collisionWithEntity = !entity->isDead && CheckCollisionRecs(selectionHitbox, entity->hitbox);
             bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, LevelEntityOriginHitbox(entity));
             if (collisionWithEntity || collisionWithGhost) {
@@ -108,15 +111,27 @@ static void updateEntitySelectionList() {
             }
         }
         else if (STATE->mode == MODE_OVERWORLD) {
+            
             OverworldEntity *entity = (OverworldEntity *) node->item;
+            
+            if (entity->components & OW_IS_CURSOR) goto next_entity;
+
             if (CheckCollisionRecs(selectionHitbox, OverworldEntitySquare(entity))) {
                 
                 LinkedListAdd(&EDITOR_STATE->selectedEntities, entity);
             }
         }
 
+next_entity:
         node = node->next;
     }
+}
+
+void selectEntitiesApplyMove() {
+
+    // TODO
+
+    TraceLog(LOG_TRACE, "Editor applied selected entities displacement.");
 }
 
 void EditorInitialize() {
@@ -212,8 +227,7 @@ void EditorTick() {
 
     // Moving selected entities
     if (s->isMovingSelectedEntities && !s->movedEntitiesThisFrame) {
-        // TODO apply displacement to entities
-        TraceLog(LOG_INFO, "test -- stopped moving entity"); // TODO remove it
+        selectEntitiesApplyMove();
         s->isMovingSelectedEntities = false;
     }
     s->movedEntitiesThisFrame = false;
@@ -268,10 +282,10 @@ bool EditorSelectedEntitiesMove(Vector2 cursorPos) {
             return false;
         }
 
-        s->selectedEntitiesDisplacement.start = cursorPos;
+        s->selectedEntitiesMoveCoords.start = cursorPos;
     }
 
-    s->selectedEntitiesDisplacement.end = cursorPos;
+    s->selectedEntitiesMoveCoords.end = cursorPos;
     s->isMovingSelectedEntities = true;
     s->movedEntitiesThisFrame = true;
 
@@ -331,4 +345,24 @@ Rectangle EditorSelectionGetRect() {
     }
 
     return (Rectangle) { x, y, width, height };
+}
+
+Vector2 EditorEntitySelectionCalcMove(Vector2 hitbox) {
+
+    Trajectory t = EDITOR_STATE->selectedEntitiesMoveCoords;
+    
+    Vector2 delta = {
+        t.end.x - t.start.x,
+        t.end.y - t.start.y,
+    };
+
+    Dimensions grid = LEVEL_GRID;
+    if (STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
+    
+    Vector2 pos = SnapToGrid((Vector2) {
+                                    hitbox.x + delta.x,
+                                    hitbox.y + delta.y                            
+                                }, grid);
+
+    return pos;
 }

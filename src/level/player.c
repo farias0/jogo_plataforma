@@ -32,7 +32,7 @@
 // JUMP_BUFFER_BACKWARDS_SIZE for when the player is gliding.
 // The player is falling slower, and it feels jarring to have  
 // a smaller Y window where the backwards jump buffer works.
-#define JUMP_BUFFER_BACKWARDS_SIZE_GLIDING  0.12f
+#define JUMP_BUFFER_BACKWARDS_SIZE_GLIDING  0.20f
 
 // How many seconds after having left the ground the jump command
 // still works
