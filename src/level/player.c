@@ -8,32 +8,37 @@
 #include "../render.h"
 
 
-#define PLAYERS_UPPERBODY_PROPORTION    0.90f // What % of the player's height is upperbody, for hitboxes
+#define PLAYERS_UPPERBODY_PROPORTION        0.90f // What % of the player's height is upperbody, for hitboxes
 
-#define PLAYER_SPEED_DEFAULT            5.5f
-#define PLAYER_SPEED_FAST               9.0f
+#define PLAYER_SPEED_DEFAULT                5.5f
+#define PLAYER_SPEED_FAST                   9.0f
 
-#define JUMP_START_VELOCITY_DEFAULT     10.0f
-#define JUMP_START_VELOCITY_RUNNING     12.0f
+#define JUMP_START_VELOCITY_DEFAULT         10.0f
+#define JUMP_START_VELOCITY_RUNNING         12.0f
 
-#define DOWNWARDS_VELOCITY_TARGET       -10.0f
-#define Y_VELOCITY_TARGET_TOLERANCE     1
+#define DOWNWARDS_VELOCITY_TARGET           -10.0f
+#define Y_VELOCITY_TARGET_TOLERANCE         1
 
-#define Y_ACCELERATION_RATE             0.4f
+#define Y_ACCELERATION_RATE                 0.4f
 
 // How much of the Y velocity is preserved when the ceiling is hit
 // and the trajectory vector is inverted (from upwards to downwards)
-#define CEILING_VELOCITY_FACTOR         0.4f
+#define CEILING_VELOCITY_FACTOR             0.4f
 
 // How many seconds before landing on the ground the jump command
 // still works 
-#define JUMP_BUFFER_BACKWARDS_SIZE      0.12f         
+#define JUMP_BUFFER_BACKWARDS_SIZE          0.08f  
+
+// JUMP_BUFFER_BACKWARDS_SIZE for when the player is gliding.
+// The player is falling slower, and it feels jarring to have  
+// a smaller Y window where the backwards jump buffer works.
+#define JUMP_BUFFER_BACKWARDS_SIZE_GLIDING  0.12f
 
 // How many seconds after having left the ground the jump command
 // still works
-#define JUMP_BUFFER_FORWARDS_SIZE       0.15f
+#define JUMP_BUFFER_FORWARDS_SIZE           0.15f
 
-#define Y_VELOCITY_GLIDING              -1.5f
+#define Y_VELOCITY_GLIDING                  -1.5f
 
 
 LevelEntity *LEVEL_PLAYER = 0;
@@ -58,12 +63,22 @@ static void initializePlayerState() {
 
 // The vertical velocity that works as the initial
 // propulsion of a jump
-inline static float jumpStartVelocity() {
+static float jumpStartVelocity() {
 
     if (PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
         return JUMP_START_VELOCITY_RUNNING;
     else
         return JUMP_START_VELOCITY_DEFAULT;
+}
+
+// The size of the backwards jump buffer, that varies in function
+// of its vertical velocity
+static float jumpBufferBackwardsSize() {
+
+    if (PLAYER_STATE->isGliding)
+        return JUMP_BUFFER_BACKWARDS_SIZE_GLIDING;
+    else
+        return JUMP_BUFFER_BACKWARDS_SIZE;
 }
 
 // Syncs the player state's hitbox with the player entity's data 
@@ -244,7 +259,7 @@ void LevelPlayerTick() {
 
     const double now = GetTime();
     if (!pState->isAscending &&
-        (now - PLAYER_STATE->lastPressedJump < JUMP_BUFFER_BACKWARDS_SIZE) &&
+        (now - PLAYER_STATE->lastPressedJump < jumpBufferBackwardsSize()) &&
         (now - PLAYER_STATE->lastGroundBeneath < JUMP_BUFFER_FORWARDS_SIZE)) {
 
         // Starts jump
@@ -372,8 +387,7 @@ next_entity:
     }
 
 
-    bool isGliding = false;
-
+    PLAYER_STATE->isGliding = false;
     if (pState->yVelocity > pState->yVelocityTarget) {
 
         if (PLAYER_STATE->mode == PLAYER_MODE_GLIDE &&
@@ -382,7 +396,7 @@ next_entity:
 
             // Is gliding
             pState->yVelocity = Y_VELOCITY_GLIDING;
-            isGliding = true;
+            PLAYER_STATE->isGliding = true;
 
         } else {
 
@@ -396,10 +410,12 @@ next_entity:
     Sprite currentSprite;
 
     if (PLAYER_STATE->mode == PLAYER_MODE_GLIDE) {
-        if (isGliding) currentSprite =      PlayerGlideFallingSprite;
-        else currentSprite =                PlayerGlideOnSprite;
+        if (PLAYER_STATE->isGliding)
+            currentSprite =     PlayerGlideFallingSprite;
+        else
+            currentSprite =     PlayerGlideOnSprite;
     }
-    else currentSprite =                    PlayerDefaultSprite;
+    else currentSprite =        PlayerDefaultSprite;
 
     LEVEL_PLAYER->sprite.sprite = currentSprite.sprite;
 }

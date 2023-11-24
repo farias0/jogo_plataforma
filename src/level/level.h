@@ -66,6 +66,9 @@ typedef struct PlayerState {
     // If the player is on the "going up" phase of the jump
     bool isAscending;
 
+    // If the player is on mode 'GLIDE' and is actively gliding
+    bool isGliding;
+
     float yVelocity;
     float yVelocityTarget;
     float xVelocity;
