@@ -435,10 +435,10 @@ next_button:
 
 static void drawEditorEntitySelection() {
 
-    if (EDITOR_ENTITY_SELECTION->isSelecting)
+    if (EDITOR_STATE->isSelectingEntities)
         drawSceneRectangle(EditorSelectionGetRect(), EDITOR_SELECTION_RECT_COLOR);
 
-    ListNode *node = EDITOR_ENTITY_SELECTION->entitiesHead;
+    ListNode *node = EDITOR_STATE->selectedEntities;
     while (node != 0) {
 
         const Color color = EDITOR_SELECTION_ENTITY_COLOR;
@@ -459,8 +459,7 @@ static void drawEditorEntitySelection() {
 
 static void drawEditor() {
 
-    if (EDITOR_ENTITY_SELECTION)
-        drawEditorEntitySelection();
+    drawEditorEntitySelection();
 
 
     DrawLine(SCREEN_WIDTH,

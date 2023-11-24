@@ -79,17 +79,23 @@ void handleDevInput() {
         EditorSelectEntities(mousePosInScene);
         return;
     }
-    else if (STATE->isEditorEnabled && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && EDITOR_ENTITY_SELECTION) {
+    else if (STATE->isEditorEnabled && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && EDITOR_STATE->selectedEntities) {
+
+        if (!IsInPlayArea(mousePosInScreen)) goto skip_selected_entities_actions;
 
         // Actions available when entities are selected
 
+        // if (CheckCollisionPointRec(mousePosInScene, EditorSelectionGetRect())) {
+        //     EditorSelectedEntitiesMove(mousePosInScene);
+        // }
+
         if (STATE->editorButtonToggled &&
-            STATE->editorButtonToggled->type == EDITOR_ENTITY_ERASER &&
-            IsInPlayArea(mousePosInScreen))
+            STATE->editorButtonToggled->type == EDITOR_ENTITY_ERASER)
                     goto skip_to_button_handler;
 
         EditorSelectionCancel();
     }
+skip_selected_entities_actions:
 
 
     if      (!IsInPlayArea(mousePosInScreen)) return;

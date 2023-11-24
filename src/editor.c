@@ -11,9 +11,7 @@
 
 ListNode *EDITOR_ENTITIES_HEAD = 0;
 ListNode *EDITOR_CONTROL_HEAD = 0;
-EditorSelection *EDITOR_ENTITY_SELECTION = 0;
-
-static bool selectedEntitiesThisFrame = false;
+EditorState *EDITOR_STATE = 0;
 
 
 static EditorEntityButton *addEntityButton(
@@ -76,12 +74,7 @@ void loadOverworldEditor() {
 // based on its origin and current cursor pos
 static void updateEntitySelectionList() {
 
-    if (!EDITOR_ENTITY_SELECTION) {
-        TraceLog(LOG_ERROR, "Entity selection list tried to update, but there's no reference to selection.");
-        return;
-    }
-
-    LinkedListRemoveAll(&EDITOR_ENTITY_SELECTION->entitiesHead);
+    LinkedListRemoveAll(&EDITOR_STATE->selectedEntities);
 
     Rectangle selectionHitbox = EditorSelectionGetRect();
 
@@ -94,14 +87,14 @@ static void updateEntitySelectionList() {
             bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, LevelEntityOriginHitbox(entity));
             if (collisionWithEntity || collisionWithGhost) {
                 
-                LinkedListAdd(&EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+                LinkedListAdd(&EDITOR_STATE->selectedEntities, entity);
             }
         }
         else if (STATE->mode == MODE_OVERWORLD) {
             OverworldEntity *entity = (OverworldEntity *) node->item;
             if (CheckCollisionRecs(selectionHitbox, OverworldEntitySquare(entity))) {
                 
-                LinkedListAdd(&EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+                LinkedListAdd(&EDITOR_STATE->selectedEntities, entity);
             }
         }
 
@@ -109,12 +102,28 @@ static void updateEntitySelectionList() {
     }
 }
 
-void EditorSync() {
+void EditorInitialize() {
+
+    EDITOR_STATE = MemAlloc(sizeof(EditorState));
+
+    EditorStateReset();
+
+    TraceLog(LOG_INFO, "Editor initialized.");
+}
+
+void EditorStateReset() {
+
+    EditorSelectionCancel();
 
     LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
     LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
+
+    TraceLog(LOG_DEBUG, "Editor state reset.");
+}
+
+void EditorSync() {
     
-    EditorSelectionCancel();
+    EditorStateReset();
 
     switch (STATE->mode) {
     
@@ -173,14 +182,16 @@ void EditorEnabledToggle() {
 
 void EditorTick() {
 
+    EditorState *s = EDITOR_STATE;
+
     // Entity selection
-    if (EDITOR_ENTITY_SELECTION) {
-        if (selectedEntitiesThisFrame)
+    if (s->isSelectingEntities) {
+        if (s->selectedEntitiesThisFrame)
             updateEntitySelectionList();
         else
-            EDITOR_ENTITY_SELECTION->isSelecting = false;
+            s->isSelectingEntities = false;
     }
-    selectedEntitiesThisFrame = false;
+    s->selectedEntitiesThisFrame = false;
 }
 
 void EditorEntityButtonSelect(EditorEntityButton *item) {
@@ -190,32 +201,47 @@ void EditorEntityButtonSelect(EditorEntityButton *item) {
 
 void EditorSelectEntities(Vector2 cursorPos) {
 
-    EditorSelection *s = EDITOR_ENTITY_SELECTION;
+    EditorState *s = EDITOR_STATE;
 
-    if (!s) {
-        EDITOR_ENTITY_SELECTION = MemAlloc(sizeof(EditorSelection));
-        s = EDITOR_ENTITY_SELECTION;
-        s->origin = cursorPos;
-    }
-
-    if (!s->isSelecting) {
-        s->origin = cursorPos;
+    if (!s->isSelectingEntities) {
+        s->entitySelectionCoords.start = cursorPos;
     }
     
-    s->current = cursorPos;
-    s->isSelecting = true;
-    selectedEntitiesThisFrame = true;
+    s->entitySelectionCoords.end = cursorPos;
+    s->isSelectingEntities = true;
+    s->selectedEntitiesThisFrame = true;
 }
 
 void EditorSelectionCancel() {
-    
-    if (EDITOR_ENTITY_SELECTION) {
-        LinkedListRemoveAll(&EDITOR_ENTITY_SELECTION->entitiesHead);
-        MemFree(EDITOR_ENTITY_SELECTION);
-        EDITOR_ENTITY_SELECTION = 0;
+
+    if (EDITOR_STATE) {
+        
+        EDITOR_STATE->isSelectingEntities = false;
+        EDITOR_STATE->selectedEntitiesThisFrame = false;
+        EDITOR_STATE->isMovingSelectedEntities = false;
+        LinkedListRemoveAll(&EDITOR_STATE->selectedEntities);
     }
 
     TraceLog(LOG_TRACE, "Editor's entity selection canceled.");
+}
+
+void EditorSelectedEntitiesMove(Vector2 cursorPos) {
+
+    /*
+        Separar o conceito de 'seleção' do cluster de entidades selecionadas.
+
+        Existirão duas entidades, 'seleção' e 'movimentoSeleção'.
+        - Ambas possuem um componente 'movimentoMouse', que possui origem e posAtual
+
+        Quando o render ver uma 'seleção', ele vai renderizar o retângulo transparente.
+        Quando o render ver um 'movimentoSeleção', ele vai renderizar os itens do cluster
+            de entidade duas vezes, uma com transparência baseado na origem, e outra sólido
+            baseado na posAtual.
+
+        Quando o 'movimentoSeleção' parar de existir, deverá aplicar a nova posição em todas
+            as entidades.
+    */
+
 }
 
 Rectangle EditorEntityButtonRect(int buttonNumber) {
@@ -253,21 +279,21 @@ Rectangle EditorControlButtonRect(int buttonNumber) {
 
 Rectangle EditorSelectionGetRect() {
 
-    EditorSelection *s = EDITOR_ENTITY_SELECTION;
+    Trajectory t = EDITOR_STATE->entitySelectionCoords;
 
-    float x         = s->origin.x;
-    float y         = s->origin.y;
-    float width     = s->current.x - s->origin.x;
-    float height    = s->current.y - s->origin.y;
+    float x         = t.start.x;
+    float y         = t.start.y;
+    float width     = t.end.x - t.start.x;
+    float height    = t.end.y - t.start.y;
 
-    if (s->current.x < s->origin.x) {
-        x       = s->current.x;
-        width   = s->origin.x - s->current.x;
+    if (t.end.x < t.start.x) {
+        x       = t.end.x;
+        width   = t.start.x - t.end.x;
     }
 
-    if (s->current.y < s->origin.y) {
-        y       = s->current.y;
-        height  = s->origin.y - s->current.y;
+    if (t.end.y < t.start.y) {
+        y       = t.end.y;
+        height  = t.start.y - t.end.y;
     }
 
     return (Rectangle) { x, y, width, height };

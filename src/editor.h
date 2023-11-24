@@ -89,16 +89,20 @@ typedef struct EditorControlButton {
 } EditorControlButton;
 
 
-// A selection of entities in the screen by a cursor.
-typedef struct EditorSelection {
+typedef struct EditorState {
 
-    Vector2 origin;
-    Vector2 current;
-    bool isSelecting;
-    ListNode *entitiesHead;
+    // Entity selection
+    bool        isSelectingEntities;
+    bool        selectedEntitiesThisFrame;
+    Trajectory  entitySelectionCoords;
+    ListNode *  selectedEntities;
+    bool        isMovingSelectedEntities;
+    Trajectory  selectedEntitiesDisplacement;
 
-} EditorSelection;
+} EditorState;
 
+
+// TODO move loaded editor buttons to EditorState
 
 // The head of the linked list of all the loaded editor entity itens
 extern ListNode *EDITOR_ENTITIES_HEAD;
@@ -106,9 +110,12 @@ extern ListNode *EDITOR_ENTITIES_HEAD;
 // The head of the linked list of all the loaded editor control itens
 extern ListNode *EDITOR_CONTROL_HEAD;
 
-// Selection of entities in the screen by a cursor, if a selection is hapenning.
-extern EditorSelection *EDITOR_ENTITY_SELECTION;
+extern EditorState *EDITOR_STATE;
 
+
+void EditorInitialize();
+
+void EditorStateReset();
 
 // Destroy any existing editor itens and then loads the items
 // for the current game mode
@@ -134,6 +141,9 @@ void EditorSelectEntities(Vector2 cursorPos);
 // Cancels the selection of entities.
 void EditorSelectionCancel();
 
+// Moves a cluster of selected entities.
+void EditorSelectedEntitiesMove(Vector2 cursorPos);
+
 // Calculates and returns an editor entity buttons' coordinates,
 // alongside its dimensions
 Rectangle EditorEntityButtonRect(int buttonNumber);
@@ -142,7 +152,9 @@ Rectangle EditorEntityButtonRect(int buttonNumber);
 // alongside its dimensions
 Rectangle EditorControlButtonRect(int buttonNumber);
 
-// Gets the rectangle for the current editor's entity selection.
+// Converts current editor's entity selection coordinates from
+// a trajectory to a rectangle (with positive dimensions, so missing direction).
 Rectangle EditorSelectionGetRect();
+
 
 #endif // _EDITOR_H_INCLUDED_

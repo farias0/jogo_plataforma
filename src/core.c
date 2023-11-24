@@ -71,6 +71,7 @@ void SystemsInitialize() {
     AssetsInitialize();
     GameStateInitialize();
     CameraInitialize();
+    EditorInitialize();
     RenderInitialize();
 }
 

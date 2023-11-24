@@ -234,11 +234,10 @@ next_node:
 
     LevelEntity *entity = (LevelEntity *) node->item;
 
-    bool isPartOfSelection = EDITOR_ENTITY_SELECTION &&
-                                LinkedListGetNode(EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+    bool isPartOfSelection = LinkedListGetNode(EDITOR_STATE->selectedEntities, entity);
     if (isPartOfSelection) {
 
-        ListNode *selectedNode = EDITOR_ENTITY_SELECTION->entitiesHead;
+        ListNode *selectedNode = EDITOR_STATE->selectedEntities;
         while (selectedNode) {
 
             ListNode *next = selectedNode->next;

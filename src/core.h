@@ -22,6 +22,11 @@ typedef struct Dimensions {
     float height;
 } Dimensions;
 
+typedef struct Trajectory {
+    Vector2 start;
+    Vector2 end;
+} Trajectory;
+
 typedef enum GameMode {
     MODE_IN_LEVEL,
     MODE_OVERWORLD

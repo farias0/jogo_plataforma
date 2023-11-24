@@ -355,11 +355,10 @@ void OverworldTileRemoveAt(Vector2 pos) {
 
     OverworldEntity *entity = (OverworldEntity *) node->item;
 
-    bool isPartOfSelection = EDITOR_ENTITY_SELECTION &&
-                                LinkedListGetNode(EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+    bool isPartOfSelection = LinkedListGetNode(EDITOR_STATE->selectedEntities, entity);
     if (isPartOfSelection) {
 
-        ListNode *node = EDITOR_ENTITY_SELECTION->entitiesHead;
+        ListNode *node = EDITOR_STATE->selectedEntities;
         while (node) {
             ListNode *next = node->next;
             ListNode *nodeInOW = LinkedListGetNode(OW_LIST_HEAD, (OverworldEntity *) node->item);
