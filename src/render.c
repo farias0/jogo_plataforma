@@ -479,7 +479,7 @@ static void drawEditorEntitySelection() {
             if (EDITOR_STATE->isMovingSelectedEntities) {
                 drawLevelEntityMoveGhost(entity);
             } else {
-                drawSceneRectangle(entity->hitbox, color);
+                if (!entity->isDead) drawSceneRectangle(entity->hitbox, color);
                 drawSceneRectangle(LevelEntityOriginHitbox(entity), color);
             }
 

@@ -110,7 +110,7 @@ void CameraLevelCentralizeOnPlayer() {
     }
 
     CAMERA->pos.x = LEVEL_PLAYER->hitbox.x - SCREEN_WIDTH/3;
-    CAMERA->pos.y = LEVEL_PLAYER->hitbox.y - (3*SCREEN_HEIGHT)/5;
+    CAMERA->pos.y = LEVEL_PLAYER->hitbox.y - SCREEN_HEIGHT/2;
 
     CameraPanningReset();
     TraceLog(LOG_TRACE, "Camera centralized on Player.");
