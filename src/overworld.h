@@ -30,6 +30,7 @@ typedef enum OverworldEntityComponent {
     OW_IS_CURSOR            = 1,
     OW_IS_LEVEL_DOT         = 2,
     OW_IS_PATH              = 4,
+    OW_IS_ROTATABLE         = 8,
 } OverworldEntityComponent;
 
 typedef struct OverworldEntity {

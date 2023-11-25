@@ -147,17 +147,17 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
         newTile->sprite = LevelDotSprite;
         break;
     case OW_STRAIGHT_PATH:
-        newTile->components = OW_IS_PATH;
+        newTile->components = OW_IS_PATH + OW_IS_ROTATABLE;
         newTile->sprite = PathTileStraightSprite;
         SpriteRotate(&newTile->sprite, degrees);
         break;
     case OW_JOIN_PATH:
-        newTile->components = OW_IS_PATH;
+        newTile->components = OW_IS_PATH + OW_IS_ROTATABLE;
         newTile->sprite = PathTileJoinSprite;
         SpriteRotate(&newTile->sprite, degrees);
         break;
     case OW_PATH_IN_L:
-        newTile->components = OW_IS_PATH;
+        newTile->components = OW_IS_PATH + OW_IS_ROTATABLE;
         newTile->sprite = PathTileInLSprite;
         SpriteRotate(&newTile->sprite, degrees);
         break;
@@ -285,24 +285,21 @@ next_entity:
 void OverworldTileAddOrInteract(Vector2 pos) {
 
     pos = SnapToGrid(pos, OW_GRID);
+
     Rectangle testHitbox = (Rectangle){ pos.x,
                                     pos.y,
                                     OW_GRID.width,
                                     OW_GRID.width };
 
-    ListNode *node = OW_LIST_HEAD;
-
     OverworldEntity *entity = OverworldCheckCollisionWithAnyTile(testHitbox);
 
     if (entity) {
 
-        if (entity->components & OW_IS_CURSOR) return;
-
-        if (entity->components & OW_IS_LEVEL_DOT) {
-        TraceLog(LOG_TRACE, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
-                        entity->components, entity->gridPos.x, entity->gridPos.y);
-        return;
-    }
+        if (!(entity->components & OW_IS_ROTATABLE)) {
+            TraceLog(LOG_TRACE, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
+                            entity->components, entity->gridPos.x, entity->gridPos.y);
+            return;
+        }
 
         // Interacting
         SpriteRotate(&entity->sprite, 90);
