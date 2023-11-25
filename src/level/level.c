@@ -57,9 +57,10 @@ static ListNode *getEntityOnScene(Vector2 pos) {
 // beneath an existing level entity.
 static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
 
+    // Virtual entity to use when checking only hitboxes
+    LevelEntity virtualEntity;
     if (!entity) {
-        // Virtual entity to use when checking only hitboxes
-        LevelEntity virtualEntity;
+        virtualEntity.isFacingRight = false;
         entity = &virtualEntity;
     }
 
