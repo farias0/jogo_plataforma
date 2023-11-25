@@ -16,6 +16,7 @@ Sprite EnemySprite;
 Sprite BlockSprite;
 Sprite AcidSprite;
 Sprite LevelEndOrbSprite;
+Sprite GlideItemSprite;
 
 // Overworld
 Sprite OverworldCursorSprite;
@@ -62,6 +63,7 @@ void AssetsInitialize() {
     LevelEndOrbSprite = defaultSprite("../assets/level_end_orb_1.png");
     BlockSprite = tileSprite("../assets/floor_tile_1.png");
     AcidSprite = tileSprite("../assets/acid_tile_1.png");
+    GlideItemSprite = tileSprite("../assets/glide_item.png");
 
     // Overworld
     OverworldCursorSprite = defaultSprite("../assets/cursor_default_1.png");

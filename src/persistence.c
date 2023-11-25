@@ -28,6 +28,7 @@ typedef enum LevelEntityType {
     LEVEL_ENTITY_BLOCK,
     LEVEL_ENTITY_ACID,
     LEVEL_ENTITY_EXIT,
+    LEVEL_ENTITY_GLIDE
 } LevelEntityType;
 
 typedef struct PersistenceLevelEntity {
@@ -77,6 +78,7 @@ void PersistenceLevelSave(char *levelName) {
                                                             data[i].entityType = LEVEL_ENTITY_BLOCK;
 
         else if (entity->components & LEVEL_IS_EXIT)        data[i].entityType = LEVEL_ENTITY_EXIT;
+        else if (entity->components & LEVEL_IS_GLIDE)       data[i].entityType = LEVEL_ENTITY_GLIDE;
         else { 
             TraceLog(LOG_WARNING, "Unknow entity type found when serializing level, components=%d. Skipping it...");
             saveItemCount--;
@@ -145,6 +147,8 @@ bool PersistenceLevelLoad(char *levelName) {
             LevelAcidAdd(origin); break;
         case LEVEL_ENTITY_EXIT:
             LevelExitAdd(origin); break;
+        case LEVEL_ENTITY_GLIDE:
+            LevelGlideAdd(origin); break;
         default:
             TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, type=%d.", data[i].entityType); 
         }

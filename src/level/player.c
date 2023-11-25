@@ -381,6 +381,13 @@ void LevelPlayerTick() {
                 LevelGoToOverworld();
             }
 
+            else if (entity->components & LEVEL_IS_GLIDE &&
+                        CheckCollisionRecs(entity->hitbox, LEVEL_PLAYER->hitbox) &&
+                        PLAYER_STATE->mode != PLAYER_MODE_GLIDE) {
+                LevelPlayerSetMode(PLAYER_MODE_GLIDE);
+                return;
+            }
+
 next_entity:
             node = node->next;
         }
