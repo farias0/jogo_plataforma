@@ -24,6 +24,7 @@ extern Sprite EnemySprite;
 extern Sprite BlockSprite;
 extern Sprite AcidSprite;
 extern Sprite LevelEndOrbSprite;
+extern Sprite GlideItemSprite;
 
 // Overworld
 extern Sprite OverworldCursorSprite;

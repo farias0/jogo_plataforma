@@ -21,6 +21,7 @@ typedef enum LevelEntityComponent {
     LEVEL_IS_EXIT           = 8,
     LEVEL_IS_GROUND         = 16,
     LEVEL_IS_DANGER         = 32,
+    LEVEL_IS_GLIDE          = 64
 } LevelEntityComponent;
 
 typedef struct LevelEntity {
@@ -110,6 +111,9 @@ void LevelExitCheckAndAdd(Vector2 pos);
 // Gives priority to the tile in the direction the player is looking at.
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity);
 
+// The ground beneath a hitbox, or 0 if not on the ground.
+LevelEntity *LevelGetGroundBeneathHitbox(Rectangle hitbox);
+
 void LevelEntityDestroy(ListNode *node);
 
 // Searches for level entity in position
@@ -188,6 +192,10 @@ void LevelBlockCheckAndAdd(Vector2 origin);
 // Initializes and adds an acid block to the level in the given origin,
 // if there are no other blocks there already.
 void LevelAcidCheckAndAdd(Vector2 origin);
+
+void LevelGlideAdd(Vector2 origin);
+
+void LevelGlideCheckAndAdd(Vector2 origin);
 
 
 #endif // _LEVEL_H_INCLUDED_

@@ -52,6 +52,63 @@ static ListNode *getEntityOnScene(Vector2 pos) {
     return 0;
 }
 
+// Searches the level for a ground immediatelly beneath the hitbox.
+// Accepts an optional 'entity' reference, in case its checking for ground
+// beneath an existing level entity.
+static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
+
+    // Virtual entity to use when checking only hitboxes
+    LevelEntity virtualEntity;
+    if (!entity) {
+        virtualEntity.isFacingRight = false;
+        entity = &virtualEntity;
+    }
+
+    int feetHeight = hitbox.y + hitbox.height;
+
+    ListNode *node = LEVEL_LIST_HEAD;
+
+    LevelEntity *foundGround = 0; 
+
+    while (node != 0) {
+
+        LevelEntity *possibleGround = (LevelEntity *)node->item;
+
+        if (possibleGround != entity &&
+            possibleGround->components & LEVEL_IS_GROUND &&
+
+            !(possibleGround->isDead) &&
+
+            // If x is within the possible ground
+            possibleGround->hitbox.x < (hitbox.x + hitbox.width) &&
+            hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&
+
+            // If y is RIGHT above the possible ground
+            abs((int) (possibleGround->hitbox.y - feetHeight)) <= ON_THE_GROUND_Y_TOLERANCE) {
+                
+                // Is on a ground
+
+                if (foundGround) {
+
+                    // In case of multiple grounds beneath
+                    if (
+                        (entity->isFacingRight && (possibleGround->hitbox.x > foundGround->hitbox.x)) ||
+                        (!entity->isFacingRight && (possibleGround->hitbox.x < foundGround->hitbox.x))
+                    ) {
+                        
+                        foundGround = possibleGround;
+
+                    }
+                }
+                else foundGround = possibleGround;
+            } 
+
+        node = node->next;
+    }
+
+    return foundGround;   
+}
+
 void LevelInitialize(char *levelName) {
 
     GameStateReset();
@@ -142,48 +199,12 @@ void LevelExitCheckAndAdd(Vector2 pos) {
 
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
 
-    int entitysFoot = entity->hitbox.y + entity->hitbox.height;
+    return getGroundBeneath(entity->hitbox, entity);    
+}
 
-    ListNode *node = LEVEL_LIST_HEAD;
+LevelEntity *LevelGetGroundBeneathHitbox(Rectangle hitbox) {
 
-    LevelEntity *foundGround = 0; 
-
-    while (node != 0) {
-
-        LevelEntity *possibleGround = (LevelEntity *)node->item;
-
-        if (possibleGround != entity &&
-            possibleGround->components & LEVEL_IS_GROUND &&
-
-            !(possibleGround->isDead) &&
-
-            // If x is within the possible ground
-            possibleGround->hitbox.x < (entity->hitbox.x + entity->hitbox.width) &&
-            entity->hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&
-
-            // If y is RIGHT above the possible ground
-            abs((int) (possibleGround->hitbox.y - entitysFoot)) <= ON_THE_GROUND_Y_TOLERANCE) {
-                
-                // Is on a ground
-
-                if (foundGround) {
-
-                    if (
-                        (entity->isFacingRight && (possibleGround->hitbox.x > foundGround->hitbox.x)) ||
-                        (!entity->isFacingRight && (possibleGround->hitbox.x < foundGround->hitbox.x))
-                    ) {
-                        
-                        foundGround = possibleGround;
-
-                    }
-                }
-                else foundGround = possibleGround;
-            } 
-
-        node = node->next;
-    }
-
-    return foundGround;    
+    return getGroundBeneath(hitbox, 0);
 }
 
 void LevelEntityDestroy(ListNode *node) {
