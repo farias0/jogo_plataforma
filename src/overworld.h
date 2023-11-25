@@ -30,6 +30,7 @@ typedef enum OverworldEntityComponent {
     OW_IS_CURSOR            = 1,
     OW_IS_LEVEL_DOT         = 2,
     OW_IS_PATH              = 4,
+    OW_IS_ROTATABLE         = 8,
 } OverworldEntityComponent;
 
 typedef struct OverworldEntity {
@@ -70,6 +71,10 @@ void OverworldTileAddOrInteract(Vector2 pos);
 
 // Removes tile from overworld and destroys it, if present and if allowed.
 void OverworldTileRemoveAt(Vector2 pos);
+
+// Checks for collision between a hitbox and any tile in the overworld.
+// Returns the collided entity, or 0 if none.
+OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox);
 
 void OverworldTick();
 

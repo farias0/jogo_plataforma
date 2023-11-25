@@ -173,7 +173,7 @@ bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox);
 
 // Checks for collision between a rectangle and any 
 // living entity in the level, including their origins.
-bool LevelCheckCollisionWithAnyEntityOrOrigin(Rectangle hitbox);
+bool LevelCheckCollisionWithAnything(Rectangle hitbox);
 
 void LevelEnemyKill(LevelEntity *entity);
 

@@ -71,6 +71,7 @@ void SystemsInitialize() {
     AssetsInitialize();
     GameStateInitialize();
     CameraInitialize();
+    EditorInitialize();
     RenderInitialize();
 }
 
@@ -176,4 +177,13 @@ Vector2 DistanceFromGrid(Vector2 coords, Dimensions grid) {
         distanceFromGrid(coords.x, grid.width),
         distanceFromGrid(coords.y, grid.height)
     };
+}
+
+Vector2 RectangleGetPos(Rectangle rect) {
+    return (Vector2){ rect.x, rect.y };
+}
+
+void RectangleSetPos(Rectangle *rect, Vector2 pos) {
+    rect->x = pos.x;
+    rect->y = pos.y;
 }

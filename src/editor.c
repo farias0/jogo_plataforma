@@ -11,10 +11,25 @@
 
 ListNode *EDITOR_ENTITIES_HEAD = 0;
 ListNode *EDITOR_CONTROL_HEAD = 0;
-EditorSelection *EDITOR_ENTITY_SELECTION = 0;
+EditorState *EDITOR_STATE = 0;
 
-static bool selectedEntitiesThisFrame = false;
 
+static void editorUseEraser(Vector2 cursorPos) {
+
+    switch (STATE->mode) {
+        
+    case MODE_IN_LEVEL:
+        LevelEntityRemoveAt(cursorPos);
+        break;
+    
+    case MODE_OVERWORLD:
+        OverworldTileRemoveAt(cursorPos);
+        break;
+    }
+
+
+    EditorSelectionCancel();
+}
 
 static EditorEntityButton *addEntityButton(
     EditorEntityType type, Sprite sprite, void (*handler), EditorInteractionType interaction) {
@@ -44,7 +59,7 @@ EditorControlButton *addControlButton(EditorControlType type, char *label, void 
 
 void loadInLevelEditor() {
 
-    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &LevelEntityRemoveAt, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &editorUseEraser, EDITOR_INTERACTION_HOLD);
     addEntityButton(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
     STATE->editorButtonToggled =
         addEntityButton(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
@@ -59,7 +74,7 @@ void loadInLevelEditor() {
 
 void loadOverworldEditor() {
 
-    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &OverworldTileRemoveAt, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &editorUseEraser, EDITOR_INTERACTION_HOLD);
     STATE->editorButtonToggled =
         addEntityButton(EDITOR_ENTITY_LEVEL_DOT, LevelDotSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_PATH_JOIN, PathTileJoinSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
@@ -76,12 +91,7 @@ void loadOverworldEditor() {
 // based on its origin and current cursor pos
 static void updateEntitySelectionList() {
 
-    if (!EDITOR_ENTITY_SELECTION) {
-        TraceLog(LOG_ERROR, "Entity selection list tried to update, but there's no reference to selection.");
-        return;
-    }
-
-    LinkedListRemoveAll(&EDITOR_ENTITY_SELECTION->entitiesHead);
+    LinkedListRemoveAll(&EDITOR_STATE->selectedEntities);
 
     Rectangle selectionHitbox = EditorSelectionGetRect();
 
@@ -90,31 +100,118 @@ static void updateEntitySelectionList() {
 
         if (STATE->mode == MODE_IN_LEVEL) {
             LevelEntity *entity = (LevelEntity *) node->item;
+            
+            if (entity->components & LEVEL_IS_PLAYER) goto next_entity;
+
             bool collisionWithEntity = !entity->isDead && CheckCollisionRecs(selectionHitbox, entity->hitbox);
             bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, LevelEntityOriginHitbox(entity));
             if (collisionWithEntity || collisionWithGhost) {
                 
-                LinkedListAdd(&EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+                LinkedListAdd(&EDITOR_STATE->selectedEntities, entity);
             }
         }
         else if (STATE->mode == MODE_OVERWORLD) {
+            
             OverworldEntity *entity = (OverworldEntity *) node->item;
+            
+            if (entity->components & OW_IS_CURSOR) goto next_entity;
+
             if (CheckCollisionRecs(selectionHitbox, OverworldEntitySquare(entity))) {
                 
-                LinkedListAdd(&EDITOR_ENTITY_SELECTION->entitiesHead, entity);
+                LinkedListAdd(&EDITOR_STATE->selectedEntities, entity);
             }
         }
 
+next_entity:
         node = node->next;
     }
 }
 
-void EditorSync() {
+void selectEntitiesApplyMove() {
+
+    // Searches for collision 
+    ListNode *node = EDITOR_STATE->selectedEntities;
+    while (node) {
+
+        switch (STATE->mode) {
+
+        case MODE_IN_LEVEL: {
+            LevelEntity *entity = (LevelEntity *) node->item;
+            Rectangle hitbox = entity->hitbox;
+            Vector2 pos = EditorEntitySelectionCalcMove(RectangleGetPos(hitbox));
+            RectangleSetPos(&hitbox, pos);
+            if (LevelCheckCollisionWithAnything(hitbox))
+                return;
+            break;
+        }
+
+        case MODE_OVERWORLD: {
+            OverworldEntity *entity = (OverworldEntity *) node->item;
+            Rectangle hitbox = OverworldEntitySquare(entity);
+            Vector2 pos = EditorEntitySelectionCalcMove(RectangleGetPos(hitbox));
+            RectangleSetPos(&hitbox, pos);
+            if (OverworldCheckCollisionWithAnyTile(hitbox))
+                return;
+            break;
+        }
+
+        }
+        node = node->next;
+    }
+
+    // Apply move
+    Vector2 newPos;
+    node = EDITOR_STATE->selectedEntities;
+
+    while (node) {
+        
+        switch (STATE->mode) {
+
+        case MODE_IN_LEVEL: {
+            LevelEntity *entity = (LevelEntity *) node->item;
+            newPos = EditorEntitySelectionCalcMove(RectangleGetPos(entity->hitbox));
+            RectangleSetPos(&entity->hitbox, newPos);
+            entity->origin = EditorEntitySelectionCalcMove(entity->origin);
+            break;
+        }
+
+        case MODE_OVERWORLD: {
+            OverworldEntity *entity = (OverworldEntity *) node->item;
+            entity->gridPos = EditorEntitySelectionCalcMove(entity->gridPos);
+            break;
+        }
+
+        }
+        node = node->next;
+    }
+
+    EditorSelectionCancel();
+
+    TraceLog(LOG_TRACE, "Editor applied selected entities displacement.");
+}
+
+void EditorInitialize() {
+
+    EDITOR_STATE = MemAlloc(sizeof(EditorState));
+
+    EditorStateReset();
+
+    TraceLog(LOG_INFO, "Editor initialized.");
+}
+
+void EditorStateReset() {
+
+    EditorSelectionCancel();
 
     LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
     LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
+
+    TraceLog(LOG_DEBUG, "Editor state reset.");
+}
+
+void EditorSync() {
     
-    EditorSelectionCancel();
+    EditorStateReset();
 
     switch (STATE->mode) {
     
@@ -173,14 +270,23 @@ void EditorEnabledToggle() {
 
 void EditorTick() {
 
+    EditorState *s = EDITOR_STATE;
+
     // Entity selection
-    if (EDITOR_ENTITY_SELECTION) {
-        if (selectedEntitiesThisFrame)
+    if (s->isSelectingEntities) {
+        if (s->selectedEntitiesThisFrame)
             updateEntitySelectionList();
         else
-            EDITOR_ENTITY_SELECTION->isSelecting = false;
+            s->isSelectingEntities = false;
     }
-    selectedEntitiesThisFrame = false;
+    s->selectedEntitiesThisFrame = false;
+
+    // Moving selected entities
+    if (s->isMovingSelectedEntities && !s->movedEntitiesThisFrame) {
+        selectEntitiesApplyMove();
+        s->isMovingSelectedEntities = false;
+    }
+    s->movedEntitiesThisFrame = false;
 }
 
 void EditorEntityButtonSelect(EditorEntityButton *item) {
@@ -190,32 +296,56 @@ void EditorEntityButtonSelect(EditorEntityButton *item) {
 
 void EditorSelectEntities(Vector2 cursorPos) {
 
-    EditorSelection *s = EDITOR_ENTITY_SELECTION;
+    EditorState *s = EDITOR_STATE;
 
-    if (!s) {
-        EDITOR_ENTITY_SELECTION = MemAlloc(sizeof(EditorSelection));
-        s = EDITOR_ENTITY_SELECTION;
-        s->origin = cursorPos;
-    }
-
-    if (!s->isSelecting) {
-        s->origin = cursorPos;
+    if (!s->isSelectingEntities) {
+        s->entitySelectionCoords.start = cursorPos;
     }
     
-    s->current = cursorPos;
-    s->isSelecting = true;
-    selectedEntitiesThisFrame = true;
+    s->entitySelectionCoords.end = cursorPos;
+    s->isSelectingEntities = true;
+    s->selectedEntitiesThisFrame = true;
 }
 
 void EditorSelectionCancel() {
-    
-    if (EDITOR_ENTITY_SELECTION) {
-        LinkedListRemoveAll(&EDITOR_ENTITY_SELECTION->entitiesHead);
-        MemFree(EDITOR_ENTITY_SELECTION);
-        EDITOR_ENTITY_SELECTION = 0;
+
+    if (EDITOR_STATE) {
+        
+        EDITOR_STATE->isSelectingEntities = false;
+        EDITOR_STATE->selectedEntitiesThisFrame = false;
+        EDITOR_STATE->isMovingSelectedEntities = false;
+        LinkedListRemoveAll(&EDITOR_STATE->selectedEntities);
     }
 
     TraceLog(LOG_TRACE, "Editor's entity selection canceled.");
+}
+
+bool EditorSelectedEntitiesMove(Vector2 cursorPos) {
+
+    EditorState *s = EDITOR_STATE;
+
+    if (!s->selectedEntities) {
+        TraceLog(LOG_ERROR,
+                    "Editor tried to check selection move, but there are no entities selected.");
+        return false;
+    }
+
+    if (!s->isMovingSelectedEntities) {
+
+        // Should actually check for collision with each selected entity,
+        // but this is good enough for now
+        if (!CheckCollisionPointRec(cursorPos, EditorSelectionGetRect())) {
+            return false;
+        }
+
+        s->selectedEntitiesMoveCoords.start = cursorPos;
+    }
+
+    s->selectedEntitiesMoveCoords.end = cursorPos;
+    s->isMovingSelectedEntities = true;
+    s->movedEntitiesThisFrame = true;
+
+    return true;
 }
 
 Rectangle EditorEntityButtonRect(int buttonNumber) {
@@ -253,22 +383,42 @@ Rectangle EditorControlButtonRect(int buttonNumber) {
 
 Rectangle EditorSelectionGetRect() {
 
-    EditorSelection *s = EDITOR_ENTITY_SELECTION;
+    Trajectory t = EDITOR_STATE->entitySelectionCoords;
 
-    float x         = s->origin.x;
-    float y         = s->origin.y;
-    float width     = s->current.x - s->origin.x;
-    float height    = s->current.y - s->origin.y;
+    float x         = t.start.x;
+    float y         = t.start.y;
+    float width     = t.end.x - t.start.x;
+    float height    = t.end.y - t.start.y;
 
-    if (s->current.x < s->origin.x) {
-        x       = s->current.x;
-        width   = s->origin.x - s->current.x;
+    if (t.end.x < t.start.x) {
+        x       = t.end.x;
+        width   = t.start.x - t.end.x;
     }
 
-    if (s->current.y < s->origin.y) {
-        y       = s->current.y;
-        height  = s->origin.y - s->current.y;
+    if (t.end.y < t.start.y) {
+        y       = t.end.y;
+        height  = t.start.y - t.end.y;
     }
 
     return (Rectangle) { x, y, width, height };
+}
+
+Vector2 EditorEntitySelectionCalcMove(Vector2 hitbox) {
+
+    Trajectory t = EDITOR_STATE->selectedEntitiesMoveCoords;
+    
+    Vector2 delta = {
+        t.end.x - t.start.x,
+        t.end.y - t.start.y,
+    };
+
+    Dimensions grid = LEVEL_GRID;
+    if (STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
+    
+    Vector2 pos = SnapToGrid((Vector2) {
+                                    hitbox.x + delta.x,
+                                    hitbox.y + delta.y                            
+                                }, grid);
+
+    return pos;
 }

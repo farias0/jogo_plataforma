@@ -166,6 +166,21 @@ static void drawOverworldEntity(OverworldEntity *entity) {
     drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, false);
 }
 
+// Draws the ghost of an editor's selected entity being moved
+static void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
+
+    Vector2 pos = EditorEntitySelectionCalcMove((Vector2){
+                                                    entity->gridPos.x,
+                                                    entity->gridPos.y });
+
+    pos = PosInSceneToScreen(pos);
+
+    Color color = (Color) { WHITE.r, WHITE.g, WHITE.b,
+                            EDITOR_SELECTION_MOVE_TRANSPARENCY };
+
+    drawTexture(entity->sprite, pos, color, false);
+}
+
 static void drawLevelEntity(LevelEntity *entity) {
 
     Vector2 pos = PosInSceneToScreen((Vector2){
@@ -175,6 +190,20 @@ static void drawLevelEntity(LevelEntity *entity) {
     drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, !entity->isFacingRight);
 }
 
+// Draws the ghost of an editor's selected entity being moved
+static void drawLevelEntityMoveGhost(LevelEntity *entity) {
+
+    Vector2 pos = EditorEntitySelectionCalcMove((Vector2){
+                                                    entity->hitbox.x,
+                                                    entity->hitbox.y });
+
+    pos = PosInSceneToScreen(pos);
+
+    Color color = (Color) { WHITE.r, WHITE.g, WHITE.b,
+                            EDITOR_SELECTION_MOVE_TRANSPARENCY };
+
+    drawTexture(entity->sprite, pos, color, !entity->isFacingRight);
+}
 
 static void drawLevelEntityOrigin(LevelEntity *entity) {
 
@@ -435,22 +464,36 @@ next_button:
 
 static void drawEditorEntitySelection() {
 
-    if (EDITOR_ENTITY_SELECTION->isSelecting)
+    if (EDITOR_STATE->isSelectingEntities)
         drawSceneRectangle(EditorSelectionGetRect(), EDITOR_SELECTION_RECT_COLOR);
 
-    ListNode *node = EDITOR_ENTITY_SELECTION->entitiesHead;
+    ListNode *node = EDITOR_STATE->selectedEntities;
     while (node != 0) {
 
         const Color color = EDITOR_SELECTION_ENTITY_COLOR;
 
         if (STATE->mode == MODE_IN_LEVEL) {
+
             LevelEntity *entity = (LevelEntity *) node->item;
-            drawSceneRectangle(entity->hitbox, color);
-            drawSceneRectangle(LevelEntityOriginHitbox(entity), color);
+
+            if (EDITOR_STATE->isMovingSelectedEntities) {
+                drawLevelEntityMoveGhost(entity);
+            } else {
+                drawSceneRectangle(entity->hitbox, color);
+                drawSceneRectangle(LevelEntityOriginHitbox(entity), color);
+            }
+
         }
         else if (STATE->mode == MODE_OVERWORLD) {
+
             OverworldEntity *entity = (OverworldEntity *) node->item;
-            drawSceneRectangle(OverworldEntitySquare(entity), color);
+
+            if (EDITOR_STATE->isMovingSelectedEntities) {
+                drawOverworldEntityMoveGhost(entity);
+            } else {
+                drawSceneRectangle(OverworldEntitySquare(entity), color);
+            }
+            
         }
 
         node = node->next;
@@ -459,8 +502,7 @@ static void drawEditorEntitySelection() {
 
 static void drawEditor() {
 
-    if (EDITOR_ENTITY_SELECTION)
-        drawEditorEntitySelection();
+    drawEditorEntitySelection();
 
 
     DrawLine(SCREEN_WIDTH,
