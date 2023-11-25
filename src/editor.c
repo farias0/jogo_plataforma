@@ -185,9 +185,7 @@ void selectEntitiesApplyMove() {
         }
         node = node->next;
     }
-
-    EditorSelectionCancel();
-
+    
     TraceLog(LOG_TRACE, "Editor applied selected entities displacement.");
 }
 
