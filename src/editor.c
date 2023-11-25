@@ -186,6 +186,11 @@ void selectEntitiesApplyMove() {
         node = node->next;
     }
     
+    EDITOR_STATE->entitySelectionCoords.start =
+        EditorEntitySelectionCalcMove(EDITOR_STATE->entitySelectionCoords.start);
+    EDITOR_STATE->entitySelectionCoords.end =
+        EditorEntitySelectionCalcMove(EDITOR_STATE->entitySelectionCoords.end);
+
     TraceLog(LOG_TRACE, "Editor applied selected entities displacement.");
 }
 
