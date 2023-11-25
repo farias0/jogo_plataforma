@@ -129,7 +129,7 @@ void LevelExitCheckAndAdd(Vector2 pos) {
     
     Rectangle hitbox = SpriteHitboxFromMiddle(LevelEndOrbSprite, pos);
 
-    if (LevelCheckCollisionWithAnyEntityOrOrigin(hitbox)) {
+    if (LevelCheckCollisionWithAnything(hitbox)) {
         TraceLog(LOG_DEBUG, "Couldn't add level exit, collision with entity.");
         return;
     }
@@ -316,7 +316,7 @@ bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox) {
     return false;
 }
 
-bool LevelCheckCollisionWithAnyEntityOrOrigin(Rectangle hitbox) {
+bool LevelCheckCollisionWithAnything(Rectangle hitbox) {
 
     ListNode *node = LEVEL_LIST_HEAD;
 

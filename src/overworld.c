@@ -292,30 +292,26 @@ void OverworldTileAddOrInteract(Vector2 pos) {
 
     ListNode *node = OW_LIST_HEAD;
 
-    // First, test collision with other tiles
-    while (node != 0) {
+    OverworldEntity *entity = OverworldCheckCollisionWithAnyTile(testHitbox);
 
-        OverworldEntity *entity = (OverworldEntity *) node->item;
+    if (entity) {
 
-        if (entity->components & OW_IS_CURSOR) goto next_entity;
-
-        if (!CheckCollisionRecs(testHitbox, OverworldEntitySquare(entity))) goto next_entity;
+        if (entity->components & OW_IS_CURSOR) return;
 
         if (entity->components & OW_IS_LEVEL_DOT) {
-            TraceLog(LOG_TRACE, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
-                            entity->components, entity->gridPos.x, entity->gridPos.y);
-            return;
-        }
+        TraceLog(LOG_TRACE, "Couldn't place tile, collided with item component=%d, x=%.1f, y=%.1f",
+                        entity->components, entity->gridPos.x, entity->gridPos.y);
+        return;
+    }
 
+        // Interacting
         SpriteRotate(&entity->sprite, 90);
         TraceLog(LOG_TRACE, "Rotated tile component=%d, x=%.1f, y=%.1f",
                 entity->components, entity->gridPos.x, entity->gridPos.y);
         return;
-
-next_entity:
-        node = node->next;
     }
 
+    // Adding
     OverworldTileType typeToAdd;
 
     // This is highly gambiarra, the tile type should be informed to this function somehow,
@@ -374,6 +370,27 @@ void OverworldTileRemoveAt(Vector2 pos) {
     }
 }
 
+OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox) {
+
+    ListNode *node = OW_LIST_HEAD;
+
+    while (node != 0) {
+
+        OverworldEntity *entity = (OverworldEntity *) node->item;
+
+        if (entity->tileType & OW_NOT_TILE) goto next_entity;
+
+        if (!CheckCollisionRecs(hitbox, OverworldEntitySquare(entity))) goto next_entity;
+
+        return entity;
+
+next_entity:
+        node = node->next;
+    }
+
+    return 0;
+}
+
 void OverworldTick() {
 
     // TODO check if having the first check before saves on processing,
@@ -388,6 +405,8 @@ void OverworldTick() {
 
         return;
     }
+
+    updateCursorPosition();
 
     CameraTick();    
 }

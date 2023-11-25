@@ -71,6 +71,10 @@ void OverworldTileAddOrInteract(Vector2 pos);
 // Removes tile from overworld and destroys it, if present and if allowed.
 void OverworldTileRemoveAt(Vector2 pos);
 
+// Checks for collision between a hitbox and any tile in the overworld.
+// Returns the collided entity, or 0 if none.
+OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox);
+
 void OverworldTick();
 
 // Saves overworld's state to persistence.

@@ -99,5 +99,11 @@ Vector2 SnapToGrid(Vector2 coords, Dimensions grid);
 // The distance between a point and the closest (bottom-right) point of a grid.
 Vector2 DistanceFromGrid(Vector2 coords, Dimensions grid);
 
+// Returns the x and y of a rectangle
+Vector2 RectangleGetPos(Rectangle rect);
+
+// Sets the x and y of a rectangle according to a Vector
+void RectangleSetPos(Rectangle *rect, Vector2 pos);
+
 
 #endif // _CORE_H_INCLUDED_

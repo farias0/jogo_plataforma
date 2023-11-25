@@ -129,7 +129,63 @@ next_entity:
 
 void selectEntitiesApplyMove() {
 
-    // TODO
+    // Searches for collision 
+    ListNode *node = EDITOR_STATE->selectedEntities;
+    while (node) {
+
+        switch (STATE->mode) {
+
+        case MODE_IN_LEVEL: {
+            LevelEntity *entity = (LevelEntity *) node->item;
+            Rectangle hitbox = entity->hitbox;
+            Vector2 pos = EditorEntitySelectionCalcMove(RectangleGetPos(hitbox));
+            RectangleSetPos(&hitbox, pos);
+            if (LevelCheckCollisionWithAnything(hitbox))
+                return;
+            break;
+        }
+
+        case MODE_OVERWORLD: {
+            OverworldEntity *entity = (OverworldEntity *) node->item;
+            Rectangle hitbox = OverworldEntitySquare(entity);
+            Vector2 pos = EditorEntitySelectionCalcMove(RectangleGetPos(hitbox));
+            RectangleSetPos(&hitbox, pos);
+            if (OverworldCheckCollisionWithAnyTile(hitbox))
+                return;
+            break;
+        }
+
+        }
+        node = node->next;
+    }
+
+    // Apply move
+    Vector2 newPos;
+    node = EDITOR_STATE->selectedEntities;
+
+    while (node) {
+        
+        switch (STATE->mode) {
+
+        case MODE_IN_LEVEL: {
+            LevelEntity *entity = (LevelEntity *) node->item;
+            newPos = EditorEntitySelectionCalcMove(RectangleGetPos(entity->hitbox));
+            RectangleSetPos(&entity->hitbox, newPos);
+            entity->origin = EditorEntitySelectionCalcMove(entity->origin);
+            break;
+        }
+
+        case MODE_OVERWORLD: {
+            OverworldEntity *entity = (OverworldEntity *) node->item;
+            entity->gridPos = EditorEntitySelectionCalcMove(entity->gridPos);
+            break;
+        }
+
+        }
+        node = node->next;
+    }
+
+    EditorSelectionCancel();
 
     TraceLog(LOG_TRACE, "Editor applied selected entities displacement.");
 }

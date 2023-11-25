@@ -32,7 +32,7 @@ void LevelEnemyCheckAndAdd(Vector2 origin) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(EnemySprite, origin);
 
-    if (LevelCheckCollisionWithAnyEntityOrOrigin(hitbox)) {
+    if (LevelCheckCollisionWithAnything(hitbox)) {
         TraceLog(LOG_DEBUG, "Couldn't add enemy to level, collision with entity.");
         return;
     }
