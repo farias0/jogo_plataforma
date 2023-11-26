@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "level.h"
 #include "../core.h"
@@ -40,6 +41,8 @@
 
 #define Y_VELOCITY_GLIDING                  -1.5f
 
+#define INITIAL_CHECKPOINTS_NUMBER          1;
+
 
 LevelEntity *LEVEL_PLAYER = 0;
 
@@ -56,6 +59,7 @@ static void initializePlayerState() {
     PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
     PLAYER_STATE->lastPressedJump = -1;
     PLAYER_STATE->lastGroundBeneath = -1;
+    PLAYER_STATE->checkpointsLeft = INITIAL_CHECKPOINTS_NUMBER;
 
     TraceLog(LOG_DEBUG, "Player state initialized.");
 }
@@ -456,6 +460,11 @@ void LevelPlayerSetCheckpoint() {
         return;
     }
 
+    if (PLAYER_STATE->checkpointsLeft < 1) {
+        RenderPrintSysMessage("Sem checkpoints disponíveis.");
+        return;
+    }
+
     if (PLAYER_STATE->checkpoint) {
         LevelEntityDestroy(
             LinkedListGetNode(LEVEL_LIST_HEAD, PLAYER_STATE->checkpoint));
@@ -464,6 +473,11 @@ void LevelPlayerSetCheckpoint() {
     Vector2 pos = RectangleGetPos(LEVEL_PLAYER->hitbox);
     pos.y += LEVEL_PLAYER->hitbox.height / 2;
     PLAYER_STATE->checkpoint = LevelCheckpointAdd(pos);
+
+    PLAYER_STATE->checkpointsLeft--;
+    char checkpointMsg[30];
+    sprintf(checkpointMsg, "Checkpoints disponívels: %d", PLAYER_STATE->checkpointsLeft);
+    RenderPrintSysMessage(checkpointMsg);
 
     TraceLog(LOG_DEBUG, "Player set checkpoint at x=%.1f, y=%.1f.", pos.x, pos.y);
 }

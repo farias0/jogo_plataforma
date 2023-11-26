@@ -80,6 +80,7 @@ typedef struct PlayerState {
     PlayerMode mode;
 
     LevelEntity *checkpoint;
+    size_t checkpointsLeft;
 
     // timestamps, for jump buffers
     double lastPressedJump;
