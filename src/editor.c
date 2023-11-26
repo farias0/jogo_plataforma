@@ -14,6 +14,11 @@ ListNode *EDITOR_CONTROL_HEAD = 0;
 EditorState *EDITOR_STATE = 0;
 
 
+
+static void buttonsSelectDefault() {
+    STATE->editorButtonToggled = EDITOR_STATE->defaultEntityButton;
+}
+
 static void editorUseEraser(Vector2 cursorPos) {
 
     switch (STATE->mode) {
@@ -61,7 +66,7 @@ void loadInLevelEditor() {
 
     addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &editorUseEraser, EDITOR_INTERACTION_HOLD);
     addEntityButton(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
-    STATE->editorButtonToggled =
+    EDITOR_STATE->defaultEntityButton =
         addEntityButton(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
     addEntityButton(EDITOR_ENTITY_ACID, AcidSprite, &LevelAcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
     addEntityButton(EDITOR_ENTITY_EXIT, LevelEndOrbSprite, &LevelExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
@@ -76,7 +81,7 @@ void loadInLevelEditor() {
 void loadOverworldEditor() {
 
     addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &editorUseEraser, EDITOR_INTERACTION_HOLD);
-    STATE->editorButtonToggled =
+    EDITOR_STATE->defaultEntityButton =
         addEntityButton(EDITOR_ENTITY_LEVEL_DOT, LevelDotSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_PATH_JOIN, PathTileJoinSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_STRAIGHT, PathTileStraightSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
@@ -229,7 +234,10 @@ void EditorSync() {
 
     default:
         TraceLog(LOG_ERROR, "Could not find editor items list for game mode %d.", STATE->mode);
+        return;
     }
+
+    buttonsSelectDefault();
 }
 
 void EditorEmpty() {
@@ -248,6 +256,8 @@ void EditorEnable() {
 
     RenderResizeWindow(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
     MouseCursorEnable();
+
+    buttonsSelectDefault();
 
     TraceLog(LOG_TRACE, "Editor enabled.");
 }
@@ -280,8 +290,10 @@ void EditorTick() {
     if (s->isSelectingEntities) {
         if (s->selectedEntitiesThisFrame)
             updateEntitySelectionList();
-        else
+        else {
             s->isSelectingEntities = false;
+            buttonsSelectDefault();
+        }
     }
     s->selectedEntitiesThisFrame = false;
 

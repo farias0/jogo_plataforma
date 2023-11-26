@@ -96,6 +96,8 @@ typedef struct EditorControlButton {
 
 typedef struct EditorState {
 
+    EditorEntityButton *defaultEntityButton;
+
     // Entity selection
     bool        isSelectingEntities;
     bool        selectedEntitiesThisFrame;
