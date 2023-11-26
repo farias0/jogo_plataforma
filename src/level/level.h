@@ -3,6 +3,7 @@
 
 
 #include <raylib.h>
+#include <stdlib.h>
 
 #include "../linked_list.h"
 #include "../assets.h"

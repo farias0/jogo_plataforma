@@ -14,6 +14,7 @@
         "xutility": "c",
         "stdlib.h": "c",
         "string.h": "c",
-        "editor.h": "c"
+        "editor.h": "c",
+        "overworld.h": "c"
     }
 }
