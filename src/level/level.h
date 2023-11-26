@@ -3,7 +3,6 @@
 
 
 #include <raylib.h>
-#include <stdlib.h>
 
 #include "../linked_list.h"
 #include "../assets.h"
@@ -81,7 +80,7 @@ typedef struct PlayerState {
     PlayerMode mode;
 
     LevelEntity *checkpoint;
-    size_t checkpointsLeft;
+    int checkpointsLeft;
 
     // timestamps, for jump buffers
     double lastPressedJump;
