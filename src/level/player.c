@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "level.h"
 #include "../core.h"
@@ -40,6 +41,8 @@
 
 #define Y_VELOCITY_GLIDING                  -1.5f
 
+#define INITIAL_CHECKPOINTS_NUMBER          1;
+
 
 LevelEntity *LEVEL_PLAYER = 0;
 
@@ -54,9 +57,9 @@ static void initializePlayerState() {
     PLAYER_STATE->isAscending = false;
     PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
     PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
-    PLAYER_STATE->respawnFlagSet = false;
     PLAYER_STATE->lastPressedJump = -1;
     PLAYER_STATE->lastGroundBeneath = -1;
+    PLAYER_STATE->checkpointsLeft = INITIAL_CHECKPOINTS_NUMBER;
 
     TraceLog(LOG_DEBUG, "Player state initialized.");
 }
@@ -172,14 +175,6 @@ void LevelPlayerSetMode(PlayerMode mode) {
     PLAYER_STATE->mode = mode;
 
     TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
-}
-
-void LevelPlayerSetRespawn() {
-
-    PLAYER_STATE->respawnFlag = (Vector2){ LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y };
-    PLAYER_STATE->respawnFlagSet = true;
-    TraceLog(LOG_DEBUG, "Respawn set to %.1f, %.1f.", LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y);
-    RenderPrintSysMessage("Atualizado ponto de renascimento.");
 }
 
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
@@ -443,12 +438,12 @@ void LevelPlayerContinue() {
         node = node->next;
     }
 
-    if (PLAYER_STATE->respawnFlagSet) {
-        LEVEL_PLAYER->hitbox.x = PLAYER_STATE->respawnFlag.x;
-        LEVEL_PLAYER->hitbox.y = PLAYER_STATE->respawnFlag.y;
+    if (PLAYER_STATE->checkpoint) {
+        Vector2 pos = RectangleGetPos(PLAYER_STATE->checkpoint->hitbox);
+        pos.y -= PLAYER_STATE->checkpoint->hitbox.height;
+        RectangleSetPos(&LEVEL_PLAYER->hitbox, pos);
     } else {
-        LEVEL_PLAYER->hitbox.x = LEVEL_PLAYER->origin.x;
-        LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER->origin.y;
+        RectangleSetPos(&LEVEL_PLAYER->hitbox, LEVEL_PLAYER->origin);
     }
     PLAYER_STATE->isAscending = false;
 
@@ -456,4 +451,33 @@ void LevelPlayerContinue() {
     CameraLevelCentralizeOnPlayer();
 
     TraceLog(LOG_DEBUG, "Player continue.");
+}
+
+void LevelPlayerSetCheckpoint() {
+
+    if (!PLAYER_STATE->groundBeneath) {
+        TraceLog(LOG_DEBUG, "Player didn't set checkpoint, not on the ground.");
+        return;
+    }
+
+    if (PLAYER_STATE->checkpointsLeft < 1) {
+        RenderPrintSysMessage("Sem checkpoints disponíveis.");
+        return;
+    }
+
+    if (PLAYER_STATE->checkpoint) {
+        LevelEntityDestroy(
+            LinkedListGetNode(LEVEL_LIST_HEAD, PLAYER_STATE->checkpoint));
+    }
+
+    Vector2 pos = RectangleGetPos(LEVEL_PLAYER->hitbox);
+    pos.y += LEVEL_PLAYER->hitbox.height / 2;
+    PLAYER_STATE->checkpoint = LevelCheckpointAdd(pos);
+
+    PLAYER_STATE->checkpointsLeft--;
+    char checkpointMsg[50];
+    sprintf(checkpointMsg, "Checkpoints disponívels: %d", PLAYER_STATE->checkpointsLeft);
+    RenderPrintSysMessage(checkpointMsg);
+
+    TraceLog(LOG_DEBUG, "Player set checkpoint at x=%.1f, y=%.1f.", pos.x, pos.y);
 }

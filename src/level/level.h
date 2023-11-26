@@ -21,7 +21,8 @@ typedef enum LevelEntityComponent {
     LEVEL_IS_EXIT           = 8,
     LEVEL_IS_GROUND         = 16,
     LEVEL_IS_DANGER         = 32,
-    LEVEL_IS_GLIDE          = 64
+    LEVEL_IS_GLIDE          = 64,
+    LEVEL_IS_CHECKPOINT     = 128
 } LevelEntityComponent;
 
 typedef struct LevelEntity {
@@ -59,7 +60,7 @@ typedef enum PlayerMode {
 typedef struct PlayerState {
 
     // The ground beneath the player, updated every frame, or 0 if there's no ground beneath
-    LevelEntity* groundBeneath;
+    LevelEntity *groundBeneath;
 
     // TODO maybe add multiple hitboxes support for every entity
     Rectangle upperbody, lowerbody;
@@ -78,8 +79,8 @@ typedef struct PlayerState {
 
     PlayerMode mode;
 
-    bool respawnFlagSet;
-    Vector2 respawnFlag;
+    LevelEntity *checkpoint;
+    int checkpointsLeft;
 
     // timestamps, for jump buffers
     double lastPressedJump;
@@ -145,9 +146,6 @@ void LevelPlayerCheckAndSetPos(Vector2 pos);
 
 void LevelPlayerSetMode(PlayerMode mode);
 
-// Sets player to respawn in the current position during this level session.
-void LevelPlayerSetRespawn();
-
 void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction);
 
 void LevelPlayerStartRunning();
@@ -160,6 +158,8 @@ void LevelPlayerTick();
 
 // Continues the game after dying.
 void LevelPlayerContinue();
+
+void LevelPlayerSetCheckpoint();
 
 
 // Initializes and adds an enemy to the level in the given origin
@@ -183,11 +183,11 @@ void LevelEnemyKill(LevelEntity *entity);
 
 void LevelBlockAdd(Vector2 origin);
 
-void LevelAcidAdd(Vector2 origin);
-
 // Initializes and adds a block to the level in the given origin,
 // if there are no other blocks there already.
 void LevelBlockCheckAndAdd(Vector2 origin);
+
+void LevelAcidAdd(Vector2 origin);
 
 // Initializes and adds an acid block to the level in the given origin,
 // if there are no other blocks there already.
@@ -196,6 +196,8 @@ void LevelAcidCheckAndAdd(Vector2 origin);
 void LevelGlideAdd(Vector2 origin);
 
 void LevelGlideCheckAndAdd(Vector2 origin);
+
+LevelEntity *LevelCheckpointAdd(Vector2 pos);
 
 
 #endif // _LEVEL_H_INCLUDED_
