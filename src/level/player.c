@@ -475,7 +475,7 @@ void LevelPlayerSetCheckpoint() {
     PLAYER_STATE->checkpoint = LevelCheckpointAdd(pos);
 
     PLAYER_STATE->checkpointsLeft--;
-    char checkpointMsg[30];
+    char checkpointMsg[50];
     sprintf(checkpointMsg, "Checkpoints disponívels: %d", PLAYER_STATE->checkpointsLeft);
     RenderPrintSysMessage(checkpointMsg);
 
