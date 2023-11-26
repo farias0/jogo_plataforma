@@ -182,6 +182,28 @@ void LevelExitAdd(Vector2 pos) {
                 newExit->hitbox.x, newExit->hitbox.y);
 }
 
+LevelEntity *LevelCheckpointAdd(Vector2 pos) {
+
+    LevelEntity *newCheckpoint = MemAlloc(sizeof(LevelEntity));
+
+    Sprite sprite = LevelCheckpointSprite;
+    Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
+
+    newCheckpoint->components = LEVEL_IS_CHECKPOINT;
+    newCheckpoint->hitbox = hitbox;
+    newCheckpoint->origin = pos;
+    newCheckpoint->sprite = sprite;
+    newCheckpoint->isFacingRight = true;
+    newCheckpoint->layer = -1;
+
+    levelExitNode = LinkedListAdd(&LEVEL_LIST_HEAD, newCheckpoint);
+
+    TraceLog(LOG_TRACE, "Added checkpoint to level (x=%.1f, y=%.1f)",
+                newCheckpoint->hitbox.x, newCheckpoint->hitbox.y);
+
+    return newCheckpoint;
+}
+
 void LevelExitCheckAndAdd(Vector2 pos) {
     
     Rectangle hitbox = SpriteHitboxFromMiddle(LevelEndOrbSprite, pos);

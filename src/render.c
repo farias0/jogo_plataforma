@@ -17,7 +17,7 @@
 #pragma GCC diagnostic pop
 
 
-#define FIRST_LAYER 0
+#define FIRST_LAYER -1
 #define LAST_LAYER  1
 
 #define SYS_MESSAGE_SECONDS 2
