@@ -89,6 +89,25 @@ void LevelEnemyTick(ListNode *enemyNode) {
 
     if (enemy->isFacingRight) enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
     else enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
+
+    ListNode *node = LEVEL_LIST_HEAD;
+    while (node) {
+
+        LevelEntity *entity = (LevelEntity *) node->item;
+
+        if (entity == enemy) goto next_node;
+
+        if (entity->components & LEVEL_IS_SCENARIO &&
+            CheckCollisionRecs(entity->hitbox, enemy->hitbox)) {
+
+                enemy->isFacingRight = !enemy->isFacingRight;
+
+                return;
+        }
+
+next_node:
+        node = node->next;
+    }
 }
 
 void LevelEnemyKill(LevelEntity *entity) {
