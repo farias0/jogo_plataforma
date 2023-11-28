@@ -5,6 +5,7 @@
 
 #include "player.h"
 #include "level.h"
+#include "enemy.h"
 #include "../core.h"
 #include "../camera.h"
 #include "../render.h"
