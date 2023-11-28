@@ -37,7 +37,6 @@ typedef struct GameState {
 
     bool showDebugHUD;
     bool showDebugGrid;
-    bool showDebugEntity;
     bool showBackground;
 } GameState;
 
@@ -46,6 +45,8 @@ extern GameState *GAME_STATE;
 
 
 void GameStateInitialize();
+
+void GameStateReset();
 
 // Initialize the game's core systems
 void SystemsInitialize();

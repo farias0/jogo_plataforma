@@ -20,6 +20,8 @@ int main() {
 
     SystemsInitialize();
 
+    GameStateReset();
+
     OverworldInitialize();
 
     while (!WindowShouldClose())    // Detect window close button or ESC key

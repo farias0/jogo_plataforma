@@ -51,11 +51,22 @@ void GameStateInitialize() {
     GAME_STATE = MemAlloc(sizeof(GameState));
 
     GAME_STATE->showBackground = false;
+    GAME_STATE->showDebugGrid = false;
+    GAME_STATE->showDebugHUD = false;
+
+    TraceLog(LOG_INFO, "Game state initialized.");
+}
+
+void GameStateReset() {
+
+    GAME_STATE->showDebugGrid = false;
     GAME_STATE->showDebugHUD = false;
 
     EditorDisable();
+    DebugHudDisable();
+    MouseCursorDisable();
 
-    TraceLog(LOG_INFO, "Game state initialized.");
+    TraceLog(LOG_INFO, "Game state reset.");
 }
 
 void SystemsInitialize() {
