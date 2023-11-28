@@ -24,6 +24,9 @@
 // TODO allow to drag and modify the player's origin in the editor
 #define PLAYERS_ORIGIN (Vector2){ 344, 200 };
 
+// With how many checkpoints available the player starts
+#define STARTING_CHECKPOINTS_NUMBER          1;
+
 
 LevelState *LEVEL_STATE = 0;
 
@@ -36,6 +39,8 @@ void resetLevelState() {
     LEVEL_STATE->awaitingAssociation = false;
     LEVEL_STATE->concludedAgo = -1;
     LEVEL_STATE->exitNode = 0;
+    LEVEL_STATE->checkpoint = 0;
+    LEVEL_STATE->checkpointsLeft = 0;
 
     PLAYER_ENTITY = 0;
 
@@ -155,6 +160,8 @@ void LevelInitialize(char *levelName) {
         leaveLevel();
         return;
     }
+
+    LEVEL_STATE->checkpointsLeft = STARTING_CHECKPOINTS_NUMBER;
 
     strcpy(LEVEL_STATE->levelName, levelName);
 

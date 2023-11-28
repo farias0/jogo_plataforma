@@ -43,8 +43,6 @@
 
 #define Y_VELOCITY_GLIDING                  -1.5f
 
-#define INITIAL_CHECKPOINTS_NUMBER          1;
-
 
 LevelEntity *PLAYER_ENTITY = 0;
 
@@ -61,7 +59,6 @@ static void initializePlayerState() {
     PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
     PLAYER_STATE->lastPressedJump = -1;
     PLAYER_STATE->lastGroundBeneath = -1;
-    PLAYER_STATE->checkpointsLeft = INITIAL_CHECKPOINTS_NUMBER;
 
     TraceLog(LOG_DEBUG, "Player state initialized.");
 }
@@ -440,9 +437,9 @@ void PlayerContinue() {
         node = node->next;
     }
 
-    if (PLAYER_STATE->checkpoint) {
-        Vector2 pos = RectangleGetPos(PLAYER_STATE->checkpoint->hitbox);
-        pos.y -= PLAYER_STATE->checkpoint->hitbox.height;
+    if (LEVEL_STATE->checkpoint) {
+        Vector2 pos = RectangleGetPos(LEVEL_STATE->checkpoint->hitbox);
+        pos.y -= LEVEL_STATE->checkpoint->hitbox.height;
         RectangleSetPos(&PLAYER_ENTITY->hitbox, pos);
     } else {
         RectangleSetPos(&PLAYER_ENTITY->hitbox, PLAYER_ENTITY->origin);
@@ -462,23 +459,23 @@ void PlayerSetCheckpoint() {
         return;
     }
 
-    if (PLAYER_STATE->checkpointsLeft < 1) {
+    if (LEVEL_STATE->checkpointsLeft < 1) {
         RenderPrintSysMessage("Sem checkpoints disponíveis.");
         return;
     }
 
-    if (PLAYER_STATE->checkpoint) {
+    if (LEVEL_STATE->checkpoint) {
         LevelEntityDestroy(
-            LinkedListGetNode(LEVEL_STATE->listHead, PLAYER_STATE->checkpoint));
+            LinkedListGetNode(LEVEL_STATE->listHead, LEVEL_STATE->checkpoint));
     }
 
     Vector2 pos = RectangleGetPos(PLAYER_ENTITY->hitbox);
     pos.y += PLAYER_ENTITY->hitbox.height / 2;
-    PLAYER_STATE->checkpoint = LevelCheckpointAdd(pos);
+    LEVEL_STATE->checkpoint = LevelCheckpointAdd(pos);
 
-    PLAYER_STATE->checkpointsLeft--;
+    LEVEL_STATE->checkpointsLeft--;
     char checkpointMsg[50];
-    sprintf(checkpointMsg, "Checkpoints disponívels: %d", PLAYER_STATE->checkpointsLeft);
+    sprintf(checkpointMsg, "Checkpoints disponívels: %d", LEVEL_STATE->checkpointsLeft);
     RenderPrintSysMessage(checkpointMsg);
 
     TraceLog(LOG_DEBUG, "Player set checkpoint at x=%.1f, y=%.1f.", pos.x, pos.y);
