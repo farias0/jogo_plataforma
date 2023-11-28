@@ -15,6 +15,14 @@
 EditorState *EDITOR_STATE = 0;
 
 
+static void editorStateReset() {
+
+    EditorSelectionCancel();
+
+    EditorEmpty();
+
+    TraceLog(LOG_DEBUG, "Editor state reset.");
+}
 
 static void buttonsSelectDefault() {
     EDITOR_STATE->toggledEntityButton = EDITOR_STATE->defaultEntityButton;
@@ -204,24 +212,14 @@ void EditorInitialize() {
 
     EDITOR_STATE = MemAlloc(sizeof(EditorState));
 
-    EditorStateReset();
+    editorStateReset();
 
     TraceLog(LOG_INFO, "Editor initialized.");
 }
 
-void EditorStateReset() {
-
-    EditorSelectionCancel();
-
-    LinkedListDestroyAll(&EDITOR_STATE->entitiesHead);
-    LinkedListDestroyAll(&EDITOR_STATE->controlHead);
-
-    TraceLog(LOG_DEBUG, "Editor state reset.");
-}
-
 void EditorSync() {
     
-    EditorStateReset();
+    editorStateReset();
 
     switch (GAME_STATE->mode) {
     
@@ -245,7 +243,7 @@ void EditorEmpty() {
 
     LinkedListDestroyAll(&EDITOR_STATE->entitiesHead);
     LinkedListDestroyAll(&EDITOR_STATE->controlHead);
-
+    EDITOR_STATE->defaultEntityButton = 0;
     EDITOR_STATE->toggledEntityButton = 0;
 
     TraceLog(LOG_TRACE, "Editor emptied.");

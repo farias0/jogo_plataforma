@@ -127,8 +127,6 @@ extern EditorState *EDITOR_STATE;
 
 void EditorInitialize();
 
-void EditorStateReset();
-
 // Destroy any existing editor itens and then loads the items
 // for the current game mode
 void EditorSync();
