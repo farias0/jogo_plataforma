@@ -51,7 +51,7 @@ typedef struct GameState {
 } GameState;
 
 
-extern GameState *STATE;
+extern GameState *GAME_STATE;
 
 
 void GameStateInitialize();

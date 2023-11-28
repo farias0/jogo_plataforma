@@ -135,13 +135,13 @@ static void drawSpriteInBackground(Sprite sprite, Vector2 pos, int layer) {
 
 static void drawBackground() {
 
-    if (STATE->mode == MODE_OVERWORLD) {
+    if (GAME_STATE->mode == MODE_OVERWORLD) {
         DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 39, 39, 54, 255 }); 
     }
 
 
-    else if (STATE->mode == MODE_IN_LEVEL) {
-        if (STATE->loadedLevel[0] == '\0') {
+    else if (GAME_STATE->mode == MODE_IN_LEVEL) {
+        if (GAME_STATE->loadedLevel[0] == '\0') {
             DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
             return;
         }
@@ -151,7 +151,7 @@ static void drawBackground() {
         Vector2 levelBottomOnScreen = PosInSceneToScreen((Vector2){ 0, FLOOR_DEATH_HEIGHT });
         DrawRectangle(0, levelBottomOnScreen.y, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
 
-        if (!STATE->showBackground) return; 
+        if (!GAME_STATE->showBackground) return; 
         drawSpriteInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);
         drawSpriteInBackground(BGHouseSprite,     (Vector2){ 600, 300 },  -2);
     }
@@ -223,7 +223,7 @@ static void drawEntities() {
 
         while (node != 0) {
 
-            if (STATE->mode == MODE_IN_LEVEL) {
+            if (GAME_STATE->mode == MODE_IN_LEVEL) {
                 LevelEntity *entity = (LevelEntity *) node->item;
                 if (entity->layer != layer) goto next_entity;
                 
@@ -235,7 +235,7 @@ static void drawEntities() {
                         drawLevelEntityOrigin(entity);
             }
 
-            else if (STATE->mode == MODE_OVERWORLD) {
+            else if (GAME_STATE->mode == MODE_OVERWORLD) {
                 OverworldEntity *entity = (OverworldEntity *) node->item;
                 if (entity->layer != layer) goto next_entity;
                 drawOverworldEntity((OverworldEntity *) node->item);
@@ -285,8 +285,8 @@ next_node:
 static void drawDebugGrid() {
 
     Dimensions grid;
-    if (STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
-    else if (STATE->mode == MODE_IN_LEVEL) grid = LEVEL_GRID;
+    if (GAME_STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
+    else if (GAME_STATE->mode == MODE_IN_LEVEL) grid = LEVEL_GRID;
     else return;
 
     Vector2 offset = DistanceFromGrid(CAMERA->pos, grid);
@@ -304,19 +304,19 @@ static void drawLevelHud() {
 
     if (EDITOR_STATE->isEnabled) return;
 
-    if (STATE->isPaused && LEVEL_PLAYER && !LEVEL_PLAYER->isDead)
+    if (GAME_STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
         DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
         
-    if (LEVEL_PLAYER && LEVEL_PLAYER->isDead)
+    if (PLAYER_ENTITY && PLAYER_ENTITY->isDead)
         DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
     
-    if (STATE->loadedLevel[0] == '\0')
+    if (GAME_STATE->loadedLevel[0] == '\0')
         DrawText("Arraste uma fase para cá", 400, 350, 40, RAYWHITE);
 }
 
 static void drawOverworldHud() {
 
-    OverworldEntity *tile = STATE->tileUnderCursor;
+    OverworldEntity *tile = GAME_STATE->tileUnderCursor;
 
     if (tile->tileType == OW_LEVEL_DOT) {
 
@@ -472,7 +472,7 @@ static void drawEditorEntitySelection() {
 
         const Color color = EDITOR_SELECTION_ENTITY_COLOR;
 
-        if (STATE->mode == MODE_IN_LEVEL) {
+        if (GAME_STATE->mode == MODE_IN_LEVEL) {
 
             LevelEntity *entity = (LevelEntity *) node->item;
 
@@ -484,7 +484,7 @@ static void drawEditorEntitySelection() {
             }
 
         }
-        else if (STATE->mode == MODE_OVERWORLD) {
+        else if (GAME_STATE->mode == MODE_OVERWORLD) {
 
             OverworldEntity *entity = (OverworldEntity *) node->item;
 
@@ -571,14 +571,14 @@ void Render() {
 
         drawEntities();
 
-        if      (STATE->mode == MODE_IN_LEVEL)          drawLevelHud();
-        else if (STATE->mode == MODE_OVERWORLD)         drawOverworldHud();
+        if      (GAME_STATE->mode == MODE_IN_LEVEL)          drawLevelHud();
+        else if (GAME_STATE->mode == MODE_OVERWORLD)         drawOverworldHud();
 
-        if      (STATE->showDebugGrid)                  drawDebugGrid();
+        if      (GAME_STATE->showDebugGrid)                  drawDebugGrid();
 
         if (levelTransitionShaderControl.timer != -1)   drawLevelTransitionShader();
 
-        if      (STATE->showDebugHUD)                   drawDebugHud();
+        if      (GAME_STATE->showDebugHUD)                   drawDebugHud();
 
         drawSysMessages();
 

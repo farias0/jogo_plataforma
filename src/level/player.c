@@ -46,7 +46,7 @@
 #define INITIAL_CHECKPOINTS_NUMBER          1;
 
 
-LevelEntity *LEVEL_PLAYER = 0;
+LevelEntity *PLAYER_ENTITY = 0;
 
 PlayerState *PLAYER_STATE = 0;
 
@@ -90,10 +90,10 @@ static float jumpBufferBackwardsSize() {
 static void syncPlayersHitboxes() {
 
     PLAYER_STATE->upperbody = (Rectangle){
-        LEVEL_PLAYER->hitbox.x + 1,
-        LEVEL_PLAYER->hitbox.y - 1,
-        LEVEL_PLAYER->hitbox.width + 2,
-        LEVEL_PLAYER->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
+        PLAYER_ENTITY->hitbox.x + 1,
+        PLAYER_ENTITY->hitbox.y - 1,
+        PLAYER_ENTITY->hitbox.width + 2,
+        PLAYER_ENTITY->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
     };
 
     /*
@@ -103,27 +103,27 @@ static void syncPlayersHitboxes() {
         This is something that should not be needed in a more robust implementation.
     */
     PLAYER_STATE->lowerbody = (Rectangle){
-        LEVEL_PLAYER->hitbox.x - 1,
-        LEVEL_PLAYER->hitbox.y + PLAYER_STATE->upperbody.height,
-        LEVEL_PLAYER->hitbox.width + 2,
-        LEVEL_PLAYER->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
+        PLAYER_ENTITY->hitbox.x - 1,
+        PLAYER_ENTITY->hitbox.y + PLAYER_STATE->upperbody.height,
+        PLAYER_ENTITY->hitbox.width + 2,
+        PLAYER_ENTITY->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
     };
 }
 
 static void die() {
 
-    LEVEL_PLAYER->isDead = true;
-    STATE->isPaused = true;
+    PLAYER_ENTITY->isDead = true;
+    GAME_STATE->isPaused = true;
 
     TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isAscending=%d",
-                LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y, PLAYER_STATE->isAscending);
+                PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y, PLAYER_STATE->isAscending);
 }
 
 
 void PlayerInitialize(Vector2 origin) {
 
     LevelEntity *newPlayer = MemAlloc(sizeof(LevelEntity));
-    LEVEL_PLAYER = newPlayer;
+    PLAYER_ENTITY = newPlayer;
     LinkedListAdd(&LEVEL_LIST_HEAD, newPlayer);
  
     newPlayer->components = LEVEL_IS_PLAYER;
@@ -151,14 +151,14 @@ void PlayerCheckAndSetOrigin(Vector2 pos) {
         return;
     }
 
-    LEVEL_PLAYER->origin = (Vector2){ hitbox.x, hitbox.y };
+    PLAYER_ENTITY->origin = (Vector2){ hitbox.x, hitbox.y };
 
-    TraceLog(LOG_DEBUG, "Player's origin set to x=%.1f, y=%.1f.", LEVEL_PLAYER->origin.x, LEVEL_PLAYER->origin.y);
+    TraceLog(LOG_DEBUG, "Player's origin set to x=%.1f, y=%.1f.", PLAYER_ENTITY->origin.x, PLAYER_ENTITY->origin.y);
 }
 
 void PlayerCheckAndSetPos(Vector2 pos) {
 
-    Rectangle hitbox = SpriteHitboxFromMiddle(LEVEL_PLAYER->sprite, pos);
+    Rectangle hitbox = SpriteHitboxFromMiddle(PLAYER_ENTITY->sprite, pos);
     
     if (LevelCheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
@@ -167,9 +167,9 @@ void PlayerCheckAndSetPos(Vector2 pos) {
         return;
     }
     
-    LEVEL_PLAYER->hitbox = hitbox;
+    PLAYER_ENTITY->hitbox = hitbox;
     syncPlayersHitboxes();
-    TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y);
+    TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y);
 }
 
 void PlayerSetMode(PlayerMode mode) {
@@ -189,11 +189,11 @@ void PlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
         amount = PLAYER_SPEED_FAST;
 
     if (direction == PLAYER_MOVEMENT_LEFT) {
-        LEVEL_PLAYER->isFacingRight = false;
+        PLAYER_ENTITY->isFacingRight = false;
         PLAYER_STATE->xVelocity = -amount;
     }
     else if (direction == PLAYER_MOVEMENT_RIGHT) {
-        LEVEL_PLAYER->isFacingRight = true;
+        PLAYER_ENTITY->isFacingRight = true;
         PLAYER_STATE->xVelocity = amount;
     }
     else {
@@ -226,7 +226,7 @@ void PlayerTick() {
     if (levelConcludedAgo >= 0) return;
 
 
-    pState->groundBeneath = LevelGetGroundBeneath(LEVEL_PLAYER);
+    pState->groundBeneath = LevelGetGroundBeneath(PLAYER_ENTITY);
 
 
     if (pState->groundBeneath) {
@@ -235,7 +235,7 @@ void PlayerTick() {
 
         if (!pState->isAscending) {
             // Is on the ground
-            LEVEL_PLAYER->hitbox.y = pState->groundBeneath->hitbox.y - LEVEL_PLAYER->hitbox.height;
+            PLAYER_ENTITY->hitbox.y = pState->groundBeneath->hitbox.y - PLAYER_ENTITY->hitbox.height;
             pState->yVelocity = 0;
             pState->yVelocityTarget = 0;
         }
@@ -276,15 +276,15 @@ void PlayerTick() {
         }
     }
 
-    float oldX = LEVEL_PLAYER->hitbox.x;
-    float oldY = LEVEL_PLAYER->hitbox.y;
-    LEVEL_PLAYER->hitbox.x += pState->xVelocity;
-    LEVEL_PLAYER->hitbox.y -= pState->yVelocity;
+    float oldX = PLAYER_ENTITY->hitbox.x;
+    float oldY = PLAYER_ENTITY->hitbox.y;
+    PLAYER_ENTITY->hitbox.x += pState->xVelocity;
+    PLAYER_ENTITY->hitbox.y -= pState->yVelocity;
     syncPlayersHitboxes();
 
     // Collision checking
     {
-        if (LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height > FLOOR_DEATH_HEIGHT) {
+        if (PLAYER_ENTITY->hitbox.y + PLAYER_ENTITY->hitbox.height > FLOOR_DEATH_HEIGHT) {
             die();
             return;
         }
@@ -315,7 +315,7 @@ void PlayerTick() {
 
                 // Check for collision with level geometry
 
-                Rectangle collisionRec = GetCollisionRec(entity->hitbox, LEVEL_PLAYER->hitbox);
+                Rectangle collisionRec = GetCollisionRec(entity->hitbox, PLAYER_ENTITY->hitbox);
 
                 if (entity->components & LEVEL_IS_DANGER &&
                     (collisionRec.width > 0 || collisionRec.height > 0 || pState->groundBeneath == entity)) {
@@ -329,7 +329,7 @@ void PlayerTick() {
             
                 const bool isAWall = collisionRec.width <= collisionRec.height;
                 const bool isACeiling = (collisionRec.width >= collisionRec.height) &&
-                                    (entity->hitbox.y < LEVEL_PLAYER->hitbox.y);
+                                    (entity->hitbox.y < PLAYER_ENTITY->hitbox.y);
 
 
                 if (isAWall && collisionRec.width > 0) {
@@ -337,11 +337,11 @@ void PlayerTick() {
                     const bool isEntitysRightWall = collisionRec.x > entity->hitbox.x; 
                     const bool isEntitysLeftWall = !isEntitysRightWall;
 
-                    const bool isEntityToTheLeft = entity->hitbox.x < LEVEL_PLAYER->hitbox.x;
+                    const bool isEntityToTheLeft = entity->hitbox.x < PLAYER_ENTITY->hitbox.x;
                     const bool isEntityToTheRight = !isEntityToTheLeft;
 
-                    const bool isPlayerMovingToTheLeft = LEVEL_PLAYER->hitbox.x < oldX;
-                    const bool isPlayerMovingToTheRight = LEVEL_PLAYER->hitbox.x > oldX;
+                    const bool isPlayerMovingToTheLeft = PLAYER_ENTITY->hitbox.x < oldX;
+                    const bool isPlayerMovingToTheRight = PLAYER_ENTITY->hitbox.x > oldX;
 
                     // So when the player hits the entity to its left,
                     // he can only collide with its left wall.
@@ -349,9 +349,9 @@ void PlayerTick() {
                         (isEntitysLeftWall && isEntityToTheRight && isPlayerMovingToTheRight)) {
 
 
-                        // if (STATE->showDebugHUD) RenderPrintSysMessage("Hit wall");
+                        // if (GAME_STATE->showDebugHUD) RenderPrintSysMessage("Hit wall");
 
-                        LEVEL_PLAYER->hitbox.x = oldX;
+                        PLAYER_ENTITY->hitbox.x = oldX;
 
                     }
                 }
@@ -359,10 +359,10 @@ void PlayerTick() {
 
                 if (isACeiling && pState->isAscending) {
 
-                    // if (STATE->showDebugHUD) RenderPrintSysMessage("Hit ceiling");
+                    // if (GAME_STATE->showDebugHUD) RenderPrintSysMessage("Hit ceiling");
 
                     pState->isAscending = false;
-                    LEVEL_PLAYER->hitbox.y = oldY;
+                    PLAYER_ENTITY->hitbox.y = oldY;
                     pState->yVelocity = (pState->yVelocity * -1) * CEILING_VELOCITY_FACTOR;
                     pState->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
                 }
@@ -371,7 +371,7 @@ void PlayerTick() {
             }
 
             else if (entity->components & LEVEL_IS_EXIT &&
-                        CheckCollisionRecs(entity->hitbox, LEVEL_PLAYER->hitbox)) {
+                        CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox)) {
 
                 // Player exit level
 
@@ -379,7 +379,7 @@ void PlayerTick() {
             }
 
             else if (entity->components & LEVEL_IS_GLIDE &&
-                        CheckCollisionRecs(entity->hitbox, LEVEL_PLAYER->hitbox) &&
+                        CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox) &&
                         PLAYER_STATE->mode != PLAYER_MODE_GLIDE) {
                 PlayerSetMode(PLAYER_MODE_GLIDE);
                 return;
@@ -421,12 +421,12 @@ next_entity:
     }
     else currentSprite =        PlayerDefaultSprite;
 
-    LEVEL_PLAYER->sprite.sprite = currentSprite.sprite;
+    PLAYER_ENTITY->sprite.sprite = currentSprite.sprite;
 }
 
 void PlayerContinue() {
 
-    STATE->isPaused = false;
+    GAME_STATE->isPaused = false;
 
     // Reset all the entities to their origins
     ListNode *node = LEVEL_LIST_HEAD;
@@ -443,9 +443,9 @@ void PlayerContinue() {
     if (PLAYER_STATE->checkpoint) {
         Vector2 pos = RectangleGetPos(PLAYER_STATE->checkpoint->hitbox);
         pos.y -= PLAYER_STATE->checkpoint->hitbox.height;
-        RectangleSetPos(&LEVEL_PLAYER->hitbox, pos);
+        RectangleSetPos(&PLAYER_ENTITY->hitbox, pos);
     } else {
-        RectangleSetPos(&LEVEL_PLAYER->hitbox, LEVEL_PLAYER->origin);
+        RectangleSetPos(&PLAYER_ENTITY->hitbox, PLAYER_ENTITY->origin);
     }
     PLAYER_STATE->isAscending = false;
 
@@ -472,8 +472,8 @@ void PlayerSetCheckpoint() {
             LinkedListGetNode(LEVEL_LIST_HEAD, PLAYER_STATE->checkpoint));
     }
 
-    Vector2 pos = RectangleGetPos(LEVEL_PLAYER->hitbox);
-    pos.y += LEVEL_PLAYER->hitbox.height / 2;
+    Vector2 pos = RectangleGetPos(PLAYER_ENTITY->hitbox);
+    pos.y += PLAYER_ENTITY->hitbox.height / 2;
     PLAYER_STATE->checkpoint = LevelCheckpointAdd(pos);
 
     PLAYER_STATE->checkpointsLeft--;

@@ -54,7 +54,8 @@ typedef struct PlayerState {
 } PlayerState;
 
 
-extern LevelEntity *LEVEL_PLAYER; 
+// Reference to the player's LevelEntity, part of the level entity list
+extern LevelEntity *PLAYER_ENTITY; 
 
 extern PlayerState *PLAYER_STATE;
 

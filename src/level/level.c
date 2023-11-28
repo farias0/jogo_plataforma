@@ -113,10 +113,10 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
 void LevelInitialize(char *levelName) {
 
     GameStateReset();
-    STATE->mode = MODE_IN_LEVEL;
+    GAME_STATE->mode = MODE_IN_LEVEL;
 
     LinkedListDestroyAll(&LEVEL_LIST_HEAD);
-    LEVEL_PLAYER = 0;
+    PLAYER_ENTITY = 0;
     levelExitNode = 0;
 
     if (levelName[0] == '\0') {
@@ -131,7 +131,7 @@ void LevelInitialize(char *levelName) {
         return;
     }
 
-    strcpy(STATE->loadedLevel, levelName);
+    strcpy(GAME_STATE->loadedLevel, levelName);
 
     EditorSync();
 
@@ -141,14 +141,14 @@ void LevelInitialize(char *levelName) {
 
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
-            (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), false);
+            (Vector2){PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), false);
 
     TraceLog(LOG_INFO, "Level initialized: %s.", levelName);
 }
 
 void LevelGoToOverworld() {
 
-    if (!LEVEL_PLAYER) {
+    if (!PLAYER_ENTITY) {
         OverworldInitialize();
         return;    
     }
@@ -157,7 +157,7 @@ void LevelGoToOverworld() {
 
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
-            (Vector2){LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y}, LEVEL_PLAYER->sprite), true);
+            (Vector2){PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), true);
 
     RenderDebugEntityStopAll();
 
@@ -318,7 +318,7 @@ void LevelTick() {
         return;
     }
 
-    if (STATE->isPaused) goto skip_entities_tick;
+    if (GAME_STATE->isPaused) goto skip_entities_tick;
     if (EDITOR_STATE->isEnabled) goto skip_entities_tick;
 
     ListNode *node = LEVEL_LIST_HEAD;
@@ -387,17 +387,17 @@ bool LevelCheckCollisionWithAnything(Rectangle hitbox) {
 }
 
 void LevelSave() {
-    PersistenceLevelSave(STATE->loadedLevel);
+    PersistenceLevelSave(GAME_STATE->loadedLevel);
 }
 
 void LevelLoadNew() {
     LevelInitialize(NEW_LEVEL_NAME);
 
-    LEVEL_PLAYER->origin = PLAYERS_ORIGIN;
-    LEVEL_PLAYER->hitbox.x = LEVEL_PLAYER->origin.x;
-    LEVEL_PLAYER->hitbox.y = LEVEL_PLAYER->origin.y;
+    PLAYER_ENTITY->origin = PLAYERS_ORIGIN;
+    PLAYER_ENTITY->hitbox.x = PLAYER_ENTITY->origin.x;
+    PLAYER_ENTITY->hitbox.y = PLAYER_ENTITY->origin.y;
 
-    strcpy(STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
+    strcpy(GAME_STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
 }
 
 Rectangle LevelEntityOriginHitbox(LevelEntity *entity) {

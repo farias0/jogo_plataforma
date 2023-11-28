@@ -15,7 +15,7 @@
 
 void handleInLevelInput() {
 
-    if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
+    if      (IsKeyPressed(KEY_F5))          GAME_STATE->showBackground = !GAME_STATE->showBackground;
 
 
     if (EDITOR_STATE->isEnabled) return;
@@ -26,7 +26,7 @@ void handleInLevelInput() {
     if      (IsKeyPressed(KEY_ENTER))       { PausedGameToggle(); return; }
 
 
-    if (STATE->isPaused || !LEVEL_PLAYER || LEVEL_PLAYER->isDead) return;
+    if (GAME_STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
 
 
     if      (IsKeyDown(KEY_Z))              PlayerStartRunning();
@@ -62,7 +62,7 @@ void handleDevInput() {
 
     if      (IsKeyPressed(KEY_F1))          { EditorEnabledToggle(); return; }
     if      (IsKeyPressed(KEY_F2))          DebugHudToggle();
-    if      (IsKeyPressed(KEY_F3))          STATE->showDebugGrid = !STATE->showDebugGrid;
+    if      (IsKeyPressed(KEY_F3))          GAME_STATE->showDebugGrid = !GAME_STATE->showDebugGrid;
 
 
     /* Mouse functionalities */
@@ -102,15 +102,15 @@ skip_selected_entities_actions:
     if      (!IsInPlayArea(mousePosInScreen)) return;
 
 
-    if (STATE->showDebugHUD || EDITOR_STATE->isEnabled) {
+    if (GAME_STATE->showDebugHUD || EDITOR_STATE->isEnabled) {
 
-        if (IsKeyDown(KEY_SPACE) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && LEVEL_PLAYER) {
+        if (IsKeyDown(KEY_SPACE) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && PLAYER_ENTITY) {
             PlayerCheckAndSetPos(mousePosInScene);
             return;
         }
     }
 
-    if (STATE->showDebugHUD) {
+    if (GAME_STATE->showDebugHUD) {
 
         if  (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             RenderDebugEntityToggle(LevelEntityGetAt(mousePosInScene));
@@ -120,7 +120,7 @@ skip_selected_entities_actions:
 
     if (EDITOR_STATE->isEnabled) {
 
-        if (IsKeyDown(KEY_O) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && LEVEL_PLAYER) {
+        if (IsKeyDown(KEY_O) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && PLAYER_ENTITY) {
             PlayerCheckAndSetOrigin(mousePosInScene);
             return;
         }
@@ -158,19 +158,19 @@ void handleDroppedFile() {
         
         LevelInitialize(levelName);
         
-        if (STATE->expectingLevelAssociation) {
+        if (GAME_STATE->expectingLevelAssociation) {
 
-            strcpy(STATE->tileUnderCursor->levelName, levelName);
+            strcpy(GAME_STATE->tileUnderCursor->levelName, levelName);
 
             TraceLog(LOG_INFO, "Dot on x=%.1f, y=%.1f associated with level %s.",
-                        STATE->tileUnderCursor->gridPos.x, STATE->tileUnderCursor->gridPos.y, levelName);
+                        GAME_STATE->tileUnderCursor->gridPos.x, GAME_STATE->tileUnderCursor->gridPos.y, levelName);
             
             char *sysMsg = MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
             sprintf(sysMsg, "Associada fase %s", levelName);
             RenderPrintSysMessage(sysMsg);
             MemFree(sysMsg);
 
-            STATE->expectingLevelAssociation = false;
+            GAME_STATE->expectingLevelAssociation = false;
         }
     }
 
@@ -186,10 +186,10 @@ void InputHandle() {
         return;
     }
 
-    if (STATE->mode == MODE_IN_LEVEL) {
+    if (GAME_STATE->mode == MODE_IN_LEVEL) {
         handleInLevelInput();
     }
-    else if (STATE->mode == MODE_OVERWORLD) {
+    else if (GAME_STATE->mode == MODE_OVERWORLD) {
         handleOverworldInput();
     }
 }

@@ -26,9 +26,9 @@ static void updateCursorPosition() {
 
     Dimensions cursorDimensions = SpriteScaledDimensions(OverworldCursorSprite);
 
-    OW_CURSOR->gridPos.x = STATE->tileUnderCursor->gridPos.x;
+    OW_CURSOR->gridPos.x = GAME_STATE->tileUnderCursor->gridPos.x;
 
-    OW_CURSOR->gridPos.y = STATE->tileUnderCursor->gridPos.y +
+    OW_CURSOR->gridPos.y = GAME_STATE->tileUnderCursor->gridPos.y +
                     (OW_GRID.height / 2) -
                     cursorDimensions.height;
 }
@@ -51,7 +51,7 @@ static void checkAndRemoveTile(ListNode *node) {
     // Ideally the game would support removing the tile under the player,
     // but this would demand some logic to manage the tileUnder pointer.
     // For now this is good enough.
-    if (entity == STATE->tileUnderCursor ||
+    if (entity == GAME_STATE->tileUnderCursor ||
         entity->components & OW_IS_CURSOR) {
 
             TraceLog(LOG_TRACE, "Won't remove tile, it's the cursor or it's under it.");
@@ -102,7 +102,7 @@ static ListNode *getEntityOnScene(Vector2 pos) {
 void OverworldInitialize() {
 
     GameStateReset();
-    STATE->mode = MODE_OVERWORLD;
+    GAME_STATE->mode = MODE_OVERWORLD;
 
     if (!OW_LIST_HEAD) {
 
@@ -116,7 +116,7 @@ void OverworldInitialize() {
         updateCursorPosition();
     }
 
-    STATE->expectingLevelAssociation = false;
+    GAME_STATE->expectingLevelAssociation = false;
 
     EditorSync();
 
@@ -124,7 +124,7 @@ void OverworldInitialize() {
 
     CameraFollow();
 
-    memset(STATE->loadedLevel, 0, sizeof(STATE->loadedLevel));
+    memset(GAME_STATE->loadedLevel, 0, sizeof(GAME_STATE->loadedLevel));
 
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), false);
@@ -178,18 +178,18 @@ void OverworldLevelSelect() {
     if (overworldLevelSelectedAgo >= 0) return;
     
 
-    if (!(STATE->tileUnderCursor->components & OW_IS_LEVEL_DOT)) {
+    if (!(GAME_STATE->tileUnderCursor->components & OW_IS_LEVEL_DOT)) {
         TraceLog(LOG_TRACE, "Overworld tried to enter level, but not a dot.");
         return;
     }
 
-    if (!STATE->tileUnderCursor->levelName) {
+    if (!GAME_STATE->tileUnderCursor->levelName) {
         TraceLog(LOG_ERROR, "tileUnderCursor has no levelName reference.");
         return;
     }
 
-    if (STATE->tileUnderCursor->levelName[0] == '\0') {
-        STATE->expectingLevelAssociation = true;
+    if (GAME_STATE->tileUnderCursor->levelName[0] == '\0') {
+        GAME_STATE->expectingLevelAssociation = true;
     }
 
     CameraPanningReset();
@@ -198,7 +198,7 @@ void OverworldLevelSelect() {
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), true);
 
     overworldLevelSelectedAgo = GetTime();
-    overworldLevelSelectedName = STATE->tileUnderCursor->levelName;
+    overworldLevelSelectedName = GAME_STATE->tileUnderCursor->levelName;
 }
 
 void OverworldCursorMove(OverworldCursorDirection direction) {
@@ -208,7 +208,7 @@ void OverworldCursorMove(OverworldCursorDirection direction) {
 
     TraceLog(LOG_TRACE, "Overworld move to direction %d", direction);
 
-    OverworldEntity *tileUnder = STATE->tileUnderCursor;
+    OverworldEntity *tileUnder = GAME_STATE->tileUnderCursor;
 
     ListNode *node = OW_LIST_HEAD;
 
@@ -272,7 +272,7 @@ void OverworldCursorMove(OverworldCursorDirection direction) {
 
 
         if (foundPath) {
-            STATE->tileUnderCursor = entity;
+            GAME_STATE->tileUnderCursor = entity;
             updateCursorPosition();
             break;
         }

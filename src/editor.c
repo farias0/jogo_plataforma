@@ -24,7 +24,7 @@ static void buttonsSelectDefault() {
 
 static void editorUseEraser(Vector2 cursorPos) {
 
-    switch (STATE->mode) {
+    switch (GAME_STATE->mode) {
         
     case MODE_IN_LEVEL:
         LevelEntityRemoveAt(cursorPos);
@@ -107,7 +107,7 @@ static void updateEntitySelectionList() {
     ListNode *node = GetEntityListHead();
     while (node != 0) {
 
-        if (STATE->mode == MODE_IN_LEVEL) {
+        if (GAME_STATE->mode == MODE_IN_LEVEL) {
             LevelEntity *entity = (LevelEntity *) node->item;
             
             if (entity->components & LEVEL_IS_PLAYER) goto next_entity;
@@ -119,7 +119,7 @@ static void updateEntitySelectionList() {
                 LinkedListAdd(&EDITOR_STATE->selectedEntities, entity);
             }
         }
-        else if (STATE->mode == MODE_OVERWORLD) {
+        else if (GAME_STATE->mode == MODE_OVERWORLD) {
             
             OverworldEntity *entity = (OverworldEntity *) node->item;
             
@@ -142,7 +142,7 @@ void selectEntitiesApplyMove() {
     ListNode *node = EDITOR_STATE->selectedEntities;
     while (node) {
 
-        switch (STATE->mode) {
+        switch (GAME_STATE->mode) {
 
         case MODE_IN_LEVEL: {
             LevelEntity *entity = (LevelEntity *) node->item;
@@ -174,7 +174,7 @@ void selectEntitiesApplyMove() {
 
     while (node) {
         
-        switch (STATE->mode) {
+        switch (GAME_STATE->mode) {
 
         case MODE_IN_LEVEL: {
             LevelEntity *entity = (LevelEntity *) node->item;
@@ -225,7 +225,7 @@ void EditorSync() {
     
     EditorStateReset();
 
-    switch (STATE->mode) {
+    switch (GAME_STATE->mode) {
     
     case MODE_IN_LEVEL:
         loadInLevelEditor();
@@ -236,7 +236,7 @@ void EditorSync() {
         break;
 
     default:
-        TraceLog(LOG_ERROR, "Could not find editor items list for game mode %d.", STATE->mode);
+        TraceLog(LOG_ERROR, "Could not find editor items list for game mode %d.", GAME_STATE->mode);
         return;
     }
 
@@ -437,7 +437,7 @@ Vector2 EditorEntitySelectionCalcMove(Vector2 hitbox) {
     };
 
     Dimensions grid = LEVEL_GRID;
-    if (STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
+    if (GAME_STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
     
     Vector2 pos = SnapToGrid((Vector2) {
                                     hitbox.x + delta.x,

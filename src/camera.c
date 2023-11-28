@@ -23,32 +23,32 @@ static Vector2 panningCursorLastFrame;
 
 static void followOverworldCamera() {
 
-    Dimensions tileDimensions = SpriteScaledDimensions(STATE->tileUnderCursor->sprite);
+    Dimensions tileDimensions = SpriteScaledDimensions(GAME_STATE->tileUnderCursor->sprite);
 
-    CAMERA->pos.x = STATE->tileUnderCursor->gridPos.x
+    CAMERA->pos.x = GAME_STATE->tileUnderCursor->gridPos.x
                     - (SCREEN_WIDTH/2) + (tileDimensions.width/2);
-    CAMERA->pos.y = STATE->tileUnderCursor->gridPos.y
+    CAMERA->pos.y = GAME_STATE->tileUnderCursor->gridPos.y
                     - (SCREEN_HEIGHT/2) + (tileDimensions.height/2);
 }
 
 static void followLevelCamera() {
 
-    if (!LEVEL_PLAYER) {
+    if (!PLAYER_ENTITY) {
         TraceLog(LOG_WARNING, "Camera can't follow player, no reference to them.");
         return;
     }
 
-    if (LEVEL_PLAYER->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT) {
-        CAMERA->pos.x = LEVEL_PLAYER->hitbox.x - CAMERA_FOLLOW_LEFT;
+    if (PLAYER_ENTITY->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT) {
+        CAMERA->pos.x = PLAYER_ENTITY->hitbox.x - CAMERA_FOLLOW_LEFT;
     }
-    else if (LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width > CAMERA->pos.x + CAMERA_FOLLOW_RIGHT) {
-        CAMERA->pos.x = LEVEL_PLAYER->hitbox.x + LEVEL_PLAYER->hitbox.width - CAMERA_FOLLOW_RIGHT;
+    else if (PLAYER_ENTITY->hitbox.x + PLAYER_ENTITY->hitbox.width > CAMERA->pos.x + CAMERA_FOLLOW_RIGHT) {
+        CAMERA->pos.x = PLAYER_ENTITY->hitbox.x + PLAYER_ENTITY->hitbox.width - CAMERA_FOLLOW_RIGHT;
     }
-    if (LEVEL_PLAYER->hitbox.y < CAMERA->pos.y + CAMERA_FOLLOW_UP) {
-        CAMERA->pos.y = LEVEL_PLAYER->hitbox.y - CAMERA_FOLLOW_UP;
+    if (PLAYER_ENTITY->hitbox.y < CAMERA->pos.y + CAMERA_FOLLOW_UP) {
+        CAMERA->pos.y = PLAYER_ENTITY->hitbox.y - CAMERA_FOLLOW_UP;
     }
-    else if (LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height > CAMERA->pos.y + CAMERA_FOLLOW_DOWN) {
-        CAMERA->pos.y = LEVEL_PLAYER->hitbox.y + LEVEL_PLAYER->hitbox.height - CAMERA_FOLLOW_DOWN;
+    else if (PLAYER_ENTITY->hitbox.y + PLAYER_ENTITY->hitbox.height > CAMERA->pos.y + CAMERA_FOLLOW_DOWN) {
+        CAMERA->pos.y = PLAYER_ENTITY->hitbox.y + PLAYER_ENTITY->hitbox.height - CAMERA_FOLLOW_DOWN;
     }
 }
 
@@ -60,7 +60,7 @@ static void tickOverworldCamera() {
 
 static void tickLevelCamera() {
 
-    if (!LEVEL_PLAYER) return;
+    if (!PLAYER_ENTITY) return;
     followLevelCamera();
 }
 
@@ -77,7 +77,7 @@ void CameraTick() {
     if (isPanned) return;
     if (EDITOR_STATE->isEnabled) return;
 
-    switch (STATE->mode)
+    switch (GAME_STATE->mode)
     {
     case MODE_OVERWORLD:
         tickOverworldCamera();
@@ -91,7 +91,7 @@ void CameraTick() {
 
 void CameraFollow() {
 
-    switch (STATE->mode)
+    switch (GAME_STATE->mode)
     {
     case MODE_OVERWORLD:
         followOverworldCamera();
@@ -105,13 +105,13 @@ void CameraFollow() {
 
 void CameraLevelCentralizeOnPlayer() {
 
-    if (!LEVEL_PLAYER) {
+    if (!PLAYER_ENTITY) {
         TraceLog(LOG_ERROR, "Camera can't centralize on Player because Player instance couldn't be found.");
         return;
     }
 
-    CAMERA->pos.x = LEVEL_PLAYER->hitbox.x - SCREEN_WIDTH/3;
-    CAMERA->pos.y = LEVEL_PLAYER->hitbox.y - SCREEN_HEIGHT/2;
+    CAMERA->pos.x = PLAYER_ENTITY->hitbox.x - SCREEN_WIDTH/3;
+    CAMERA->pos.y = PLAYER_ENTITY->hitbox.y - SCREEN_HEIGHT/2;
 
     CameraPanningReset();
     TraceLog(LOG_TRACE, "Camera centralized on Player.");

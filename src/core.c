@@ -11,7 +11,7 @@
 #include "render.h"
 
 
-GameState *STATE = 0;
+GameState *GAME_STATE = 0;
 
 static size_t mouseEnabledReferences = 0;
 
@@ -38,20 +38,20 @@ void windowTitleUpdate() {
 
     char title[LEVEL_NAME_BUFFER_SIZE + 20];
 
-    if (STATE->loadedLevel[0] == '\0')
+    if (GAME_STATE->loadedLevel[0] == '\0')
         sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());    
     else
-        sprintf(title, "%s - %d FPS", STATE->loadedLevel, GetFPS());
+        sprintf(title, "%s - %d FPS", GAME_STATE->loadedLevel, GetFPS());
 
     SetWindowTitle(title);
 }
 
 void GameStateInitialize() {
 
-    STATE = MemAlloc(sizeof(GameState));
+    GAME_STATE = MemAlloc(sizeof(GameState));
 
-    STATE->showBackground = false;
-    STATE->showDebugHUD = false;
+    GAME_STATE->showBackground = false;
+    GAME_STATE->showDebugHUD = false;
 
     EditorDisable();
 
@@ -60,9 +60,9 @@ void GameStateInitialize() {
 
 void GameStateReset() {
 
-    strcpy(STATE->loadedLevel, "");
-    STATE->isPaused = false;
-    STATE->mode = MODE_IN_LEVEL;
+    strcpy(GAME_STATE->loadedLevel, "");
+    GAME_STATE->isPaused = false;
+    GAME_STATE->mode = MODE_IN_LEVEL;
 
     TraceLog(LOG_DEBUG, "Game state reset.");
 }
@@ -78,9 +78,9 @@ void SystemsInitialize() {
 
 void GameUpdate() {
 
-    if (STATE->mode == MODE_IN_LEVEL)
+    if (GAME_STATE->mode == MODE_IN_LEVEL)
         LevelTick();
-    else if (STATE->mode == MODE_OVERWORLD)
+    else if (GAME_STATE->mode == MODE_OVERWORLD)
         OverworldTick();
 
     if (EDITOR_STATE->isEnabled)
@@ -91,41 +91,41 @@ void GameUpdate() {
 
 void PausedGameToggle() {
     
-    if (STATE->isPaused) {
+    if (GAME_STATE->isPaused) {
 
-        if (STATE->mode == MODE_IN_LEVEL) {
+        if (GAME_STATE->mode == MODE_IN_LEVEL) {
 
-            if (LEVEL_PLAYER) {
-                if (LEVEL_PLAYER->isDead) PlayerContinue();
+            if (PLAYER_ENTITY) {
+                if (PLAYER_ENTITY->isDead) PlayerContinue();
             } else {
                 TraceLog(LOG_ERROR, "Pause toggle in level has no reference to player.");
             }
         }
 
-        STATE->isPaused = false;
+        GAME_STATE->isPaused = false;
 
     } else {
-        STATE->isPaused = true;
+        GAME_STATE->isPaused = true;
     }
 }
 
 ListNode *GetEntityListHead() {
 
-    if (STATE->mode == MODE_IN_LEVEL) return LEVEL_LIST_HEAD;
-    else if (STATE->mode == MODE_OVERWORLD) return OW_LIST_HEAD;
+    if (GAME_STATE->mode == MODE_IN_LEVEL) return LEVEL_LIST_HEAD;
+    else if (GAME_STATE->mode == MODE_OVERWORLD) return OW_LIST_HEAD;
     else return 0;
 }
 
 void DebugHudEnable() {
 
-    STATE->showDebugHUD = true;
+    GAME_STATE->showDebugHUD = true;
     MouseCursorEnable();
     TraceLog(LOG_TRACE, "Debug hud enabled.");
 }
 
 void DebugHudDisable() {
 
-    STATE->showDebugHUD = false;
+    GAME_STATE->showDebugHUD = false;
     MouseCursorDisable();
     CameraPanningReset();
     TraceLog(LOG_TRACE, "Debug hud disabled.");
@@ -147,7 +147,7 @@ void MouseCursorEnable() {
 
 void DebugHudToggle() {
 
-    if (STATE->showDebugHUD) {
+    if (GAME_STATE->showDebugHUD) {
         RenderDebugEntityStopAll();
         DebugHudDisable();
     }
