@@ -3,7 +3,8 @@
 #include <string.h>
 
 #include "level.h"
-#include "../core.h"
+#include "player.h"
+#include "enemy.h"
 #include "../camera.h"
 #include "../render.h"
 #include "../editor.h"
@@ -329,8 +330,8 @@ void LevelTick() {
 
         LevelEntity *entity = (LevelEntity *)node->item;
 
-        if (entity->components & LEVEL_IS_ENEMY) LevelEnemyTick(node);
-        else if (entity->components & LEVEL_IS_PLAYER) LevelPlayerTick();
+        if (entity->components & LEVEL_IS_ENEMY) EnemyTick(node);
+        else if (entity->components & LEVEL_IS_PLAYER) PlayerTick();
 
         node = next;
     }

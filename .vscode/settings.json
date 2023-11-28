@@ -15,6 +15,9 @@
         "stdlib.h": "c",
         "string.h": "c",
         "editor.h": "c",
-        "overworld.h": "c"
+        "overworld.h": "c",
+        "enemy.h": "c",
+        "block.h": "c",
+        "powerups.h": "c"
     }
 }

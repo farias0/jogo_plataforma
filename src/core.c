@@ -5,6 +5,7 @@
 #include "overworld.h"
 #include "camera.h"
 #include "level/level.h"
+#include "level/player.h"
 #include "editor.h"
 #include "string.h"
 #include "render.h"
@@ -95,7 +96,7 @@ void PausedGameToggle() {
         if (STATE->mode == MODE_IN_LEVEL) {
 
             if (LEVEL_PLAYER) {
-                if (LEVEL_PLAYER->isDead) LevelPlayerContinue();
+                if (LEVEL_PLAYER->isDead) PlayerContinue();
             } else {
                 TraceLog(LOG_ERROR, "Pause toggle in level has no reference to player.");
             }

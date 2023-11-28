@@ -3,6 +3,9 @@
 #include "editor.h"
 #include "core.h"
 #include "level/level.h"
+#include "level/enemy.h"
+#include "level/powerups.h"
+#include "level/block.h"
 #include "overworld.h"
 #include "linked_list.h"
 #include "camera.h"
@@ -65,12 +68,12 @@ EditorControlButton *addControlButton(EditorControlType type, char *label, void 
 void loadInLevelEditor() {
 
     addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &editorUseEraser, EDITOR_INTERACTION_HOLD);
-    addEntityButton(EDITOR_ENTITY_ENEMY, EnemySprite, &LevelEnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_ENEMY, EnemySprite, &EnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
     EDITOR_STATE->defaultEntityButton =
-        addEntityButton(EDITOR_ENTITY_BLOCK, BlockSprite, &LevelBlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
-    addEntityButton(EDITOR_ENTITY_ACID, AcidSprite, &LevelAcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
+        addEntityButton(EDITOR_ENTITY_BLOCK, BlockSprite, &BlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ACID, AcidSprite, &AcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
     addEntityButton(EDITOR_ENTITY_EXIT, LevelEndOrbSprite, &LevelExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_GLIDE, GlideItemSprite, &LevelGlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_GLIDE, GlideItemSprite, &GlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
     addControlButton(EDITOR_CONTROL_SAVE, "Salvar fase", &LevelSave);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
