@@ -106,6 +106,9 @@ LevelEntity *LevelEntityGetAt(Vector2 pos);
 // list and destroys it, if found and if allowed.
 void LevelEntityRemoveAt(Vector2 pos);
 
+// Toggles between paused and unpaused game
+void LevelPauseToggle();
+
 // Runs the update routine of the level's entities
 void LevelTick();
 

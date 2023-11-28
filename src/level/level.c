@@ -337,6 +337,21 @@ next_selected_node:
     }
 }
 
+void LevelPauseToggle() {
+
+    if (LEVEL_STATE->isPaused) {
+
+        if (PLAYER_ENTITY && PLAYER_ENTITY->isDead) {
+            PlayerContinue();
+        }
+
+        LEVEL_STATE->isPaused = false;
+
+    } else {
+        LEVEL_STATE->isPaused = true;
+    }
+}
+
 void LevelTick() {
 
     // TODO check if having the first check before saves on processing,

@@ -54,9 +54,6 @@ void SystemsInitialize();
 // Updates the logic of the game. To be called once every frame.
 void GameUpdate();
 
-// Toggles between paused and unpaused game
-void PausedGameToggle();
-
 // True if the given position is inside the game screen (doesn't include the editor)
 bool IsInPlayArea(Vector2 pos);
 

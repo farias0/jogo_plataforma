@@ -91,26 +91,6 @@ void GameUpdate() {
     windowTitleUpdate();
 }
 
-void PausedGameToggle() {
-    
-    if (LEVEL_STATE->isPaused) {
-
-        if (GAME_STATE->mode == MODE_IN_LEVEL) {
-
-            if (PLAYER_ENTITY) {
-                if (PLAYER_ENTITY->isDead) PlayerContinue();
-            } else {
-                TraceLog(LOG_ERROR, "Pause toggle in level has no reference to player.");
-            }
-        }
-
-        LEVEL_STATE->isPaused = false;
-
-    } else {
-        LEVEL_STATE->isPaused = true;
-    }
-}
-
 ListNode *GetEntityListHead() {
 
     if (GAME_STATE->mode == MODE_IN_LEVEL) return LEVEL_STATE->listHead;

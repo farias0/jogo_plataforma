@@ -23,7 +23,7 @@ void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_BACKSPACE))   { LevelGoToOverworld(); return; }
 
-    if      (IsKeyPressed(KEY_ENTER))       { PausedGameToggle(); return; }
+    if      (IsKeyPressed(KEY_ENTER))       { LevelPauseToggle(); return; }
 
 
     if (LEVEL_STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
