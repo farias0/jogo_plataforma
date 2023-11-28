@@ -99,6 +99,10 @@ typedef struct EditorState {
     // If the editor is enabled
     bool isEnabled;
 
+    // The heads for each button list
+    ListNode *entitiesHead;
+    ListNode *controlHead;
+
     // What entity button is currently selected in the editor
     EditorEntityButton *toggledEntityButton;
 
@@ -117,14 +121,6 @@ typedef struct EditorState {
 
 } EditorState;
 
-
-// TODO move loaded editor buttons to EditorState
-
-// The head of the linked list of all the loaded editor entity itens
-extern ListNode *EDITOR_ENTITIES_HEAD;
-
-// The head of the linked list of all the loaded editor control itens
-extern ListNode *EDITOR_CONTROL_HEAD;
 
 extern EditorState *EDITOR_STATE;
 

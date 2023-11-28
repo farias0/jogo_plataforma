@@ -399,7 +399,7 @@ static void drawEditorEntityButtons() {
                     EDITOR_BG_COLOR);
 
     int renderedCount = 0;
-    ListNode *node = EDITOR_ENTITIES_HEAD;
+    ListNode *node = EDITOR_STATE->entitiesHead;
 
     while (node != 0) {
 
@@ -434,7 +434,7 @@ static void drawEditorControlButtons() {
                     EDITOR_BG_COLOR);
 
     int renderedCount = 0;
-    ListNode *node = EDITOR_CONTROL_HEAD;
+    ListNode *node = EDITOR_STATE->controlHead;
 
     while (node != 0) {
 

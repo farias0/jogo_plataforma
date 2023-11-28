@@ -12,8 +12,6 @@
 #include "render.h"
 
 
-ListNode *EDITOR_ENTITIES_HEAD = 0;
-ListNode *EDITOR_CONTROL_HEAD = 0;
 EditorState *EDITOR_STATE = 0;
 
 
@@ -48,7 +46,7 @@ static EditorEntityButton *addEntityButton(
         newButton->sprite = sprite;
         newButton->interactionType = interaction;
 
-        LinkedListAdd(&EDITOR_ENTITIES_HEAD, newButton);
+        LinkedListAdd(&EDITOR_STATE->entitiesHead, newButton);
 
         return newButton;
 }
@@ -60,7 +58,7 @@ EditorControlButton *addControlButton(EditorControlType type, char *label, void 
     newButton->handler = handler;
     newButton->label = label;
 
-    LinkedListAdd(&EDITOR_CONTROL_HEAD, newButton);
+    LinkedListAdd(&EDITOR_STATE->controlHead, newButton);
 
     return newButton;
 }
@@ -215,8 +213,8 @@ void EditorStateReset() {
 
     EditorSelectionCancel();
 
-    LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
-    LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
+    LinkedListDestroyAll(&EDITOR_STATE->entitiesHead);
+    LinkedListDestroyAll(&EDITOR_STATE->controlHead);
 
     TraceLog(LOG_DEBUG, "Editor state reset.");
 }
@@ -245,8 +243,8 @@ void EditorSync() {
 
 void EditorEmpty() {
 
-    LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
-    LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
+    LinkedListDestroyAll(&EDITOR_STATE->entitiesHead);
+    LinkedListDestroyAll(&EDITOR_STATE->controlHead);
 
     EDITOR_STATE->toggledEntityButton = 0;
 
