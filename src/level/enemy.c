@@ -41,7 +41,7 @@ void EnemyCheckAndAdd(Vector2 origin) {
 
 void EnemyTick(ListNode *enemyNode) {
 
-    if (levelConcludedAgo >= 0) return;
+    if (LEVEL_STATE->concludedAgo >= 0) return;
 
     LevelEntity *enemy = (LevelEntity *)enemyNode->item;
     if (enemy->isDead) return;

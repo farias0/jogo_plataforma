@@ -27,8 +27,6 @@
 
 LevelState *LEVEL_STATE = 0;
 
-double levelConcludedAgo = -1;
-
 static ListNode *levelExitNode = 0;
 
 
@@ -38,6 +36,7 @@ void resetLevelState() {
     memset(LEVEL_STATE->levelName, 0, sizeof(LEVEL_STATE->levelName));
     LEVEL_STATE->isPaused = false;
     LEVEL_STATE->awaitingAssociation = false;
+    LEVEL_STATE->concludedAgo = -1;
 
     PLAYER_ENTITY = 0;
     levelExitNode = 0;
@@ -189,7 +188,7 @@ void LevelGoToOverworld() {
 
     RenderDebugEntityStopAll();
 
-    levelConcludedAgo = GetTime();
+    LEVEL_STATE->concludedAgo = GetTime();
 }
 
 void LevelExitAdd(Vector2 pos) {
@@ -336,12 +335,12 @@ void LevelTick() {
 
     // TODO check if having the first check before saves on processing,
     // of if it's just redundant. 
-    if (levelConcludedAgo != -1 &&
-        GetTime() - levelConcludedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
+    if (LEVEL_STATE->concludedAgo != -1 &&
+        GetTime() - LEVEL_STATE->concludedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
 
         leaveLevel();
 
-        levelConcludedAgo = -1;
+        LEVEL_STATE->concludedAgo = -1;
 
         return;
     }

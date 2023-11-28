@@ -58,14 +58,13 @@ typedef struct LevelState {
 
     bool isPaused;
 
+    // How long ago, in seconds, the level concluded, or -1 if it's not concluded
+    double concludedAgo;
+
 } LevelState;
 
 
-
 extern LevelState *LEVEL_STATE;
-
-// How long ago, in seconds, the level concluded, or -1 if it's not concluded
-extern double levelConcludedAgo;
 
 
 // Initialize and go to the given level

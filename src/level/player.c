@@ -181,7 +181,7 @@ void PlayerSetMode(PlayerMode mode) {
 
 void PlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
 
-    if (levelConcludedAgo >= 0) return;
+    if (LEVEL_STATE->concludedAgo >= 0) return;
     
 
     float amount = PLAYER_SPEED_DEFAULT;
@@ -223,7 +223,7 @@ void PlayerTick() {
     PlayerState *pState = PLAYER_STATE;
 
 
-    if (levelConcludedAgo >= 0) return;
+    if (LEVEL_STATE->concludedAgo >= 0) return;
 
 
     pState->groundBeneath = LevelGetGroundBeneath(PLAYER_ENTITY);
