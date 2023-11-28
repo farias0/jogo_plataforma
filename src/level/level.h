@@ -61,6 +61,9 @@ typedef struct LevelState {
     // How long ago, in seconds, the level concluded, or -1 if it's not concluded
     double concludedAgo;
 
+    // Reference to the level exit in the level entity's list
+    ListNode *exitNode;
+
 } LevelState;
 
 

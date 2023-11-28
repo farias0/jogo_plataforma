@@ -27,8 +27,6 @@
 
 LevelState *LEVEL_STATE = 0;
 
-static ListNode *levelExitNode = 0;
-
 
 void resetLevelState() {
 
@@ -37,9 +35,9 @@ void resetLevelState() {
     LEVEL_STATE->isPaused = false;
     LEVEL_STATE->awaitingAssociation = false;
     LEVEL_STATE->concludedAgo = -1;
+    LEVEL_STATE->exitNode = 0;
 
     PLAYER_ENTITY = 0;
-    levelExitNode = 0;
 
     TraceLog(LOG_INFO, "Level State initialized.");
 }
@@ -204,7 +202,7 @@ void LevelExitAdd(Vector2 pos) {
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
-    levelExitNode = LinkedListAdd(&LEVEL_STATE->listHead, newExit);
+    LEVEL_STATE->exitNode = LinkedListAdd(&LEVEL_STATE->listHead, newExit);
 
     TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
                 newExit->hitbox.x, newExit->hitbox.y);
@@ -224,7 +222,7 @@ LevelEntity *LevelCheckpointAdd(Vector2 pos) {
     newCheckpoint->isFacingRight = true;
     newCheckpoint->layer = -1;
 
-    levelExitNode = LinkedListAdd(&LEVEL_STATE->listHead, newCheckpoint);
+    LinkedListAdd(&LEVEL_STATE->listHead, newCheckpoint);
 
     TraceLog(LOG_TRACE, "Added checkpoint to level (x=%.1f, y=%.1f)",
                 newCheckpoint->hitbox.x, newCheckpoint->hitbox.y);
@@ -242,7 +240,8 @@ void LevelExitCheckAndAdd(Vector2 pos) {
     }
 
     // Currently only one level exit is supported, but this should change in the future.
-    if (levelExitNode) LinkedListDestroyNode(&LEVEL_STATE->listHead, levelExitNode);
+    if (LEVEL_STATE->exitNode)
+        LinkedListDestroyNode(&LEVEL_STATE->listHead, LEVEL_STATE->exitNode);
     
     LevelExitAdd((Vector2){ hitbox.x, hitbox.y });
 }
@@ -259,7 +258,7 @@ LevelEntity *LevelGetGroundBeneathHitbox(Rectangle hitbox) {
 
 void LevelEntityDestroy(ListNode *node) {
 
-    if (node == levelExitNode) levelExitNode = 0;
+    if (node == LEVEL_STATE->exitNode) LEVEL_STATE->exitNode = 0;
 
     RenderDebugEntityStop((LevelEntity *) node->item);
 
