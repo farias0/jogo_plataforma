@@ -219,7 +219,7 @@ return_result:
 
 void PersistenceOverworldSave() {
 
-    size_t owItemCount = LinkedListCountNodes(OW_LIST_HEAD);
+    size_t owItemCount = LinkedListCountNodes(OW_STATE->listHead);
     size_t saveItemCount = owItemCount;
     size_t entitySize = sizeof(PersistenceOverworldEntity);
     PersistenceOverworldEntity *data = MemAlloc(entitySize * saveItemCount);
@@ -227,7 +227,7 @@ void PersistenceOverworldSave() {
     TraceLog(LOG_DEBUG, "Saving overworld... (struct size=%d, level item count=%d)",
                         entitySize, owItemCount);
 
-    ListNode *node = OW_LIST_HEAD;
+    ListNode *node = OW_STATE->listHead;
     for (size_t i = 0; i < saveItemCount; ) {
 
         OverworldEntity *entity = (OverworldEntity *) node->item;

@@ -94,7 +94,7 @@ void GameUpdate() {
 ListNode *GetEntityListHead() {
 
     if (GAME_STATE->mode == MODE_IN_LEVEL) return LEVEL_STATE->listHead;
-    else if (GAME_STATE->mode == MODE_OVERWORLD) return OW_LIST_HEAD;
+    else if (GAME_STATE->mode == MODE_OVERWORLD) return OW_STATE->listHead;
     else return 0;
 }
 
