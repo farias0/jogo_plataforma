@@ -5,6 +5,10 @@
 #include "persistence.h"
 #include "linked_list.h"
 #include "level/level.h"
+#include "level/player.h"
+#include "level/enemy.h"
+#include "level/block.h"
+#include "level/powerups.h"
 #include "files.h"
 #include "render.h"
 #include "overworld.h"
@@ -138,17 +142,17 @@ bool PersistenceLevelLoad(char *levelName) {
         switch (data[i].entityType) {
         
         case LEVEL_ENTITY_PLAYER:
-            LevelPlayerInitialize(origin); break;
+            PlayerInitialize(origin); break;
         case LEVEL_ENTITY_ENEMY:
-            LevelEnemyAdd(origin); break;
+            EnemyAdd(origin); break;
         case LEVEL_ENTITY_BLOCK:
-            LevelBlockAdd(origin); break;
+            BlockAdd(origin); break;
         case LEVEL_ENTITY_ACID:
-            LevelAcidAdd(origin); break;
+            AcidAdd(origin); break;
         case LEVEL_ENTITY_EXIT:
             LevelExitAdd(origin); break;
         case LEVEL_ENTITY_GLIDE:
-            LevelGlideAdd(origin); break;
+            GlideAdd(origin); break;
         default:
             TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, type=%d.", data[i].entityType); 
         }

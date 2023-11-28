@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "player.h"
 #include "level.h"
+#include "enemy.h"
 #include "../core.h"
 #include "../camera.h"
 #include "../render.h"
@@ -118,7 +120,7 @@ static void die() {
 }
 
 
-void LevelPlayerInitialize(Vector2 origin) {
+void PlayerInitialize(Vector2 origin) {
 
     LevelEntity *newPlayer = MemAlloc(sizeof(LevelEntity));
     LEVEL_PLAYER = newPlayer;
@@ -138,7 +140,7 @@ void LevelPlayerInitialize(Vector2 origin) {
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
 }
 
-void LevelPlayerCheckAndSetOrigin(Vector2 pos) {
+void PlayerCheckAndSetOrigin(Vector2 pos) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(PlayerDefaultSprite, pos);
     
@@ -154,7 +156,7 @@ void LevelPlayerCheckAndSetOrigin(Vector2 pos) {
     TraceLog(LOG_DEBUG, "Player's origin set to x=%.1f, y=%.1f.", LEVEL_PLAYER->origin.x, LEVEL_PLAYER->origin.y);
 }
 
-void LevelPlayerCheckAndSetPos(Vector2 pos) {
+void PlayerCheckAndSetPos(Vector2 pos) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(LEVEL_PLAYER->sprite, pos);
     
@@ -170,14 +172,14 @@ void LevelPlayerCheckAndSetPos(Vector2 pos) {
     TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", LEVEL_PLAYER->hitbox.x, LEVEL_PLAYER->hitbox.y);
 }
 
-void LevelPlayerSetMode(PlayerMode mode) {
+void PlayerSetMode(PlayerMode mode) {
 
     PLAYER_STATE->mode = mode;
 
     TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
 }
 
-void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
+void PlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
 
     if (levelConcludedAgo >= 0) return;
     
@@ -201,22 +203,22 @@ void LevelPlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
     syncPlayersHitboxes();
 }
 
-void LevelPlayerStartRunning() {
+void PlayerStartRunning() {
 
     PLAYER_STATE->speed = PLAYER_MOVEMENT_RUNNING;
 }
 
-void LevelPlayerStopRunning() {
+void PlayerStopRunning() {
 
     PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
 }
 
-void LevelPlayerJump() {
+void PlayerJump() {
 
     PLAYER_STATE->lastPressedJump = GetTime();
 }
 
-void LevelPlayerTick() {
+void PlayerTick() {
 
     PlayerState *pState = PLAYER_STATE;
 
@@ -269,7 +271,7 @@ void LevelPlayerTick() {
             pState->groundBeneath->components & LEVEL_IS_ENEMY) {
 
             PLAYER_STATE->lastGroundBeneath = GetTime();
-            LevelEnemyKill(pState->groundBeneath);
+            EnemyKill(pState->groundBeneath);
             pState->groundBeneath = 0;
         }
     }
@@ -304,7 +306,7 @@ void LevelPlayerTick() {
                 // Player hit enemy
                 if (CheckCollisionRecs(entity->hitbox, pState->lowerbody)) {
                     PLAYER_STATE->lastGroundBeneath = GetTime();
-                    LevelEnemyKill(entity);
+                    EnemyKill(entity);
                     goto next_entity;
                 }
             }
@@ -379,7 +381,7 @@ void LevelPlayerTick() {
             else if (entity->components & LEVEL_IS_GLIDE &&
                         CheckCollisionRecs(entity->hitbox, LEVEL_PLAYER->hitbox) &&
                         PLAYER_STATE->mode != PLAYER_MODE_GLIDE) {
-                LevelPlayerSetMode(PLAYER_MODE_GLIDE);
+                PlayerSetMode(PLAYER_MODE_GLIDE);
                 return;
             }
 
@@ -422,7 +424,7 @@ next_entity:
     LEVEL_PLAYER->sprite.sprite = currentSprite.sprite;
 }
 
-void LevelPlayerContinue() {
+void PlayerContinue() {
 
     STATE->isPaused = false;
 
@@ -453,7 +455,7 @@ void LevelPlayerContinue() {
     TraceLog(LOG_DEBUG, "Player continue.");
 }
 
-void LevelPlayerSetCheckpoint() {
+void PlayerSetCheckpoint() {
 
     if (!PLAYER_STATE->groundBeneath) {
         TraceLog(LOG_DEBUG, "Player didn't set checkpoint, not on the ground.");

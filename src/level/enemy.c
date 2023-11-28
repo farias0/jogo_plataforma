@@ -1,7 +1,6 @@
 #include <raylib.h>
 
-#include "../linked_list.h"
-#include "../core.h"
+#include "enemy.h"
 #include "level.h"
 #include "../render.h"
 
@@ -9,7 +8,7 @@
 #define ENEMY_FALL_RATE 7.0f
 
 
-void LevelEnemyAdd(Vector2 origin) {
+void EnemyAdd(Vector2 origin) {
 
     LevelEntity *newEnemy = MemAlloc(sizeof(LevelEntity));
 
@@ -28,7 +27,7 @@ void LevelEnemyAdd(Vector2 origin) {
                 newEnemy->hitbox.x, newEnemy->hitbox.y);
 }
 
-void LevelEnemyCheckAndAdd(Vector2 origin) {    
+void EnemyCheckAndAdd(Vector2 origin) {    
 
     Rectangle hitbox = SpriteHitboxFromMiddle(EnemySprite, origin);
 
@@ -37,10 +36,10 @@ void LevelEnemyCheckAndAdd(Vector2 origin) {
         return;
     }
 
-    LevelEnemyAdd((Vector2){ hitbox.x, hitbox.y });
+    EnemyAdd((Vector2){ hitbox.x, hitbox.y });
 }
 
-void LevelEnemyTick(ListNode *enemyNode) {
+void EnemyTick(ListNode *enemyNode) {
 
     if (levelConcludedAgo >= 0) return;
 
@@ -70,7 +69,7 @@ void LevelEnemyTick(ListNode *enemyNode) {
 
         if  (enemy->hitbox.y + enemy->hitbox.height > FLOOR_DEATH_HEIGHT) {
 
-            LevelEnemyKill(enemy);
+            EnemyKill(enemy);
             return;
         }
 
@@ -110,7 +109,7 @@ next_node:
     }
 }
 
-void LevelEnemyKill(LevelEntity *entity) {
+void EnemyKill(LevelEntity *entity) {
 
     entity->isDead = true;
 

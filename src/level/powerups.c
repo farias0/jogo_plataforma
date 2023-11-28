@@ -1,7 +1,10 @@
+#include <raylib.h>
+
+#include "powerups.h"
 #include "level.h"
 
 
-void LevelGlideAdd(Vector2 origin) {
+void GlideAdd(Vector2 origin) {
     
     LevelEntity *glide = MemAlloc(sizeof(LevelEntity));
 
@@ -16,7 +19,7 @@ void LevelGlideAdd(Vector2 origin) {
                 glide->hitbox.x, glide->hitbox.y);
 }  
 
-void LevelGlideCheckAndAdd(Vector2 origin) {
+void GlideCheckAndAdd(Vector2 origin) {
 
     origin = SnapToGrid(origin, LEVEL_GRID);
 
@@ -28,5 +31,5 @@ void LevelGlideCheckAndAdd(Vector2 origin) {
         return;
     }
     
-    LevelGlideAdd(origin);
+    GlideAdd(origin);
 }

@@ -5,6 +5,7 @@
 #include "input.h"
 #include "core.h"
 #include "level/level.h"
+#include "level/player.h"
 #include "overworld.h"
 #include "camera.h"
 #include "persistence.h"
@@ -27,20 +28,20 @@ void handleInLevelInput() {
     if (STATE->isPaused || !LEVEL_PLAYER || LEVEL_PLAYER->isDead) return;
 
 
-    if      (IsKeyDown(KEY_Z))              LevelPlayerStartRunning();
-    else                                    LevelPlayerStopRunning();
+    if      (IsKeyDown(KEY_Z))              PlayerStartRunning();
+    else                                    PlayerStopRunning();
 
-    if      (IsKeyDown(KEY_RIGHT))          LevelPlayerMoveHorizontal(PLAYER_MOVEMENT_RIGHT);
-    else if (IsKeyDown(KEY_LEFT))           LevelPlayerMoveHorizontal(PLAYER_MOVEMENT_LEFT);
-    else                                    LevelPlayerMoveHorizontal(PLAYER_MOVEMENT_STOP);
+    if      (IsKeyDown(KEY_RIGHT))          PlayerMoveHorizontal(PLAYER_MOVEMENT_RIGHT);
+    else if (IsKeyDown(KEY_LEFT))           PlayerMoveHorizontal(PLAYER_MOVEMENT_LEFT);
+    else                                    PlayerMoveHorizontal(PLAYER_MOVEMENT_STOP);
 
-    if      (IsKeyPressed(KEY_X))           LevelPlayerJump();
+    if      (IsKeyPressed(KEY_X))           PlayerJump();
 
-    if      (IsKeyPressed(KEY_C))           LevelPlayerSetCheckpoint();
+    if      (IsKeyPressed(KEY_C))           PlayerSetCheckpoint();
 
     // For debugging
-    if      (IsKeyPressed(KEY_ONE))         LevelPlayerSetMode(PLAYER_MODE_DEFAULT);
-    if      (IsKeyPressed(KEY_TWO))         LevelPlayerSetMode(PLAYER_MODE_GLIDE);
+    if      (IsKeyPressed(KEY_ONE))         PlayerSetMode(PLAYER_MODE_DEFAULT);
+    if      (IsKeyPressed(KEY_TWO))         PlayerSetMode(PLAYER_MODE_GLIDE);
 }
 
 void handleOverworldInput() {
@@ -103,7 +104,7 @@ skip_selected_entities_actions:
     if (STATE->showDebugHUD || STATE->isEditorEnabled) {
 
         if (IsKeyDown(KEY_SPACE) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && LEVEL_PLAYER) {
-            LevelPlayerCheckAndSetPos(mousePosInScene);
+            PlayerCheckAndSetPos(mousePosInScene);
             return;
         }
     }
@@ -119,7 +120,7 @@ skip_selected_entities_actions:
     if (STATE->isEditorEnabled) {
 
         if (IsKeyDown(KEY_O) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && LEVEL_PLAYER) {
-            LevelPlayerCheckAndSetOrigin(mousePosInScene);
+            PlayerCheckAndSetOrigin(mousePosInScene);
             return;
         }
 

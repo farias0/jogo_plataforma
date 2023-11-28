@@ -3,8 +3,8 @@
 
 #include "core.h"
 #include "assets.h"
-#include "input.h"
 #include "level/level.h"
+#include "level/player.h"
 #include "overworld.h"
 #include "camera.h"
 #include "editor.h"

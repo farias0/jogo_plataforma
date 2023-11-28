@@ -1,10 +1,8 @@
 #include <raylib.h>
 
 #include "core.h"
-#include "camera.h"
 #include "render.h"
 #include "input.h"
-#include "assets.h"
 #include "overworld.h"
 
 int main() {

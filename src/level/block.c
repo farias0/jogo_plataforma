@@ -1,10 +1,10 @@
 #include <raylib.h>
 
+#include "block.h"
 #include "level.h"
-#include "../core.h"
 
 
-void LevelBlockAdd(Vector2 origin) {
+void BlockAdd(Vector2 origin) {
 
     LevelEntity *newBlock = MemAlloc(sizeof(LevelEntity));
 
@@ -20,7 +20,17 @@ void LevelBlockAdd(Vector2 origin) {
                 newBlock->hitbox.x, newBlock->hitbox.y);
 }
 
-void LevelAcidAdd(Vector2 origin) {
+void BlockCheckAndAdd(Vector2 origin) {
+
+    origin = SnapToGrid(origin, LEVEL_GRID);
+
+    Rectangle hitbox = SpriteHitboxFromEdge(BlockSprite, origin);
+    if (LevelCheckCollisionWithAnything(hitbox)) return;
+    
+    BlockAdd(origin);
+}
+
+void AcidAdd(Vector2 origin) {
 
     LevelEntity *newBlock = MemAlloc(sizeof(LevelEntity));
 
@@ -37,22 +47,12 @@ void LevelAcidAdd(Vector2 origin) {
                 newBlock->hitbox.x, newBlock->hitbox.y);
 }
 
-void LevelBlockCheckAndAdd(Vector2 origin) {
-
-    origin = SnapToGrid(origin, LEVEL_GRID);
-
-    Rectangle hitbox = SpriteHitboxFromEdge(BlockSprite, origin);
-    if (LevelCheckCollisionWithAnything(hitbox)) return;
-    
-    LevelBlockAdd(origin);
-}
-
-void LevelAcidCheckAndAdd(Vector2 origin) {
+void AcidCheckAndAdd(Vector2 origin) {
 
     origin = SnapToGrid(origin, LEVEL_GRID);
 
     Rectangle hitbox = SpriteHitboxFromEdge(AcidSprite, origin);
     if (LevelCheckCollisionWithAnything(hitbox)) return;
     
-    LevelAcidAdd(origin);
+    AcidAdd(origin);
 }
