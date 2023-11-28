@@ -33,7 +33,7 @@ static void initializeOverworldState() {
 // Updates the position for the cursor according to the tile under it
 static void updateCursorPosition() {
 
-    Dimensions cursorDimensions = SpriteScaledDimensions(OverworldCursorSprite);
+    Dimensions cursorDimensions = SpriteScaledDimensions(SPRITES->OverworldCursor);
 
     OW_CURSOR->gridPos.x = GAME_STATE->tileUnderCursor->gridPos.x;
 
@@ -75,7 +75,7 @@ static void initializeCursor() {
     OverworldEntity *newCursor = MemAlloc(sizeof(OverworldEntity));
 
     newCursor->components = OW_IS_CURSOR;
-    newCursor->sprite = OverworldCursorSprite;
+    newCursor->sprite = SPRITES->OverworldCursor;
     newCursor->layer = 1;
 
     LinkedListAdd(&OW_STATE->listHead, newCursor);
@@ -150,21 +150,21 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
     {
     case OW_LEVEL_DOT:
         newTile->components = OW_IS_LEVEL_DOT;
-        newTile->sprite = LevelDotSprite;
+        newTile->sprite = SPRITES->LevelDot;
         break;
     case OW_STRAIGHT_PATH:
         newTile->components = OW_IS_PATH + OW_IS_ROTATABLE;
-        newTile->sprite = PathTileStraightSprite;
+        newTile->sprite = SPRITES->PathTileStraight;
         SpriteRotate(&newTile->sprite, degrees);
         break;
     case OW_JOIN_PATH:
         newTile->components = OW_IS_PATH + OW_IS_ROTATABLE;
-        newTile->sprite = PathTileJoinSprite;
+        newTile->sprite = SPRITES->PathTileJoin;
         SpriteRotate(&newTile->sprite, degrees);
         break;
     case OW_PATH_IN_L:
         newTile->components = OW_IS_PATH + OW_IS_ROTATABLE;
-        newTile->sprite = PathTileInLSprite;
+        newTile->sprite = SPRITES->PathTileInL;
         SpriteRotate(&newTile->sprite, degrees);
         break;
     default:

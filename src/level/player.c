@@ -125,7 +125,7 @@ void PlayerInitialize(Vector2 origin) {
  
     newPlayer->components = LEVEL_IS_PLAYER;
     newPlayer->origin = origin;
-    newPlayer->sprite = PlayerDefaultSprite;
+    newPlayer->sprite = SPRITES->PlayerDefault;
     newPlayer->hitbox = SpriteHitboxFromEdge(newPlayer->sprite, newPlayer->origin);
     newPlayer->isFacingRight = true;
 
@@ -139,7 +139,7 @@ void PlayerInitialize(Vector2 origin) {
 
 void PlayerCheckAndSetOrigin(Vector2 pos) {
 
-    Rectangle hitbox = SpriteHitboxFromMiddle(PlayerDefaultSprite, pos);
+    Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->PlayerDefault, pos);
     
     if (LevelCheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
@@ -412,11 +412,11 @@ next_entity:
 
     if (PLAYER_STATE->mode == PLAYER_MODE_GLIDE) {
         if (PLAYER_STATE->isGliding)
-            currentSprite =     PlayerGlideFallingSprite;
+            currentSprite =     SPRITES->PlayerGlideFalling;
         else
-            currentSprite =     PlayerGlideOnSprite;
+            currentSprite =     SPRITES->PlayerGlideOn;
     }
-    else currentSprite =        PlayerDefaultSprite;
+    else currentSprite =        SPRITES->PlayerDefault;
 
     PLAYER_ENTITY->sprite.sprite = currentSprite.sprite;
 }

@@ -200,7 +200,7 @@ void LevelExitAdd(Vector2 pos) {
 
     LevelEntity *newExit = MemAlloc(sizeof(LevelEntity));
 
-    Sprite sprite = LevelEndOrbSprite;
+    Sprite sprite = SPRITES->LevelEndOrb;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
     newExit->components = LEVEL_IS_EXIT;
@@ -219,7 +219,7 @@ LevelEntity *LevelCheckpointAdd(Vector2 pos) {
 
     LevelEntity *newCheckpoint = MemAlloc(sizeof(LevelEntity));
 
-    Sprite sprite = LevelCheckpointSprite;
+    Sprite sprite = SPRITES->LevelCheckpoint;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
     newCheckpoint->components = LEVEL_IS_CHECKPOINT;
@@ -239,7 +239,7 @@ LevelEntity *LevelCheckpointAdd(Vector2 pos) {
 
 void LevelExitCheckAndAdd(Vector2 pos) {
     
-    Rectangle hitbox = SpriteHitboxFromMiddle(LevelEndOrbSprite, pos);
+    Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->LevelEndOrb, pos);
 
     if (LevelCheckCollisionWithAnything(hitbox)) {
         TraceLog(LOG_DEBUG, "Couldn't add level exit, collision with entity.");

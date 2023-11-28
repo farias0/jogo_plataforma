@@ -12,32 +12,38 @@ typedef struct Sprite {
     int rotation;
 } Sprite;
 
+typedef struct Sprites {
+
+    // Editor
+   Sprite Eraser;
+
+    // In Level
+   Sprite PlayerDefault;
+   Sprite PlayerGlideOn;
+   Sprite PlayerGlideFalling;
+   Sprite Enemy;
+   Sprite Block;
+   Sprite Acid;
+   Sprite LevelEndOrb;
+   Sprite LevelCheckpoint;
+   Sprite GlideItem;
+
+    // Overworld
+   Sprite OverworldCursor;
+   Sprite LevelDot;
+   Sprite PathTileJoin;
+   Sprite PathTileStraight;
+   Sprite PathTileInL;
+
+    // Background
+   Sprite Nightclub;
+   Sprite BGHouse;
+
+} Sprites;
+
 
 // Editor
-extern Sprite EraserSprite;
-
-// In Level
-extern Sprite PlayerDefaultSprite;
-extern Sprite PlayerGlideOnSprite;
-extern Sprite PlayerGlideFallingSprite;
-extern Sprite EnemySprite;
-extern Sprite BlockSprite;
-extern Sprite AcidSprite;
-extern Sprite LevelEndOrbSprite;
-extern Sprite LevelCheckpointSprite;
-extern Sprite GlideItemSprite;
-
-// Overworld
-extern Sprite OverworldCursorSprite;
-extern Sprite LevelDotSprite;
-extern Sprite PathTileJoinSprite;
-extern Sprite PathTileStraightSprite;
-extern Sprite PathTileInLSprite;
-
-// Background
-extern Sprite NightclubSprite;
-extern Sprite BGHouseSprite;
-
+extern Sprites *SPRITES;
 
 // Shaders
 extern Shader ShaderLevelTransition;
