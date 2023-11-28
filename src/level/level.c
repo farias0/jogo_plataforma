@@ -32,11 +32,34 @@ double levelConcludedAgo = -1;
 static ListNode *levelExitNode = 0;
 
 
+void resetLevelState() {
+
+    LinkedListDestroyAll(&LEVEL_STATE->listHead);
+    memset(LEVEL_STATE->levelName, 0, sizeof(LEVEL_STATE->levelName));
+    LEVEL_STATE->isPaused = false;
+    LEVEL_STATE->awaitingAssociation = false;
+
+    PLAYER_ENTITY = 0;
+    levelExitNode = 0;
+
+    TraceLog(LOG_INFO, "Level State initialized.");
+}
+
 void initializeLevelState() {
 
     LEVEL_STATE = MemAlloc(sizeof(LevelState));
 
+    resetLevelState();
+
     TraceLog(LOG_INFO, "Level State initialized.");
+}
+
+void leaveLevel() {
+    
+    resetLevelState();
+    OverworldInitialize();
+
+    TraceLog(LOG_TRACE, "Level left.");
 }
 
 // Searches for an entity in a given position
@@ -121,26 +144,22 @@ void LevelInitialize(char *levelName) {
 
     if (!LEVEL_STATE) initializeLevelState();
 
-    GameStateReset();
     GAME_STATE->mode = MODE_IN_LEVEL;
-
-    LinkedListDestroyAll(&LEVEL_STATE->listHead);
-    PLAYER_ENTITY = 0;
-    levelExitNode = 0;
 
     if (levelName[0] == '\0') {
         EditorEmpty();
         CameraPanningReset();
+        LEVEL_STATE->awaitingAssociation = true;
         TraceLog(LOG_INFO, "Level waiting for file drop.");
         return;
     }
 
     if (!PersistenceLevelLoad(levelName)) {
-        OverworldInitialize();
+        leaveLevel();
         return;
     }
 
-    strcpy(GAME_STATE->loadedLevel, levelName);
+    strcpy(LEVEL_STATE->levelName, levelName);
 
     EditorSync();
 
@@ -158,7 +177,7 @@ void LevelInitialize(char *levelName) {
 void LevelGoToOverworld() {
 
     if (!PLAYER_ENTITY) {
-        OverworldInitialize();
+        leaveLevel();
         return;    
     }
 
@@ -320,14 +339,14 @@ void LevelTick() {
     if (levelConcludedAgo != -1 &&
         GetTime() - levelConcludedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
 
-        OverworldInitialize();
+        leaveLevel();
 
         levelConcludedAgo = -1;
 
         return;
     }
 
-    if (GAME_STATE->isPaused) goto skip_entities_tick;
+    if (LEVEL_STATE->isPaused) goto skip_entities_tick;
     if (EDITOR_STATE->isEnabled) goto skip_entities_tick;
 
     ListNode *node = LEVEL_STATE->listHead;
@@ -396,7 +415,7 @@ bool LevelCheckCollisionWithAnything(Rectangle hitbox) {
 }
 
 void LevelSave() {
-    PersistenceLevelSave(GAME_STATE->loadedLevel);
+    PersistenceLevelSave(LEVEL_STATE->levelName);
 }
 
 void LevelLoadNew() {
@@ -406,7 +425,7 @@ void LevelLoadNew() {
     PLAYER_ENTITY->hitbox.x = PLAYER_ENTITY->origin.x;
     PLAYER_ENTITY->hitbox.y = PLAYER_ENTITY->origin.y;
 
-    strcpy(GAME_STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
+    strcpy(LEVEL_STATE->levelName, DEFAULT_NEW_LEVEL_NAME);
 }
 
 Rectangle LevelEntityOriginHitbox(LevelEntity *entity) {

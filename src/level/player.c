@@ -113,7 +113,7 @@ static void syncPlayersHitboxes() {
 static void die() {
 
     PLAYER_ENTITY->isDead = true;
-    GAME_STATE->isPaused = true;
+    LEVEL_STATE->isPaused = true;
 
     TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isAscending=%d",
                 PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y, PLAYER_STATE->isAscending);
@@ -426,7 +426,7 @@ next_entity:
 
 void PlayerContinue() {
 
-    GAME_STATE->isPaused = false;
+    LEVEL_STATE->isPaused = false;
 
     // Reset all the entities to their origins
     ListNode *node = LEVEL_STATE->listHead;

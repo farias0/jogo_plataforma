@@ -38,10 +38,10 @@ void windowTitleUpdate() {
 
     char title[LEVEL_NAME_BUFFER_SIZE + 20];
 
-    if (GAME_STATE->loadedLevel[0] == '\0')
-        sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());    
+    if (LEVEL_STATE && LEVEL_STATE->levelName[0] != '\0')
+        sprintf(title, "%s - %d FPS", LEVEL_STATE->levelName, GetFPS());  
     else
-        sprintf(title, "%s - %d FPS", GAME_STATE->loadedLevel, GetFPS());
+        sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());  
 
     SetWindowTitle(title);
 }
@@ -56,15 +56,6 @@ void GameStateInitialize() {
     EditorDisable();
 
     TraceLog(LOG_INFO, "Game state initialized.");
-}
-
-void GameStateReset() {
-
-    strcpy(GAME_STATE->loadedLevel, "");
-    GAME_STATE->isPaused = false;
-    GAME_STATE->mode = MODE_IN_LEVEL;
-
-    TraceLog(LOG_DEBUG, "Game state reset.");
 }
 
 void SystemsInitialize() {
@@ -91,7 +82,7 @@ void GameUpdate() {
 
 void PausedGameToggle() {
     
-    if (GAME_STATE->isPaused) {
+    if (LEVEL_STATE->isPaused) {
 
         if (GAME_STATE->mode == MODE_IN_LEVEL) {
 
@@ -102,10 +93,10 @@ void PausedGameToggle() {
             }
         }
 
-        GAME_STATE->isPaused = false;
+        LEVEL_STATE->isPaused = false;
 
     } else {
-        GAME_STATE->isPaused = true;
+        LEVEL_STATE->isPaused = true;
     }
 }
 
