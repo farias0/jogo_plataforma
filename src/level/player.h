@@ -45,9 +45,6 @@ typedef struct PlayerState {
 
     PlayerMode mode;
 
-    LevelEntity *checkpoint;
-    int checkpointsLeft;
-
     // timestamps, for jump buffers
     double lastPressedJump;
     double lastGroundBeneath;

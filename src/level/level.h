@@ -64,6 +64,12 @@ typedef struct LevelState {
     // Reference to the level exit in the level entity's list
     ListNode *exitNode;
 
+    // Reference to the current checkpoint in the level entity's list
+    LevelEntity *checkpoint;
+
+    // How many checkpoints the player has left
+    int checkpointsLeft;
+
 } LevelState;
 
 
