@@ -19,7 +19,7 @@ EditorState *EDITOR_STATE = 0;
 
 
 static void buttonsSelectDefault() {
-    STATE->editorButtonToggled = EDITOR_STATE->defaultEntityButton;
+    EDITOR_STATE->toggledEntityButton = EDITOR_STATE->defaultEntityButton;
 }
 
 static void editorUseEraser(Vector2 cursorPos) {
@@ -248,14 +248,14 @@ void EditorEmpty() {
     LinkedListDestroyAll(&EDITOR_ENTITIES_HEAD);
     LinkedListDestroyAll(&EDITOR_CONTROL_HEAD);
 
-    STATE->editorButtonToggled = 0;
+    EDITOR_STATE->toggledEntityButton = 0;
 
     TraceLog(LOG_TRACE, "Editor emptied.");
 }
 
 void EditorEnable() {
 
-    STATE->isEditorEnabled = true;
+    EDITOR_STATE->isEnabled = true;
 
     RenderResizeWindow(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
     MouseCursorEnable();
@@ -267,9 +267,14 @@ void EditorEnable() {
 
 void EditorDisable() {
 
-    STATE->isEditorEnabled = false;
+    // This check is because this function in being called during the initialization,
+    // before EditorInitialize(). Maybe this should not happen.
+    if (!EDITOR_STATE) return;
+
+    EDITOR_STATE->isEnabled = false;
 
     RenderResizeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
+
     MouseCursorDisable();
 
     CameraPanningReset();
@@ -281,7 +286,7 @@ void EditorDisable() {
 
 void EditorEnabledToggle() {
 
-    if (STATE->isEditorEnabled) EditorDisable();
+    if (EDITOR_STATE->isEnabled) EditorDisable();
     else EditorEnable();
 }
 
@@ -310,7 +315,7 @@ void EditorTick() {
 
 void EditorEntityButtonSelect(EditorEntityButton *item) {
 
-    STATE->editorButtonToggled = item;
+    EDITOR_STATE->toggledEntityButton = item;
 }
 
 void EditorSelectEntities(Vector2 cursorPos) {

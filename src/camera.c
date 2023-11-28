@@ -4,6 +4,7 @@
 #include "level/player.h"
 #include "core.h"
 #include "overworld.h"
+#include "editor.h"
 
 
 #define CAMERA_FOLLOW_LEFT      SCREEN_WIDTH/4
@@ -74,7 +75,7 @@ void CameraInitialize() {
 void CameraTick() {
 
     if (isPanned) return;
-    if (STATE->isEditorEnabled) return;
+    if (EDITOR_STATE->isEnabled) return;
 
     switch (STATE->mode)
     {

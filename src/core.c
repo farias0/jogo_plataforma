@@ -83,7 +83,7 @@ void GameUpdate() {
     else if (STATE->mode == MODE_OVERWORLD)
         OverworldTick();
 
-    if (STATE->isEditorEnabled)
+    if (EDITOR_STATE->isEnabled)
         EditorTick();
 
     windowTitleUpdate();

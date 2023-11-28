@@ -231,7 +231,7 @@ static void drawEntities() {
                     !entity->isDead)
                         drawLevelEntity(entity);
 
-                if (STATE->isEditorEnabled)
+                if (EDITOR_STATE->isEnabled)
                         drawLevelEntityOrigin(entity);
             }
 
@@ -302,7 +302,7 @@ static void drawDebugGrid() {
 
 static void drawLevelHud() {
 
-    if (STATE->isEditorEnabled) return;
+    if (EDITOR_STATE->isEnabled) return;
 
     if (STATE->isPaused && LEVEL_PLAYER && !LEVEL_PLAYER->isDead)
         DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
@@ -405,7 +405,7 @@ static void drawEditorEntityButtons() {
 
         EditorEntityButton *item = (EditorEntityButton *) node->item;
 
-        bool isItemSelected = STATE->editorButtonToggled == item;
+        bool isItemSelected = EDITOR_STATE->toggledEntityButton == item;
 
         Rectangle buttonRect = EditorEntityButtonRect(renderedCount);
 
@@ -582,7 +582,7 @@ void Render() {
 
         drawSysMessages();
 
-        if (STATE->isEditorEnabled) drawEditor();
+        if (EDITOR_STATE->isEnabled) drawEditor();
 
     EndDrawing();
 }
