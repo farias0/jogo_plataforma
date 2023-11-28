@@ -313,7 +313,7 @@ void OverworldTileAddOrInteract(Vector2 pos) {
 
     // This is highly gambiarra, the tile type should be informed to this function somehow,
     // instead of having to read here which editor button is toggled
-    switch (STATE->editorButtonToggled->type) {
+    switch (EDITOR_STATE->toggledEntityButton->type) {
         
         case EDITOR_ENTITY_LEVEL_DOT:
             typeToAdd = OW_LEVEL_DOT; break;
@@ -326,7 +326,7 @@ void OverworldTileAddOrInteract(Vector2 pos) {
         default:
             TraceLog(LOG_ERROR,
                         "Couldn't find Overworld Tile Type for Editor Item Type %d.",
-                        STATE->editorButtonToggled->type);
+                        EDITOR_STATE->toggledEntityButton->type);
             return;
     }
 

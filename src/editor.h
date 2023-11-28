@@ -96,6 +96,12 @@ typedef struct EditorControlButton {
 
 typedef struct EditorState {
 
+    // If the editor is enabled
+    bool isEnabled;
+
+    // What entity button is currently selected in the editor
+    EditorEntityButton *toggledEntityButton;
+
     EditorEntityButton *defaultEntityButton;
 
     // Entity selection

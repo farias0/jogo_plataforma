@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "persistence.h"
 #include "render.h"
+#include "editor.h"
 
 
 void handleInLevelInput() {
@@ -17,7 +18,7 @@ void handleInLevelInput() {
     if      (IsKeyPressed(KEY_F5))          STATE->showBackground = !STATE->showBackground;
 
 
-    if (STATE->isEditorEnabled) return;
+    if (EDITOR_STATE->isEnabled) return;
 
 
     if      (IsKeyPressed(KEY_BACKSPACE))   { LevelGoToOverworld(); return; }
@@ -46,7 +47,7 @@ void handleInLevelInput() {
 
 void handleOverworldInput() {
 
-    if (STATE->isEditorEnabled) return;
+    if (EDITOR_STATE->isEnabled) return;
     
 
     if      (IsKeyPressed(KEY_X))           { OverworldLevelSelect(); return; };
@@ -77,18 +78,18 @@ void handleDevInput() {
 
 
     // Entitiy selection
-    if (STATE->isEditorEnabled && IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+    if (EDITOR_STATE->isEnabled && IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         EditorSelectEntities(mousePosInScene);
         return;
     }
-    else if (STATE->isEditorEnabled && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && EDITOR_STATE->selectedEntities) {
+    else if (EDITOR_STATE->isEnabled && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && EDITOR_STATE->selectedEntities) {
 
         if (!IsInPlayArea(mousePosInScreen)) goto skip_selected_entities_actions;
 
         // Actions available when entities are selected
 
-        if (STATE->editorButtonToggled &&
-            STATE->editorButtonToggled->type == EDITOR_ENTITY_ERASER)
+        if (EDITOR_STATE->toggledEntityButton &&
+            EDITOR_STATE->toggledEntityButton->type == EDITOR_ENTITY_ERASER)
                     goto skip_to_button_handler;
 
         if (EditorSelectedEntitiesMove(mousePosInScene)) return;
@@ -101,7 +102,7 @@ skip_selected_entities_actions:
     if      (!IsInPlayArea(mousePosInScreen)) return;
 
 
-    if (STATE->showDebugHUD || STATE->isEditorEnabled) {
+    if (STATE->showDebugHUD || EDITOR_STATE->isEnabled) {
 
         if (IsKeyDown(KEY_SPACE) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && LEVEL_PLAYER) {
             PlayerCheckAndSetPos(mousePosInScene);
@@ -117,7 +118,7 @@ skip_selected_entities_actions:
         }
     }
 
-    if (STATE->isEditorEnabled) {
+    if (EDITOR_STATE->isEnabled) {
 
         if (IsKeyDown(KEY_O) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && LEVEL_PLAYER) {
             PlayerCheckAndSetOrigin(mousePosInScene);
@@ -129,21 +130,21 @@ skip_to_button_handler:
 
             // TODO use a timer to not keep checking it every frame
 
-            if (!STATE->editorButtonToggled) return;
+            if (!EDITOR_STATE->toggledEntityButton) return;
 
-            if (!STATE->editorButtonToggled->handler) {
+            if (!EDITOR_STATE->toggledEntityButton->handler) {
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                     TraceLog(LOG_WARNING, "No code to handle selected editor entity.");
                 return;
             }
 
             // so holding doesn't keep activating the item
-            if (STATE->editorButtonToggled->interactionType == EDITOR_INTERACTION_CLICK &&
+            if (EDITOR_STATE->toggledEntityButton->interactionType == EDITOR_INTERACTION_CLICK &&
                 !IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
                     return;
 
 
-            STATE->editorButtonToggled->handler(mousePosInScene);
+            EDITOR_STATE->toggledEntityButton->handler(mousePosInScene);
             return;
         }
     }

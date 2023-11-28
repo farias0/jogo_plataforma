@@ -14,7 +14,6 @@
 #define FLOOR_DEATH_HEIGHT 800 // Below this y in level the player dies
 
 
-struct EditorEntityButton;
 struct OverworldEntity;
 
 typedef struct Dimensions {
@@ -39,10 +38,6 @@ typedef struct GameState {
     char loadedLevel[LEVEL_NAME_BUFFER_SIZE];
 
     bool isPaused;
-
-    // What entity button is currently selected in the editor
-    struct EditorEntityButton *editorButtonToggled;
-    bool isEditorEnabled;
 
     struct OverworldEntity *tileUnderCursor;
     

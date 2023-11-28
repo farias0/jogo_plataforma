@@ -319,7 +319,7 @@ void LevelTick() {
     }
 
     if (STATE->isPaused) goto skip_entities_tick;
-    if (STATE->isEditorEnabled) goto skip_entities_tick;
+    if (EDITOR_STATE->isEnabled) goto skip_entities_tick;
 
     ListNode *node = LEVEL_LIST_HEAD;
     ListNode *next;
