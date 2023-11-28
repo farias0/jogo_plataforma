@@ -25,18 +25,45 @@
 #define PLAYERS_ORIGIN (Vector2){ 344, 200 };
 
 
-ListNode *LEVEL_LIST_HEAD = 0;
+LevelState *LEVEL_STATE = 0;
 
-double levelConcludedAgo = -1;
 
-static ListNode *levelExitNode = 0;
+void resetLevelState() {
 
+    LinkedListDestroyAll(&LEVEL_STATE->listHead);
+    memset(LEVEL_STATE->levelName, 0, sizeof(LEVEL_STATE->levelName));
+    LEVEL_STATE->isPaused = false;
+    LEVEL_STATE->awaitingAssociation = false;
+    LEVEL_STATE->concludedAgo = -1;
+    LEVEL_STATE->exitNode = 0;
+
+    PLAYER_ENTITY = 0;
+
+    TraceLog(LOG_INFO, "Level State initialized.");
+}
+
+void initializeLevelState() {
+
+    LEVEL_STATE = MemAlloc(sizeof(LevelState));
+
+    resetLevelState();
+
+    TraceLog(LOG_INFO, "Level State initialized.");
+}
+
+void leaveLevel() {
+    
+    resetLevelState();
+    OverworldInitialize();
+
+    TraceLog(LOG_TRACE, "Level left.");
+}
 
 // Searches for an entity in a given position
 // and returns its node, or 0 if not found.
 static ListNode *getEntityOnScene(Vector2 pos) {
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
 
     while (node != 0) {
 
@@ -67,7 +94,7 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
 
     int feetHeight = hitbox.y + hitbox.height;
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
 
     LevelEntity *foundGround = 0; 
 
@@ -112,26 +139,24 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
 
 void LevelInitialize(char *levelName) {
 
-    GameStateReset();
-    GAME_STATE->mode = MODE_IN_LEVEL;
+    if (!LEVEL_STATE) initializeLevelState();
 
-    LinkedListDestroyAll(&LEVEL_LIST_HEAD);
-    PLAYER_ENTITY = 0;
-    levelExitNode = 0;
+    GAME_STATE->mode = MODE_IN_LEVEL;
 
     if (levelName[0] == '\0') {
         EditorEmpty();
         CameraPanningReset();
+        LEVEL_STATE->awaitingAssociation = true;
         TraceLog(LOG_INFO, "Level waiting for file drop.");
         return;
     }
 
     if (!PersistenceLevelLoad(levelName)) {
-        OverworldInitialize();
+        leaveLevel();
         return;
     }
 
-    strcpy(GAME_STATE->loadedLevel, levelName);
+    strcpy(LEVEL_STATE->levelName, levelName);
 
     EditorSync();
 
@@ -149,7 +174,7 @@ void LevelInitialize(char *levelName) {
 void LevelGoToOverworld() {
 
     if (!PLAYER_ENTITY) {
-        OverworldInitialize();
+        leaveLevel();
         return;    
     }
 
@@ -161,7 +186,7 @@ void LevelGoToOverworld() {
 
     RenderDebugEntityStopAll();
 
-    levelConcludedAgo = GetTime();
+    LEVEL_STATE->concludedAgo = GetTime();
 }
 
 void LevelExitAdd(Vector2 pos) {
@@ -177,7 +202,7 @@ void LevelExitAdd(Vector2 pos) {
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
-    levelExitNode = LinkedListAdd(&LEVEL_LIST_HEAD, newExit);
+    LEVEL_STATE->exitNode = LinkedListAdd(&LEVEL_STATE->listHead, newExit);
 
     TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
                 newExit->hitbox.x, newExit->hitbox.y);
@@ -197,7 +222,7 @@ LevelEntity *LevelCheckpointAdd(Vector2 pos) {
     newCheckpoint->isFacingRight = true;
     newCheckpoint->layer = -1;
 
-    levelExitNode = LinkedListAdd(&LEVEL_LIST_HEAD, newCheckpoint);
+    LinkedListAdd(&LEVEL_STATE->listHead, newCheckpoint);
 
     TraceLog(LOG_TRACE, "Added checkpoint to level (x=%.1f, y=%.1f)",
                 newCheckpoint->hitbox.x, newCheckpoint->hitbox.y);
@@ -215,7 +240,8 @@ void LevelExitCheckAndAdd(Vector2 pos) {
     }
 
     // Currently only one level exit is supported, but this should change in the future.
-    if (levelExitNode) LinkedListDestroyNode(&LEVEL_LIST_HEAD, levelExitNode);
+    if (LEVEL_STATE->exitNode)
+        LinkedListDestroyNode(&LEVEL_STATE->listHead, LEVEL_STATE->exitNode);
     
     LevelExitAdd((Vector2){ hitbox.x, hitbox.y });
 }
@@ -232,11 +258,11 @@ LevelEntity *LevelGetGroundBeneathHitbox(Rectangle hitbox) {
 
 void LevelEntityDestroy(ListNode *node) {
 
-    if (node == levelExitNode) levelExitNode = 0;
+    if (node == LEVEL_STATE->exitNode) LEVEL_STATE->exitNode = 0;
 
     RenderDebugEntityStop((LevelEntity *) node->item);
 
-    LinkedListDestroyNode(&LEVEL_LIST_HEAD, node);
+    LinkedListDestroyNode(&LEVEL_STATE->listHead, node);
 
     TraceLog(LOG_TRACE, "Destroyed level entity.");
 }
@@ -255,7 +281,7 @@ void LevelEntityRemoveAt(Vector2 pos) {
     // TODO This function is a monstruosity and should be broken up
     // in at least two others ASAP
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
     while (node != 0) {
 
         LevelEntity *entity = (LevelEntity *) node->item;
@@ -289,7 +315,7 @@ next_node:
 
             if (selectedEntity->components & LEVEL_IS_PLAYER) goto next_selected_node;
 
-            ListNode *nodeInLevel = LinkedListGetNode(LEVEL_LIST_HEAD, selectedEntity);
+            ListNode *nodeInLevel = LinkedListGetNode(LEVEL_STATE->listHead, selectedEntity);
             LevelEntityDestroy(nodeInLevel);
 
 next_selected_node:
@@ -308,20 +334,20 @@ void LevelTick() {
 
     // TODO check if having the first check before saves on processing,
     // of if it's just redundant. 
-    if (levelConcludedAgo != -1 &&
-        GetTime() - levelConcludedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
+    if (LEVEL_STATE->concludedAgo != -1 &&
+        GetTime() - LEVEL_STATE->concludedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
 
-        OverworldInitialize();
+        leaveLevel();
 
-        levelConcludedAgo = -1;
+        LEVEL_STATE->concludedAgo = -1;
 
         return;
     }
 
-    if (GAME_STATE->isPaused) goto skip_entities_tick;
+    if (LEVEL_STATE->isPaused) goto skip_entities_tick;
     if (EDITOR_STATE->isEnabled) goto skip_entities_tick;
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
     ListNode *next;
 
     while (node != 0) {
@@ -342,7 +368,7 @@ skip_entities_tick:
 
 bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox) {
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
 
     while (node != 0) {
     
@@ -362,7 +388,7 @@ bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox) {
 
 bool LevelCheckCollisionWithAnything(Rectangle hitbox) {
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
 
     while (node != 0) {
     
@@ -387,7 +413,7 @@ bool LevelCheckCollisionWithAnything(Rectangle hitbox) {
 }
 
 void LevelSave() {
-    PersistenceLevelSave(GAME_STATE->loadedLevel);
+    PersistenceLevelSave(LEVEL_STATE->levelName);
 }
 
 void LevelLoadNew() {
@@ -397,7 +423,7 @@ void LevelLoadNew() {
     PLAYER_ENTITY->hitbox.x = PLAYER_ENTITY->origin.x;
     PLAYER_ENTITY->hitbox.y = PLAYER_ENTITY->origin.y;
 
-    strcpy(GAME_STATE->loadedLevel, DEFAULT_NEW_LEVEL_NAME);
+    strcpy(LEVEL_STATE->levelName, DEFAULT_NEW_LEVEL_NAME);
 }
 
 Rectangle LevelEntityOriginHitbox(LevelEntity *entity) {

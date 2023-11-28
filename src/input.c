@@ -26,7 +26,7 @@ void handleInLevelInput() {
     if      (IsKeyPressed(KEY_ENTER))       { PausedGameToggle(); return; }
 
 
-    if (GAME_STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
+    if (LEVEL_STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
 
 
     if      (IsKeyDown(KEY_Z))              PlayerStartRunning();
@@ -158,7 +158,7 @@ void handleDroppedFile() {
         
         LevelInitialize(levelName);
         
-        if (GAME_STATE->expectingLevelAssociation) {
+        if (LEVEL_STATE && LEVEL_STATE->awaitingAssociation) {
 
             strcpy(GAME_STATE->tileUnderCursor->levelName, levelName);
 
@@ -169,8 +169,6 @@ void handleDroppedFile() {
             sprintf(sysMsg, "Associada fase %s", levelName);
             RenderPrintSysMessage(sysMsg);
             MemFree(sysMsg);
-
-            GAME_STATE->expectingLevelAssociation = false;
         }
     }
 

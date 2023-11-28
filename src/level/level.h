@@ -7,11 +7,14 @@
 #include "../linked_list.h"
 #include "../assets.h"
 #include "../core.h"
+#include "../persistence.h"
 
 
 #define NEW_LEVEL_NAME "default_new_level.lvl"
 
 #define LEVEL_GRID (Dimensions){ 32, 32 }
+
+#define FLOOR_DEATH_HEIGHT 800 // Below this y entities die
 
 
 typedef enum LevelEntityComponent {
@@ -41,12 +44,30 @@ typedef struct LevelEntity {
     
 } LevelEntity;
 
+typedef struct LevelState {
 
-// The head of the linked list of all the level entities
-extern ListNode *LEVEL_LIST_HEAD;
+    // The head of the linked list of all the level entities
+    ListNode *listHead;
 
-// How long ago, in seconds, the level concluded, or -1 if it's not concluded
-extern double levelConcludedAgo;
+    // The current loaded level's name
+    char levelName[LEVEL_NAME_BUFFER_SIZE];
+
+    // If the selected dot has no associated level, and so the level scene
+    // is waiting for a level file to dropped so it can be associated
+    bool awaitingAssociation;
+
+    bool isPaused;
+
+    // How long ago, in seconds, the level concluded, or -1 if it's not concluded
+    double concludedAgo;
+
+    // Reference to the level exit in the level entity's list
+    ListNode *exitNode;
+
+} LevelState;
+
+
+extern LevelState *LEVEL_STATE;
 
 
 // Initialize and go to the given level

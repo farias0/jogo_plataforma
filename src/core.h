@@ -3,15 +3,13 @@
 
 #include <raylib.h>
 #include "linked_list.h"
-#include "persistence.h"
+
 
 // Currently this represents the play space (not including editor)
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
 #define SCREEN_WIDTH_W_EDITOR   SCREEN_WIDTH + EDITOR_BAR_WIDTH
-
-#define FLOOR_DEATH_HEIGHT 800 // Below this y in level the player dies
 
 
 struct OverworldEntity;
@@ -35,14 +33,7 @@ typedef struct GameState {
 
     GameMode mode;
 
-    char loadedLevel[LEVEL_NAME_BUFFER_SIZE];
-
-    bool isPaused;
-
     struct OverworldEntity *tileUnderCursor;
-    
-    // If selected a dot in the OW without an associated level
-    bool expectingLevelAssociation;
 
     bool showDebugHUD;
     bool showDebugGrid;
@@ -55,8 +46,6 @@ extern GameState *GAME_STATE;
 
 
 void GameStateInitialize();
-
-void GameStateReset();
 
 // Initialize the game's core systems
 void SystemsInitialize();

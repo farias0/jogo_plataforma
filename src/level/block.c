@@ -14,7 +14,7 @@ void BlockAdd(Vector2 origin) {
     newBlock->sprite = BlockSprite;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
 
-    LinkedListAdd(&LEVEL_LIST_HEAD, newBlock);
+    LinkedListAdd(&LEVEL_STATE->listHead, newBlock);
 
     TraceLog(LOG_TRACE, "Added block to level (x=%.1f, y=%.1f)",
                 newBlock->hitbox.x, newBlock->hitbox.y);
@@ -41,7 +41,7 @@ void AcidAdd(Vector2 origin) {
     newBlock->sprite = AcidSprite;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
 
-    LinkedListAdd(&LEVEL_LIST_HEAD, newBlock);
+    LinkedListAdd(&LEVEL_STATE->listHead, newBlock);
 
     TraceLog(LOG_TRACE, "Added acid block to level (x=%.1f, y=%.1f)",
                 newBlock->hitbox.x, newBlock->hitbox.y);

@@ -101,7 +101,6 @@ static ListNode *getEntityOnScene(Vector2 pos) {
 
 void OverworldInitialize() {
 
-    GameStateReset();
     GAME_STATE->mode = MODE_OVERWORLD;
 
     if (!OW_LIST_HEAD) {
@@ -116,15 +115,11 @@ void OverworldInitialize() {
         updateCursorPosition();
     }
 
-    GAME_STATE->expectingLevelAssociation = false;
-
     EditorSync();
 
     CameraPanningReset();
 
     CameraFollow();
-
-    memset(GAME_STATE->loadedLevel, 0, sizeof(GAME_STATE->loadedLevel));
 
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), false);
@@ -186,10 +181,6 @@ void OverworldLevelSelect() {
     if (!GAME_STATE->tileUnderCursor->levelName) {
         TraceLog(LOG_ERROR, "tileUnderCursor has no levelName reference.");
         return;
-    }
-
-    if (GAME_STATE->tileUnderCursor->levelName[0] == '\0') {
-        GAME_STATE->expectingLevelAssociation = true;
     }
 
     CameraPanningReset();

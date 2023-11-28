@@ -141,7 +141,7 @@ static void drawBackground() {
 
 
     else if (GAME_STATE->mode == MODE_IN_LEVEL) {
-        if (GAME_STATE->loadedLevel[0] == '\0') {
+        if (LEVEL_STATE->levelName[0] == '\0') {
             DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
             return;
         }
@@ -304,13 +304,13 @@ static void drawLevelHud() {
 
     if (EDITOR_STATE->isEnabled) return;
 
-    if (GAME_STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
+    if (LEVEL_STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
         DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
         
     if (PLAYER_ENTITY && PLAYER_ENTITY->isDead)
         DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
     
-    if (GAME_STATE->loadedLevel[0] == '\0')
+    if (LEVEL_STATE->levelName[0] == '\0')
         DrawText("Arraste uma fase para cá", 400, 350, 40, RAYWHITE);
 }
 
