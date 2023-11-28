@@ -21,7 +21,7 @@ void EnemyAdd(Vector2 origin) {
     newEnemy->isFacingRight = true;
     newEnemy->isFallingDown = true;
 
-    LinkedListAdd(&LEVEL_LIST_HEAD, newEnemy);
+    LinkedListAdd(&LEVEL_STATE->listHead, newEnemy);
 
     TraceLog(LOG_TRACE, "Added enemy to level (x=%.1f, y=%.1f)",
                 newEnemy->hitbox.x, newEnemy->hitbox.y);
@@ -89,7 +89,7 @@ void EnemyTick(ListNode *enemyNode) {
     if (enemy->isFacingRight) enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
     else enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
     while (node) {
 
         LevelEntity *entity = (LevelEntity *) node->item;

@@ -59,7 +59,7 @@ static void getFilePath(char *pathBuffer, size_t bufferSize, char *fileName) {
 
 void PersistenceLevelSave(char *levelName) {
 
-    size_t levelItemCount = LinkedListCountNodes(LEVEL_LIST_HEAD);
+    size_t levelItemCount = LinkedListCountNodes(LEVEL_STATE->listHead);
     size_t saveItemCount = levelItemCount;
     size_t entitySize = sizeof(PersistenceLevelEntity);
     PersistenceLevelEntity *data = MemAlloc(entitySize * saveItemCount);
@@ -67,7 +67,7 @@ void PersistenceLevelSave(char *levelName) {
     TraceLog(LOG_DEBUG, "Saving level %s... (struct size=%d, level item count=%d)",
                         levelName, entitySize, levelItemCount);
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
     for (size_t i = 0; i < saveItemCount; ) {
 
         LevelEntity *entity = (LevelEntity *) node->item;

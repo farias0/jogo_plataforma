@@ -124,7 +124,7 @@ void PlayerInitialize(Vector2 origin) {
 
     LevelEntity *newPlayer = MemAlloc(sizeof(LevelEntity));
     PLAYER_ENTITY = newPlayer;
-    LinkedListAdd(&LEVEL_LIST_HEAD, newPlayer);
+    LinkedListAdd(&LEVEL_STATE->listHead, newPlayer);
  
     newPlayer->components = LEVEL_IS_PLAYER;
     newPlayer->origin = origin;
@@ -289,7 +289,7 @@ void PlayerTick() {
             return;
         }
 
-        ListNode *node = LEVEL_LIST_HEAD;
+        ListNode *node = LEVEL_STATE->listHead;
 
         while (node != 0) {
 
@@ -429,7 +429,7 @@ void PlayerContinue() {
     GAME_STATE->isPaused = false;
 
     // Reset all the entities to their origins
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
     while (node) {
 
         LevelEntity *entity = (LevelEntity *) node->item;
@@ -469,7 +469,7 @@ void PlayerSetCheckpoint() {
 
     if (PLAYER_STATE->checkpoint) {
         LevelEntityDestroy(
-            LinkedListGetNode(LEVEL_LIST_HEAD, PLAYER_STATE->checkpoint));
+            LinkedListGetNode(LEVEL_STATE->listHead, PLAYER_STATE->checkpoint));
     }
 
     Vector2 pos = RectangleGetPos(PLAYER_ENTITY->hitbox);

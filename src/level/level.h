@@ -41,9 +41,16 @@ typedef struct LevelEntity {
     
 } LevelEntity;
 
+typedef struct LevelState {
 
-// The head of the linked list of all the level entities
-extern ListNode *LEVEL_LIST_HEAD;
+    // The head of the linked list of all the level entities
+    ListNode *listHead;
+
+} LevelState;
+
+
+
+extern LevelState *LEVEL_STATE;
 
 // How long ago, in seconds, the level concluded, or -1 if it's not concluded
 extern double levelConcludedAgo;

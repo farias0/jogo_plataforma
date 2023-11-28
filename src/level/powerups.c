@@ -13,7 +13,7 @@ void GlideAdd(Vector2 origin) {
     glide->sprite = GlideItemSprite;
     glide->hitbox = SpriteHitboxFromEdge(glide->sprite, glide->origin);
 
-    LinkedListAdd(&LEVEL_LIST_HEAD, glide);
+    LinkedListAdd(&LEVEL_STATE->listHead, glide);
 
     TraceLog(LOG_TRACE, "Added glide item to level (x=%.1f, y=%.1f)",
                 glide->hitbox.x, glide->hitbox.y);

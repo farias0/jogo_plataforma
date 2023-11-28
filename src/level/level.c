@@ -25,18 +25,25 @@
 #define PLAYERS_ORIGIN (Vector2){ 344, 200 };
 
 
-ListNode *LEVEL_LIST_HEAD = 0;
+LevelState *LEVEL_STATE = 0;
 
 double levelConcludedAgo = -1;
 
 static ListNode *levelExitNode = 0;
 
 
+void initializeLevelState() {
+
+    LEVEL_STATE = MemAlloc(sizeof(LevelState));
+
+    TraceLog(LOG_INFO, "Level State initialized.");
+}
+
 // Searches for an entity in a given position
 // and returns its node, or 0 if not found.
 static ListNode *getEntityOnScene(Vector2 pos) {
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
 
     while (node != 0) {
 
@@ -67,7 +74,7 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
 
     int feetHeight = hitbox.y + hitbox.height;
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
 
     LevelEntity *foundGround = 0; 
 
@@ -112,10 +119,12 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
 
 void LevelInitialize(char *levelName) {
 
+    if (!LEVEL_STATE) initializeLevelState();
+
     GameStateReset();
     GAME_STATE->mode = MODE_IN_LEVEL;
 
-    LinkedListDestroyAll(&LEVEL_LIST_HEAD);
+    LinkedListDestroyAll(&LEVEL_STATE->listHead);
     PLAYER_ENTITY = 0;
     levelExitNode = 0;
 
@@ -177,7 +186,7 @@ void LevelExitAdd(Vector2 pos) {
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
-    levelExitNode = LinkedListAdd(&LEVEL_LIST_HEAD, newExit);
+    levelExitNode = LinkedListAdd(&LEVEL_STATE->listHead, newExit);
 
     TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
                 newExit->hitbox.x, newExit->hitbox.y);
@@ -197,7 +206,7 @@ LevelEntity *LevelCheckpointAdd(Vector2 pos) {
     newCheckpoint->isFacingRight = true;
     newCheckpoint->layer = -1;
 
-    levelExitNode = LinkedListAdd(&LEVEL_LIST_HEAD, newCheckpoint);
+    levelExitNode = LinkedListAdd(&LEVEL_STATE->listHead, newCheckpoint);
 
     TraceLog(LOG_TRACE, "Added checkpoint to level (x=%.1f, y=%.1f)",
                 newCheckpoint->hitbox.x, newCheckpoint->hitbox.y);
@@ -215,7 +224,7 @@ void LevelExitCheckAndAdd(Vector2 pos) {
     }
 
     // Currently only one level exit is supported, but this should change in the future.
-    if (levelExitNode) LinkedListDestroyNode(&LEVEL_LIST_HEAD, levelExitNode);
+    if (levelExitNode) LinkedListDestroyNode(&LEVEL_STATE->listHead, levelExitNode);
     
     LevelExitAdd((Vector2){ hitbox.x, hitbox.y });
 }
@@ -236,7 +245,7 @@ void LevelEntityDestroy(ListNode *node) {
 
     RenderDebugEntityStop((LevelEntity *) node->item);
 
-    LinkedListDestroyNode(&LEVEL_LIST_HEAD, node);
+    LinkedListDestroyNode(&LEVEL_STATE->listHead, node);
 
     TraceLog(LOG_TRACE, "Destroyed level entity.");
 }
@@ -255,7 +264,7 @@ void LevelEntityRemoveAt(Vector2 pos) {
     // TODO This function is a monstruosity and should be broken up
     // in at least two others ASAP
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
     while (node != 0) {
 
         LevelEntity *entity = (LevelEntity *) node->item;
@@ -289,7 +298,7 @@ next_node:
 
             if (selectedEntity->components & LEVEL_IS_PLAYER) goto next_selected_node;
 
-            ListNode *nodeInLevel = LinkedListGetNode(LEVEL_LIST_HEAD, selectedEntity);
+            ListNode *nodeInLevel = LinkedListGetNode(LEVEL_STATE->listHead, selectedEntity);
             LevelEntityDestroy(nodeInLevel);
 
 next_selected_node:
@@ -321,7 +330,7 @@ void LevelTick() {
     if (GAME_STATE->isPaused) goto skip_entities_tick;
     if (EDITOR_STATE->isEnabled) goto skip_entities_tick;
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
     ListNode *next;
 
     while (node != 0) {
@@ -342,7 +351,7 @@ skip_entities_tick:
 
 bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox) {
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
 
     while (node != 0) {
     
@@ -362,7 +371,7 @@ bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox) {
 
 bool LevelCheckCollisionWithAnything(Rectangle hitbox) {
 
-    ListNode *node = LEVEL_LIST_HEAD;
+    ListNode *node = LEVEL_STATE->listHead;
 
     while (node != 0) {
     
