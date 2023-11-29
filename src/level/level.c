@@ -144,12 +144,6 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
 
 void LevelInitialize() {
 
-    if (LEVEL_STATE) {
-        TraceLog(LOG_ERROR, "Level already initialized.");
-        resetLevelState();
-        return;
-    }
-
     initializeLevelState();
     TraceLog(LOG_INFO, "Level system initialized.");
 }
