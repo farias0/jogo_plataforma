@@ -21,6 +21,7 @@ static bool isPanned = false;
 static Vector2 panningCameraOrigin;
 static Vector2 panningCursorLastFrame;
 
+
 static void followOverworldCamera() {
 
     Dimensions tileDimensions = SpriteScaledDimensions(OW_STATE->tileUnderCursor->sprite);

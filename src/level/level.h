@@ -76,8 +76,11 @@ typedef struct LevelState {
 extern LevelState *LEVEL_STATE;
 
 
-// Initialize and go to the given level
-void LevelInitialize(char *levelName);
+// Initialize the level system
+void LevelInitialize();
+
+// Loads and goes to the given level
+void LevelLoad(char *levelName);
 
 // Starts "go to Overworld" routine
 void LevelGoToOverworld();

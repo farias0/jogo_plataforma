@@ -142,9 +142,19 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
     return foundGround;   
 }
 
-void LevelInitialize(char *levelName) {
+void LevelInitialize() {
 
-    if (!LEVEL_STATE) initializeLevelState();
+    if (LEVEL_STATE) {
+        TraceLog(LOG_ERROR, "Level already initialized.");
+        resetLevelState();
+        return;
+    }
+
+    initializeLevelState();
+    TraceLog(LOG_INFO, "Level system initialized.");
+}
+
+void LevelLoad(char *levelName) {
 
     GAME_STATE->mode = MODE_IN_LEVEL;
 
@@ -175,7 +185,7 @@ void LevelInitialize(char *levelName) {
         SpritePosMiddlePoint(
             (Vector2){PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), false);
 
-    TraceLog(LOG_INFO, "Level initialized: %s.", levelName);
+    TraceLog(LOG_INFO, "Level loaded: %s.", levelName);
 }
 
 void LevelGoToOverworld() {
@@ -439,7 +449,8 @@ void LevelSave() {
 }
 
 void LevelLoadNew() {
-    LevelInitialize(NEW_LEVEL_NAME);
+
+    LevelLoad(NEW_LEVEL_NAME);
 
     PLAYER_ENTITY->origin = PLAYERS_ORIGIN;
     PLAYER_ENTITY->hitbox.x = PLAYER_ENTITY->origin.x;

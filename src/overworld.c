@@ -397,7 +397,7 @@ void OverworldTick() {
     if (levelSelectedAgo != -1 &&
         GetTime() - levelSelectedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
 
-        LevelInitialize(levelSelectedName);
+        LevelLoad(levelSelectedName);
 
         levelSelectedAgo = -1;
         levelSelectedName = 0;
