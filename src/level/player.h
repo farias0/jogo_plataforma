@@ -12,11 +12,11 @@ typedef enum PlayerMovementSpeed {
     PLAYER_MOVEMENT_RUNNING
 } PlayerMovementSpeed;
 
-typedef enum PlayerHorizontalMovementType {
-    PLAYER_MOVEMENT_STOP,
-    PLAYER_MOVEMENT_LEFT,
-    PLAYER_MOVEMENT_RIGHT
-} PlayerHorizontalMovementType;
+typedef enum PlayerHorizontalDirection {
+    PLAYER_DIRECTION_STOP,
+    PLAYER_DIRECTION_LEFT,
+    PLAYER_DIRECTION_RIGHT
+} PlayerHorizontalDirection;
 
 typedef enum PlayerMode {
     PLAYER_MODE_DEFAULT,
@@ -37,11 +37,17 @@ typedef struct PlayerState {
     // If the player is on mode 'GLIDE' and is actively gliding
     bool isGliding;
 
+    // The player's horizontal movement's direction
+    PlayerHorizontalDirection xDirection;
+
     float yVelocity;
     float yVelocityTarget;
     float xVelocity;
 
     PlayerMovementSpeed speed;
+
+    // The speed of the current jump (if jumping)
+    PlayerMovementSpeed jumpSpeed;
 
     PlayerMode mode;
 
@@ -68,7 +74,7 @@ void PlayerCheckAndSetPos(Vector2 pos);
 
 void PlayerSetMode(PlayerMode mode);
 
-void PlayerMoveHorizontal(PlayerHorizontalMovementType direction);
+void PlayerMoveHorizontal(PlayerHorizontalDirection direction);
 
 void PlayerStartRunning();
 

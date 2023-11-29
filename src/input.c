@@ -32,9 +32,9 @@ void handleInLevelInput() {
     if      (IsKeyDown(KEY_Z))              PlayerStartRunning();
     else                                    PlayerStopRunning();
 
-    if      (IsKeyDown(KEY_RIGHT))          PlayerMoveHorizontal(PLAYER_MOVEMENT_RIGHT);
-    else if (IsKeyDown(KEY_LEFT))           PlayerMoveHorizontal(PLAYER_MOVEMENT_LEFT);
-    else                                    PlayerMoveHorizontal(PLAYER_MOVEMENT_STOP);
+    if      (IsKeyDown(KEY_RIGHT))          PlayerMoveHorizontal(PLAYER_DIRECTION_RIGHT);
+    else if (IsKeyDown(KEY_LEFT))           PlayerMoveHorizontal(PLAYER_DIRECTION_LEFT);
+    else                                    PlayerMoveHorizontal(PLAYER_DIRECTION_STOP);
 
     if      (IsKeyPressed(KEY_X))           PlayerJump();
 

@@ -10,11 +10,15 @@
 #include "../render.h"
 
 
-#define PLAYERS_UPPERBODY_PROPORTION        0.90f // What % of the player's height is upperbody, for hitboxes
+// What % of the player's height is upperbody, for hitboxes
+#define PLAYERS_UPPERBODY_PROPORTION        0.90f
 
-#define PLAYER_SPEED_DEFAULT                5.5f
-#define PLAYER_SPEED_FAST                   9.0f
 
+#define X_VELOCITY_DEFAULT                  5.5f
+#define X_VELOCITY_RUNNING                  9.0f
+
+
+// The Y velocity applied when starting a jump
 #define JUMP_START_VELOCITY_DEFAULT         10.0f
 #define JUMP_START_VELOCITY_RUNNING         12.0f
 
@@ -23,9 +27,13 @@
 
 #define Y_ACCELERATION_RATE                 0.4f
 
+// A special, constant, Y velocity for when the player is gliding
+#define Y_VELOCITY_GLIDING                  -1.5f
+
 // How much of the Y velocity is preserved when the ceiling is hit
 // and the trajectory vector is inverted (from upwards to downwards)
-#define CEILING_VELOCITY_FACTOR             0.4f
+#define CEILING_VELOCITY_FACTOR             0.5f
+
 
 // How many seconds before landing on the ground the jump command
 // still works 
@@ -39,8 +47,6 @@
 // How many seconds after having left the ground the jump command
 // still works
 #define JUMP_BUFFER_FORWARDS_SIZE           0.15f
-
-#define Y_VELOCITY_GLIDING                  -1.5f
 
 
 LevelEntity *PLAYER_ENTITY = 0;
@@ -179,28 +185,9 @@ void PlayerSetMode(PlayerMode mode) {
     TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
 }
 
-void PlayerMoveHorizontal(PlayerHorizontalMovementType direction) {
+void PlayerMoveHorizontal(PlayerHorizontalDirection direction) {
 
-    if (LEVEL_STATE->concludedAgo >= 0) return;
-    
-
-    float amount = PLAYER_SPEED_DEFAULT;
-    if (PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
-        amount = PLAYER_SPEED_FAST;
-
-    if (direction == PLAYER_MOVEMENT_LEFT) {
-        PLAYER_ENTITY->isFacingRight = false;
-        PLAYER_STATE->xVelocity = -amount;
-    }
-    else if (direction == PLAYER_MOVEMENT_RIGHT) {
-        PLAYER_ENTITY->isFacingRight = true;
-        PLAYER_STATE->xVelocity = amount;
-    }
-    else {
-        PLAYER_STATE->xVelocity = 0;
-    }
-
-    syncPlayersHitboxes();
+    PLAYER_STATE->xDirection = direction;
 }
 
 void PlayerStartRunning() {
@@ -227,6 +214,32 @@ void PlayerTick() {
 
 
     pState->groundBeneath = LevelGetGroundBeneath(PLAYER_ENTITY);
+
+
+    if (pState->xDirection == PLAYER_DIRECTION_RIGHT)
+        PLAYER_ENTITY->isFacingRight = true;
+    else if (pState->xDirection == PLAYER_DIRECTION_LEFT)
+        PLAYER_ENTITY->isFacingRight = false;
+        
+
+    float xVelocity = fabs(pState->xVelocity);
+
+    if (pState->xDirection == PLAYER_DIRECTION_STOP)
+        xVelocity = 0;
+    else if (PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
+        // Can't move fast in the air if started jumping with normal speed
+        if (pState->groundBeneath || pState->jumpSpeed == PLAYER_MOVEMENT_RUNNING)
+            xVelocity = X_VELOCITY_RUNNING;       
+        else
+            xVelocity = X_VELOCITY_DEFAULT;
+    }
+    else if (PLAYER_STATE->speed == PLAYER_MOVEMENT_DEFAULT)
+        xVelocity = X_VELOCITY_DEFAULT;
+
+    if (!PLAYER_ENTITY->isFacingRight)
+        xVelocity *= -1;
+
+    pState->xVelocity = xVelocity;
 
 
     if (pState->groundBeneath) {
@@ -263,6 +276,7 @@ void PlayerTick() {
         pState->isAscending = true;
         pState->yVelocity = jumpStartVelocity();
         pState->yVelocityTarget = 0.0f;
+        pState->jumpSpeed = pState->speed;
 
         // Player hit enemy
         // -- this check is for the case the player jumps off the enemy,
