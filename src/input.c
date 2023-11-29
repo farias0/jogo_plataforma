@@ -156,9 +156,9 @@ void handleDroppedFile() {
     
     if (PersistenceGetDroppedLevelName(levelName)) {
         
-        LevelInitialize(levelName);
+        LevelLoad(levelName);
         
-        if (LEVEL_STATE && LEVEL_STATE->awaitingAssociation) {
+        if (LEVEL_STATE->awaitingAssociation) {
 
             strcpy(OW_STATE->tileUnderCursor->levelName, levelName);
 

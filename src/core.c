@@ -1,13 +1,12 @@
-#include "math.h"
+#include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "core.h"
 #include "overworld.h"
 #include "camera.h"
 #include "level/level.h"
-#include "level/player.h"
 #include "editor.h"
-#include "string.h"
 #include "render.h"
 
 
@@ -38,7 +37,7 @@ void windowTitleUpdate() {
 
     char title[LEVEL_NAME_BUFFER_SIZE + 20];
 
-    if (LEVEL_STATE && LEVEL_STATE->levelName[0] != '\0')
+    if (LEVEL_STATE->levelName[0] != '\0')
         sprintf(title, "%s - %d FPS", LEVEL_STATE->levelName, GetFPS());  
     else
         sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());  
@@ -75,6 +74,8 @@ void SystemsInitialize() {
     GameStateInitialize();
     CameraInitialize();
     EditorInitialize();
+    OverworldInitialize();
+    LevelInitialize();
     RenderInitialize();
 }
 
