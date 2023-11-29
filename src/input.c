@@ -160,10 +160,10 @@ void handleDroppedFile() {
         
         if (LEVEL_STATE && LEVEL_STATE->awaitingAssociation) {
 
-            strcpy(GAME_STATE->tileUnderCursor->levelName, levelName);
+            strcpy(OW_STATE->tileUnderCursor->levelName, levelName);
 
             TraceLog(LOG_INFO, "Dot on x=%.1f, y=%.1f associated with level %s.",
-                        GAME_STATE->tileUnderCursor->gridPos.x, GAME_STATE->tileUnderCursor->gridPos.y, levelName);
+                        OW_STATE->tileUnderCursor->gridPos.x, OW_STATE->tileUnderCursor->gridPos.y, levelName);
             
             char *sysMsg = MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
             sprintf(sysMsg, "Associada fase %s", levelName);

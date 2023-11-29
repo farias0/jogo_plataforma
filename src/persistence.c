@@ -249,7 +249,7 @@ void PersistenceOverworldSave() {
             data[i].levelName[0] = '\0';
         }
 
-        if (entity == GAME_STATE->tileUnderCursor) data[i].isTileUnderCursor = 1;
+        if (entity == OW_STATE->tileUnderCursor) data[i].isTileUnderCursor = 1;
 
         i++;
 
@@ -306,7 +306,7 @@ bool PersistenceOverworldLoad() {
             strncpy(newTile->levelName, data[i].levelName, LEVEL_NAME_BUFFER_SIZE);
         }
 
-        if (data[i].isTileUnderCursor) GAME_STATE->tileUnderCursor = newTile;
+        if (data[i].isTileUnderCursor) OW_STATE->tileUnderCursor = newTile;
     }
 
     MemFree(data);

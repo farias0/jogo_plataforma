@@ -35,9 +35,9 @@ static void updateCursorPosition() {
 
     Dimensions cursorDimensions = SpriteScaledDimensions(SPRITES->OverworldCursor);
 
-    OW_CURSOR->gridPos.x = GAME_STATE->tileUnderCursor->gridPos.x;
+    OW_CURSOR->gridPos.x = OW_STATE->tileUnderCursor->gridPos.x;
 
-    OW_CURSOR->gridPos.y = GAME_STATE->tileUnderCursor->gridPos.y +
+    OW_CURSOR->gridPos.y = OW_STATE->tileUnderCursor->gridPos.y +
                     (OW_GRID.height / 2) -
                     cursorDimensions.height;
 }
@@ -60,7 +60,7 @@ static void checkAndRemoveTile(ListNode *node) {
     // Ideally the game would support removing the tile under the player,
     // but this would demand some logic to manage the tileUnder pointer.
     // For now this is good enough.
-    if (entity == GAME_STATE->tileUnderCursor ||
+    if (entity == OW_STATE->tileUnderCursor ||
         entity->components & OW_IS_CURSOR) {
 
             TraceLog(LOG_TRACE, "Won't remove tile, it's the cursor or it's under it.");
@@ -184,12 +184,12 @@ void OverworldLevelSelect() {
     if (levelSelectedAgo >= 0) return;
     
 
-    if (!(GAME_STATE->tileUnderCursor->components & OW_IS_LEVEL_DOT)) {
+    if (!(OW_STATE->tileUnderCursor->components & OW_IS_LEVEL_DOT)) {
         TraceLog(LOG_TRACE, "Overworld tried to enter level, but not a dot.");
         return;
     }
 
-    if (!GAME_STATE->tileUnderCursor->levelName) {
+    if (!OW_STATE->tileUnderCursor->levelName) {
         TraceLog(LOG_ERROR, "tileUnderCursor has no levelName reference.");
         return;
     }
@@ -200,7 +200,7 @@ void OverworldLevelSelect() {
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), true);
 
     levelSelectedAgo = GetTime();
-    levelSelectedName = GAME_STATE->tileUnderCursor->levelName;
+    levelSelectedName = OW_STATE->tileUnderCursor->levelName;
 }
 
 void OverworldCursorMove(OverworldCursorDirection direction) {
@@ -210,7 +210,7 @@ void OverworldCursorMove(OverworldCursorDirection direction) {
 
     TraceLog(LOG_TRACE, "Overworld move to direction %d", direction);
 
-    OverworldEntity *tileUnder = GAME_STATE->tileUnderCursor;
+    OverworldEntity *tileUnder = OW_STATE->tileUnderCursor;
 
     ListNode *node = OW_STATE->listHead;
 
@@ -274,7 +274,7 @@ void OverworldCursorMove(OverworldCursorDirection direction) {
 
 
         if (foundPath) {
-            GAME_STATE->tileUnderCursor = entity;
+            OW_STATE->tileUnderCursor = entity;
             updateCursorPosition();
             break;
         }

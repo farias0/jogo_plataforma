@@ -316,7 +316,7 @@ static void drawLevelHud() {
 
 static void drawOverworldHud() {
 
-    OverworldEntity *tile = GAME_STATE->tileUnderCursor;
+    OverworldEntity *tile = OW_STATE->tileUnderCursor;
 
     if (tile->tileType == OW_LEVEL_DOT) {
 

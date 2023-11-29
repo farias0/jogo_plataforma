@@ -51,6 +51,9 @@ typedef struct OverworldState {
     // The head of the linked list of all the overworld entities
     ListNode *listHead;
 
+    // Reference to the tile the cursor is over, part of the overworld entity list 
+    OverworldEntity *tileUnderCursor;
+
 } OverworldState;
 
 
