@@ -73,13 +73,13 @@ EditorControlButton *addControlButton(EditorControlType type, char *label, void 
 
 void loadInLevelEditor() {
 
-    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &editorUseEraser, EDITOR_INTERACTION_HOLD);
-    addEntityButton(EDITOR_ENTITY_ENEMY, EnemySprite, &EnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_ERASER, SPRITES->Eraser, &editorUseEraser, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ENEMY, SPRITES->Enemy, &EnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
     EDITOR_STATE->defaultEntityButton =
-        addEntityButton(EDITOR_ENTITY_BLOCK, BlockSprite, &BlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
-    addEntityButton(EDITOR_ENTITY_ACID, AcidSprite, &AcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
-    addEntityButton(EDITOR_ENTITY_EXIT, LevelEndOrbSprite, &LevelExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_GLIDE, GlideItemSprite, &GlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
+        addEntityButton(EDITOR_ENTITY_BLOCK, SPRITES->Block, &BlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ACID, SPRITES->Acid, &AcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
+    addEntityButton(EDITOR_ENTITY_EXIT, SPRITES->LevelEndOrb, &LevelExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_GLIDE, SPRITES->GlideItem, &GlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
     addControlButton(EDITOR_CONTROL_SAVE, "Salvar fase", &LevelSave);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
@@ -89,12 +89,12 @@ void loadInLevelEditor() {
 
 void loadOverworldEditor() {
 
-    addEntityButton(EDITOR_ENTITY_ERASER, EraserSprite, &editorUseEraser, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ERASER, SPRITES->Eraser, &editorUseEraser, EDITOR_INTERACTION_HOLD);
     EDITOR_STATE->defaultEntityButton =
-        addEntityButton(EDITOR_ENTITY_LEVEL_DOT, LevelDotSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_PATH_JOIN, PathTileJoinSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_STRAIGHT, PathTileStraightSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_PATH_IN_L, PathTileInLSprite, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+        addEntityButton(EDITOR_ENTITY_LEVEL_DOT, SPRITES->LevelDot, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_PATH_JOIN, SPRITES->PathTileJoin, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_STRAIGHT, SPRITES->PathTileStraight, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_PATH_IN_L, SPRITES->PathTileInL, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
 
     addControlButton(EDITOR_CONTROL_SAVE, "Salvar mundo", &OverworldSave);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);

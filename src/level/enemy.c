@@ -16,8 +16,8 @@ void EnemyAdd(Vector2 origin) {
                             LEVEL_IS_GROUND +
                             LEVEL_IS_DANGER;
     newEnemy->origin = origin;
-    newEnemy->hitbox = SpriteHitboxFromEdge(EnemySprite, origin);
-    newEnemy->sprite = EnemySprite;
+    newEnemy->sprite = SPRITES->Enemy;
+    newEnemy->hitbox = SpriteHitboxFromEdge(newEnemy->sprite, newEnemy->origin);
     newEnemy->isFacingRight = true;
     newEnemy->isFallingDown = true;
 
@@ -29,7 +29,7 @@ void EnemyAdd(Vector2 origin) {
 
 void EnemyCheckAndAdd(Vector2 origin) {    
 
-    Rectangle hitbox = SpriteHitboxFromMiddle(EnemySprite, origin);
+    Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->Enemy, origin);
 
     if (LevelCheckCollisionWithAnything(hitbox)) {
         TraceLog(LOG_DEBUG, "Couldn't add enemy to level, collision with entity.");

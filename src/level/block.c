@@ -11,7 +11,7 @@ void BlockAdd(Vector2 origin) {
     newBlock->components = LEVEL_IS_SCENARIO +
                             LEVEL_IS_GROUND;
     newBlock->origin = origin;
-    newBlock->sprite = BlockSprite;
+    newBlock->sprite = SPRITES->Block;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
 
     LinkedListAdd(&LEVEL_STATE->listHead, newBlock);
@@ -24,7 +24,7 @@ void BlockCheckAndAdd(Vector2 origin) {
 
     origin = SnapToGrid(origin, LEVEL_GRID);
 
-    Rectangle hitbox = SpriteHitboxFromEdge(BlockSprite, origin);
+    Rectangle hitbox = SpriteHitboxFromEdge(SPRITES->Block, origin);
     if (LevelCheckCollisionWithAnything(hitbox)) return;
     
     BlockAdd(origin);
@@ -38,7 +38,7 @@ void AcidAdd(Vector2 origin) {
                             LEVEL_IS_GROUND +
                             LEVEL_IS_DANGER;
     newBlock->origin = origin;
-    newBlock->sprite = AcidSprite;
+    newBlock->sprite = SPRITES->Acid;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
 
     LinkedListAdd(&LEVEL_STATE->listHead, newBlock);
@@ -51,7 +51,7 @@ void AcidCheckAndAdd(Vector2 origin) {
 
     origin = SnapToGrid(origin, LEVEL_GRID);
 
-    Rectangle hitbox = SpriteHitboxFromEdge(AcidSprite, origin);
+    Rectangle hitbox = SpriteHitboxFromEdge(SPRITES->Acid, origin);
     if (LevelCheckCollisionWithAnything(hitbox)) return;
     
     AcidAdd(origin);

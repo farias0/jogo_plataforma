@@ -11,24 +11,33 @@
 #include "editor.h"
 
 
-ListNode *OW_LIST_HEAD = 0;
+OverworldState *OW_STATE = 0;
 
-double overworldLevelSelectedAgo = -1;
-
-
+// Reference to the cursor part of the entity list
 static OverworldEntity *OW_CURSOR = 0;
 
-static char *overworldLevelSelectedName = 0;
+// How long ago, in seconds, a level was selected in the OW, or -1 if it wasn't
+static double levelSelectedAgo = -1;
 
+// The name of the selected level
+static char *levelSelectedName = 0;
+
+
+static void initializeOverworldState() {
+
+    OW_STATE = MemAlloc(sizeof(OverworldState));
+
+    TraceLog(LOG_INFO, "Overworld State initialized.");
+}
 
 // Updates the position for the cursor according to the tile under it
 static void updateCursorPosition() {
 
-    Dimensions cursorDimensions = SpriteScaledDimensions(OverworldCursorSprite);
+    Dimensions cursorDimensions = SpriteScaledDimensions(SPRITES->OverworldCursor);
 
-    OW_CURSOR->gridPos.x = GAME_STATE->tileUnderCursor->gridPos.x;
+    OW_CURSOR->gridPos.x = OW_STATE->tileUnderCursor->gridPos.x;
 
-    OW_CURSOR->gridPos.y = GAME_STATE->tileUnderCursor->gridPos.y +
+    OW_CURSOR->gridPos.y = OW_STATE->tileUnderCursor->gridPos.y +
                     (OW_GRID.height / 2) -
                     cursorDimensions.height;
 }
@@ -38,7 +47,7 @@ static void destroyEntityOverworld(ListNode *node) {
     OverworldEntity *entity = (OverworldEntity *) node->item;
     MemFree(entity->levelName);
 
-    LinkedListDestroyNode(&OW_LIST_HEAD, node);
+    LinkedListDestroyNode(&OW_STATE->listHead, node);
 
     TraceLog(LOG_TRACE, "Destroyed overworld entity.");
 }
@@ -51,7 +60,7 @@ static void checkAndRemoveTile(ListNode *node) {
     // Ideally the game would support removing the tile under the player,
     // but this would demand some logic to manage the tileUnder pointer.
     // For now this is good enough.
-    if (entity == GAME_STATE->tileUnderCursor ||
+    if (entity == OW_STATE->tileUnderCursor ||
         entity->components & OW_IS_CURSOR) {
 
             TraceLog(LOG_TRACE, "Won't remove tile, it's the cursor or it's under it.");
@@ -66,10 +75,10 @@ static void initializeCursor() {
     OverworldEntity *newCursor = MemAlloc(sizeof(OverworldEntity));
 
     newCursor->components = OW_IS_CURSOR;
-    newCursor->sprite = OverworldCursorSprite;
+    newCursor->sprite = SPRITES->OverworldCursor;
     newCursor->layer = 1;
 
-    LinkedListAdd(&OW_LIST_HEAD, newCursor);
+    LinkedListAdd(&OW_STATE->listHead, newCursor);
 
     OW_CURSOR = newCursor;
 
@@ -81,7 +90,7 @@ static void initializeCursor() {
 // in a given position and returns its node, or 0 if not found.
 static ListNode *getEntityOnScene(Vector2 pos) {
 
-    ListNode *node = OW_LIST_HEAD;
+    ListNode *node = OW_STATE->listHead;
 
     while (node != 0) {
 
@@ -101,9 +110,11 @@ static ListNode *getEntityOnScene(Vector2 pos) {
 
 void OverworldInitialize() {
 
+    if (!OW_STATE) initializeOverworldState();
+
     GAME_STATE->mode = MODE_OVERWORLD;
 
-    if (!OW_LIST_HEAD) {
+    if (!OW_STATE->listHead) {
 
         initializeCursor();
 
@@ -139,28 +150,28 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
     {
     case OW_LEVEL_DOT:
         newTile->components = OW_IS_LEVEL_DOT;
-        newTile->sprite = LevelDotSprite;
+        newTile->sprite = SPRITES->LevelDot;
         break;
     case OW_STRAIGHT_PATH:
         newTile->components = OW_IS_PATH + OW_IS_ROTATABLE;
-        newTile->sprite = PathTileStraightSprite;
+        newTile->sprite = SPRITES->PathTileStraight;
         SpriteRotate(&newTile->sprite, degrees);
         break;
     case OW_JOIN_PATH:
         newTile->components = OW_IS_PATH + OW_IS_ROTATABLE;
-        newTile->sprite = PathTileJoinSprite;
+        newTile->sprite = SPRITES->PathTileJoin;
         SpriteRotate(&newTile->sprite, degrees);
         break;
     case OW_PATH_IN_L:
         newTile->components = OW_IS_PATH + OW_IS_ROTATABLE;
-        newTile->sprite = PathTileInLSprite;
+        newTile->sprite = SPRITES->PathTileInL;
         SpriteRotate(&newTile->sprite, degrees);
         break;
     default:
         TraceLog(LOG_ERROR, "Could not find sprite for overworld tile type %d.", type);
     }
 
-    LinkedListAdd(&OW_LIST_HEAD, newTile);
+    LinkedListAdd(&OW_STATE->listHead, newTile);
 
     TraceLog(LOG_TRACE, "Added tile to overworld (x=%.1f, y=%.1f)",
                 newTile->gridPos.x, newTile->gridPos.y);
@@ -170,15 +181,15 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
 
 void OverworldLevelSelect() {
 
-    if (overworldLevelSelectedAgo >= 0) return;
+    if (levelSelectedAgo >= 0) return;
     
 
-    if (!(GAME_STATE->tileUnderCursor->components & OW_IS_LEVEL_DOT)) {
+    if (!(OW_STATE->tileUnderCursor->components & OW_IS_LEVEL_DOT)) {
         TraceLog(LOG_TRACE, "Overworld tried to enter level, but not a dot.");
         return;
     }
 
-    if (!GAME_STATE->tileUnderCursor->levelName) {
+    if (!OW_STATE->tileUnderCursor->levelName) {
         TraceLog(LOG_ERROR, "tileUnderCursor has no levelName reference.");
         return;
     }
@@ -188,20 +199,20 @@ void OverworldLevelSelect() {
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), true);
 
-    overworldLevelSelectedAgo = GetTime();
-    overworldLevelSelectedName = GAME_STATE->tileUnderCursor->levelName;
+    levelSelectedAgo = GetTime();
+    levelSelectedName = OW_STATE->tileUnderCursor->levelName;
 }
 
 void OverworldCursorMove(OverworldCursorDirection direction) {
 
-    if (overworldLevelSelectedAgo >= 0) return;
+    if (levelSelectedAgo >= 0) return;
     
 
     TraceLog(LOG_TRACE, "Overworld move to direction %d", direction);
 
-    OverworldEntity *tileUnder = GAME_STATE->tileUnderCursor;
+    OverworldEntity *tileUnder = OW_STATE->tileUnderCursor;
 
-    ListNode *node = OW_LIST_HEAD;
+    ListNode *node = OW_STATE->listHead;
 
     while (node != 0) {
 
@@ -263,7 +274,7 @@ void OverworldCursorMove(OverworldCursorDirection direction) {
 
 
         if (foundPath) {
-            GAME_STATE->tileUnderCursor = entity;
+            OW_STATE->tileUnderCursor = entity;
             updateCursorPosition();
             break;
         }
@@ -345,7 +356,7 @@ void OverworldTileRemoveAt(Vector2 pos) {
         ListNode *node = EDITOR_STATE->selectedEntities;
         while (node) {
             ListNode *next = node->next;
-            ListNode *nodeInOW = LinkedListGetNode(OW_LIST_HEAD, (OverworldEntity *) node->item);
+            ListNode *nodeInOW = LinkedListGetNode(OW_STATE->listHead, (OverworldEntity *) node->item);
             checkAndRemoveTile(nodeInOW);
             node = next;
         }
@@ -360,7 +371,7 @@ void OverworldTileRemoveAt(Vector2 pos) {
 
 OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox) {
 
-    ListNode *node = OW_LIST_HEAD;
+    ListNode *node = OW_STATE->listHead;
 
     while (node != 0) {
 
@@ -383,13 +394,13 @@ void OverworldTick() {
 
     // TODO check if having the first check before saves on processing,
     // of if it's just redundant. 
-    if (overworldLevelSelectedAgo != -1 &&
-        GetTime() - overworldLevelSelectedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
+    if (levelSelectedAgo != -1 &&
+        GetTime() - levelSelectedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
 
-        LevelInitialize(overworldLevelSelectedName);
+        LevelInitialize(levelSelectedName);
 
-        overworldLevelSelectedAgo = -1;
-        overworldLevelSelectedName = 0;
+        levelSelectedAgo = -1;
+        levelSelectedName = 0;
 
         return;
     }

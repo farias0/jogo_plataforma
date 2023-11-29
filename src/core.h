@@ -12,8 +12,6 @@
 #define SCREEN_WIDTH_W_EDITOR   SCREEN_WIDTH + EDITOR_BAR_WIDTH
 
 
-struct OverworldEntity;
-
 typedef struct Dimensions {
     float width;
     float height;
@@ -32,8 +30,6 @@ typedef enum GameMode {
 typedef struct GameState {
 
     GameMode mode;
-
-    struct OverworldEntity *tileUnderCursor;
 
     bool showDebugHUD;
     bool showDebugGrid;

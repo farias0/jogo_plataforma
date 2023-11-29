@@ -152,8 +152,8 @@ static void drawBackground() {
         DrawRectangle(0, levelBottomOnScreen.y, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
 
         if (!GAME_STATE->showBackground) return; 
-        drawSpriteInBackground(NightclubSprite,   (Vector2){ 1250, 250 },  -1);
-        drawSpriteInBackground(BGHouseSprite,     (Vector2){ 600, 300 },  -2);
+        drawSpriteInBackground(SPRITES->Nightclub,   (Vector2){ 1250, 250 },  -1);
+        drawSpriteInBackground(SPRITES->BGHouse,     (Vector2){ 600, 300 },  -2);
     }
 }
 
@@ -316,7 +316,7 @@ static void drawLevelHud() {
 
 static void drawOverworldHud() {
 
-    OverworldEntity *tile = GAME_STATE->tileUnderCursor;
+    OverworldEntity *tile = OW_STATE->tileUnderCursor;
 
     if (tile->tileType == OW_LEVEL_DOT) {
 

@@ -23,11 +23,11 @@ static Vector2 panningCursorLastFrame;
 
 static void followOverworldCamera() {
 
-    Dimensions tileDimensions = SpriteScaledDimensions(GAME_STATE->tileUnderCursor->sprite);
+    Dimensions tileDimensions = SpriteScaledDimensions(OW_STATE->tileUnderCursor->sprite);
 
-    CAMERA->pos.x = GAME_STATE->tileUnderCursor->gridPos.x
+    CAMERA->pos.x = OW_STATE->tileUnderCursor->gridPos.x
                     - (SCREEN_WIDTH/2) + (tileDimensions.width/2);
-    CAMERA->pos.y = GAME_STATE->tileUnderCursor->gridPos.y
+    CAMERA->pos.y = OW_STATE->tileUnderCursor->gridPos.y
                     - (SCREEN_HEIGHT/2) + (tileDimensions.height/2);
 }
 
