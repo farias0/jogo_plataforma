@@ -138,6 +138,8 @@ void PlayerInitialize(Vector2 origin) {
 
 void PlayerCheckAndSetOrigin(Vector2 pos) {
 
+    if (!PLAYER_ENTITY) return;
+
     Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->PlayerDefault, pos);
     
     if (LevelCheckCollisionWithAnyEntity(hitbox)) {
@@ -153,6 +155,8 @@ void PlayerCheckAndSetOrigin(Vector2 pos) {
 }
 
 void PlayerCheckAndSetPos(Vector2 pos) {
+
+    if (!PLAYER_ENTITY) return;
 
     Rectangle hitbox = SpriteHitboxFromMiddle(PLAYER_ENTITY->sprite, pos);
     

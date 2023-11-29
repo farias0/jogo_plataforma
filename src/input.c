@@ -104,7 +104,7 @@ skip_selected_entities_actions:
 
     if (GAME_STATE->showDebugHUD || EDITOR_STATE->isEnabled) {
 
-        if (IsKeyDown(KEY_SPACE) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && PLAYER_ENTITY) {
+        if (IsKeyDown(KEY_SPACE) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             PlayerCheckAndSetPos(mousePosInScene);
             return;
         }
@@ -120,7 +120,7 @@ skip_selected_entities_actions:
 
     if (EDITOR_STATE->isEnabled) {
 
-        if (IsKeyDown(KEY_O) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && PLAYER_ENTITY) {
+        if (IsKeyDown(KEY_O) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             PlayerCheckAndSetOrigin(mousePosInScene);
             return;
         }

@@ -263,10 +263,6 @@ void EditorEnable() {
 
 void EditorDisable() {
 
-    // This check is because this function in being called during the initialization,
-    // before EditorInitialize(). Maybe this should not happen.
-    if (!EDITOR_STATE) return;
-
     EDITOR_STATE->isEnabled = false;
 
     RenderResizeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -329,13 +325,10 @@ void EditorSelectEntities(Vector2 cursorPos) {
 
 void EditorSelectionCancel() {
 
-    if (EDITOR_STATE) {
-        
-        EDITOR_STATE->isSelectingEntities = false;
-        EDITOR_STATE->selectedEntitiesThisFrame = false;
-        EDITOR_STATE->isMovingSelectedEntities = false;
-        LinkedListRemoveAll(&EDITOR_STATE->selectedEntities);
-    }
+    EDITOR_STATE->isSelectingEntities = false;
+    EDITOR_STATE->selectedEntitiesThisFrame = false;
+    EDITOR_STATE->isMovingSelectedEntities = false;
+    LinkedListRemoveAll(&EDITOR_STATE->selectedEntities);
 
     TraceLog(LOG_TRACE, "Editor's entity selection canceled.");
 }
