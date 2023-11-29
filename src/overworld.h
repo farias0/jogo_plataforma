@@ -60,7 +60,11 @@ typedef struct OverworldState {
 extern OverworldState *OW_STATE;
 
 
+// Initialize the overworld system
 void OverworldInitialize();
+
+// Goes to the overworld
+void OverworldLoad();
 
 // Initializes and adds a new tile to the overworld,
 // and returns it.

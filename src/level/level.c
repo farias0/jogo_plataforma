@@ -59,7 +59,7 @@ void initializeLevelState() {
 void leaveLevel() {
     
     resetLevelState();
-    OverworldInitialize();
+    OverworldLoad();
 
     TraceLog(LOG_TRACE, "Level left.");
 }

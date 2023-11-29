@@ -110,21 +110,23 @@ static ListNode *getEntityOnScene(Vector2 pos) {
 
 void OverworldInitialize() {
 
-    if (!OW_STATE) initializeOverworldState();
+    initializeOverworldState();
+
+    initializeCursor();
+
+    if (!PersistenceOverworldLoad()) {
+        TraceLog(LOG_ERROR, "Could not initialize overworld; error reading persistence.");
+        exit(1);
+    }
+
+    TraceLog(LOG_INFO, "Overworld system initialized.");
+}
+
+void OverworldLoad() {
 
     GAME_STATE->mode = MODE_OVERWORLD;
 
-    if (!OW_STATE->listHead) {
-
-        initializeCursor();
-
-        if (!PersistenceOverworldLoad()) {
-            TraceLog(LOG_ERROR, "Could not initialize overworld; error reading persistence.");
-            exit(1);
-        }
-
-        updateCursorPosition();
-    }
+    updateCursorPosition();
 
     EditorSync();
 
@@ -135,7 +137,7 @@ void OverworldInitialize() {
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), false);
 
-    TraceLog(LOG_INFO, "Overworld initialized.");
+    TraceLog(LOG_INFO, "Overworld loaded.");
 }
 
 OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degrees) {
