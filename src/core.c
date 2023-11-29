@@ -1,13 +1,12 @@
-#include "math.h"
+#include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "core.h"
 #include "overworld.h"
 #include "camera.h"
 #include "level/level.h"
-#include "level/player.h"
 #include "editor.h"
-#include "string.h"
 #include "render.h"
 
 

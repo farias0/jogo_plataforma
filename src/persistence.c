@@ -12,7 +12,6 @@
 #include "files.h"
 #include "render.h"
 #include "overworld.h"
-#include "core.h"
 
 
 #define PERSISTENCE_DIR_NAME            "levels"
