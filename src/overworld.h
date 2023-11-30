@@ -87,6 +87,10 @@ void OverworldTileRemoveAt(Vector2 pos);
 // Returns the collided entity, or 0 if none.
 OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox);
 
+// Checks for collision between a hitbox and any tile in the overworld
+// that's NOT present in a given list. Returns the collided entity, or 0 if none.
+OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, ListNode *entityListHead);
+
 void OverworldTick();
 
 // Saves overworld's state to persistence.

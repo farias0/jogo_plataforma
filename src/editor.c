@@ -165,7 +165,7 @@ void selectEntitiesApplyMove() {
             Rectangle hitbox = OverworldEntitySquare(entity);
             Vector2 pos = EditorEntitySelectionCalcMove(RectangleGetPos(hitbox));
             RectangleSetPos(&hitbox, pos);
-            if (OverworldCheckCollisionWithAnyTile(hitbox))
+            if (OverworldCheckCollisionWithAnyTileExcept(hitbox, EDITOR_STATE->selectedEntities))
                 return;
             break;
         }
