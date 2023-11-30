@@ -373,15 +373,26 @@ void OverworldTileRemoveAt(Vector2 pos) {
 
 OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox) {
 
+    return OverworldCheckCollisionWithAnyTileExcept(hitbox, 0);
+}
+
+OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, ListNode *entityListHead) {
+
     ListNode *node = OW_STATE->listHead;
 
     while (node != 0) {
 
         OverworldEntity *entity = (OverworldEntity *) node->item;
 
-        if (entity->tileType & OW_NOT_TILE) goto next_entity;
+        if (entity->tileType == OW_NOT_TILE) goto next_entity;
 
         if (!CheckCollisionRecs(hitbox, OverworldEntitySquare(entity))) goto next_entity;
+
+        ListNode *excludedNode = entityListHead;
+        while (excludedNode != 0) {
+            if (excludedNode->item == entity) goto next_entity;
+            excludedNode = excludedNode->next;
+        }
 
         return entity;
 
