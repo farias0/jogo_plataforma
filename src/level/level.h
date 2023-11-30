@@ -10,11 +10,14 @@
 #include "../persistence.h"
 
 
-#define NEW_LEVEL_NAME "default_new_level.lvl"
+// The level used as a basis for new levels
+#define LEVEL_BLUEPRINT_NAME    "_blueprint.lvl"
 
-#define LEVEL_GRID (Dimensions){ 32, 32 }
+// The size of cells that make up the level grid
+#define LEVEL_GRID              (Dimensions){ 32, 32 }
 
-#define FLOOR_DEATH_HEIGHT 800 // Below this y entities die
+// Below this y entities die
+#define FLOOR_DEATH_HEIGHT      800
 
 
 typedef enum LevelEntityComponent {

@@ -8,6 +8,7 @@
 #include "core.h"
 
 
+// The size of cells that make up the overworld grid
 #define OW_GRID (Dimensions){ 64, 64 }
 
 

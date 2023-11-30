@@ -12,20 +12,17 @@
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
-#define ON_THE_GROUND_Y_TOLERANCE 5
+#define ON_THE_GROUND_Y_TOLERANCE       5
 
 // TODO seek an unused level name, i.e. "new_level_2.lvl"
-// THe name of a new level
-#define DEFAULT_NEW_LEVEL_NAME "new_level.lvl"
+// The filename of the newly created levels
+#define NEW_LEVEL_NAME                  "new_level.lvl"
 
-// The players origin for all new levels, unchangeably.
-// -- This allows us to set the player's origin via code for all new levels,
-// untying it from the default new level's data.
-// TODO allow to drag and modify the player's origin in the editor
-#define PLAYERS_ORIGIN (Vector2){ 344, 200 };
+// The players origin by default.
+#define PLAYERS_ORIGIN                  (Vector2){ 344, 200 };
 
 // With how many checkpoints available the player starts
-#define STARTING_CHECKPOINTS_NUMBER          1;
+#define STARTING_CHECKPOINTS_NUMBER     1;
 
 
 LevelState *LEVEL_STATE = 0;
@@ -270,6 +267,7 @@ LevelEntity *LevelGetGroundBeneathHitbox(Rectangle hitbox) {
 void LevelEntityDestroy(ListNode *node) {
 
     if (node == LEVEL_STATE->exitNode) LEVEL_STATE->exitNode = 0;
+    if (node == LEVEL_STATE->checkpoint) LEVEL_STATE->checkpoint = 0;
 
     RenderDebugEntityStop((LevelEntity *) node->item);
 
@@ -289,7 +287,7 @@ LevelEntity *LevelEntityGetAt(Vector2 pos) {
 
 void LevelEntityRemoveAt(Vector2 pos) {
 
-    // TODO This function is a monstruosity and should be broken up
+    // TODO This function is too big and should be broken up
     // in at least two others ASAP
 
     ListNode *node = LEVEL_STATE->listHead;
@@ -444,13 +442,13 @@ void LevelSave() {
 
 void LevelLoadNew() {
 
-    LevelLoad(NEW_LEVEL_NAME);
+    LevelLoad(LEVEL_BLUEPRINT_NAME);
 
     PLAYER_ENTITY->origin = PLAYERS_ORIGIN;
     PLAYER_ENTITY->hitbox.x = PLAYER_ENTITY->origin.x;
     PLAYER_ENTITY->hitbox.y = PLAYER_ENTITY->origin.y;
 
-    strcpy(LEVEL_STATE->levelName, DEFAULT_NEW_LEVEL_NAME);
+    strcpy(LEVEL_STATE->levelName, NEW_LEVEL_NAME);
 }
 
 Rectangle LevelEntityOriginHitbox(LevelEntity *entity) {

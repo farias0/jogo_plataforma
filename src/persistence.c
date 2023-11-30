@@ -199,7 +199,7 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
 
     const char *fileName = GetFileName(filePath);
 
-    if (strcmp(fileName, NEW_LEVEL_NAME) == 0 ||
+    if (strcmp(fileName, LEVEL_BLUEPRINT_NAME) == 0 ||
         strlen(fileName) > LEVEL_NAME_BUFFER_SIZE) {
 
             TraceLog(LOG_ERROR, "Dropped file has invalid level name %s.",

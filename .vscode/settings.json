@@ -18,6 +18,7 @@
         "overworld.h": "c",
         "enemy.h": "c",
         "block.h": "c",
-        "powerups.h": "c"
+        "powerups.h": "c",
+        "player.h": "c"
     }
 }
