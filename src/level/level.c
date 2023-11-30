@@ -267,9 +267,12 @@ LevelEntity *LevelGetGroundBeneathHitbox(Rectangle hitbox) {
 void LevelEntityDestroy(ListNode *node) {
 
     if (node == LEVEL_STATE->exitNode) LEVEL_STATE->exitNode = 0;
-    if (node == LEVEL_STATE->checkpoint) LEVEL_STATE->checkpoint = 0;
 
-    RenderDebugEntityStop((LevelEntity *) node->item);
+    LevelEntity *entity = (LevelEntity *) node->item;
+
+    if (entity == LEVEL_STATE->checkpoint) LEVEL_STATE->checkpoint = 0;
+
+    RenderDebugEntityStop(entity);
 
     LinkedListDestroyNode(&LEVEL_STATE->listHead, node);
 
