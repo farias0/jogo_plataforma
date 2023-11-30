@@ -135,6 +135,10 @@ bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox);
 // living entity in the level, including their origins.
 bool LevelCheckCollisionWithAnything(Rectangle hitbox);
 
+// Checks for collision between a rectangle and any living entity in the level,
+// including their origins, as long as it's NOT present in a given entity list.
+bool LevelCheckCollisionWithAnythingElse(Rectangle hitbox, ListNode *entityListHead);
+
 // Adds a level checkpoint in the given position
 LevelEntity *LevelCheckpointAdd(Vector2 pos);
 

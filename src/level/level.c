@@ -415,6 +415,11 @@ bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox) {
 
 bool LevelCheckCollisionWithAnything(Rectangle hitbox) {
 
+    return LevelCheckCollisionWithAnythingElse(hitbox, 0);
+}
+
+bool LevelCheckCollisionWithAnythingElse(Rectangle hitbox, ListNode *entityListHead) {
+
     ListNode *node = LEVEL_STATE->listHead;
 
     while (node != 0) {
@@ -429,9 +434,16 @@ bool LevelCheckCollisionWithAnything(Rectangle hitbox) {
         if (CheckCollisionRecs(hitbox, entitysOrigin) ||
             (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox))) {
 
+            ListNode *excludedNode = entityListHead;
+            while (excludedNode != 0) {
+                if (excludedNode->item == entity) goto next_node;
+                excludedNode = excludedNode->next;
+            }
+
             return true;
         }
 
+next_node:
         node = node->next;
 
     }

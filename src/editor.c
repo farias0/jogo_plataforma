@@ -155,7 +155,7 @@ void selectEntitiesApplyMove() {
             Rectangle hitbox = entity->hitbox;
             Vector2 pos = EditorEntitySelectionCalcMove(RectangleGetPos(hitbox));
             RectangleSetPos(&hitbox, pos);
-            if (LevelCheckCollisionWithAnything(hitbox))
+            if (LevelCheckCollisionWithAnythingElse(hitbox, EDITOR_STATE->selectedEntities))
                 return;
             break;
         }
