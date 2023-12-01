@@ -44,6 +44,14 @@ ListNode *DEBUG_ENTITY_INFO_HEAD = 0;
 static RenderTexture2D shaderRenderTexture;
 static LevelTransitionShaderControl levelTransitionShaderControl;
 
+
+// Returns the given color, with the given transparency level. 
+static Color getColorTransparency(Color color, int transpareny) {
+
+    return (Color) { color.r, color.g, color.b,
+                        (unsigned char) transpareny };
+}
+
 // Draws rectangle with scene-based position
 static void drawSceneRectangle(Rectangle rect, Color color) {
 
@@ -500,6 +508,15 @@ static void drawEditorEntitySelection() {
     }
 }
 
+static void drawEditorCursor() {
+
+    EditorEntityButton* b = EDITOR_STATE->toggledEntityButton;
+    if (b) {
+        Vector2 m = GetMousePosition();
+        DrawTexture(b->sprite.sprite, m.x, m.y, getColorTransparency(WHITE, 96));
+    }
+}
+
 static void drawEditor() {
 
     drawEditorEntitySelection();
@@ -520,6 +537,8 @@ static void drawEditor() {
                 RAYWHITE); // Separator
 
     drawEditorControlButtons();
+
+    drawEditorCursor();
 }
 
 static void drawLevelTransitionShader() {
