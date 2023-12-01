@@ -88,8 +88,8 @@ void PersistenceLevelSave(char *levelName) {
             goto skip_entity; 
         }
         
-        data[i].originX = (uint32_t) entity->origin.x;
-        data[i].originY = (uint32_t) entity->origin.y;
+        memcpy(&data[i].originX,    &entity->origin.x,  sizeof(uint32_t));
+        memcpy(&data[i].originY,    &entity->origin.y,  sizeof(uint32_t));
 
         i++;
 
@@ -133,11 +133,10 @@ bool PersistenceLevelLoad(char *levelName) {
 
     for (size_t i = 0; i < filedata.itemCount; i++) {
 
-        Vector2 origin = (Vector2){
-            (float) data[i].originX,
-            (float) data[i].originY    
-        };
-
+        Vector2 origin;
+        memcpy(&origin.x,   &data[i].originX,   sizeof(uint32_t));
+        memcpy(&origin.y,   &data[i].originY,   sizeof(uint32_t));
+        
         switch (data[i].entityType) {
         
         case LEVEL_ENTITY_PLAYER:
@@ -238,9 +237,9 @@ void PersistenceOverworldSave() {
         }
         
         data[i].tileType =          entity->tileType;
-        data[i].posX =              (uint32_t) entity->gridPos.x;
-        data[i].posY =              (uint32_t) entity->gridPos.y;
         data[i].rotation =          (int32_t) entity->sprite.rotation;
+        memcpy(&data[i].posX,       &entity->gridPos.x,         sizeof(uint32_t));
+        memcpy(&data[i].posY,       &entity->gridPos.y,         sizeof(uint32_t));
 
         if (entity->levelName) {
             strcpy(data[i].levelName, entity->levelName);
@@ -292,10 +291,9 @@ bool PersistenceOverworldLoad() {
 
     for (size_t i = 0; i < fileData.itemCount; i++) {
 
-        Vector2 pos = (Vector2){
-            (float) data[i].posX,
-            (float) data[i].posY    
-        };
+        Vector2 pos;
+        memcpy(&(pos.x), &(data[i].posX), sizeof(uint32_t));
+        memcpy(&(pos.y), &(data[i].posY), sizeof(uint32_t));
 
         OverworldEntity *newTile = 
             OverworldTileAdd(pos, (OverworldTileType) data[i].tileType, (int) data[i].rotation);

@@ -19,6 +19,7 @@
         "enemy.h": "c",
         "block.h": "c",
         "powerups.h": "c",
-        "player.h": "c"
+        "player.h": "c",
+        "*.m": "c"
     }
 }
