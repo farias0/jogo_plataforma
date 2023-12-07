@@ -8,6 +8,7 @@
 #include "level/level.h"
 #include "editor.h"
 #include "render.h"
+#include "debug.h"
 
 
 GameState *GAME_STATE = 0;

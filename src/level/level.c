@@ -9,6 +9,7 @@
 #include "../render.h"
 #include "../editor.h"
 #include "../overworld.h"
+#include "../debug.h"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
