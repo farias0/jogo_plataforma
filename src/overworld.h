@@ -71,6 +71,9 @@ void OverworldLoad();
 // and returns it.
 OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degrees);
 
+// Searches for an overworld entity at a given position
+OverworldEntity *OverworldEntityGetAt(Vector2 pos);
+
 // If the current tile contains a level, starts 'go to level' routine and select it
 void OverworldLevelSelect();
 

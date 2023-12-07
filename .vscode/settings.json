@@ -21,6 +21,8 @@
         "powerups.h": "c",
         "player.h": "c",
         "*.m": "c",
-        "debug.h": "c"
+        "debug.h": "c",
+        "level.h": "c",
+        "linked_list.h": "c"
     }
 }

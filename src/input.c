@@ -114,7 +114,7 @@ skip_selected_entities_actions:
     if (GAME_STATE->showDebugHUD) {
 
         if  (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            DebugEntityToggle(LevelEntityGetAt(mousePosInScene));
+            DebugEntityToggle(mousePosInScene);
             return;
         }
     }

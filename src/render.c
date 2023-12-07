@@ -366,7 +366,8 @@ static void drawDebugHud() {
 
     ListNode *node = DEBUG_ENTITY_INFO_HEAD;
     while (node != 0) {
-        LevelEntity *entity = (LevelEntity *) node->item;
+        void *entity = node->item;
+        Rectangle hitbox;
         ListNode *nextNode = node->next;
 
         if (!entity) { // Destroyed
@@ -375,21 +376,32 @@ static void drawDebugHud() {
             goto next_node;
         }
 
-        Vector2 pos = PosInSceneToScreen((Vector2) {
-                                            entity->hitbox.x,
-                                            entity->hitbox.y
-                                        });
+        switch (GAME_STATE->mode) {
+        case MODE_IN_LEVEL:
+            hitbox = ((LevelEntity *) entity)->hitbox;
+            break;
 
-        DrawRectangle(pos.x, pos.y,
-                entity->hitbox.width, entity->hitbox.height, (Color){ GREEN.r, GREEN.g, GREEN.b, 128 });
-        DrawRectangleLines(pos.x, pos.y,
-                entity->hitbox.width, entity->hitbox.height, GREEN);
+        case MODE_OVERWORLD:
+            RectangleSetPos(&hitbox, ((OverworldEntity *) entity)->gridPos);
+            RectangleSetDimensions(&hitbox, OW_GRID);
+            break;
+
+        default:
+            return;
+        }
+
+        Vector2 screenPos = PosInSceneToScreen(RectangleGetPos(hitbox));
+
+        DrawRectangle(screenPos.x, screenPos.y,
+                hitbox.width, hitbox.height, (Color){ GREEN.r, GREEN.g, GREEN.b, 128 });
+        DrawRectangleLines(screenPos.x, screenPos.y,
+                hitbox.width, hitbox.height, GREEN);
 
         char buffer[500];
         sprintf(buffer, "X=%.1f\nY=%.1f",
-                    entity->hitbox.x,
-                    entity->hitbox.y);
-        DrawText(buffer, pos.x, pos.y, 25, WHITE);
+                    hitbox.x,
+                    hitbox.y);
+        DrawText(buffer, screenPos.x, screenPos.y, 25, WHITE);
 
 next_node:
         node = nextNode;

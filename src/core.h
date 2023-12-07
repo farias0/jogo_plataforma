@@ -83,5 +83,8 @@ Vector2 RectangleGetPos(Rectangle rect);
 // Sets the x and y of a rectangle according to a Vector
 void RectangleSetPos(Rectangle *rect, Vector2 pos);
 
+// Sets the width and height of a rectangle according to a Dimensions
+void RectangleSetDimensions(Rectangle *rect, Dimensions dims);
+
 
 #endif // _CORE_H_INCLUDED_

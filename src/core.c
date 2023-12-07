@@ -172,3 +172,8 @@ void RectangleSetPos(Rectangle *rect, Vector2 pos) {
     rect->x = pos.x;
     rect->y = pos.y;
 }
+
+void RectangleSetDimensions(Rectangle *rect, Dimensions dims) {
+    rect->width = dims.width;
+    rect->height = dims.height;
+}
