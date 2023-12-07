@@ -26,14 +26,5 @@ void RenderPrintSysMessage(char *msg);
 */
 void RenderLevelTransitionEffectStart(Vector2 sceneFocusPont, bool isClose);
 
-// Shows info about entity, or stop showing if it's there already.
-void RenderDebugEntityToggle(LevelEntity *entity);
-
-// Stops showing info about an entity. If it's not showing already, does nothing.
-void RenderDebugEntityStop(LevelEntity *entity);
-
-// Stops showing info about all entities.
-void RenderDebugEntityStopAll();
-
 
 #endif // _RENDER_H_INCLUDED_

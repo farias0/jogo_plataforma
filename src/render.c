@@ -8,6 +8,7 @@
 #include "overworld.h"
 #include "camera.h"
 #include "editor.h"
+#include "debug.h"
 
 #pragma GCC diagnostic push 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -36,8 +37,6 @@ typedef struct LevelTransitionShaderControl {
 
 
 ListNode *SYS_MESSAGES_HEAD = 0;
-
-ListNode *DEBUG_ENTITY_INFO_HEAD = 0;
 
 
 // Texture covering the whole screen, used to render shaders
@@ -636,30 +635,4 @@ void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
     // Fix for how GLSL works
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
-}
-
-void RenderDebugEntityToggle(LevelEntity *entity) {
-    
-    ListNode *entitysNode = LinkedListGetNode(DEBUG_ENTITY_INFO_HEAD, entity);
-
-    if (entitysNode) {
-        LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
-        TraceLog(LOG_TRACE, "Debug entity info removed entity;");
-    } else {
-        LinkedListAdd(&DEBUG_ENTITY_INFO_HEAD, entity);
-        TraceLog(LOG_TRACE, "Debug entity info added entity;");
-    }
-}
-
-void RenderDebugEntityStop(LevelEntity *entity) {
-    ListNode *entitysNode = LinkedListGetNode(DEBUG_ENTITY_INFO_HEAD, entity);
-    if (entitysNode) {
-        LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
-        TraceLog(LOG_TRACE, "Debug entity info stopped showing entity.");
-    }
-}
-
-void RenderDebugEntityStopAll() {
-    LinkedListRemoveAll(&DEBUG_ENTITY_INFO_HEAD);
-    TraceLog(LOG_TRACE, "Debug entity info stopped showing all entities.");
 }

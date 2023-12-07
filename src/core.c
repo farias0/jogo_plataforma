@@ -131,7 +131,7 @@ void MouseCursorEnable() {
 void DebugHudToggle() {
 
     if (GAME_STATE->showDebugHUD) {
-        RenderDebugEntityStopAll();
+        DebugEntityStopAll();
         DebugHudDisable();
     }
     else {

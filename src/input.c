@@ -11,6 +11,7 @@
 #include "persistence.h"
 #include "render.h"
 #include "editor.h"
+#include "debug.h"
 
 
 void handleInLevelInput() {
@@ -113,7 +114,7 @@ skip_selected_entities_actions:
     if (GAME_STATE->showDebugHUD) {
 
         if  (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            RenderDebugEntityToggle(LevelEntityGetAt(mousePosInScene));
+            DebugEntityToggle(LevelEntityGetAt(mousePosInScene));
             return;
         }
     }

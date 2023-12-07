@@ -113,7 +113,7 @@ void EnemyKill(LevelEntity *entity) {
 
     entity->isDead = true;
 
-    RenderDebugEntityStop(entity);
+    DebugEntityStop(entity);
 
     TraceLog(LOG_TRACE, "Enemy died.");
 }

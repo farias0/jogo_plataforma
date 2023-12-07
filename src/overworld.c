@@ -293,7 +293,7 @@ void OverworldTileAddOrInteract(Vector2 pos) {
     Rectangle testHitbox = (Rectangle){ pos.x,
                                     pos.y,
                                     OW_GRID.width,
-                                    OW_GRID.width };
+                                    OW_GRID.height };
 
     OverworldEntity *entity = OverworldCheckCollisionWithAnyTile(testHitbox);
 
