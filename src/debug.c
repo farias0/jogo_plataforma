@@ -2,6 +2,7 @@
 
 #include "debug.h"
 #include "level/level.h"
+#include "overworld.h"
 #include "linked_list.h"
 
 
@@ -11,10 +12,14 @@ ListNode *DEBUG_ENTITY_INFO_HEAD = 0;
 void DebugEntityToggle(Vector2 pos) {
 
     void *entity;
-    if (GAME_STATE->mode == MODE_IN_LEVEL)
-        entity = LevelEntityGetAt(pos);
-    else
+    switch (GAME_STATE->mode) {
+    case MODE_IN_LEVEL:
+        entity = LevelEntityGetAt(pos); break;
+    case MODE_OVERWORLD:
+        entity = OverworldEntityGetAt(pos); break;
+    default:
         return;
+    }
     
     if (!entity) return;
 
@@ -22,20 +27,20 @@ void DebugEntityToggle(Vector2 pos) {
 
     if (entitysNode) {
         LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
-        TraceLog(LOG_TRACE, "Debug entity info removed entity;");
+        TraceLog(LOG_TRACE, "Debug entity info disabled entity.");
     } else {
         LinkedListAdd(&DEBUG_ENTITY_INFO_HEAD, entity);
-        TraceLog(LOG_TRACE, "Debug entity info added entity;");
+        TraceLog(LOG_TRACE, "Debug entity info enabled entity.");
     }
 }
 
-void DebugEntityStop(LevelEntity *entity) {
+void DebugEntityStop(void *entity) {
     
     ListNode *entitysNode = LinkedListGetNode(DEBUG_ENTITY_INFO_HEAD, entity);
 
     if (entitysNode) {
         LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
-        TraceLog(LOG_TRACE, "Debug entity info stopped showing entity.");
+        TraceLog(LOG_TRACE, "Debug entity info disabled entity.");
     }
 }
 
@@ -43,5 +48,5 @@ void DebugEntityStopAll() {
 
     LinkedListRemoveAll(&DEBUG_ENTITY_INFO_HEAD);
 
-    TraceLog(LOG_TRACE, "Debug entity info stopped showing all entities.");
+    TraceLog(LOG_TRACE, "Debug entity info disabled all entities.");
 }

@@ -64,7 +64,7 @@ void leaveLevel() {
 
 // Searches for an entity in a given position
 // and returns its node, or 0 if not found.
-static ListNode *getEntityOnScene(Vector2 pos) {
+static ListNode *getEntityNodeAtPos(Vector2 pos) {
 
     ListNode *node = LEVEL_STATE->listHead;
 
@@ -282,7 +282,7 @@ void LevelEntityDestroy(ListNode *node) {
 
 LevelEntity *LevelEntityGetAt(Vector2 pos) {
 
-    ListNode *node = getEntityOnScene(pos);
+    ListNode *node = getEntityNodeAtPos(pos);
 
     if (!node) return 0;
 

@@ -9,6 +9,7 @@
 #include "render.h"
 #include "persistence.h"
 #include "editor.h"
+#include "debug.h"
 
 
 OverworldState *OW_STATE = 0;
@@ -45,6 +46,9 @@ static void updateCursorPosition() {
 static void destroyEntityOverworld(ListNode *node) {
 
     OverworldEntity *entity = (OverworldEntity *) node->item;
+
+    DebugEntityStop(entity);
+
     MemFree(entity->levelName);
 
     LinkedListDestroyNode(&OW_STATE->listHead, node);
@@ -86,9 +90,9 @@ static void initializeCursor() {
                 newCursor->gridPos.x, newCursor->gridPos.y);
 }
 
-// Searches for an entity that's not the cursor
-// in a given position and returns its node, or 0 if not found.
-static ListNode *getEntityOnScene(Vector2 pos) {
+// Searches for an entity in a given position
+// and returns its node, or 0 if not found.
+static ListNode *getEntityNodeAtPos(Vector2 pos) {
 
     ListNode *node = OW_STATE->listHead;
 
@@ -96,8 +100,7 @@ static ListNode *getEntityOnScene(Vector2 pos) {
 
         OverworldEntity *entity = (OverworldEntity *) node->item;
 
-        if (!(entity->components & OW_IS_CURSOR) &&
-            CheckCollisionPointRec(pos, OverworldEntitySquare(entity))) {
+        if (CheckCollisionPointRec(pos, OverworldEntitySquare(entity))) {
 
                 return node;
             }
@@ -181,6 +184,15 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
     return newTile;
 }
 
+OverworldEntity *OverworldEntityGetAt(Vector2 pos) {
+
+    ListNode *node = getEntityNodeAtPos(pos);
+
+    if (!node) return 0;
+
+    return ((OverworldEntity *) node->item);
+}
+
 void OverworldLevelSelect() {
 
     if (levelSelectedAgo >= 0) return;
@@ -197,6 +209,8 @@ void OverworldLevelSelect() {
     }
 
     CameraPanningReset();
+
+    DebugEntityStopAll();
 
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(OW_CURSOR->gridPos, OW_CURSOR->sprite), true);
@@ -342,15 +356,19 @@ void OverworldTileAddOrInteract(Vector2 pos) {
 
 void OverworldTileRemoveAt(Vector2 pos) {
 
-    ListNode *node = getEntityOnScene(pos);
+    ListNode *node = getEntityNodeAtPos(pos);
 
     if (!node) {
-
         TraceLog(LOG_TRACE, "Didn't find any tile to remove.");
         return;
     }
 
     OverworldEntity *entity = (OverworldEntity *) node->item;
+
+    if (entity == OW_CURSOR) {
+        TraceLog(LOG_TRACE, "Can't remove overworld cursor.");
+        return;
+    }
 
     bool isPartOfSelection = LinkedListGetNode(EDITOR_STATE->selectedEntities, entity);
     if (isPartOfSelection) {
