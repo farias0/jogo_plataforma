@@ -20,6 +20,7 @@
         "block.h": "c",
         "powerups.h": "c",
         "player.h": "c",
-        "*.m": "c"
+        "*.m": "c",
+        "debug.h": "c"
     }
 }

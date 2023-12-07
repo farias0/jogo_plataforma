@@ -8,6 +8,7 @@
 #include "level/level.h"
 #include "editor.h"
 #include "render.h"
+#include "debug.h"
 
 
 GameState *GAME_STATE = 0;
@@ -131,7 +132,7 @@ void MouseCursorEnable() {
 void DebugHudToggle() {
 
     if (GAME_STATE->showDebugHUD) {
-        RenderDebugEntityStopAll();
+        DebugEntityStopAll();
         DebugHudDisable();
     }
     else {

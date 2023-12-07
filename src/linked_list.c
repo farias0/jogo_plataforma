@@ -58,8 +58,6 @@ ListNode *LinkedListGetNode(ListNode *head, void *item) {
         head = head->next;
     }
 
-    TraceLog(LOG_TRACE, "Linked list get node returning %x.", head);
-
     return head;
 }
 

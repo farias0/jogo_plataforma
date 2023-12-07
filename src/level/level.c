@@ -9,6 +9,7 @@
 #include "../render.h"
 #include "../editor.h"
 #include "../overworld.h"
+#include "../debug.h"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
@@ -192,7 +193,7 @@ void LevelGoToOverworld() {
         SpritePosMiddlePoint(
             (Vector2){PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), true);
 
-    RenderDebugEntityStopAll();
+    DebugEntityStopAll();
 
     LEVEL_STATE->concludedAgo = GetTime();
 }
@@ -272,7 +273,7 @@ void LevelEntityDestroy(ListNode *node) {
 
     if (entity == LEVEL_STATE->checkpoint) LEVEL_STATE->checkpoint = 0;
 
-    RenderDebugEntityStop(entity);
+    DebugEntityStop(entity);
 
     LinkedListDestroyNode(&LEVEL_STATE->listHead, node);
 

@@ -2,7 +2,8 @@
 
 #include "enemy.h"
 #include "level.h"
-#include "../render.h"
+#include "../debug.h"
+
 
 #define ENEMY_SPEED_DEFAULT 4.0f
 #define ENEMY_FALL_RATE 7.0f
@@ -113,7 +114,7 @@ void EnemyKill(LevelEntity *entity) {
 
     entity->isDead = true;
 
-    RenderDebugEntityStop(entity);
+    DebugEntityStop(entity);
 
     TraceLog(LOG_TRACE, "Enemy died.");
 }
