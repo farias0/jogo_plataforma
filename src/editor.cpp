@@ -81,8 +81,8 @@ void loadInLevelEditor() {
     addEntityButton(EDITOR_ENTITY_EXIT, SPRITES->LevelEndOrb, &LevelExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_GLIDE, SPRITES->GlideItem, &GlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
-    addControlButton(EDITOR_CONTROL_SAVE, "Salvar fase", &LevelSave);
-    addControlButton(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
+    addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &LevelSave);
+    addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &LevelLoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded in level itens.");
 }
@@ -96,8 +96,8 @@ void loadOverworldEditor() {
     addEntityButton(EDITOR_ENTITY_STRAIGHT, SPRITES->PathTileStraight, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_PATH_IN_L, SPRITES->PathTileInL, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
 
-    addControlButton(EDITOR_CONTROL_SAVE, "Salvar mundo", &OverworldSave);
-    addControlButton(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
+    addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar mundo", &OverworldSave);
+    addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &LevelLoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded overworld itens.");
 }
