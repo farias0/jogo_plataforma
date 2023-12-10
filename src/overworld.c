@@ -148,7 +148,7 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
     OverworldEntity *newTile = MemAlloc(sizeof(OverworldEntity));
 
     newTile->tileType = type;
-    newTile->gridPos = SnapToGrid(pos, OW_GRID);
+    newTile->gridPos = pos;
     newTile->levelName = MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
 
     switch (newTile->tileType)
