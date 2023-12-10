@@ -14,6 +14,7 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-result"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wenum-compare"
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
 #pragma GCC diagnostic pop
@@ -87,8 +88,8 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
     Rectangle source = {
         0.0,
         0.0,
-        -sprite.sprite.width,
-        sprite.sprite.height
+        (float) -sprite.sprite.width,
+        (float) sprite.sprite.height
     };
 
     Rectangle destination = {
