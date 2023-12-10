@@ -3,8 +3,8 @@
 
 #include "files.hpp"
 
-#define MODE_READ "ab+"
-#define MODE_WRITE "wb+"
+#define MODE_READ   (char *) "ab+"
+#define MODE_WRITE  (char *) "wb+"
 
 
 static size_t MAX_ITEM_COUNT = 16384;
@@ -16,7 +16,7 @@ static FILE *openFile(char *filepath, char* mode) {
 
     if (!file) {
         TraceLog(LOG_ERROR, "Could not open file %s.", filepath);
-        return false;
+        return 0;
     }
 
     TraceLog(LOG_TRACE, "Opened file '%s'.", filepath);
