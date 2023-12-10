@@ -4,3 +4,5 @@ build/
 .idea/
 cmake-build-debug/
 cmake-build-debug-visual-studio/
+
+levels/new_level.lvl

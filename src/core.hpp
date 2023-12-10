@@ -20,14 +20,12 @@ public:
 
     Dimensions() {}
 
-    Dimensions(float width, float height) {
-        this->width = width;
-        this->height = height;
-    }
+    Dimensions(float width, float height):
+        width(width), height(height) {}
 
 };
 
-// Used to have an OOP version of raylib's Rectangle
+// An OOP version of raylib's Rectangle
 class Rect {
 public:
     float x;
@@ -37,12 +35,8 @@ public:
 
     Rect() {}
 
-    Rect(float x, float y, float width, float height) {
-        this->x = x;
-        this->y = y;
-        this->width = width;
-        this->height = height;
-    }
+    Rect(float x, float y, float width, float height):
+        x(x), y(y), width(width), height(height) {}
 
     operator Rectangle() {
         return { x, y, width, height };
