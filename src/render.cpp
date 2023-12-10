@@ -13,6 +13,7 @@
 #pragma GCC diagnostic push 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-result"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
 #pragma GCC diagnostic pop
@@ -84,8 +85,8 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
     }
 
     Rectangle source = {
-        0,
-        0,
+        0.0,
+        0.0,
         -sprite.sprite.width,
         sprite.sprite.height
     };
@@ -368,6 +369,7 @@ static void drawDebugHud() {
     while (node != 0) {
         void *entity = node->item;
         Rectangle hitbox;
+        Vector2 screenPos;
         ListNode *nextNode = node->next;
 
         if (!entity) { // Destroyed
@@ -390,7 +392,7 @@ static void drawDebugHud() {
             return;
         }
 
-        Vector2 screenPos = PosInSceneToScreen(RectangleGetPos(hitbox));
+        screenPos = PosInSceneToScreen(RectangleGetPos(hitbox));
 
         DrawRectangle(screenPos.x, screenPos.y,
                 hitbox.width, hitbox.height, { GREEN.r, GREEN.g, GREEN.b, 128 });
