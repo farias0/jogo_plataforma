@@ -510,10 +510,12 @@ static void drawEditorEntitySelection() {
 static void drawEditorCursor() {
 
     EditorEntityButton* b = EDITOR_STATE->toggledEntityButton;
-    if (b) {
-        Vector2 m = GetMousePosition();
-        DrawTexture(b->sprite.sprite, m.x, m.y, getColorTransparency(WHITE, 96));
-    }
+    if (!b) return;
+
+    Vector2 m = GetMousePosition();
+    if (!IsInPlayArea(m)) return;
+
+    DrawTexture(b->sprite.sprite, m.x, m.y, getColorTransparency(WHITE, 96));
 }
 
 static void drawEditor() {
