@@ -2,7 +2,7 @@
 #define _INPUT_H_INCLUDED_
 
 
-#include "editor.h"
+#include "editor.hpp"
 
 void InputHandle();
 

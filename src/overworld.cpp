@@ -2,14 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "overworld.h"
-#include "core.h"
-#include "assets.h"
-#include "camera.h"
-#include "render.h"
-#include "persistence.h"
-#include "editor.h"
-#include "debug.h"
+#include "overworld.hpp"
+#include "core.hpp"
+#include "assets.hpp"
+#include "camera.hpp"
+#include "render.hpp"
+#include "persistence.hpp"
+#include "editor.hpp"
+#include "debug.hpp"
 
 
 OverworldState *OW_STATE = 0;
@@ -26,7 +26,7 @@ static char *levelSelectedName = 0;
 
 static void initializeOverworldState() {
 
-    OW_STATE = MemAlloc(sizeof(OverworldState));
+    OW_STATE = (OverworldState *) MemAlloc(sizeof(OverworldState));
 
     TraceLog(LOG_INFO, "Overworld State initialized.");
 }
@@ -76,7 +76,7 @@ static void checkAndRemoveTile(ListNode *node) {
 
 static void initializeCursor() {
 
-    OverworldEntity *newCursor = MemAlloc(sizeof(OverworldEntity));
+    OverworldEntity *newCursor = (OverworldEntity *) MemAlloc(sizeof(OverworldEntity));
 
     newCursor->components = OW_IS_CURSOR;
     newCursor->sprite = SPRITES->OverworldCursor;
@@ -145,11 +145,11 @@ void OverworldLoad() {
 
 OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degrees) {
 
-    OverworldEntity *newTile = MemAlloc(sizeof(OverworldEntity));
+    OverworldEntity *newTile = (OverworldEntity *) MemAlloc(sizeof(OverworldEntity));
 
     newTile->tileType = type;
     newTile->gridPos = pos;
-    newTile->levelName = MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
+    newTile->levelName = (char *) MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
 
     switch (newTile->tileType)
     {
@@ -304,10 +304,10 @@ void OverworldTileAddOrInteract(Vector2 pos) {
 
     pos = SnapToGrid(pos, OW_GRID);
 
-    Rectangle testHitbox = (Rectangle){ pos.x,
-                                    pos.y,
-                                    OW_GRID.width,
-                                    OW_GRID.height };
+    Rectangle testHitbox = { pos.x,
+                                pos.y,
+                                OW_GRID.width,
+                                OW_GRID.height };
 
     OverworldEntity *entity = OverworldCheckCollisionWithAnyTile(testHitbox);
 
@@ -447,7 +447,7 @@ void OverworldSave() {
 
 Rectangle OverworldEntitySquare(OverworldEntity *entity) {
 
-    return (Rectangle) {
+    return {
         entity->gridPos.x,
         entity->gridPos.y,
         OW_GRID.width,

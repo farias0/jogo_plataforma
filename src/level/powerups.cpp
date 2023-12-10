@@ -1,12 +1,12 @@
 #include <raylib.h>
 
-#include "powerups.h"
-#include "level.h"
+#include "powerups.hpp"
+#include "level.hpp"
 
 
 void GlideAdd(Vector2 origin) {
     
-    LevelEntity *glide = MemAlloc(sizeof(LevelEntity));
+    LevelEntity *glide = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
 
     glide->components = LEVEL_IS_GLIDE;
     glide->origin = origin;

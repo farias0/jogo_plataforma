@@ -1,9 +1,9 @@
 #include <raylib.h>
 
-#include "core.h"
-#include "render.h"
-#include "input.h"
-#include "overworld.h"
+#include "core.hpp"
+#include "render.hpp"
+#include "input.hpp"
+#include "overworld.hpp"
 
 int main() {
 

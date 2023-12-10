@@ -1034,7 +1034,7 @@ typedef enum {
 #include <math.h>               // Required for: roundf() [GuiColorPicker()]
 
 // jogo_plataforma's
-#include "../src/render.h"
+#include "../src/render.hpp"
 
 #ifdef __cplusplus
     #define RAYGUI_CLITERAL(name) name

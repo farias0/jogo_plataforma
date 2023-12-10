@@ -1,9 +1,9 @@
 #include <raylib.h>
 
-#include "debug.h"
-#include "level/level.h"
-#include "overworld.h"
-#include "linked_list.h"
+#include "debug.hpp"
+#include "level/level.hpp"
+#include "overworld.hpp"
+#include "linked_list.hpp"
 
 
 ListNode *DEBUG_ENTITY_INFO_HEAD = 0;

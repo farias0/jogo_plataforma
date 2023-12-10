@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <raylib.h>
 
-#include "files.h"
+#include "files.hpp"
 
 #define MODE_READ "ab+"
 #define MODE_WRITE "wb+"

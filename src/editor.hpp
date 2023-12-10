@@ -4,21 +4,19 @@
 
 #include <raylib.h>
 
-#include "assets.h"
-#include "linked_list.h"
+#include "assets.hpp"
+#include "linked_list.hpp"
+#include "core.hpp"
 
 
 // The rectangle defining the area of the editor panel in the screen
-#define EDITOR_PANEL_RECT               (Rectangle){ SCREEN_WIDTH, \
-                                                        0, \
-                                                        200, \
-                                                        SCREEN_HEIGHT }
+#define EDITOR_PANEL_RECT               Rect(SCREEN_WIDTH, 0, 200, SCREEN_HEIGHT)
 
 // The Y of the divider that vertically separates the editor panel in two
 #define EDITOR_CONTROL_PANEL_Y          4*SCREEN_HEIGHT/5
 
 // The background color of the editor
-#define EDITOR_BG_COLOR                 (Color){ 0x08, 0x08, 0x11, 0xff }
+#define EDITOR_BG_COLOR                 { 0x08, 0x08, 0x11, 0xff }
 
 // The size of the side of an square entity button
 #define ENTITY_BUTTON_SIZE              80
@@ -42,10 +40,10 @@
 #define CONTROL_BUTTON_WALL_SPACING     (EDITOR_PANEL_RECT.width - (CONTROL_BUTTON_WIDTH * 2) - CONTROL_BUTTON_SPACING) / 2
 
 // The color of the entity selection's square
-#define EDITOR_SELECTION_RECT_COLOR     (Color){ BLUE.r, BLUE.g, BLUE.b, 64 }
+#define EDITOR_SELECTION_RECT_COLOR     { BLUE.r, BLUE.g, BLUE.b, 64 }
 
 // The color of the shade over each selected entity
-#define EDITOR_SELECTION_ENTITY_COLOR   (Color){ BLUE.r, BLUE.g, BLUE.b, 128 }
+#define EDITOR_SELECTION_ENTITY_COLOR   { BLUE.r, BLUE.g, BLUE.b, 128 }
 
 // How transparent, compared to the original, the ghost of the
 // entities being moved will be

@@ -2,14 +2,14 @@
 #define _OVERWORLD_H_INCLUDED_
 
 
-#include "assets.h"
-#include "linked_list.h"
-#include "persistence.h"
-#include "core.h"
+#include "assets.hpp"
+#include "linked_list.hpp"
+#include "persistence.hpp"
+#include "core.hpp"
 
 
 // The size of cells that make up the overworld grid
-#define OW_GRID (Dimensions){ 64, 64 }
+#define OW_GRID         Dimensions(64, 64)
 
 
 typedef enum OverworldCursorDirection {

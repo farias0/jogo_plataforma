@@ -2,7 +2,8 @@
 #define _CORE_H_INCLUDED_
 
 #include <raylib.h>
-#include "linked_list.h"
+
+#include "linked_list.hpp"
 
 
 // Currently this represents the play space (not including editor)
@@ -12,10 +13,41 @@
 #define SCREEN_WIDTH_W_EDITOR   SCREEN_WIDTH + EDITOR_PANEL_RECT.width
 
 
-typedef struct Dimensions {
+class Dimensions {
+public:
     float width;
     float height;
-} Dimensions;
+
+    Dimensions() {}
+
+    Dimensions(float width, float height) {
+        this->width = width;
+        this->height = height;
+    }
+
+};
+
+// Used to have an OOP version of raylib's Rectangle
+class Rect {
+public:
+    float x;
+    float y;
+    float width;
+    float height;
+
+    Rect() {}
+
+    Rect(float x, float y, float width, float height) {
+        this->x = x;
+        this->y = y;
+        this->width = width;
+        this->height = height;
+    }
+
+    operator Rectangle() {
+        return { x, y, width, height };
+    }
+};
 
 typedef struct Trajectory {
     Vector2 start;

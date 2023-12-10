@@ -4,7 +4,7 @@
 
 #include <raylib.h>
 
-#include "level.h"
+#include "level.hpp"
 
 
 // Initializes and adds an enemy to the level in the given origin
