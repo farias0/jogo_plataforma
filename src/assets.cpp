@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <string>
 
 #include "assets.hpp"
 
@@ -13,17 +14,17 @@ Sprites *SPRITES = 0;
 Shader ShaderLevelTransition;
 
 
-static inline Sprite defaultSprite(char *texturePath) {
+static inline Sprite defaultSprite(std::string texturePath) {
     return {
-        LoadTexture(texturePath),
+        LoadTexture(texturePath.c_str()),
         DEFAULT_SPRITE_SCALE,
         0
     };
 }
 
-static inline Sprite tileSprite(char *texturePath) {
+static inline Sprite tileSprite(std::string texturePath) {
     return {
-        LoadTexture(texturePath),
+        LoadTexture(texturePath.c_str()),
         FLOOR_TILE_SIZE,
         0
     };
