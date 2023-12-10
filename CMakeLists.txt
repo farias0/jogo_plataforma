@@ -8,6 +8,7 @@ project(jogo_plataforma)
 add_subdirectory(raylib)
 
 set(CMAKE_C_STANDARD 11) # required by raylib
+set(CMAKE_CXX_STANDARD 20)
 
 add_executable(${PROJECT_NAME} src/game.cpp src/level/player.cpp src/linked_list.cpp src/level/enemy.cpp
     src/level/level.cpp src/camera.cpp src/core.cpp src/render.cpp src/input.cpp src/editor.cpp src/assets.cpp
