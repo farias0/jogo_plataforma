@@ -166,6 +166,11 @@ void LevelInitialize() {
 
 void LevelLoad(char *levelName) {
 
+    // Gambiarra. In case a level file was dragged and there was a level loaded already
+    if (PLAYER_ENTITY) {
+        resetLevelState();
+    }
+
     GAME_STATE->mode = MODE_IN_LEVEL;
 
     if (levelName[0] == '\0') {
