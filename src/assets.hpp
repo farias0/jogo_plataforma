@@ -3,7 +3,8 @@
 
 
 #include <raylib.h>
-#include "core.h"
+
+#include "core.hpp"
 
 
 typedef struct Sprite {

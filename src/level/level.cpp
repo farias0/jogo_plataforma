@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "level.h"
-#include "player.h"
-#include "enemy.h"
-#include "../camera.h"
-#include "../render.h"
-#include "../editor.h"
-#include "../overworld.h"
-#include "../debug.h"
+#include "level.hpp"
+#include "player.hpp"
+#include "enemy.hpp"
+#include "../camera.hpp"
+#include "../render.hpp"
+#include "../editor.hpp"
+#include "../overworld.hpp"
+#include "../debug.hpp"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
@@ -20,7 +20,7 @@
 #define NEW_LEVEL_NAME                  "new_level.lvl"
 
 // The players origin by default.
-#define PLAYERS_ORIGIN                  (Vector2){ 344, 200 };
+#define PLAYERS_ORIGIN                  { 344, 200 };
 
 // With how many checkpoints available the player starts
 #define STARTING_CHECKPOINTS_NUMBER     1;
@@ -47,7 +47,7 @@ void resetLevelState() {
 
 void initializeLevelState() {
 
-    LEVEL_STATE = MemAlloc(sizeof(LevelState));
+    LEVEL_STATE = (LevelState *) MemAlloc(sizeof(LevelState));
 
     resetLevelState();
 
@@ -81,6 +81,24 @@ static ListNode *getEntityNodeAtPos(Vector2 pos) {
     };
 
     return 0;
+}
+
+void tickAllEntities() {
+
+    ListNode *node = LEVEL_STATE->listHead;
+    ListNode *next;
+
+    while (node != 0) {
+
+        next = node->next;
+
+        LevelEntity *entity = (LevelEntity *)node->item;
+
+        if (entity->components & LEVEL_IS_ENEMY) EnemyTick(node);
+        else if (entity->components & LEVEL_IS_PLAYER) PlayerTick();
+
+        node = next;
+    }
 }
 
 // Searches the level for a ground immediatelly beneath the hitbox.
@@ -175,7 +193,7 @@ void LevelLoad(char *levelName) {
 
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
-            (Vector2){PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), false);
+            {PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), false);
 
     TraceLog(LOG_INFO, "Level loaded: %s.", levelName);
 }
@@ -191,7 +209,7 @@ void LevelGoToOverworld() {
 
     RenderLevelTransitionEffectStart(
         SpritePosMiddlePoint(
-            (Vector2){PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), true);
+            {PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), true);
 
     DebugEntityStopAll();
 
@@ -200,7 +218,7 @@ void LevelGoToOverworld() {
 
 void LevelExitAdd(Vector2 pos) {
 
-    LevelEntity *newExit = MemAlloc(sizeof(LevelEntity));
+    LevelEntity *newExit = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
 
     Sprite sprite = SPRITES->LevelEndOrb;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
@@ -219,7 +237,7 @@ void LevelExitAdd(Vector2 pos) {
 
 LevelEntity *LevelCheckpointAdd(Vector2 pos) {
 
-    LevelEntity *newCheckpoint = MemAlloc(sizeof(LevelEntity));
+    LevelEntity *newCheckpoint = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
 
     Sprite sprite = SPRITES->LevelCheckpoint;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
@@ -252,7 +270,7 @@ void LevelExitCheckAndAdd(Vector2 pos) {
     if (LEVEL_STATE->exitNode)
         LinkedListDestroyNode(&LEVEL_STATE->listHead, LEVEL_STATE->exitNode);
     
-    LevelExitAdd((Vector2){ hitbox.x, hitbox.y });
+    LevelExitAdd({ hitbox.x, hitbox.y });
 }
 
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
@@ -328,8 +346,8 @@ next_node:
 
             if (selectedEntity->components & LEVEL_IS_PLAYER) goto next_selected_node;
 
-            ListNode *nodeInLevel = LinkedListGetNode(LEVEL_STATE->listHead, selectedEntity);
-            LevelEntityDestroy(nodeInLevel);
+            LevelEntityDestroy(
+                LinkedListGetNode(LEVEL_STATE->listHead, selectedEntity));
 
 next_selected_node:
             selectedNode = next;
@@ -372,24 +390,8 @@ void LevelTick() {
         return;
     }
 
-    if (LEVEL_STATE->isPaused) goto skip_entities_tick;
-    if (EDITOR_STATE->isEnabled) goto skip_entities_tick;
-
-    ListNode *node = LEVEL_STATE->listHead;
-    ListNode *next;
-
-    while (node != 0) {
-
-        next = node->next;
-
-        LevelEntity *entity = (LevelEntity *)node->item;
-
-        if (entity->components & LEVEL_IS_ENEMY) EnemyTick(node);
-        else if (entity->components & LEVEL_IS_PLAYER) PlayerTick();
-
-        node = next;
-    }
-skip_entities_tick:
+    if (!LEVEL_STATE->isPaused && !EDITOR_STATE->isEnabled)
+        tickAllEntities();
 
     CameraTick();
 }
@@ -427,10 +429,10 @@ bool LevelCheckCollisionWithAnythingElse(Rectangle hitbox, ListNode *entityListH
     
         LevelEntity *entity = (LevelEntity *) node->item;
 
-        Rectangle entitysOrigin = (Rectangle) {
-                                                entity->origin.x,       entity->origin.y,
-                                                entity->hitbox.width,   entity->hitbox.height
-                                            };
+        Rectangle entitysOrigin = {
+                                        entity->origin.x,       entity->origin.y,
+                                        entity->hitbox.width,   entity->hitbox.height
+                                    };
 
         if (CheckCollisionRecs(hitbox, entitysOrigin) ||
             (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox))) {
@@ -458,7 +460,7 @@ void LevelSave() {
 
 void LevelLoadNew() {
 
-    LevelLoad(LEVEL_BLUEPRINT_NAME);
+    LevelLoad((char *) LEVEL_BLUEPRINT_NAME);
 
     PLAYER_ENTITY->origin = PLAYERS_ORIGIN;
     PLAYER_ENTITY->hitbox.x = PLAYER_ENTITY->origin.x;
@@ -469,7 +471,7 @@ void LevelLoadNew() {
 
 Rectangle LevelEntityOriginHitbox(LevelEntity *entity) {
 
-    return (Rectangle){
+    return {
         entity->origin.x, entity->origin.y,
         entity->hitbox.width, entity->hitbox.height
     };

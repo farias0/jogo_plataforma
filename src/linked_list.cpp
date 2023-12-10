@@ -1,11 +1,11 @@
 #include "raylib.h"
 
-#include "linked_list.h"
+#include "linked_list.hpp"
 
 
 ListNode *LinkedListAdd(ListNode **head, void *item) {
 
-    ListNode *node = MemAlloc(sizeof(ListNode));
+    ListNode *node = (ListNode *) MemAlloc(sizeof(ListNode));
 
     node->item = item;
 

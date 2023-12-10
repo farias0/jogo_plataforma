@@ -4,8 +4,8 @@
 
 #include <raylib.h>
 
-#include "linked_list.h"
-#include "level/level.h"
+#include "linked_list.hpp"
+#include "level/level.hpp"
 
 
 extern ListNode *DEBUG_ENTITY_INFO_HEAD;

@@ -1,8 +1,8 @@
 #include <raylib.h>
 
-#include "enemy.h"
-#include "level.h"
-#include "../debug.h"
+#include "enemy.hpp"
+#include "level.hpp"
+#include "../debug.hpp"
 
 
 #define ENEMY_SPEED_DEFAULT 4.0f
@@ -11,7 +11,7 @@
 
 void EnemyAdd(Vector2 origin) {
 
-    LevelEntity *newEnemy = MemAlloc(sizeof(LevelEntity));
+    LevelEntity *newEnemy = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
 
     newEnemy->components = LEVEL_IS_ENEMY +
                             LEVEL_IS_GROUND +
@@ -37,7 +37,7 @@ void EnemyCheckAndAdd(Vector2 origin) {
         return;
     }
 
-    EnemyAdd((Vector2){ hitbox.x, hitbox.y });
+    EnemyAdd({ hitbox.x, hitbox.y });
 }
 
 void EnemyTick(ListNode *enemyNode) {

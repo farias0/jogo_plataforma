@@ -2,14 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "overworld.h"
-#include "core.h"
-#include "assets.h"
-#include "camera.h"
-#include "render.h"
-#include "persistence.h"
-#include "editor.h"
-#include "debug.h"
+#include "overworld.hpp"
+#include "core.hpp"
+#include "assets.hpp"
+#include "camera.hpp"
+#include "render.hpp"
+#include "persistence.hpp"
+#include "editor.hpp"
+#include "debug.hpp"
 
 
 OverworldState *OW_STATE = 0;
@@ -26,7 +26,7 @@ static char *levelSelectedName = 0;
 
 static void initializeOverworldState() {
 
-    OW_STATE = MemAlloc(sizeof(OverworldState));
+    OW_STATE = (OverworldState *) MemAlloc(sizeof(OverworldState));
 
     TraceLog(LOG_INFO, "Overworld State initialized.");
 }
@@ -76,7 +76,7 @@ static void checkAndRemoveTile(ListNode *node) {
 
 static void initializeCursor() {
 
-    OverworldEntity *newCursor = MemAlloc(sizeof(OverworldEntity));
+    OverworldEntity *newCursor = (OverworldEntity *) MemAlloc(sizeof(OverworldEntity));
 
     newCursor->components = OW_IS_CURSOR;
     newCursor->sprite = SPRITES->OverworldCursor;
@@ -145,11 +145,11 @@ void OverworldLoad() {
 
 OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degrees) {
 
-    OverworldEntity *newTile = MemAlloc(sizeof(OverworldEntity));
+    OverworldEntity *newTile = (OverworldEntity *) MemAlloc(sizeof(OverworldEntity));
 
     newTile->tileType = type;
     newTile->gridPos = pos;
-    newTile->levelName = MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
+    newTile->levelName = (char *) MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
 
     switch (newTile->tileType)
     {
@@ -233,16 +233,18 @@ void OverworldCursorMove(OverworldCursorDirection direction) {
     while (node != 0) {
 
         OverworldEntity *entity = (OverworldEntity *) node->item;
+        bool isOnTheSameRow;
+        bool isOnTheSameColumn;
+        bool foundPath;
 
+        // TODO replace this with a tag "OW_IS_WALKABLE"
         bool isTile = (entity->components & OW_IS_PATH) ||
                         (entity->components & OW_IS_LEVEL_DOT);
         if (!isTile) goto next_entity;
 
-
-        bool isOnTheSameRow = tileUnder->gridPos.y == entity->gridPos.y;
-        bool isOnTheSameColumn = tileUnder->gridPos.x == entity->gridPos.x;
-        bool foundPath = false;
-
+        isOnTheSameRow = tileUnder->gridPos.y == entity->gridPos.y;
+        isOnTheSameColumn = tileUnder->gridPos.x == entity->gridPos.x;
+        foundPath = false;
 
         // This code is stupid, but I'm leaving it for sake of simplicity and ease of debug.
         switch(direction)
@@ -304,10 +306,10 @@ void OverworldTileAddOrInteract(Vector2 pos) {
 
     pos = SnapToGrid(pos, OW_GRID);
 
-    Rectangle testHitbox = (Rectangle){ pos.x,
-                                    pos.y,
-                                    OW_GRID.width,
-                                    OW_GRID.height };
+    Rectangle testHitbox = { pos.x,
+                                pos.y,
+                                OW_GRID.width,
+                                OW_GRID.height };
 
     OverworldEntity *entity = OverworldCheckCollisionWithAnyTile(testHitbox);
 
@@ -394,22 +396,23 @@ OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox) {
     return OverworldCheckCollisionWithAnyTileExcept(hitbox, 0);
 }
 
-OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, ListNode *entityListHead) {
+OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, ListNode *ignoreListHead) {
 
     ListNode *node = OW_STATE->listHead;
 
     while (node != 0) {
 
         OverworldEntity *entity = (OverworldEntity *) node->item;
+        ListNode *toIgnore;
 
         if (entity->tileType == OW_NOT_TILE) goto next_entity;
 
         if (!CheckCollisionRecs(hitbox, OverworldEntitySquare(entity))) goto next_entity;
 
-        ListNode *excludedNode = entityListHead;
-        while (excludedNode != 0) {
-            if (excludedNode->item == entity) goto next_entity;
-            excludedNode = excludedNode->next;
+        toIgnore = ignoreListHead;
+        while (toIgnore != 0) {
+            if (toIgnore->item == entity) goto next_entity;
+            toIgnore = toIgnore->next;
         }
 
         return entity;
@@ -447,7 +450,7 @@ void OverworldSave() {
 
 Rectangle OverworldEntitySquare(OverworldEntity *entity) {
 
-    return (Rectangle) {
+    return {
         entity->gridPos.x,
         entity->gridPos.y,
         OW_GRID.width,

@@ -1,15 +1,15 @@
 #include <raylib.h>
 
-#include "editor.h"
-#include "core.h"
-#include "level/level.h"
-#include "level/enemy.h"
-#include "level/powerups.h"
-#include "level/block.h"
-#include "overworld.h"
-#include "linked_list.h"
-#include "camera.h"
-#include "render.h"
+#include "editor.hpp"
+#include "core.hpp"
+#include "level/level.hpp"
+#include "level/enemy.hpp"
+#include "level/powerups.hpp"
+#include "level/block.hpp"
+#include "overworld.hpp"
+#include "linked_list.hpp"
+#include "camera.hpp"
+#include "render.hpp"
 
 
 EditorState *EDITOR_STATE = 0;
@@ -48,7 +48,7 @@ static void editorUseEraser(Vector2 cursorPos) {
 static EditorEntityButton *addEntityButton(
     EditorEntityType type, Sprite sprite, void (*handler)(Vector2), EditorInteractionType interaction) {
 
-        EditorEntityButton *newButton = MemAlloc(sizeof(EditorEntityButton));
+        EditorEntityButton *newButton = (EditorEntityButton *) MemAlloc(sizeof(EditorEntityButton));
         newButton->type = type;
         newButton->handler = handler;
         newButton->sprite = sprite;
@@ -61,7 +61,7 @@ static EditorEntityButton *addEntityButton(
 
 EditorControlButton *addControlButton(EditorControlType type, char *label, void (*handler)()) {
 
-    EditorControlButton *newButton = MemAlloc(sizeof(EditorControlButton));
+    EditorControlButton *newButton = (EditorControlButton *) MemAlloc(sizeof(EditorControlButton));
     newButton->type = type;
     newButton->handler = handler;
     newButton->label = label;
@@ -81,8 +81,8 @@ void loadInLevelEditor() {
     addEntityButton(EDITOR_ENTITY_EXIT, SPRITES->LevelEndOrb, &LevelExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_GLIDE, SPRITES->GlideItem, &GlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
-    addControlButton(EDITOR_CONTROL_SAVE, "Salvar fase", &LevelSave);
-    addControlButton(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
+    addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &LevelSave);
+    addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &LevelLoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded in level itens.");
 }
@@ -96,8 +96,8 @@ void loadOverworldEditor() {
     addEntityButton(EDITOR_ENTITY_STRAIGHT, SPRITES->PathTileStraight, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_PATH_IN_L, SPRITES->PathTileInL, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
 
-    addControlButton(EDITOR_CONTROL_SAVE, "Salvar mundo", &OverworldSave);
-    addControlButton(EDITOR_CONTROL_NEW_LEVEL, "Nova fase", &LevelLoadNew);
+    addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar mundo", &OverworldSave);
+    addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &LevelLoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded overworld itens.");
 }
@@ -210,7 +210,7 @@ void selectEntitiesApplyMove() {
 
 void EditorInitialize() {
 
-    EDITOR_STATE = MemAlloc(sizeof(EditorState));
+    EDITOR_STATE = (EditorState *) MemAlloc(sizeof(EditorState));
 
     editorStateReset();
 
@@ -374,7 +374,7 @@ Rectangle EditorEntityButtonRect(int buttonNumber) {
     float itemY = panelOrigin.y + wallSpacing;
     itemY += (buttonSize + buttonSpacing) * (buttonNumber / 2);
 
-    return (Rectangle){ itemX, itemY, buttonSize, buttonSize };
+    return { itemX, itemY, buttonSize, buttonSize };
 }
 
 Rectangle EditorControlButtonRect(int buttonNumber) {
@@ -393,7 +393,7 @@ Rectangle EditorControlButtonRect(int buttonNumber) {
     float itemY = panelOrigin.y + wallSpacing;
     itemY += (buttonHeight + buttonSpacing) * (buttonNumber / 2);
 
-    return (Rectangle){ itemX, itemY, buttonWidth, buttonHeight };
+    return { itemX, itemY, buttonWidth, buttonHeight };
 }
 
 Rectangle EditorSelectionGetRect() {
@@ -415,7 +415,7 @@ Rectangle EditorSelectionGetRect() {
         height  = t.start.y - t.end.y;
     }
 
-    return (Rectangle) { x, y, width, height };
+    return { x, y, width, height };
 }
 
 Vector2 EditorEntitySelectionCalcMove(Vector2 hitbox) {
@@ -430,10 +430,10 @@ Vector2 EditorEntitySelectionCalcMove(Vector2 hitbox) {
     Dimensions grid = LEVEL_GRID;
     if (GAME_STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
     
-    Vector2 pos = SnapToGrid((Vector2) {
-                                    hitbox.x + delta.x,
-                                    hitbox.y + delta.y                            
-                                }, grid);
+    Vector2 pos = SnapToGrid({
+                                hitbox.x + delta.x,
+                                hitbox.y + delta.y                            
+                            }, grid);
 
     return pos;
 }

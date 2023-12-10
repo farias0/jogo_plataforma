@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "core.h"
-#include "overworld.h"
-#include "camera.h"
-#include "level/level.h"
-#include "editor.h"
-#include "render.h"
-#include "debug.h"
+#include "core.hpp"
+#include "overworld.hpp"
+#include "camera.hpp"
+#include "level/level.hpp"
+#include "editor.hpp"
+#include "render.hpp"
+#include "debug.hpp"
 
 
 GameState *GAME_STATE = 0;
@@ -48,7 +48,7 @@ void windowTitleUpdate() {
 
 void GameStateInitialize() {
 
-    GAME_STATE = MemAlloc(sizeof(GameState));
+    GAME_STATE = (GameState *) MemAlloc(sizeof(GameState));
 
     GAME_STATE->showBackground = false;
     GAME_STATE->showDebugGrid = false;
@@ -150,7 +150,7 @@ bool IsInPlayArea(Vector2 pos) {
 
 Vector2 SnapToGrid(Vector2 coords, Dimensions grid) {
 
-    return (Vector2) {
+    return {
         snapToGrid(coords.x, grid.width),
         snapToGrid(coords.y, grid.height)
     };
@@ -158,14 +158,14 @@ Vector2 SnapToGrid(Vector2 coords, Dimensions grid) {
 
 Vector2 DistanceFromGrid(Vector2 coords, Dimensions grid) {
 
-    return (Vector2) {
+    return {
         distanceFromGrid(coords.x, grid.width),
         distanceFromGrid(coords.y, grid.height)
     };
 }
 
 Vector2 RectangleGetPos(Rectangle rect) {
-    return (Vector2){ rect.x, rect.y };
+    return { rect.x, rect.y };
 }
 
 void RectangleSetPos(Rectangle *rect, Vector2 pos) {

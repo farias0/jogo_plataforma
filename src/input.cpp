@@ -2,16 +2,16 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "input.h"
-#include "core.h"
-#include "level/level.h"
-#include "level/player.h"
-#include "overworld.h"
-#include "camera.h"
-#include "persistence.h"
-#include "render.h"
-#include "editor.h"
-#include "debug.h"
+#include "input.hpp"
+#include "core.hpp"
+#include "level/level.hpp"
+#include "level/player.hpp"
+#include "overworld.hpp"
+#include "camera.hpp"
+#include "persistence.hpp"
+#include "render.hpp"
+#include "editor.hpp"
+#include "debug.hpp"
 
 
 void handleInLevelInput() {
@@ -153,7 +153,7 @@ skip_to_button_handler:
 
 void handleDroppedFile() {
 
-    char *levelName = MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
+    char *levelName = (char *) MemAlloc(sizeof(char) * LEVEL_NAME_BUFFER_SIZE);
     
     if (PersistenceGetDroppedLevelName(levelName)) {
         
@@ -166,7 +166,7 @@ void handleDroppedFile() {
             TraceLog(LOG_INFO, "Dot on x=%.1f, y=%.1f associated with level %s.",
                         OW_STATE->tileUnderCursor->gridPos.x, OW_STATE->tileUnderCursor->gridPos.y, levelName);
             
-            char *sysMsg = MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
+            char *sysMsg = (char *) MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
             sprintf(sysMsg, "Associada fase %s", levelName);
             RenderPrintSysMessage(sysMsg);
             MemFree(sysMsg);

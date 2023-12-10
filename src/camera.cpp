@@ -1,10 +1,10 @@
 #include <raylib.h>
 
-#include "camera.h"
-#include "level/player.h"
-#include "core.h"
-#include "overworld.h"
-#include "editor.h"
+#include "camera.hpp"
+#include "level/player.hpp"
+#include "core.hpp"
+#include "overworld.hpp"
+#include "editor.hpp"
 
 
 #define CAMERA_FOLLOW_LEFT      SCREEN_WIDTH/4
@@ -66,9 +66,9 @@ static void tickLevelCamera() {
 }
 
 void CameraInitialize() {
-    CAMERA = MemAlloc(sizeof(MyCamera));
+    CAMERA = (MyCamera *) MemAlloc(sizeof(MyCamera));
 
-    CAMERA->pos = (Vector2) { 0, 0 };
+    CAMERA->pos = { 0, 0 };
 
     TraceLog(LOG_INFO, "Camera initialized.");
 }
@@ -160,14 +160,14 @@ bool CameraIsPanned() {
 }
 
 Vector2 PosInScreenToScene(Vector2 pos) {
-    return (Vector2){
+    return {
         pos.x + CAMERA->pos.x,
         pos.y + CAMERA->pos.y
     };
 }
 
 Vector2 PosInSceneToScreen(Vector2 pos) {
-    return (Vector2){
+    return {
         pos.x - CAMERA->pos.x,
         pos.y - CAMERA->pos.y
     };

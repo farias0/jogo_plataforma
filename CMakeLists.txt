@@ -9,9 +9,9 @@ add_subdirectory(raylib)
 
 set(CMAKE_C_STANDARD 11) # required by raylib
 
-add_executable(${PROJECT_NAME} src/game.c src/level/player.c src/linked_list.c src/level/enemy.c
-    src/level/level.c src/camera.c src/core.c src/render.c src/input.c src/editor.c src/assets.c
-    src/overworld.c src/level/block.c src/files.c src/persistence.c src/level/powerups.c src/debug.c)
+add_executable(${PROJECT_NAME} src/game.cpp src/level/player.cpp src/linked_list.cpp src/level/enemy.cpp
+    src/level/level.cpp src/camera.cpp src/core.cpp src/render.cpp src/input.cpp src/editor.cpp src/assets.cpp
+    src/overworld.cpp src/level/block.cpp src/files.cpp src/persistence.cpp src/level/powerups.cpp src/debug.cpp)
 
 set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

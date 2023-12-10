@@ -1,7 +1,7 @@
 #ifndef _RENDER_H_INCLUDED_
 #define _RENDER_H_INCLUDED_
 
-#include "level/level.h"
+#include "level/level.hpp"
 
 
 #define SYS_MSG_BUFFER_SIZE 1000

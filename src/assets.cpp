@@ -1,5 +1,8 @@
-#include "assets.h"
 #include <raylib.h>
+#include <string>
+
+#include "assets.hpp"
+
 
 #define DEFAULT_SPRITE_SCALE 2
 #define FLOOR_TILE_SIZE 1
@@ -11,17 +14,17 @@ Sprites *SPRITES = 0;
 Shader ShaderLevelTransition;
 
 
-static inline Sprite defaultSprite(char *texturePath) {
-    return (Sprite) {
-        LoadTexture(texturePath),
+static inline Sprite defaultSprite(std::string texturePath) {
+    return {
+        LoadTexture(texturePath.c_str()),
         DEFAULT_SPRITE_SCALE,
         0
     };
 }
 
-static inline Sprite tileSprite(char *texturePath) {
-    return (Sprite) {
-        LoadTexture(texturePath),
+static inline Sprite tileSprite(std::string texturePath) {
+    return {
+        LoadTexture(texturePath.c_str()),
         FLOOR_TILE_SIZE,
         0
     };
@@ -29,7 +32,7 @@ static inline Sprite tileSprite(char *texturePath) {
 
 void AssetsInitialize() {
 
-    SPRITES = MemAlloc(sizeof(Sprites));
+    SPRITES = (Sprites *) MemAlloc(sizeof(Sprites));
     Sprites *s = SPRITES;
 
     // Editor
@@ -69,7 +72,7 @@ void AssetsInitialize() {
 }
 
 Dimensions SpriteScaledDimensions(Sprite s) {
-    return (Dimensions) {
+    return {
         s.sprite.width * s.scale,
         s.sprite.height * s.scale
     };
@@ -78,7 +81,7 @@ Dimensions SpriteScaledDimensions(Sprite s) {
 Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite sprite) {
     Dimensions dimensions = SpriteScaledDimensions(sprite);
 
-    return (Vector2) {
+    return {
         pos.x + (dimensions.width / 2),
         pos.y + (dimensions.height / 2),
     };
@@ -96,7 +99,7 @@ void SpriteRotate(Sprite *sprite, int degrees) {
 
 Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin) {
     Dimensions dimensions = SpriteScaledDimensions(sprite);
-    return (Rectangle) {
+    return {
         origin.x,
         origin.y,
         dimensions.width,
@@ -106,7 +109,7 @@ Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin) {
 
 Rectangle SpriteHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
     Dimensions dimensions = SpriteScaledDimensions(sprite);
-    return (Rectangle) {
+    return {
         middlePoint.x - (dimensions.width / 2),
         middlePoint.y - (dimensions.height / 2),
         dimensions.width,

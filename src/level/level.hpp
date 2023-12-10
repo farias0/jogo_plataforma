@@ -4,17 +4,17 @@
 
 #include <raylib.h>
 
-#include "../linked_list.h"
-#include "../assets.h"
-#include "../core.h"
-#include "../persistence.h"
+#include "../linked_list.hpp"
+#include "../assets.hpp"
+#include "../core.hpp"
+#include "../persistence.hpp"
 
 
 // The level used as a basis for new levels
 #define LEVEL_BLUEPRINT_NAME    "_blueprint.lvl"
 
 // The size of cells that make up the level grid
-#define LEVEL_GRID              (Dimensions){ 32, 32 }
+#define LEVEL_GRID              Dimensions(32, 32)
 
 // Below this y entities die
 #define FLOOR_DEATH_HEIGHT      800

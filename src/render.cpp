@@ -1,18 +1,20 @@
 #include <raylib.h>
 #include <stdio.h>
 
-#include "core.h"
-#include "assets.h"
-#include "level/level.h"
-#include "level/player.h"
-#include "overworld.h"
-#include "camera.h"
-#include "editor.h"
-#include "debug.h"
+#include "core.hpp"
+#include "assets.hpp"
+#include "level/level.hpp"
+#include "level/player.hpp"
+#include "overworld.hpp"
+#include "camera.hpp"
+#include "editor.hpp"
+#include "debug.hpp"
 
 #pragma GCC diagnostic push 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-result"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wenum-compare"
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
 #pragma GCC diagnostic pop
@@ -45,17 +47,17 @@ static LevelTransitionShaderControl levelTransitionShaderControl;
 
 
 // Returns the given color, with the given transparency level. 
-static Color getColorTransparency(Color color, int transpareny) {
+static Color getColorTransparency(Color color, int transparency) {
 
-    return (Color) { color.r, color.g, color.b,
-                        (unsigned char) transpareny };
+    return { color.r, color.g, color.b,
+                (unsigned char) transparency };
 }
 
 // Draws rectangle with scene-based position
 static void drawSceneRectangle(Rectangle rect, Color color) {
 
-    Vector2 scenePos = PosInSceneToScreen((Vector2){ rect.x, rect.y });
-    Rectangle screenRect = (Rectangle){ scenePos.x, scenePos.y, rect.width, rect.height };
+    Vector2 scenePos = PosInSceneToScreen({ rect.x, rect.y });
+    Rectangle screenRect = { scenePos.x, scenePos.y, rect.width, rect.height };
     DrawRectangleRec(screenRect, color);
 }
 
@@ -66,10 +68,10 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
 
     // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
     // Maybe this should be fixed in a way that works for any angle. 
-    if (sprite.rotation == 90)          pos = (Vector2){ pos.x + dimensions.width, pos.y };
-    else if (sprite.rotation == 180)    pos = (Vector2){ pos.x + dimensions.width,
+    if (sprite.rotation == 90)          pos = { pos.x + dimensions.width, pos.y };
+    else if (sprite.rotation == 180)    pos = { pos.x + dimensions.width,
                                                             pos.y + dimensions.height };
-    else if (sprite.rotation == 270)    pos = (Vector2){ pos.x, pos.y + dimensions.height };
+    else if (sprite.rotation == 270)    pos = { pos.x, pos.y + dimensions.height };
 
 
 
@@ -83,14 +85,14 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
         return;
     }
 
-    Rectangle source = (Rectangle){
-        0,
-        0,
-        -sprite.sprite.width,
-        sprite.sprite.height
+    Rectangle source = {
+        0.0,
+        0.0,
+        (float) -sprite.sprite.width,
+        (float) sprite.sprite.height
     };
 
-    Rectangle destination = (Rectangle){
+    Rectangle destination = {
         pos.x,
         pos.y,
         dimensions.width,
@@ -100,7 +102,7 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
     DrawTexturePro(sprite.sprite,
                     source,
                     destination,
-                    (Vector2){ 0, 0 },
+                    { 0, 0 },
                     sprite.rotation,
                     tint);    
 }
@@ -109,20 +111,20 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
 static void drawSpriteInBackground(Sprite sprite, Vector2 pos, int layer) {
 
     float scale = 1;
-    Color tint = (Color){ 0xFF, 0xFF, 0xFF, 0xFF };
+    Color tint = { 0xFF, 0xFF, 0xFF, 0xFF };
     float parallaxSpeed = 1;
 
     switch (layer) {
 
     case -1:
         scale = 0.7;
-        tint = (Color){ 0xFF, 0xFF, 0xFF, 0x88 };
+        tint = { 0xFF, 0xFF, 0xFF, 0x88 };
         parallaxSpeed = 0.4;
         break;
 
     case -2:
         scale = 0.3;
-        tint = (Color){ 0xFF, 0xFF, 0xFF, 0x44 };
+        tint = { 0xFF, 0xFF, 0xFF, 0x44 };
         parallaxSpeed = 0.25;
         break;
 
@@ -143,7 +145,7 @@ static void drawSpriteInBackground(Sprite sprite, Vector2 pos, int layer) {
 static void drawBackground() {
 
     if (GAME_STATE->mode == MODE_OVERWORLD) {
-        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 39, 39, 54, 255 }); 
+        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 39, 39, 54, 255 }); 
     }
 
 
@@ -153,36 +155,36 @@ static void drawBackground() {
             return;
         }
 
-        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, (Color){ 15, 15, 20, 255 });
+        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 15, 15, 20, 255 });
 
-        Vector2 levelBottomOnScreen = PosInSceneToScreen((Vector2){ 0, FLOOR_DEATH_HEIGHT });
+        Vector2 levelBottomOnScreen = PosInSceneToScreen({ 0, FLOOR_DEATH_HEIGHT });
         DrawRectangle(0, levelBottomOnScreen.y, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
 
         if (!GAME_STATE->showBackground) return; 
-        drawSpriteInBackground(SPRITES->Nightclub,   (Vector2){ 1250, 250 },  -1);
-        drawSpriteInBackground(SPRITES->BGHouse,     (Vector2){ 600, 300 },  -2);
+        drawSpriteInBackground(SPRITES->Nightclub,   { 1250, 250 },  -1);
+        drawSpriteInBackground(SPRITES->BGHouse,     { 600, 300 },  -2);
     }
 }
 
 static void drawOverworldEntity(OverworldEntity *entity) {
 
-    Vector2 pos = PosInSceneToScreen((Vector2){
+    Vector2 pos = PosInSceneToScreen({
                                         entity->gridPos.x,
                                         entity->gridPos.y });
 
-    drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, false);
+    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, false);
 }
 
 // Draws the ghost of an editor's selected entity being moved
 static void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
 
-    Vector2 pos = EditorEntitySelectionCalcMove((Vector2){
+    Vector2 pos = EditorEntitySelectionCalcMove({
                                                     entity->gridPos.x,
                                                     entity->gridPos.y });
 
     pos = PosInSceneToScreen(pos);
 
-    Color color = (Color) { WHITE.r, WHITE.g, WHITE.b,
+    Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
     drawTexture(entity->sprite, pos, color, false);
@@ -190,23 +192,23 @@ static void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
 
 static void drawLevelEntity(LevelEntity *entity) {
 
-    Vector2 pos = PosInSceneToScreen((Vector2){
+    Vector2 pos = PosInSceneToScreen({
                                         entity->hitbox.x,
                                         entity->hitbox.y });
 
-    drawTexture(entity->sprite, (Vector2){ pos.x, pos.y }, WHITE, !entity->isFacingRight);
+    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, !entity->isFacingRight);
 }
 
 // Draws the ghost of an editor's selected entity being moved
 static void drawLevelEntityMoveGhost(LevelEntity *entity) {
 
-    Vector2 pos = EditorEntitySelectionCalcMove((Vector2){
+    Vector2 pos = EditorEntitySelectionCalcMove({
                                                     entity->hitbox.x,
                                                     entity->hitbox.y });
 
     pos = PosInSceneToScreen(pos);
 
-    Color color = (Color) { WHITE.r, WHITE.g, WHITE.b,
+    Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
     drawTexture(entity->sprite, pos, color, !entity->isFacingRight);
@@ -214,12 +216,12 @@ static void drawLevelEntityMoveGhost(LevelEntity *entity) {
 
 static void drawLevelEntityOrigin(LevelEntity *entity) {
 
-    Vector2 pos = PosInSceneToScreen((Vector2){
+    Vector2 pos = PosInSceneToScreen({
                                         entity->origin.x,
                                         entity->origin.y });
 
-    drawTexture(entity->sprite, (Vector2){ pos.x, pos.y },
-                (Color) { WHITE.r, WHITE.g, WHITE.b, 30 }, false);
+    drawTexture(entity->sprite, { pos.x, pos.y },
+                 { WHITE.r, WHITE.g, WHITE.b, 30 }, false);
 }
 
 static void drawEntities() {
@@ -329,7 +331,7 @@ static void drawOverworldHud() {
 
         // Draw level name
 
-        Vector2 pos = PosInSceneToScreen((Vector2){ tile->gridPos.x - 20,
+        Vector2 pos = PosInSceneToScreen({ tile->gridPos.x - 20,
                             tile->gridPos.y + (tile->sprite.sprite.height * tile->sprite.scale) });
 
         char levelName[LEVEL_NAME_BUFFER_SIZE];
@@ -368,6 +370,7 @@ static void drawDebugHud() {
     while (node != 0) {
         void *entity = node->item;
         Rectangle hitbox;
+        Vector2 screenPos;
         ListNode *nextNode = node->next;
 
         if (!entity) { // Destroyed
@@ -390,10 +393,10 @@ static void drawDebugHud() {
             return;
         }
 
-        Vector2 screenPos = PosInSceneToScreen(RectangleGetPos(hitbox));
+        screenPos = PosInSceneToScreen(RectangleGetPos(hitbox));
 
         DrawRectangle(screenPos.x, screenPos.y,
-                hitbox.width, hitbox.height, (Color){ GREEN.r, GREEN.g, GREEN.b, 128 });
+                hitbox.width, hitbox.height, { GREEN.r, GREEN.g, GREEN.b, 128 });
         DrawRectangleLines(screenPos.x, screenPos.y,
                 hitbox.width, hitbox.height, GREEN);
 
@@ -425,7 +428,7 @@ static void drawEditorEntityButtons() {
         GuiToggleSprite(
             buttonRect,
             item->sprite, 
-            (Vector2){ buttonRect.x, buttonRect.y },
+            { buttonRect.x, buttonRect.y },
             &isItemSelected
         );
 
@@ -560,7 +563,7 @@ static void drawLevelTransitionShader() {
     }
 
     ShaderLevelTransitionSetUniforms(
-        (Vector2){ GetScreenWidth(), GetScreenHeight() },
+        { (float) GetScreenWidth(), (float) GetScreenHeight() },
         levelTransitionShaderControl.focusPoint,
         LEVEL_TRANSITION_ANIMATION_DURATION,
         elapsedTime,
@@ -569,8 +572,8 @@ static void drawLevelTransitionShader() {
 
     BeginShaderMode(ShaderLevelTransition);
         DrawTextureRec(shaderRenderTexture.texture,
-                        (Rectangle) { 0, 0, (float)shaderRenderTexture.texture.width, (float)-shaderRenderTexture.texture.height },
-                        (Vector2) { 0, 0 },
+                         { 0, 0, (float)shaderRenderTexture.texture.width, (float)-shaderRenderTexture.texture.height },
+                         { 0, 0 },
                         WHITE );
     EndShaderMode();
 }
@@ -620,10 +623,10 @@ void RenderResizeWindow(int width, int height) {
 
 void RenderPrintSysMessage(char *msg) {
 
-    char *msgCopy = MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
+    char *msgCopy = (char *) MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
     strcpy(msgCopy, msg); 
 
-    SysMessage *newMsg = MemAlloc(sizeof(SysMessage));
+    SysMessage *newMsg = (SysMessage *) MemAlloc(sizeof(SysMessage));
     newMsg->msg = msgCopy;
     newMsg->secondsUntilDisappear = SYS_MESSAGE_SECONDS;
     

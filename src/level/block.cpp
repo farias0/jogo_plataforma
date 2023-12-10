@@ -1,12 +1,12 @@
 #include <raylib.h>
 
-#include "block.h"
-#include "level.h"
+#include "block.hpp"
+#include "level.hpp"
 
 
 void BlockAdd(Vector2 origin) {
 
-    LevelEntity *newBlock = MemAlloc(sizeof(LevelEntity));
+    LevelEntity *newBlock = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
 
     newBlock->components = LEVEL_IS_SCENARIO +
                             LEVEL_IS_GROUND;
@@ -32,7 +32,7 @@ void BlockCheckAndAdd(Vector2 origin) {
 
 void AcidAdd(Vector2 origin) {
 
-    LevelEntity *newBlock = MemAlloc(sizeof(LevelEntity));
+    LevelEntity *newBlock = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
 
     newBlock->components = LEVEL_IS_SCENARIO +
                             LEVEL_IS_GROUND +

@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "player.h"
-#include "level.h"
-#include "enemy.h"
-#include "../camera.h"
-#include "../render.h"
+#include "player.hpp"
+#include "level.hpp"
+#include "enemy.hpp"
+#include "../camera.hpp"
+#include "../render.hpp"
 
 
 // What % of the player's height is upperbody, for hitboxes
@@ -57,7 +57,7 @@ PlayerState *PLAYER_STATE = 0;
 static void initializePlayerState() {
 
     MemFree(PLAYER_STATE);
-    PLAYER_STATE = MemAlloc(sizeof(PlayerState));
+    PLAYER_STATE = (PlayerState *) MemAlloc(sizeof(PlayerState));
 
     PLAYER_STATE->isAscending = false;
     PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
@@ -91,7 +91,7 @@ static float jumpBufferBackwardsSize() {
 // Syncs the player state's hitbox with the player entity's data 
 static void syncPlayersHitboxes() {
 
-    PLAYER_STATE->upperbody = (Rectangle){
+    PLAYER_STATE->upperbody = {
         PLAYER_ENTITY->hitbox.x + 1,
         PLAYER_ENTITY->hitbox.y - 1,
         PLAYER_ENTITY->hitbox.width + 2,
@@ -104,7 +104,7 @@ static void syncPlayersHitboxes() {
         (this seems to be related with the use of raylib's CheckCollisionRecs for player-enemy collision).
         This is something that should not be needed in a more robust implementation.
     */
-    PLAYER_STATE->lowerbody = (Rectangle){
+    PLAYER_STATE->lowerbody = {
         PLAYER_ENTITY->hitbox.x - 1,
         PLAYER_ENTITY->hitbox.y + PLAYER_STATE->upperbody.height,
         PLAYER_ENTITY->hitbox.width + 2,
@@ -124,7 +124,7 @@ static void die() {
 
 void PlayerInitialize(Vector2 origin) {
 
-    LevelEntity *newPlayer = MemAlloc(sizeof(LevelEntity));
+    LevelEntity *newPlayer = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
     PLAYER_ENTITY = newPlayer;
     LinkedListAdd(&LEVEL_STATE->listHead, newPlayer);
  
@@ -151,11 +151,11 @@ void PlayerCheckAndSetOrigin(Vector2 pos) {
     if (LevelCheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
             "Player's origin couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
-        RenderPrintSysMessage("Origem iria colidir.");
+        RenderPrintSysMessage((char *) "Origem iria colidir.");
         return;
     }
 
-    PLAYER_ENTITY->origin = (Vector2){ hitbox.x, hitbox.y };
+    PLAYER_ENTITY->origin = { hitbox.x, hitbox.y };
 
     TraceLog(LOG_DEBUG, "Player's origin set to x=%.1f, y=%.1f.", PLAYER_ENTITY->origin.x, PLAYER_ENTITY->origin.y);
 }
@@ -169,7 +169,7 @@ void PlayerCheckAndSetPos(Vector2 pos) {
     if (LevelCheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
             "Player couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
-        RenderPrintSysMessage("Jogador iria colidir.");
+        RenderPrintSysMessage((char *) "Jogador iria colidir.");
         return;
     }
     
@@ -477,7 +477,7 @@ void PlayerSetCheckpoint() {
     }
 
     if (LEVEL_STATE->checkpointsLeft < 1) {
-        RenderPrintSysMessage("Sem checkpoints disponíveis.");
+        RenderPrintSysMessage((char *) "Sem checkpoints disponíveis.");
         return;
     }
 

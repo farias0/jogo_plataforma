@@ -2,16 +2,16 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "persistence.h"
-#include "linked_list.h"
-#include "level/level.h"
-#include "level/player.h"
-#include "level/enemy.h"
-#include "level/block.h"
-#include "level/powerups.h"
-#include "files.h"
-#include "render.h"
-#include "overworld.h"
+#include "persistence.hpp"
+#include "linked_list.hpp"
+#include "level/level.hpp"
+#include "level/player.hpp"
+#include "level/enemy.hpp"
+#include "level/block.hpp"
+#include "level/powerups.hpp"
+#include "files.hpp"
+#include "render.hpp"
+#include "overworld.hpp"
 
 
 #define PERSISTENCE_DIR_NAME            "levels"
@@ -61,7 +61,7 @@ void PersistenceLevelSave(char *levelName) {
     size_t levelItemCount = LinkedListCountNodes(LEVEL_STATE->listHead);
     size_t saveItemCount = levelItemCount;
     size_t entitySize = sizeof(PersistenceLevelEntity);
-    PersistenceLevelEntity *data = MemAlloc(entitySize * saveItemCount);
+    PersistenceLevelEntity *data = (PersistenceLevelEntity *) MemAlloc(entitySize * saveItemCount);
 
     TraceLog(LOG_DEBUG, "Saving level %s... (struct size=%d, level item count=%d)",
                         levelName, entitySize, levelItemCount);
@@ -97,17 +97,17 @@ skip_entity:
         node = node->next;
     }
 
-    FileData filedata = (FileData){ data, entitySize, saveItemCount };
+    FileData filedata = { data, entitySize, saveItemCount };
 
-    char *levelPath = MemAlloc(LEVEL_PATH_BUFFER_SIZE);
+    char *levelPath = (char *) MemAlloc(LEVEL_PATH_BUFFER_SIZE);
     getFilePath(levelPath, LEVEL_PATH_BUFFER_SIZE, levelName);
 
     if (FileSave(levelPath, filedata)) {
         TraceLog(LOG_INFO, "Level saved: %s.", levelName);
-        RenderPrintSysMessage("Fase salva.");
+        RenderPrintSysMessage((char *) "Fase salva.");
     } else {
         TraceLog(LOG_ERROR, "Could not save level %s.", levelName);
-        RenderPrintSysMessage("Erro salvando fase.");
+        RenderPrintSysMessage((char *) "Erro salvando fase.");
     }
 
     MemFree(data);
@@ -118,14 +118,14 @@ skip_entity:
 
 bool PersistenceLevelLoad(char *levelName) {
 
-    char *levelPath = MemAlloc(LEVEL_PATH_BUFFER_SIZE);
+    char *levelPath = (char *) MemAlloc(LEVEL_PATH_BUFFER_SIZE);
     getFilePath(levelPath, LEVEL_PATH_BUFFER_SIZE, levelName);
 
     FileData filedata = FileLoad(levelPath, sizeof(PersistenceLevelEntity));
 
     if (!filedata.itemCount) {
         TraceLog(LOG_ERROR, "Could not load level %s.", levelName);
-        RenderPrintSysMessage("Erro carregando fase.");
+        RenderPrintSysMessage((char *) "Erro carregando fase.");
         return false;
     }
 
@@ -169,11 +169,6 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
     FilePathList fileList = LoadDroppedFiles();
     bool result = false;
 
-    if (fileList.count > 1) {
-        TraceLog(LOG_ERROR, "Multiple files dropped. Ignoring them.");
-        goto return_result;
-    }
-
     char *filePath = fileList.paths[0];
 
     // Ideally we'd support loading levels from anywhere,
@@ -181,29 +176,34 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
     // ATTENTION: It presumes the working dir is next to the 'levels' dir (i.e., it's the 'build' dir)
     const char *fileDir = GetDirectoryPath(filePath);
     const char *projectRootPath = GetPrevDirectoryPath(GetWorkingDirectory());
+    const char *fileName = GetFileName(filePath);
+
+    if (fileList.count > 1) {
+        TraceLog(LOG_ERROR, "Multiple files dropped. Ignoring them.");
+        goto return_result;
+    }
+
     if (strcmp(projectRootPath, GetPrevDirectoryPath(fileDir)) != 0 ||
         strcmp(GetFileName(fileDir), PERSISTENCE_DIR_NAME) != 0) {
 
             TraceLog(LOG_ERROR, "Dropped file is not on 'levels' directory.");
-            RenderPrintSysMessage("Arquivo não é parte do jogo");
+            RenderPrintSysMessage((char *) "Arquivo não é parte do jogo");
             goto return_result;
     }
 
     if (strcmp(GetFileExtension(filePath), LEVEL_FILE_EXTENSION) != 0) {
         TraceLog(LOG_ERROR, "Dropped file extension is not %s. Ignoring it",
                     LEVEL_FILE_EXTENSION);
-        RenderPrintSysMessage("Arquivo não é fase");
+        RenderPrintSysMessage((char *) "Arquivo não é fase");
         goto return_result;
     }
-
-    const char *fileName = GetFileName(filePath);
 
     if (strcmp(fileName, LEVEL_BLUEPRINT_NAME) == 0 ||
         strlen(fileName) > LEVEL_NAME_BUFFER_SIZE) {
 
             TraceLog(LOG_ERROR, "Dropped file has invalid level name %s.",
                         fileName);
-            RenderPrintSysMessage("Nome de fase proibido");
+            RenderPrintSysMessage((char *) "Nome de fase proibido");
             goto return_result;
     }
 
@@ -220,7 +220,7 @@ void PersistenceOverworldSave() {
     size_t owItemCount = LinkedListCountNodes(OW_STATE->listHead);
     size_t saveItemCount = owItemCount;
     size_t entitySize = sizeof(PersistenceOverworldEntity);
-    PersistenceOverworldEntity *data = MemAlloc(entitySize * saveItemCount);
+    PersistenceOverworldEntity *data = (PersistenceOverworldEntity *) MemAlloc(entitySize * saveItemCount);
 
     TraceLog(LOG_DEBUG, "Saving overworld... (struct size=%d, level item count=%d)",
                         entitySize, owItemCount);
@@ -255,17 +255,17 @@ skip_entity:
         node = node->next;
     }
 
-    FileData filedata = (FileData){ data, entitySize, saveItemCount };
+    FileData filedata = { data, entitySize, saveItemCount };
 
-    char *filePath = MemAlloc(OW_PATH_BUFFER_SIZE);
-    getFilePath(filePath, OW_PATH_BUFFER_SIZE, OW_FILE_NAME);
+    char *filePath = (char *) MemAlloc(OW_PATH_BUFFER_SIZE);
+    getFilePath(filePath, OW_PATH_BUFFER_SIZE, (char *) OW_FILE_NAME);
 
     if (FileSave(filePath, filedata)) {
         TraceLog(LOG_INFO, "Overworld saved.");
-        RenderPrintSysMessage("Mundo salvo.");
+        RenderPrintSysMessage((char *) "Mundo salvo.");
     } else {
         TraceLog(LOG_ERROR, "Could not save overworld.");
-        RenderPrintSysMessage("Erro salvando mundo.");
+        RenderPrintSysMessage((char *) "Erro salvando mundo.");
     }
 
     MemFree(data);
@@ -276,14 +276,14 @@ skip_entity:
 
 bool PersistenceOverworldLoad() {
 
-    char *filePath = MemAlloc(OW_PATH_BUFFER_SIZE);
-    getFilePath(filePath, OW_PATH_BUFFER_SIZE, OW_FILE_NAME);
+    char *filePath = (char *) MemAlloc(OW_PATH_BUFFER_SIZE);
+    getFilePath(filePath, OW_PATH_BUFFER_SIZE, (char *) OW_FILE_NAME);
 
     FileData fileData = FileLoad(filePath, sizeof(PersistenceOverworldEntity));
 
     if (!fileData.itemCount) {
         TraceLog(LOG_ERROR, "Could not overworld.");
-        RenderPrintSysMessage("Erro carregando mundo.");
+        RenderPrintSysMessage((char *) "Erro carregando mundo.");
         return false;
     }
 
@@ -299,7 +299,7 @@ bool PersistenceOverworldLoad() {
             OverworldTileAdd(pos, (OverworldTileType) data[i].tileType, (int) data[i].rotation);
 
         if (data[i].levelName[0] != '\0') {
-            newTile->levelName = MemAlloc(LEVEL_NAME_BUFFER_SIZE);
+            newTile->levelName = (char *) MemAlloc(LEVEL_NAME_BUFFER_SIZE);
             strncpy(newTile->levelName, data[i].levelName, LEVEL_NAME_BUFFER_SIZE);
         }
 
