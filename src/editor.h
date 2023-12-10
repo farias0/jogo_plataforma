@@ -18,7 +18,7 @@
 #define EDITOR_CONTROL_PANEL_Y          4*SCREEN_HEIGHT/5
 
 // The background color of the editor
-#define EDITOR_BG_COLOR                 (Color){ 0, 0, 0, 220 }
+#define EDITOR_BG_COLOR                 (Color){ 0x08, 0x08, 0x11, 0xff }
 
 // The size of the side of an square entity button
 #define ENTITY_BUTTON_SIZE              80
