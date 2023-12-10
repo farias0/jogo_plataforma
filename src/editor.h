@@ -8,37 +8,43 @@
 #include "linked_list.h"
 
 
-#define EDITOR_ENTITIES_HEIGHT      4*SCREEN_HEIGHT/5
+// The rectangle defining the area of the editor panel in the screen
+#define EDITOR_PANEL_RECT               (Rectangle){ SCREEN_WIDTH, \
+                                                        0, \
+                                                        200, \
+                                                        SCREEN_HEIGHT }
 
-#define ENTITY_BUTTON_SIZE          80
-#define ENTITY_BUTTON_SPACING       12
-#define ENTITY_BUTTON_WALL_SPACING  (EDITOR_BAR_WIDTH - (ENTITY_BUTTON_SIZE * 2) - ENTITY_BUTTON_SPACING) / 2
-
-#define CONTROL_BUTTON_HEIGHT       40
-#define CONTROL_BUTTON_WIDTH        ENTITY_BUTTON_SIZE
-#define CONTROL_BUTTON_SPACING      ENTITY_BUTTON_SPACING
-#define CONTROL_BUTTON_WALL_SPACING (EDITOR_BAR_WIDTH - (CONTROL_BUTTON_WIDTH * 2) - CONTROL_BUTTON_SPACING) / 2
-
-#define EDITOR_BAR_WIDTH        200
-
-// The rectangle defining the entity area of the editor in the screen
-#define EDITOR_ENTITIES_AREA    (Rectangle){ SCREEN_WIDTH, \
-                                                0, \
-                                                EDITOR_BAR_WIDTH, \
-                                                EDITOR_ENTITIES_HEIGHT }
-
-// The rectangle defining the control area of the editor in the screen
-#define EDITOR_CONTROL_AREA     (Rectangle){ SCREEN_WIDTH, \
-                                                EDITOR_ENTITIES_HEIGHT, \
-                                                EDITOR_BAR_WIDTH, \
-                                                SCREEN_HEIGHT - EDITOR_ENTITIES_HEIGHT }
+// The Y of the divider that vertically separates the editor panel in two
+#define EDITOR_CONTROL_PANEL_Y          4*SCREEN_HEIGHT/5
 
 // The background color of the editor
-#define EDITOR_BG_COLOR                 (Color){ 0, 0, 0, 220 }
+#define EDITOR_BG_COLOR                 (Color){ 0x08, 0x08, 0x11, 0xff }
 
-// The color of the entity selection
+// The size of the side of an square entity button
+#define ENTITY_BUTTON_SIZE              80
+
+// The space between two entity buttons
+#define ENTITY_BUTTON_SPACING           12
+
+// The space between an entity button and a wall
+#define ENTITY_BUTTON_WALL_SPACING      (EDITOR_PANEL_RECT.width - (ENTITY_BUTTON_SIZE * 2) - ENTITY_BUTTON_SPACING) / 2
+
+// The height of the control button
+#define CONTROL_BUTTON_HEIGHT           40
+
+// The width of a controll button
+#define CONTROL_BUTTON_WIDTH            ENTITY_BUTTON_SIZE
+
+// The space between two control buttons
+#define CONTROL_BUTTON_SPACING          ENTITY_BUTTON_SPACING
+
+// The space between a control button and a wall
+#define CONTROL_BUTTON_WALL_SPACING     (EDITOR_PANEL_RECT.width - (CONTROL_BUTTON_WIDTH * 2) - CONTROL_BUTTON_SPACING) / 2
+
+// The color of the entity selection's square
 #define EDITOR_SELECTION_RECT_COLOR     (Color){ BLUE.r, BLUE.g, BLUE.b, 64 }
 
+// The color of the shade over each selected entity
 #define EDITOR_SELECTION_ENTITY_COLOR   (Color){ BLUE.r, BLUE.g, BLUE.b, 128 }
 
 // How transparent, compared to the original, the ghost of the

@@ -411,12 +411,6 @@ next_node:
 // Render editor buttons of game entities
 static void drawEditorEntityButtons() {
 
-    DrawRectangle(EDITOR_ENTITIES_AREA.x,
-                    EDITOR_ENTITIES_AREA.y,
-                    EDITOR_ENTITIES_AREA.width,
-                    EDITOR_ENTITIES_AREA.height,
-                    EDITOR_BG_COLOR);
-
     int renderedCount = 0;
     ListNode *node = EDITOR_STATE->entitiesHead;
 
@@ -445,12 +439,6 @@ static void drawEditorEntityButtons() {
 
 // Render editor buttons related to control functions
 static void drawEditorControlButtons() {
-
-    DrawRectangle(EDITOR_CONTROL_AREA.x,
-                    EDITOR_CONTROL_AREA.y,
-                    EDITOR_CONTROL_AREA.width,
-                    EDITOR_CONTROL_AREA.height,
-                    EDITOR_BG_COLOR);
 
     int renderedCount = 0;
     ListNode *node = EDITOR_STATE->controlHead;
@@ -522,10 +510,12 @@ static void drawEditorEntitySelection() {
 static void drawEditorCursor() {
 
     EditorEntityButton* b = EDITOR_STATE->toggledEntityButton;
-    if (b) {
-        Vector2 m = GetMousePosition();
-        DrawTexture(b->sprite.sprite, m.x, m.y, getColorTransparency(WHITE, 96));
-    }
+    if (!b) return;
+
+    Vector2 m = GetMousePosition();
+    if (!IsInPlayArea(m)) return;
+
+    DrawTexture(b->sprite.sprite, m.x, m.y, getColorTransparency(WHITE, 96));
 }
 
 static void drawEditor() {
@@ -539,13 +529,19 @@ static void drawEditor() {
                 SCREEN_HEIGHT,
                 RAYWHITE);
 
+    DrawRectangle(EDITOR_PANEL_RECT.x,
+                    EDITOR_PANEL_RECT.y,
+                    EDITOR_PANEL_RECT.width,
+                    EDITOR_PANEL_RECT.height,
+                    EDITOR_BG_COLOR);
+
     drawEditorEntityButtons();
 
     DrawLine(SCREEN_WIDTH,
-                EDITOR_ENTITIES_AREA.height,
-                SCREEN_WIDTH + EDITOR_BAR_WIDTH,
-                EDITOR_ENTITIES_AREA.height,
-                RAYWHITE); // Separator
+                EDITOR_CONTROL_PANEL_Y,
+                SCREEN_WIDTH + EDITOR_PANEL_RECT.width,
+                EDITOR_CONTROL_PANEL_Y,
+                RAYWHITE);
 
     drawEditorControlButtons();
 

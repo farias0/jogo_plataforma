@@ -363,15 +363,15 @@ bool EditorSelectedEntitiesMove(Vector2 cursorPos) {
 
 Rectangle EditorEntityButtonRect(int buttonNumber) {
 
-    const Rectangle area        = EDITOR_ENTITIES_AREA;
+    const Vector2 panelOrigin   = RectangleGetPos(EDITOR_PANEL_RECT);
     const int buttonSize        = ENTITY_BUTTON_SIZE;
     const int buttonSpacing     = ENTITY_BUTTON_SPACING;
     const int wallSpacing       = ENTITY_BUTTON_WALL_SPACING;
 
-    float itemX = area.x + wallSpacing;
+    float itemX = panelOrigin.x + wallSpacing;
     if (buttonNumber % 2) itemX += buttonSize + buttonSpacing;
 
-    float itemY = area.y + wallSpacing;
+    float itemY = panelOrigin.y + wallSpacing;
     itemY += (buttonSize + buttonSpacing) * (buttonNumber / 2);
 
     return (Rectangle){ itemX, itemY, buttonSize, buttonSize };
@@ -379,16 +379,18 @@ Rectangle EditorEntityButtonRect(int buttonNumber) {
 
 Rectangle EditorControlButtonRect(int buttonNumber) {
 
-    const Rectangle area        = EDITOR_CONTROL_AREA;
+    Vector2 panelOrigin         = RectangleGetPos(EDITOR_PANEL_RECT);
+    panelOrigin.y += EDITOR_CONTROL_PANEL_Y;
+
     const int buttonWidth       = CONTROL_BUTTON_WIDTH;
     const int buttonHeight      = CONTROL_BUTTON_HEIGHT;
     const int buttonSpacing     = CONTROL_BUTTON_SPACING;
     const int wallSpacing       = CONTROL_BUTTON_WALL_SPACING;
 
-    float itemX = area.x + wallSpacing;
+    float itemX = panelOrigin.x + wallSpacing;
     if (buttonNumber % 2) itemX += buttonWidth + buttonSpacing;
 
-    float itemY = area.y + wallSpacing;
+    float itemY = panelOrigin.y + wallSpacing;
     itemY += (buttonHeight + buttonSpacing) * (buttonNumber / 2);
 
     return (Rectangle){ itemX, itemY, buttonWidth, buttonHeight };
