@@ -83,6 +83,24 @@ static ListNode *getEntityNodeAtPos(Vector2 pos) {
     return 0;
 }
 
+void tickAllEntities() {
+
+    ListNode *node = LEVEL_STATE->listHead;
+    ListNode *next;
+
+    while (node != 0) {
+
+        next = node->next;
+
+        LevelEntity *entity = (LevelEntity *)node->item;
+
+        if (entity->components & LEVEL_IS_ENEMY) EnemyTick(node);
+        else if (entity->components & LEVEL_IS_PLAYER) PlayerTick();
+
+        node = next;
+    }
+}
+
 // Searches the level for a ground immediatelly beneath the hitbox.
 // Accepts an optional 'entity' reference, in case its checking for ground
 // beneath an existing level entity.
@@ -328,8 +346,8 @@ next_node:
 
             if (selectedEntity->components & LEVEL_IS_PLAYER) goto next_selected_node;
 
-            ListNode *nodeInLevel = LinkedListGetNode(LEVEL_STATE->listHead, selectedEntity);
-            LevelEntityDestroy(nodeInLevel);
+            LevelEntityDestroy(
+                LinkedListGetNode(LEVEL_STATE->listHead, selectedEntity));
 
 next_selected_node:
             selectedNode = next;
@@ -372,24 +390,8 @@ void LevelTick() {
         return;
     }
 
-    if (LEVEL_STATE->isPaused) goto skip_entities_tick;
-    if (EDITOR_STATE->isEnabled) goto skip_entities_tick;
-
-    ListNode *node = LEVEL_STATE->listHead;
-    ListNode *next;
-
-    while (node != 0) {
-
-        next = node->next;
-
-        LevelEntity *entity = (LevelEntity *)node->item;
-
-        if (entity->components & LEVEL_IS_ENEMY) EnemyTick(node);
-        else if (entity->components & LEVEL_IS_PLAYER) PlayerTick();
-
-        node = next;
-    }
-skip_entities_tick:
+    if (!LEVEL_STATE->isPaused && !EDITOR_STATE->isEnabled)
+        tickAllEntities();
 
     CameraTick();
 }
@@ -458,7 +460,7 @@ void LevelSave() {
 
 void LevelLoadNew() {
 
-    LevelLoad(LEVEL_BLUEPRINT_NAME);
+    LevelLoad((char *) LEVEL_BLUEPRINT_NAME);
 
     PLAYER_ENTITY->origin = PLAYERS_ORIGIN;
     PLAYER_ENTITY->hitbox.x = PLAYER_ENTITY->origin.x;
