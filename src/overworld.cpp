@@ -233,16 +233,18 @@ void OverworldCursorMove(OverworldCursorDirection direction) {
     while (node != 0) {
 
         OverworldEntity *entity = (OverworldEntity *) node->item;
+        bool isOnTheSameRow;
+        bool isOnTheSameColumn;
+        bool foundPath;
 
+        // TODO replace this with a tag "OW_IS_WALKABLE"
         bool isTile = (entity->components & OW_IS_PATH) ||
                         (entity->components & OW_IS_LEVEL_DOT);
         if (!isTile) goto next_entity;
 
-
-        bool isOnTheSameRow = tileUnder->gridPos.y == entity->gridPos.y;
-        bool isOnTheSameColumn = tileUnder->gridPos.x == entity->gridPos.x;
-        bool foundPath = false;
-
+        isOnTheSameRow = tileUnder->gridPos.y == entity->gridPos.y;
+        isOnTheSameColumn = tileUnder->gridPos.x == entity->gridPos.x;
+        foundPath = false;
 
         // This code is stupid, but I'm leaving it for sake of simplicity and ease of debug.
         switch(direction)
@@ -394,22 +396,23 @@ OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox) {
     return OverworldCheckCollisionWithAnyTileExcept(hitbox, 0);
 }
 
-OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, ListNode *entityListHead) {
+OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, ListNode *ignoreListHead) {
 
     ListNode *node = OW_STATE->listHead;
 
     while (node != 0) {
 
         OverworldEntity *entity = (OverworldEntity *) node->item;
+        ListNode *toIgnore;
 
         if (entity->tileType == OW_NOT_TILE) goto next_entity;
 
         if (!CheckCollisionRecs(hitbox, OverworldEntitySquare(entity))) goto next_entity;
 
-        ListNode *excludedNode = entityListHead;
-        while (excludedNode != 0) {
-            if (excludedNode->item == entity) goto next_entity;
-            excludedNode = excludedNode->next;
+        toIgnore = ignoreListHead;
+        while (toIgnore != 0) {
+            if (toIgnore->item == entity) goto next_entity;
+            toIgnore = toIgnore->next;
         }
 
         return entity;
