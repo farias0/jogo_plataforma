@@ -46,7 +46,7 @@ static void editorUseEraser(Vector2 cursorPos) {
 }
 
 static EditorEntityButton *addEntityButton(
-    EditorEntityType type, Sprite sprite, void (*handler), EditorInteractionType interaction) {
+    EditorEntityType type, Sprite sprite, void (*handler)(Vector2), EditorInteractionType interaction) {
 
         EditorEntityButton *newButton = MemAlloc(sizeof(EditorEntityButton));
         newButton->type = type;
@@ -59,7 +59,7 @@ static EditorEntityButton *addEntityButton(
         return newButton;
 }
 
-EditorControlButton *addControlButton(EditorControlType type, char *label, void (*handler)) {
+EditorControlButton *addControlButton(EditorControlType type, char *label, void (*handler)()) {
 
     EditorControlButton *newButton = MemAlloc(sizeof(EditorControlButton));
     newButton->type = type;
