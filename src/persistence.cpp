@@ -104,10 +104,10 @@ skip_entity:
 
     if (FileSave(levelPath, filedata)) {
         TraceLog(LOG_INFO, "Level saved: %s.", levelName);
-        RenderPrintSysMessage("Fase salva.");
+        RenderPrintSysMessage((char *) "Fase salva.");
     } else {
         TraceLog(LOG_ERROR, "Could not save level %s.", levelName);
-        RenderPrintSysMessage("Erro salvando fase.");
+        RenderPrintSysMessage((char *) "Erro salvando fase.");
     }
 
     MemFree(data);
@@ -125,7 +125,7 @@ bool PersistenceLevelLoad(char *levelName) {
 
     if (!filedata.itemCount) {
         TraceLog(LOG_ERROR, "Could not load level %s.", levelName);
-        RenderPrintSysMessage("Erro carregando fase.");
+        RenderPrintSysMessage((char *) "Erro carregando fase.");
         return false;
     }
 
@@ -169,11 +169,6 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
     FilePathList fileList = LoadDroppedFiles();
     bool result = false;
 
-    if (fileList.count > 1) {
-        TraceLog(LOG_ERROR, "Multiple files dropped. Ignoring them.");
-        goto return_result;
-    }
-
     char *filePath = fileList.paths[0];
 
     // Ideally we'd support loading levels from anywhere,
@@ -181,29 +176,34 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
     // ATTENTION: It presumes the working dir is next to the 'levels' dir (i.e., it's the 'build' dir)
     const char *fileDir = GetDirectoryPath(filePath);
     const char *projectRootPath = GetPrevDirectoryPath(GetWorkingDirectory());
+    const char *fileName = GetFileName(filePath);
+
+    if (fileList.count > 1) {
+        TraceLog(LOG_ERROR, "Multiple files dropped. Ignoring them.");
+        goto return_result;
+    }
+
     if (strcmp(projectRootPath, GetPrevDirectoryPath(fileDir)) != 0 ||
         strcmp(GetFileName(fileDir), PERSISTENCE_DIR_NAME) != 0) {
 
             TraceLog(LOG_ERROR, "Dropped file is not on 'levels' directory.");
-            RenderPrintSysMessage("Arquivo não é parte do jogo");
+            RenderPrintSysMessage((char *) "Arquivo não é parte do jogo");
             goto return_result;
     }
 
     if (strcmp(GetFileExtension(filePath), LEVEL_FILE_EXTENSION) != 0) {
         TraceLog(LOG_ERROR, "Dropped file extension is not %s. Ignoring it",
                     LEVEL_FILE_EXTENSION);
-        RenderPrintSysMessage("Arquivo não é fase");
+        RenderPrintSysMessage((char *) "Arquivo não é fase");
         goto return_result;
     }
-
-    const char *fileName = GetFileName(filePath);
 
     if (strcmp(fileName, LEVEL_BLUEPRINT_NAME) == 0 ||
         strlen(fileName) > LEVEL_NAME_BUFFER_SIZE) {
 
             TraceLog(LOG_ERROR, "Dropped file has invalid level name %s.",
                         fileName);
-            RenderPrintSysMessage("Nome de fase proibido");
+            RenderPrintSysMessage((char *) "Nome de fase proibido");
             goto return_result;
     }
 
@@ -258,14 +258,14 @@ skip_entity:
     FileData filedata = { data, entitySize, saveItemCount };
 
     char *filePath = (char *) MemAlloc(OW_PATH_BUFFER_SIZE);
-    getFilePath(filePath, OW_PATH_BUFFER_SIZE, OW_FILE_NAME);
+    getFilePath(filePath, OW_PATH_BUFFER_SIZE, (char *) OW_FILE_NAME);
 
     if (FileSave(filePath, filedata)) {
         TraceLog(LOG_INFO, "Overworld saved.");
-        RenderPrintSysMessage("Mundo salvo.");
+        RenderPrintSysMessage((char *) "Mundo salvo.");
     } else {
         TraceLog(LOG_ERROR, "Could not save overworld.");
-        RenderPrintSysMessage("Erro salvando mundo.");
+        RenderPrintSysMessage((char *) "Erro salvando mundo.");
     }
 
     MemFree(data);
@@ -277,13 +277,13 @@ skip_entity:
 bool PersistenceOverworldLoad() {
 
     char *filePath = (char *) MemAlloc(OW_PATH_BUFFER_SIZE);
-    getFilePath(filePath, OW_PATH_BUFFER_SIZE, OW_FILE_NAME);
+    getFilePath(filePath, OW_PATH_BUFFER_SIZE, (char *) OW_FILE_NAME);
 
     FileData fileData = FileLoad(filePath, sizeof(PersistenceOverworldEntity));
 
     if (!fileData.itemCount) {
         TraceLog(LOG_ERROR, "Could not overworld.");
-        RenderPrintSysMessage("Erro carregando mundo.");
+        RenderPrintSysMessage((char *) "Erro carregando mundo.");
         return false;
     }
 
