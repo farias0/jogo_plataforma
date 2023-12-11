@@ -208,6 +208,7 @@ void PlayerJump() {
 void PlayerTick() {
 
     PlayerState *pState = PLAYER_STATE;
+    bool collidedWithTextboxButton = false; // controls the exhibition of textboxes
 
 
     if (LEVEL_STATE->concludedAgo >= 0) return;
@@ -402,7 +403,12 @@ void PlayerTick() {
             else if (entity->components & LEVEL_IS_TEXTBOX &&
                         CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox)) {
 
-                TraceLog(LOG_INFO, entity->text.c_str()); // TODO implement functionality
+                collidedWithTextboxButton = true;
+
+                if (RenderGetTextboxText().empty()) {
+                    RenderDisplayTextbox(entity->text);
+                    TraceLog(LOG_TRACE, "Textbox started displaying: \"%s\".", entity->text.c_str());
+                }
             }
 
 next_entity:
@@ -427,6 +433,12 @@ next_entity:
             // Accelerates jump's vertical movement
             pState->yVelocity -= Y_ACCELERATION_RATE;
         }
+    }
+
+
+    if (!RenderGetTextboxText().empty() && !collidedWithTextboxButton) {
+        RenderDisplayTextboxStop();
+        TraceLog(LOG_TRACE, "Textbox stopped displaying.");
     }
 
 

@@ -40,10 +40,19 @@ typedef struct LevelTransitionShaderControl {
 
 ListNode *SYS_MESSAGES_HEAD = 0;
 
+/*
+    TODO create RenderState,
+    that other modules can use to communicate with Render.
+
+    E.g.: To display a textbox, set the textboxText field.
+*/
 
 // Texture covering the whole screen, used to render shaders
 static RenderTexture2D shaderRenderTexture;
 static LevelTransitionShaderControl levelTransitionShaderControl;
+
+// Text that's being displayed in a textbox
+static std::string textboxText; 
 
 
 // Returns the given color, with the given transparency level. 
@@ -312,6 +321,9 @@ static void drawDebugGrid() {
 static void drawLevelHud() {
 
     if (EDITOR_STATE->isEnabled) return;
+
+    if (!textboxText.empty())
+        DrawText(textboxText.c_str(), 600, 360, 30, RAYWHITE);
 
     if (LEVEL_STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
         DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
@@ -584,6 +596,8 @@ void RenderInitialize() {
 
     levelTransitionShaderControl.timer = -1;
 
+    textboxText = std::string();
+
     // Line spacing of DrawText() 's containing line break
     SetTextLineSpacing(30);
 
@@ -605,7 +619,7 @@ void Render() {
 
         if      (GAME_STATE->showDebugGrid)                  drawDebugGrid();
 
-        if (levelTransitionShaderControl.timer != -1)   drawLevelTransitionShader();
+        if      (levelTransitionShaderControl.timer != -1)   drawLevelTransitionShader();
 
         if      (GAME_STATE->showDebugHUD)                   drawDebugHud();
 
@@ -646,4 +660,16 @@ void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
     // Fix for how GLSL works
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
+}
+
+void RenderDisplayTextbox(std::string text) {
+    textboxText = text;
+}
+
+void RenderDisplayTextboxStop() {
+    textboxText.clear();
+}
+
+std::string RenderGetTextboxText() {
+    return textboxText;
 }

@@ -56,6 +56,7 @@ void initializeLevelState() {
 
 void leaveLevel() {
     
+    RenderDisplayTextboxStop();
     resetLevelState();
     OverworldLoad();
 
@@ -292,7 +293,7 @@ void LevelTextboxAdd(Vector2 pos) {
     newTextbox->layer = -1;
     newTextbox->isFacingRight = true;
 
-    newTextbox->text = std::string("this is my text"); // TODO
+    newTextbox->text = std::string("Lorem ipsum dolor sit amet, \nconsectetur\n adipiscing elit. Phasellus vel vestibulum sapien, sed lobortis ipsum. Sed cursus lectus eget finibus gravida. Sed tellus nibh, volutpat vitae placerat eget, faucibus vel enim. Fusce tellus lacus, vestibulum ac ex ac, cursus condimentum felis. Phasellus feugiat sed tortor eget euismod. Nulla nec felis massa. Sed sit amet rutrum turpis. Sed dignissim commodo risus in pharetra. Vivamus pretium eros eget gravida pulvinar."); // TODO
 
     LinkedListAdd(&LEVEL_STATE->listHead, newTextbox);
 
