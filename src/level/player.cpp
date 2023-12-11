@@ -402,7 +402,7 @@ void PlayerTick() {
             else if (entity->components & LEVEL_IS_TEXTBOX &&
                         CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox)) {
 
-                TraceLog(LOG_INFO, ">> Textbox activated"); // TODO implement functionality
+                TraceLog(LOG_INFO, entity->text.c_str()); // TODO implement functionality
             }
 
 next_entity:

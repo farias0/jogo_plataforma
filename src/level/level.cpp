@@ -292,6 +292,8 @@ void LevelTextboxAdd(Vector2 pos) {
     newTextbox->layer = -1;
     newTextbox->isFacingRight = true;
 
+    newTextbox->text = std::string("this is my text"); // TODO
+
     LinkedListAdd(&LEVEL_STATE->listHead, newTextbox);
 
     TraceLog(LOG_TRACE, "Added textbox button to level (x=%.1f, y=%.1f)",
@@ -327,6 +329,8 @@ void LevelEntityDestroy(ListNode *node) {
     LevelEntity *entity = (LevelEntity *) node->item;
 
     if (entity == LEVEL_STATE->checkpoint) LEVEL_STATE->checkpoint = 0;
+
+    entity->text.~basic_string(); // TODO manage entities using new and delete
 
     DebugEntityStop(entity);
 

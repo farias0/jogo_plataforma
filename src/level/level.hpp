@@ -3,6 +3,7 @@
 
 
 #include <raylib.h>
+#include <string>
 
 #include "../linked_list.hpp"
 #include "../assets.hpp"
@@ -46,6 +47,8 @@ typedef struct LevelEntity {
 
     bool isFacingRight;
     bool isFallingDown;
+
+    std::string text; // used by textbox buttons
     
 } LevelEntity;
 

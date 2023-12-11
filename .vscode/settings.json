@@ -23,6 +23,8 @@
         "*.m": "c",
         "debug.h": "c",
         "level.h": "c",
-        "linked_list.h": "c"
+        "linked_list.h": "c",
+        "iosfwd": "cpp",
+        "xmemory": "cpp"
     }
 }
