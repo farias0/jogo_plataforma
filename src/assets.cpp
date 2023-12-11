@@ -4,28 +4,24 @@
 #include "assets.hpp"
 
 
-#define DEFAULT_SPRITE_SCALE 2
-#define FLOOR_TILE_SIZE 1
-
-
 Sprites *SPRITES = 0;
 
 // Shaders
 Shader ShaderLevelTransition;
 
 
-static inline Sprite defaultSprite(std::string texturePath) {
+static inline Sprite normalSizeSprite(std::string texturePath) {
     return {
         LoadTexture(texturePath.c_str()),
-        DEFAULT_SPRITE_SCALE,
+        1,
         0
     };
 }
 
-static inline Sprite tileSprite(std::string texturePath) {
+static inline Sprite doubleSizeSprite(std::string texturePath) {
     return {
         LoadTexture(texturePath.c_str()),
-        FLOOR_TILE_SIZE,
+        2,
         0
     };
 }
@@ -36,29 +32,30 @@ void AssetsInitialize() {
     Sprites *s = SPRITES;
 
     // Editor
-    s->Eraser = defaultSprite("../assets/eraser_1.png");
+    s->Eraser = doubleSizeSprite("../assets/eraser_1.png");
 
     // In Level
-    s->PlayerDefault = defaultSprite("../assets/player_default_1.png");
-    s->PlayerGlideOn = defaultSprite("../assets/player_glide_on.png");
-    s->PlayerGlideFalling = defaultSprite("../assets/player_glide_falling.png");
-    s->Enemy = defaultSprite("../assets/enemy_default_1.png");
-    s->LevelEndOrb = defaultSprite("../assets/level_end_orb_1.png");
-    s->LevelCheckpoint = defaultSprite("../assets/player_child_1.png");
-    s->Block = tileSprite("../assets/floor_tile_1.png");
-    s->Acid = tileSprite("../assets/acid_tile_1.png");
-    s->GlideItem = tileSprite("../assets/glide_item.png");
+    s->PlayerDefault = doubleSizeSprite("../assets/player_default_1.png");
+    s->PlayerGlideOn = doubleSizeSprite("../assets/player_glide_on.png");
+    s->PlayerGlideFalling = doubleSizeSprite("../assets/player_glide_falling.png");
+    s->Enemy = doubleSizeSprite("../assets/enemy_default_1.png");
+    s->LevelEndOrb = doubleSizeSprite("../assets/level_end_orb_1.png");
+    s->LevelCheckpoint = doubleSizeSprite("../assets/player_child_1.png");
+    s->Block = normalSizeSprite("../assets/floor_tile_1.png");
+    s->Acid = normalSizeSprite("../assets/acid_tile_1.png");
+    s->GlideItem = normalSizeSprite("../assets/glide_item.png");
+    s->TextboxButton = normalSizeSprite("../assets/textbox_button.png");
 
     // Overworld
-    s->OverworldCursor = defaultSprite("../assets/cursor_default_1.png");
-    s->LevelDot = defaultSprite("../assets/level_dot_1.png");
-    s->PathTileJoin = defaultSprite("../assets/path_tile_join_vertical.png");
-    s->PathTileStraight = defaultSprite("../assets/path_tile_straight_vertical.png");
-    s->PathTileInL = defaultSprite("../assets/path_tile_L.png");
+    s->OverworldCursor = doubleSizeSprite("../assets/cursor_default_1.png");
+    s->LevelDot = doubleSizeSprite("../assets/level_dot_1.png");
+    s->PathTileJoin = doubleSizeSprite("../assets/path_tile_join_vertical.png");
+    s->PathTileStraight = doubleSizeSprite("../assets/path_tile_straight_vertical.png");
+    s->PathTileInL = doubleSizeSprite("../assets/path_tile_L.png");
 
     // Background
-    s->Nightclub = defaultSprite("../assets/nightclub_1.png");
-    s->BGHouse = defaultSprite("../assets/bg_house_1.png");
+    s->Nightclub = doubleSizeSprite("../assets/nightclub_1.png");
+    s->BGHouse = doubleSizeSprite("../assets/bg_house_1.png");
 
     // Shaders
     // ShaderDefault = (Shader) { rlGetShaderIdDefault(), rlGetShaderLocsDefault() };

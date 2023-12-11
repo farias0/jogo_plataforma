@@ -15,30 +15,33 @@ typedef struct Sprite {
 
 typedef struct Sprites {
 
+    // TODO make it a hashmap
+
     // Editor
-   Sprite Eraser;
+    Sprite Eraser;
 
     // In Level
-   Sprite PlayerDefault;
-   Sprite PlayerGlideOn;
-   Sprite PlayerGlideFalling;
-   Sprite Enemy;
-   Sprite Block;
-   Sprite Acid;
-   Sprite LevelEndOrb;
-   Sprite LevelCheckpoint;
-   Sprite GlideItem;
+    Sprite PlayerDefault;
+    Sprite PlayerGlideOn;
+    Sprite PlayerGlideFalling;
+    Sprite Enemy;
+    Sprite Block;
+    Sprite Acid;
+    Sprite LevelEndOrb;
+    Sprite LevelCheckpoint;
+    Sprite GlideItem;
+    Sprite TextboxButton;
 
     // Overworld
-   Sprite OverworldCursor;
-   Sprite LevelDot;
-   Sprite PathTileJoin;
-   Sprite PathTileStraight;
-   Sprite PathTileInL;
+    Sprite OverworldCursor;
+    Sprite LevelDot;
+    Sprite PathTileJoin;
+    Sprite PathTileStraight;
+    Sprite PathTileInL;
 
     // Background
-   Sprite Nightclub;
-   Sprite BGHouse;
+    Sprite Nightclub;
+    Sprite BGHouse;
 
 } Sprites;
 

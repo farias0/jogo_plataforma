@@ -399,6 +399,12 @@ void PlayerTick() {
                 return;
             }
 
+            else if (entity->components & LEVEL_IS_TEXTBOX &&
+                        CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox)) {
+
+                TraceLog(LOG_INFO, ">> Textbox activated"); // TODO implement functionality
+            }
+
 next_entity:
             node = node->next;
         }
