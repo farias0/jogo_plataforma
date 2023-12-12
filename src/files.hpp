@@ -2,6 +2,9 @@
 #define _FILES_H_INCLUDED_
 
 
+#include "string"
+
+
 typedef struct FileData {
     void *data;
     size_t itemSize;
@@ -11,6 +14,7 @@ typedef struct FileData {
 
 bool FileSave(char *filepath, FileData data);
 FileData FileLoad(char *filepath, size_t itemSize);
+std::string FileLoadText(std::string filepath);
 
 
 #endif // _FILES_H_INCLUDED_

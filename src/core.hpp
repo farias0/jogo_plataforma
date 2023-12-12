@@ -57,6 +57,10 @@ typedef struct GameState {
 
     GameMode mode;
 
+    // The game is waiting for the user to input a text.
+    // The whole game freezes during this time.
+    bool waitingForTextInput;
+
     bool showDebugHUD;
     bool showDebugGrid;
     bool showBackground;

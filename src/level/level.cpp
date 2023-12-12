@@ -1,6 +1,8 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include <string.h>
+#include <functional>
+#include <sstream>
 
 #include "level.hpp"
 #include "player.hpp"
@@ -10,6 +12,7 @@
 #include "../editor.hpp"
 #include "../overworld.hpp"
 #include "../debug.hpp"
+#include "../input.hpp"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
@@ -56,7 +59,10 @@ void initializeLevelState() {
 
 void leaveLevel() {
     
+    RenderDisplayTextboxStop();
+    
     resetLevelState();
+
     OverworldLoad();
 
     TraceLog(LOG_TRACE, "Level left.");
@@ -158,6 +164,22 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
     return foundGround;   
 }
 
+void createTextboxFromIdInput(Vector2 pos, std::string input) {
+
+    int id;
+    
+    try {
+        id = std::stoi(input);
+    }
+    catch (std::invalid_argument &e) {
+        RenderPrintSysMessage((char *) "ID inválido");
+        TraceLog(LOG_DEBUG, "Textbox ID input invalid: %s.", input.c_str());
+        return; // does nothing
+    }
+
+    LevelTextboxAdd(pos, id);
+}
+
 void LevelInitialize() {
 
     initializeLevelState();
@@ -221,25 +243,6 @@ void LevelGoToOverworld() {
     LEVEL_STATE->concludedAgo = GetTime();
 }
 
-void LevelExitAdd(Vector2 pos) {
-
-    LevelEntity *newExit = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
-
-    Sprite sprite = SPRITES->LevelEndOrb;
-    Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
-
-    newExit->components = LEVEL_IS_EXIT;
-    newExit->hitbox = hitbox;
-    newExit->origin = pos;
-    newExit->sprite = sprite;
-    newExit->isFacingRight = true;
-
-    LEVEL_STATE->exitNode = LinkedListAdd(&LEVEL_STATE->listHead, newExit);
-
-    TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
-                newExit->hitbox.x, newExit->hitbox.y);
-}
-
 LevelEntity *LevelCheckpointAdd(Vector2 pos) {
 
     LevelEntity *newCheckpoint = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
@@ -262,6 +265,25 @@ LevelEntity *LevelCheckpointAdd(Vector2 pos) {
     return newCheckpoint;
 }
 
+void LevelExitAdd(Vector2 pos) {
+
+    LevelEntity *newExit = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
+
+    Sprite sprite = SPRITES->LevelEndOrb;
+    Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
+
+    newExit->components = LEVEL_IS_EXIT;
+    newExit->hitbox = hitbox;
+    newExit->origin = pos;
+    newExit->sprite = sprite;
+    newExit->isFacingRight = true;
+
+    LEVEL_STATE->exitNode = LinkedListAdd(&LEVEL_STATE->listHead, newExit);
+
+    TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
+                newExit->hitbox.x, newExit->hitbox.y);
+}
+
 void LevelExitCheckAndAdd(Vector2 pos) {
     
     Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->LevelEndOrb, pos);
@@ -276,6 +298,43 @@ void LevelExitCheckAndAdd(Vector2 pos) {
         LinkedListDestroyNode(&LEVEL_STATE->listHead, LEVEL_STATE->exitNode);
     
     LevelExitAdd({ hitbox.x, hitbox.y });
+}
+
+void LevelTextboxAdd(Vector2 pos, int textId) {
+
+    LevelEntity *newTextbox = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
+
+    Sprite sprite = SPRITES->TextboxButton;
+    Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
+
+    newTextbox->components = LEVEL_IS_TEXTBOX;
+    newTextbox->hitbox = hitbox;
+    newTextbox->origin = pos;
+    newTextbox->sprite = sprite;
+    newTextbox->layer = -1;
+    newTextbox->isFacingRight = true;
+    newTextbox->textId = textId;
+
+    LinkedListAdd(&LEVEL_STATE->listHead, newTextbox);
+
+    TraceLog(LOG_TRACE, "Added textbox button to level (x=%.1f, y=%.1f)",
+                newTextbox->hitbox.x, newTextbox->hitbox.y);
+}
+
+void LevelTextboxCheckAndAdd(Vector2 pos) {
+
+    Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->TextboxButton, pos);
+
+    if (LevelCheckCollisionWithAnything(hitbox)) {
+        TraceLog(LOG_DEBUG, "Couldn't add textbox button, collision with entity.");
+        return;
+    }
+
+    pos = RectangleGetPos(hitbox);
+    TextInputCallback *callback = new TextInputCallback([pos] (std::string input) { 
+                                                            createTextboxFromIdInput(pos, input);
+                                                        });
+    Input::GetTextInput(callback);
 }
 
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
@@ -382,6 +441,8 @@ void LevelPauseToggle() {
 }
 
 void LevelTick() {
+
+    if (GAME_STATE->waitingForTextInput) return;
 
     // TODO check if having the first check before saves on processing,
     // of if it's just redundant. 

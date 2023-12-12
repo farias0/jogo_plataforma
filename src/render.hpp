@@ -26,5 +26,10 @@ void RenderPrintSysMessage(char *msg);
 */
 void RenderLevelTransitionEffectStart(Vector2 sceneFocusPont, bool isClose);
 
+void RenderDisplayTextbox(int textId);
+
+void RenderDisplayTextboxStop();
+
+int RenderGetTextboxTextId();
 
 #endif // _RENDER_H_INCLUDED_

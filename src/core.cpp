@@ -9,6 +9,8 @@
 #include "editor.hpp"
 #include "render.hpp"
 #include "debug.hpp"
+#include "text_bank.hpp"
+#include "input.hpp"
 
 
 GameState *GAME_STATE = 0;
@@ -50,6 +52,8 @@ void GameStateInitialize() {
 
     GAME_STATE = (GameState *) MemAlloc(sizeof(GameState));
 
+    GAME_STATE->waitingForTextInput = false;
+
     GAME_STATE->showBackground = false;
     GAME_STATE->showDebugGrid = false;
     GAME_STATE->showDebugHUD = false;
@@ -58,6 +62,8 @@ void GameStateInitialize() {
 }
 
 void GameStateReset() {
+
+    GAME_STATE->waitingForTextInput = false;
 
     GAME_STATE->showDebugGrid = false;
     GAME_STATE->showDebugHUD = false;
@@ -71,6 +77,7 @@ void GameStateReset() {
 
 void SystemsInitialize() {
 
+    Input::Initialize();
     AssetsInitialize();
     GameStateInitialize();
     CameraInitialize();
@@ -78,6 +85,7 @@ void SystemsInitialize() {
     OverworldInitialize();
     LevelInitialize();
     RenderInitialize();
+    TextBank::InitializeAndLoad();
 }
 
 void GameUpdate() {

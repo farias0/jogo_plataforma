@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <stdio.h>
+#include <string>
 
 #include "core.hpp"
 #include "assets.hpp"
@@ -9,6 +10,8 @@
 #include "camera.hpp"
 #include "editor.hpp"
 #include "debug.hpp"
+#include "text_bank.hpp"
+#include "input.hpp"
 
 #pragma GCC diagnostic push 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -40,10 +43,21 @@ typedef struct LevelTransitionShaderControl {
 
 ListNode *SYS_MESSAGES_HEAD = 0;
 
+/*
+    TODO create RenderState,
+    that other modules can use to communicate with Render.
+
+    E.g.: To display a textbox, set the textboxText field.
+*/
 
 // Texture covering the whole screen, used to render shaders
 static RenderTexture2D shaderRenderTexture;
 static LevelTransitionShaderControl levelTransitionShaderControl;
+
+// Text that's being displayed in a textbox
+static int textboxTextId;
+// Text that's displayed in a textbox if the id has no match
+static std::string textboxTextMissing("[sem texto]");
 
 
 // Returns the given color, with the given transparency level. 
@@ -313,6 +327,12 @@ static void drawLevelHud() {
 
     if (EDITOR_STATE->isEnabled) return;
 
+    if (textboxTextId != -1) {
+        std::string *s = &TextBank::BANK[textboxTextId];
+        if (!s->length()) s = &textboxTextMissing;
+        DrawText((*s).c_str(), 120, 100, 30, RAYWHITE);
+    }
+
     if (LEVEL_STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
         DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
         
@@ -347,6 +367,45 @@ static void drawOverworldHud() {
     }
 }
 
+void drawDebugEntityInfo(void *entity) {
+
+    Rectangle hitbox;
+    Vector2 screenPos;
+    std::string str;
+
+    switch (GAME_STATE->mode) {
+    case MODE_IN_LEVEL:
+        hitbox = ((LevelEntity *) entity)->hitbox;
+        break;
+
+    case MODE_OVERWORLD:
+        RectangleSetPos(&hitbox, ((OverworldEntity *) entity)->gridPos);
+        RectangleSetDimensions(&hitbox, OW_GRID);
+        break;
+
+    default:
+        return;
+    }
+
+    screenPos = PosInSceneToScreen(RectangleGetPos(hitbox));
+
+    DrawRectangle(screenPos.x, screenPos.y,
+            hitbox.width, hitbox.height, { GREEN.r, GREEN.g, GREEN.b, 128 });
+    DrawRectangleLines(screenPos.x, screenPos.y,
+            hitbox.width, hitbox.height, GREEN);
+
+    str = std::string("x=" + std::to_string((int) hitbox.x) +
+                        "\ny=" + std::to_string((int) hitbox.y));
+
+    if (GAME_STATE->mode == MODE_IN_LEVEL) {
+        LevelEntity *le = (LevelEntity *) entity;
+        if (le->components & LEVEL_IS_TEXTBOX)
+            str += "\ntextId=" + std::to_string(le->textId);
+    }
+
+    DrawText(str.c_str(), screenPos.x, screenPos.y, 20, WHITE);
+}
+
 static void drawDebugHud() {
 
     if (CameraIsPanned()) DrawText("Câmera deslocada",
@@ -368,45 +427,8 @@ static void drawDebugHud() {
 
     ListNode *node = DEBUG_ENTITY_INFO_HEAD;
     while (node != 0) {
-        void *entity = node->item;
-        Rectangle hitbox;
-        Vector2 screenPos;
         ListNode *nextNode = node->next;
-
-        if (!entity) { // Destroyed
-            LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, node);
-            TraceLog(LOG_TRACE, "Debug entity info stopped showing entity.");
-            goto next_node;
-        }
-
-        switch (GAME_STATE->mode) {
-        case MODE_IN_LEVEL:
-            hitbox = ((LevelEntity *) entity)->hitbox;
-            break;
-
-        case MODE_OVERWORLD:
-            RectangleSetPos(&hitbox, ((OverworldEntity *) entity)->gridPos);
-            RectangleSetDimensions(&hitbox, OW_GRID);
-            break;
-
-        default:
-            return;
-        }
-
-        screenPos = PosInSceneToScreen(RectangleGetPos(hitbox));
-
-        DrawRectangle(screenPos.x, screenPos.y,
-                hitbox.width, hitbox.height, { GREEN.r, GREEN.g, GREEN.b, 128 });
-        DrawRectangleLines(screenPos.x, screenPos.y,
-                hitbox.width, hitbox.height, GREEN);
-
-        char buffer[500];
-        sprintf(buffer, "X=%.1f\nY=%.1f",
-                    hitbox.x,
-                    hitbox.y);
-        DrawText(buffer, screenPos.x, screenPos.y, 25, WHITE);
-
-next_node:
+        drawDebugEntityInfo(node->item);
         node = nextNode;
     }
 }
@@ -578,14 +600,24 @@ static void drawLevelTransitionShader() {
     EndShaderMode();
 }
 
+void drawTextInput() {
+
+    DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 0x00, 0x00, 0x00, 0xaa });
+
+    // TODO wrap text
+    DrawText(std::string("> " + Input::STATE.textInputed).c_str(), 120, 100, 60, RAYWHITE);
+}
+
 void RenderInitialize() {
 
     shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
 
     levelTransitionShaderControl.timer = -1;
 
+    textboxTextId = -1;
+
     // Line spacing of DrawText() 's containing line break
-    SetTextLineSpacing(30);
+    SetTextLineSpacing(20);
 
     TraceLog(LOG_INFO, "Render initialized.");
 }
@@ -600,14 +632,16 @@ void Render() {
 
         drawEntities();
 
-        if      (GAME_STATE->mode == MODE_IN_LEVEL)          drawLevelHud();
-        else if (GAME_STATE->mode == MODE_OVERWORLD)         drawOverworldHud();
+        if      (GAME_STATE->mode == MODE_IN_LEVEL)         drawLevelHud();
+        else if (GAME_STATE->mode == MODE_OVERWORLD)        drawOverworldHud();
 
-        if      (GAME_STATE->showDebugGrid)                  drawDebugGrid();
+        if      (GAME_STATE->showDebugGrid)                 drawDebugGrid();
 
-        if (levelTransitionShaderControl.timer != -1)   drawLevelTransitionShader();
+        if      (levelTransitionShaderControl.timer != -1)  drawLevelTransitionShader();
 
-        if      (GAME_STATE->showDebugHUD)                   drawDebugHud();
+        if      (GAME_STATE->showDebugHUD)                  drawDebugHud();
+
+        if      (GAME_STATE->waitingForTextInput)           drawTextInput();
 
         drawSysMessages();
 
@@ -646,4 +680,16 @@ void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
     // Fix for how GLSL works
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
+}
+
+void RenderDisplayTextbox(int textId) {
+    textboxTextId = textId;
+}
+
+void RenderDisplayTextboxStop() {
+    textboxTextId = -1;
+}
+
+int RenderGetTextboxTextId() {
+    return textboxTextId;
 }

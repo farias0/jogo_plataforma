@@ -3,6 +3,7 @@
 
 
 #include <raylib.h>
+#include <string>
 
 #include "../linked_list.hpp"
 #include "../assets.hpp"
@@ -20,15 +21,17 @@
 #define FLOOR_DEATH_HEIGHT      800
 
 
+// TODO rename from 'component' to 'tag'
 typedef enum LevelEntityComponent {
     LEVEL_IS_PLAYER         = 1,
     LEVEL_IS_ENEMY          = 2,
-    LEVEL_IS_SCENARIO       = 4,
+    LEVEL_IS_SCENARIO       = 4, // the meaning of this component isnt clear
     LEVEL_IS_EXIT           = 8,
     LEVEL_IS_GROUND         = 16,
     LEVEL_IS_DANGER         = 32,
     LEVEL_IS_GLIDE          = 64,
-    LEVEL_IS_CHECKPOINT     = 128
+    LEVEL_IS_CHECKPOINT     = 128,
+    LEVEL_IS_TEXTBOX        = 256,
 } LevelEntityComponent;
 
 typedef struct LevelEntity {
@@ -44,6 +47,9 @@ typedef struct LevelEntity {
 
     bool isFacingRight;
     bool isFallingDown;
+
+    // Used by Textbox Buttons
+    int textId;
     
 } LevelEntity;
 
@@ -94,6 +100,13 @@ void LevelExitAdd(Vector2 pos);
 // Initializes and adds an exit to the level in the given origin,
 // if there are no other entities there already
 void LevelExitCheckAndAdd(Vector2 pos);
+
+// Initializes and adds a textbox button to the level
+void LevelTextboxAdd(Vector2 pos, int textId);
+
+// Initializes and adds a a textbox button to the level in the
+// given origin, if there are no other entities there already
+void LevelTextboxCheckAndAdd(Vector2 pos);
 
 // The ground beneath the entity, or 0 if not on the ground.
 // Gives priority to the tile in the direction the player is looking at.

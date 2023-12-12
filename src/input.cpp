@@ -14,6 +14,11 @@
 #include "debug.hpp"
 
 
+namespace Input {
+
+InputState STATE;
+
+
 void handleInLevelInput() {
 
     if      (IsKeyPressed(KEY_F5))          GAME_STATE->showBackground = !GAME_STATE->showBackground;
@@ -176,7 +181,52 @@ void handleDroppedFile() {
     MemFree(levelName);
 }
 
-void InputHandle() {
+void handleTextInput() {
+  
+    int keyPressed = -1;
+    while (keyPressed) {
+
+        keyPressed = GetKeyPressed();
+
+        if (keyPressed >= ' ' && keyPressed <= '~') {
+
+            STATE.textInputed += (char) keyPressed;
+
+        }
+        else if (IsKeyDown(KEY_BACKSPACE) && !STATE.textInputed.empty()) {
+            
+            STATE.textInputed.pop_back();
+
+        }
+        else if (keyPressed == KEY_ENTER) {
+
+            // Finishes text input
+            STATE.textInputCallback->operator()(STATE.textInputed);
+
+            TraceLog(LOG_TRACE, "Text input finished: %s.", STATE.textInputed.c_str());
+
+            GAME_STATE->waitingForTextInput = false;
+            STATE.textInputed.clear();
+
+            return;
+
+        }
+    }
+}
+
+void Initialize() {
+
+    STATE = InputState();
+
+    TraceLog(LOG_INFO, "Input initialized.");
+}
+
+void Handle() {
+
+    if (GAME_STATE->waitingForTextInput) {
+        handleTextInput();
+        return;
+    }
 
     handleDevInput();
 
@@ -191,4 +241,17 @@ void InputHandle() {
     else if (GAME_STATE->mode == MODE_OVERWORLD) {
         handleOverworldInput();
     }
+}
+
+void GetTextInput(TextInputCallback *callback) {
+
+    GAME_STATE->waitingForTextInput = true;
+    
+    STATE.textInputCallback = callback;
+
+    RenderPrintSysMessage((char *) "Insira o ID do texto");
+
+    TraceLog(LOG_TRACE, "Text input started.");
+}
+
 }

@@ -26,7 +26,7 @@ int main() {
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        InputHandle();
+        Input::Handle();
 
         GameUpdate();
 

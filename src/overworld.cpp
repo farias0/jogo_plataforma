@@ -1,5 +1,4 @@
 #include <raylib.h>
-#include <string.h>
 #include <stdlib.h>
 
 #include "overworld.hpp"
@@ -425,6 +424,8 @@ next_entity:
 }
 
 void OverworldTick() {
+
+    if (GAME_STATE->waitingForTextInput) return;
 
     // TODO check if having the first check before saves on processing,
     // of if it's just redundant. 

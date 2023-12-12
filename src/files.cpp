@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <raylib.h>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "files.hpp"
 
@@ -88,4 +92,13 @@ FileData FileLoad(char *filepath, size_t itemSize) {
     FileData data = readFromFile(file, itemSize);
     closeFile(file);
     return data;
+}
+
+std::string FileLoadText(std::string filepath) {
+
+    std::stringstream buffer;
+    std::ifstream file(filepath);
+    buffer << file.rdbuf();
+    file.close();
+    return buffer.str();
 }
