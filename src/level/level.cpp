@@ -1,6 +1,8 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include <string.h>
+#include <functional>
+#include <sstream>
 
 #include "level.hpp"
 #include "player.hpp"
@@ -10,6 +12,7 @@
 #include "../editor.hpp"
 #include "../overworld.hpp"
 #include "../debug.hpp"
+#include "../input.hpp"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
@@ -57,7 +60,9 @@ void initializeLevelState() {
 void leaveLevel() {
     
     RenderDisplayTextboxStop();
+    
     resetLevelState();
+
     OverworldLoad();
 
     TraceLog(LOG_TRACE, "Level left.");
@@ -157,6 +162,22 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
     }
 
     return foundGround;   
+}
+
+void createTextboxFromIdInput(Vector2 pos, std::string input) {
+
+    int id;
+    
+    try {
+        id = std::stoi(input);
+    }
+    catch (std::invalid_argument &e) {
+        RenderPrintSysMessage((char *) "ERRO: ID inválido");
+        TraceLog(LOG_DEBUG, "Textbox ID input invalid: %s.", input.c_str());
+        return; // does nothing
+    }
+
+    LevelTextboxAdd(pos, id);
 }
 
 void LevelInitialize() {
@@ -309,9 +330,11 @@ void LevelTextboxCheckAndAdd(Vector2 pos) {
         return;
     }
 
-    static int id = 1; // TODO
-    
-    LevelTextboxAdd({ hitbox.x, hitbox.y }, id++);
+    pos = RectangleGetPos(hitbox);
+    TextInputCallback *callback = new TextInputCallback([pos] (std::string input) { 
+                                                            createTextboxFromIdInput(pos, input);
+                                                        });
+    Input::GetTextInput(callback);
 }
 
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
@@ -418,6 +441,8 @@ void LevelPauseToggle() {
 }
 
 void LevelTick() {
+
+    if (GAME_STATE->waitingForTextInput) return;
 
     // TODO check if having the first check before saves on processing,
     // of if it's just redundant. 

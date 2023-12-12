@@ -10,6 +10,7 @@
 #include "persistence.hpp"
 #include "editor.hpp"
 #include "debug.hpp"
+#include "input.hpp"
 
 
 OverworldState *OW_STATE = 0;
@@ -425,6 +426,8 @@ next_entity:
 }
 
 void OverworldTick() {
+
+    if (GAME_STATE->waitingForTextInput) return;
 
     // TODO check if having the first check before saves on processing,
     // of if it's just redundant. 
