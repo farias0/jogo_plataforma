@@ -405,9 +405,9 @@ void PlayerTick() {
 
                 collidedWithTextboxButton = true;
 
-                if (RenderGetTextboxText().empty()) {
-                    RenderDisplayTextbox(entity->text);
-                    TraceLog(LOG_TRACE, "Textbox started displaying: \"%s\".", entity->text.c_str());
+                if (RenderGetTextboxTextId() == -1) {
+                    RenderDisplayTextbox(entity->textId);
+                    TraceLog(LOG_TRACE, "Textbox started displaying textId=%d.", entity->textId);
                 }
             }
 
@@ -436,7 +436,7 @@ next_entity:
     }
 
 
-    if (!RenderGetTextboxText().empty() && !collidedWithTextboxButton) {
+    if (RenderGetTextboxTextId() != -1 && !collidedWithTextboxButton) {
         RenderDisplayTextboxStop();
         TraceLog(LOG_TRACE, "Textbox stopped displaying.");
     }

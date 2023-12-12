@@ -9,6 +9,7 @@
 #include "editor.hpp"
 #include "render.hpp"
 #include "debug.hpp"
+#include "text_bank.hpp"
 
 
 GameState *GAME_STATE = 0;
@@ -78,6 +79,7 @@ void SystemsInitialize() {
     OverworldInitialize();
     LevelInitialize();
     RenderInitialize();
+    TextBank::InitializeAndLoad();
 }
 
 void GameUpdate() {

@@ -48,7 +48,8 @@ typedef struct LevelEntity {
     bool isFacingRight;
     bool isFallingDown;
 
-    std::string text; // used by textbox buttons
+    // Used by Textbox Buttons
+    int textId;
     
 } LevelEntity;
 

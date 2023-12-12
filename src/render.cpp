@@ -9,6 +9,7 @@
 #include "camera.hpp"
 #include "editor.hpp"
 #include "debug.hpp"
+#include "text_bank.hpp"
 
 #pragma GCC diagnostic push 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -52,7 +53,9 @@ static RenderTexture2D shaderRenderTexture;
 static LevelTransitionShaderControl levelTransitionShaderControl;
 
 // Text that's being displayed in a textbox
-static std::string textboxText; 
+static int textboxTextId;
+// Text that's displayed in a textbox if the id has no match
+static std::string textboxTextMissing("[sem texto]");
 
 
 // Returns the given color, with the given transparency level. 
@@ -322,8 +325,11 @@ static void drawLevelHud() {
 
     if (EDITOR_STATE->isEnabled) return;
 
-    if (!textboxText.empty())
-        DrawText(textboxText.c_str(), 600, 360, 30, RAYWHITE);
+    if (textboxTextId != -1) {
+        std::string *s = &TextBank::BANK[textboxTextId];
+        if (!s->length()) s = &textboxTextMissing;
+        DrawText((*s).c_str(), 600, 360, 30, RAYWHITE);
+    }
 
     if (LEVEL_STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
         DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
@@ -596,7 +602,7 @@ void RenderInitialize() {
 
     levelTransitionShaderControl.timer = -1;
 
-    textboxText = std::string();
+    textboxTextId = -1;
 
     // Line spacing of DrawText() 's containing line break
     SetTextLineSpacing(30);
@@ -662,14 +668,14 @@ void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
 }
 
-void RenderDisplayTextbox(std::string text) {
-    textboxText = text;
+void RenderDisplayTextbox(int textId) {
+    textboxTextId = textId;
 }
 
 void RenderDisplayTextboxStop() {
-    textboxText.clear();
+    textboxTextId = -1;
 }
 
-std::string RenderGetTextboxText() {
-    return textboxText;
+int RenderGetTextboxTextId() {
+    return textboxTextId;
 }
