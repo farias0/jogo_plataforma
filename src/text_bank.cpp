@@ -44,7 +44,7 @@ void parseFileDataIntoBank(TextBankMap *bank, std::string fileData) {
         try {
             currentId = std::stoi(line.substr(0, delimiterIdx));
         }
-        catch (std::invalid_argument) {
+        catch (std::invalid_argument &e) {
             goto invalid_line;
         }
 
