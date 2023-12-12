@@ -414,7 +414,7 @@ static void drawDebugHud() {
     ListNode *listHead = GetEntityListHead();
     if (listHead) {
         char buffer[50];
-        sprintf(buffer, "Debug ligado\n%d entidades", LinkedListCountNodes(listHead));
+        sprintf(buffer, "%d entidades", LinkedListCountNodes(listHead));
         DrawText(buffer, 10, 20, 20, WHITE);
     }
 
@@ -617,7 +617,7 @@ void RenderInitialize() {
     textboxTextId = -1;
 
     // Line spacing of DrawText() 's containing line break
-    SetTextLineSpacing(20);
+    SetTextLineSpacing(35);
 
     TraceLog(LOG_INFO, "Render initialized.");
 }
