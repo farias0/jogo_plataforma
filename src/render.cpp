@@ -328,7 +328,7 @@ static void drawLevelHud() {
     if (textboxTextId != -1) {
         std::string *s = &TextBank::BANK[textboxTextId];
         if (!s->length()) s = &textboxTextMissing;
-        DrawText((*s).c_str(), 600, 360, 30, RAYWHITE);
+        DrawText((*s).c_str(), 120, 100, 30, RAYWHITE);
     }
 
     if (LEVEL_STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
@@ -365,6 +365,45 @@ static void drawOverworldHud() {
     }
 }
 
+void drawDebugEntityInfo(void *entity) {
+
+    Rectangle hitbox;
+    Vector2 screenPos;
+    std::string str;
+
+    switch (GAME_STATE->mode) {
+    case MODE_IN_LEVEL:
+        hitbox = ((LevelEntity *) entity)->hitbox;
+        break;
+
+    case MODE_OVERWORLD:
+        RectangleSetPos(&hitbox, ((OverworldEntity *) entity)->gridPos);
+        RectangleSetDimensions(&hitbox, OW_GRID);
+        break;
+
+    default:
+        return;
+    }
+
+    screenPos = PosInSceneToScreen(RectangleGetPos(hitbox));
+
+    DrawRectangle(screenPos.x, screenPos.y,
+            hitbox.width, hitbox.height, { GREEN.r, GREEN.g, GREEN.b, 128 });
+    DrawRectangleLines(screenPos.x, screenPos.y,
+            hitbox.width, hitbox.height, GREEN);
+
+    str = std::string("x=" + std::to_string((int) hitbox.x) +
+                        "\ny=" + std::to_string((int) hitbox.y));
+
+    if (GAME_STATE->mode == MODE_IN_LEVEL) {
+        LevelEntity *le = (LevelEntity *) entity;
+        if (le->components & LEVEL_IS_TEXTBOX)
+            str += "\ntextId=" + std::to_string(le->textId);
+    }
+
+    DrawText(str.c_str(), screenPos.x, screenPos.y, 20, WHITE);
+}
+
 static void drawDebugHud() {
 
     if (CameraIsPanned()) DrawText("Câmera deslocada",
@@ -386,45 +425,8 @@ static void drawDebugHud() {
 
     ListNode *node = DEBUG_ENTITY_INFO_HEAD;
     while (node != 0) {
-        void *entity = node->item;
-        Rectangle hitbox;
-        Vector2 screenPos;
         ListNode *nextNode = node->next;
-
-        if (!entity) { // Destroyed
-            LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, node);
-            TraceLog(LOG_TRACE, "Debug entity info stopped showing entity.");
-            goto next_node;
-        }
-
-        switch (GAME_STATE->mode) {
-        case MODE_IN_LEVEL:
-            hitbox = ((LevelEntity *) entity)->hitbox;
-            break;
-
-        case MODE_OVERWORLD:
-            RectangleSetPos(&hitbox, ((OverworldEntity *) entity)->gridPos);
-            RectangleSetDimensions(&hitbox, OW_GRID);
-            break;
-
-        default:
-            return;
-        }
-
-        screenPos = PosInSceneToScreen(RectangleGetPos(hitbox));
-
-        DrawRectangle(screenPos.x, screenPos.y,
-                hitbox.width, hitbox.height, { GREEN.r, GREEN.g, GREEN.b, 128 });
-        DrawRectangleLines(screenPos.x, screenPos.y,
-                hitbox.width, hitbox.height, GREEN);
-
-        char buffer[500];
-        sprintf(buffer, "X=%.1f\nY=%.1f",
-                    hitbox.x,
-                    hitbox.y);
-        DrawText(buffer, screenPos.x, screenPos.y, 25, WHITE);
-
-next_node:
+        drawDebugEntityInfo(node->item);
         node = nextNode;
     }
 }
@@ -605,7 +607,7 @@ void RenderInitialize() {
     textboxTextId = -1;
 
     // Line spacing of DrawText() 's containing line break
-    SetTextLineSpacing(30);
+    SetTextLineSpacing(20);
 
     TraceLog(LOG_INFO, "Render initialized.");
 }
