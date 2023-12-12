@@ -279,7 +279,7 @@ void LevelExitCheckAndAdd(Vector2 pos) {
     LevelExitAdd({ hitbox.x, hitbox.y });
 }
 
-void LevelTextboxAdd(Vector2 pos) {
+void LevelTextboxAdd(Vector2 pos, int textId) {
 
     LevelEntity *newTextbox = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
 
@@ -292,9 +292,7 @@ void LevelTextboxAdd(Vector2 pos) {
     newTextbox->sprite = sprite;
     newTextbox->layer = -1;
     newTextbox->isFacingRight = true;
-
-    static int id = 1;
-    newTextbox->textId = id++; // TODO
+    newTextbox->textId = textId;
 
     LinkedListAdd(&LEVEL_STATE->listHead, newTextbox);
 
@@ -310,8 +308,10 @@ void LevelTextboxCheckAndAdd(Vector2 pos) {
         TraceLog(LOG_DEBUG, "Couldn't add textbox button, collision with entity.");
         return;
     }
+
+    static int id = 1; // TODO
     
-    LevelTextboxAdd({ hitbox.x, hitbox.y });
+    LevelTextboxAdd({ hitbox.x, hitbox.y }, id++);
 }
 
 LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {

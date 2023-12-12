@@ -31,13 +31,15 @@ typedef enum LevelEntityType {
     LEVEL_ENTITY_BLOCK,
     LEVEL_ENTITY_ACID,
     LEVEL_ENTITY_EXIT,
-    LEVEL_ENTITY_GLIDE
+    LEVEL_ENTITY_GLIDE,
+    LEVEL_ENTITY_TEXTBOX,
 } LevelEntityType;
 
 typedef struct PersistenceLevelEntity {
-    uint16_t entityType;
-    uint32_t originX;
-    uint32_t originY;
+    uint16_t    entityType;
+    uint32_t    originX;
+    uint32_t    originY;
+    uint32_t    textId;
 } PersistenceLevelEntity;
 
 typedef struct PersistenceOverworldEntity {
@@ -71,17 +73,22 @@ void PersistenceLevelSave(char *levelName) {
 
         LevelEntity *entity = (LevelEntity *) node->item;
 
-        if (entity->components & LEVEL_IS_PLAYER)           data[i].entityType = LEVEL_ENTITY_PLAYER;
-        else if (entity->components & LEVEL_IS_ENEMY)       data[i].entityType = LEVEL_ENTITY_ENEMY;
-
+        if (entity->components & LEVEL_IS_PLAYER)
+            data[i].entityType = LEVEL_ENTITY_PLAYER;
+        else if (entity->components & LEVEL_IS_ENEMY)
+            data[i].entityType = LEVEL_ENTITY_ENEMY;
         else if (entity->components & LEVEL_IS_SCENARIO && entity->components & LEVEL_IS_DANGER)
-                                                            data[i].entityType = LEVEL_ENTITY_ACID;
-
+            data[i].entityType = LEVEL_ENTITY_ACID;
         else if (entity->components & LEVEL_IS_SCENARIO && !(entity->components & LEVEL_IS_DANGER))
-                                                            data[i].entityType = LEVEL_ENTITY_BLOCK;
-
-        else if (entity->components & LEVEL_IS_EXIT)        data[i].entityType = LEVEL_ENTITY_EXIT;
-        else if (entity->components & LEVEL_IS_GLIDE)       data[i].entityType = LEVEL_ENTITY_GLIDE;
+            data[i].entityType = LEVEL_ENTITY_BLOCK;
+        else if (entity->components & LEVEL_IS_EXIT)
+            data[i].entityType = LEVEL_ENTITY_EXIT;
+        else if (entity->components & LEVEL_IS_GLIDE)
+            data[i].entityType = LEVEL_ENTITY_GLIDE;
+        else if (entity->components & LEVEL_IS_TEXTBOX) {
+            data[i].entityType = LEVEL_ENTITY_TEXTBOX;
+            memcpy(&data[i].textId, &entity->textId, sizeof(uint32_t));
+        }
         else { 
             TraceLog(LOG_WARNING, "Unknow entity type found when serializing level, components=%d. Skipping it...");
             saveItemCount--;
@@ -136,6 +143,9 @@ bool PersistenceLevelLoad(char *levelName) {
         Vector2 origin;
         memcpy(&origin.x,   &data[i].originX,   sizeof(uint32_t));
         memcpy(&origin.y,   &data[i].originY,   sizeof(uint32_t));
+
+        int textId;
+        memcpy(&textId,     &data[i].textId,    sizeof(uint32_t));
         
         switch (data[i].entityType) {
         
@@ -151,6 +161,8 @@ bool PersistenceLevelLoad(char *levelName) {
             LevelExitAdd(origin); break;
         case LEVEL_ENTITY_GLIDE:
             GlideAdd(origin); break;
+        case LEVEL_ENTITY_TEXTBOX:
+            LevelTextboxAdd(origin, textId); break;
         default:
             TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, type=%d.", data[i].entityType); 
         }

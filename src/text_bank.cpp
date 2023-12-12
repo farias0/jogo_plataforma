@@ -15,7 +15,6 @@ TextBankMap BANK;
 
 
 void parseFileDataIntoBank(TextBankMap *bank, std::string fileData) {
-
     
     *bank = TextBankMap();
     std::istringstream stream(fileData);

@@ -102,7 +102,7 @@ void LevelExitAdd(Vector2 pos);
 void LevelExitCheckAndAdd(Vector2 pos);
 
 // Initializes and adds a textbox button to the level
-void LevelTextboxAdd(Vector2 pos);
+void LevelTextboxAdd(Vector2 pos, int textId);
 
 // Initializes and adds a a textbox button to the level in the
 // given origin, if there are no other entities there already
