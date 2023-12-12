@@ -172,7 +172,7 @@ void createTextboxFromIdInput(Vector2 pos, std::string input) {
         id = std::stoi(input);
     }
     catch (std::invalid_argument &e) {
-        RenderPrintSysMessage((char *) "ERRO: ID inválido");
+        RenderPrintSysMessage((char *) "ID inválido");
         TraceLog(LOG_DEBUG, "Textbox ID input invalid: %s.", input.c_str());
         return; // does nothing
     }

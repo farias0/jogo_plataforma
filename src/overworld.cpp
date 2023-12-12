@@ -1,5 +1,4 @@
 #include <raylib.h>
-#include <string.h>
 #include <stdlib.h>
 
 #include "overworld.hpp"
@@ -10,7 +9,6 @@
 #include "persistence.hpp"
 #include "editor.hpp"
 #include "debug.hpp"
-#include "input.hpp"
 
 
 OverworldState *OW_STATE = 0;

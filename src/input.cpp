@@ -182,18 +182,36 @@ void handleDroppedFile() {
 }
 
 void handleTextInput() {
+  
+    int keyPressed = -1;
+    while (keyPressed) {
 
-    RenderPrintSysMessage((char*) "TEST finished inputting"); // TODO
-    
-    STATE.textInputed = "200";
+        keyPressed = GetKeyPressed();
 
-    // Finishes text input
-    STATE.textInputCallback->operator()(STATE.textInputed);
+        if (keyPressed >= ' ' && keyPressed <= '~') {
 
-    TraceLog(LOG_TRACE, "Text input finished: %s.", STATE.textInputed.c_str());
+            STATE.textInputed += (char) keyPressed;
 
-    GAME_STATE->waitingForTextInput = false;
-    STATE.textInputed.clear();
+        }
+        else if (IsKeyDown(KEY_BACKSPACE) && !STATE.textInputed.empty()) {
+            
+            STATE.textInputed.pop_back();
+
+        }
+        else if (keyPressed == KEY_ENTER) {
+
+            // Finishes text input
+            STATE.textInputCallback->operator()(STATE.textInputed);
+
+            TraceLog(LOG_TRACE, "Text input finished: %s.", STATE.textInputed.c_str());
+
+            GAME_STATE->waitingForTextInput = false;
+            STATE.textInputed.clear();
+
+            return;
+
+        }
+    }
 }
 
 void Initialize() {
@@ -230,6 +248,8 @@ void GetTextInput(TextInputCallback *callback) {
     GAME_STATE->waitingForTextInput = true;
     
     STATE.textInputCallback = callback;
+
+    RenderPrintSysMessage((char *) "Insira o ID do texto");
 
     TraceLog(LOG_TRACE, "Text input started.");
 }

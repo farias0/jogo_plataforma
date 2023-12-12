@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <stdio.h>
+#include <string>
 
 #include "core.hpp"
 #include "assets.hpp"
@@ -10,6 +11,7 @@
 #include "editor.hpp"
 #include "debug.hpp"
 #include "text_bank.hpp"
+#include "input.hpp"
 
 #pragma GCC diagnostic push 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -598,6 +600,14 @@ static void drawLevelTransitionShader() {
     EndShaderMode();
 }
 
+void drawTextInput() {
+
+    DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 0x00, 0x00, 0x00, 0xaa });
+
+    // TODO wrap text
+    DrawText(std::string("> " + Input::STATE.textInputed).c_str(), 120, 100, 60, RAYWHITE);
+}
+
 void RenderInitialize() {
 
     shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
@@ -622,14 +632,16 @@ void Render() {
 
         drawEntities();
 
-        if      (GAME_STATE->mode == MODE_IN_LEVEL)          drawLevelHud();
-        else if (GAME_STATE->mode == MODE_OVERWORLD)         drawOverworldHud();
+        if      (GAME_STATE->mode == MODE_IN_LEVEL)         drawLevelHud();
+        else if (GAME_STATE->mode == MODE_OVERWORLD)        drawOverworldHud();
 
-        if      (GAME_STATE->showDebugGrid)                  drawDebugGrid();
+        if      (GAME_STATE->showDebugGrid)                 drawDebugGrid();
 
-        if      (levelTransitionShaderControl.timer != -1)   drawLevelTransitionShader();
+        if      (levelTransitionShaderControl.timer != -1)  drawLevelTransitionShader();
 
-        if      (GAME_STATE->showDebugHUD)                   drawDebugHud();
+        if      (GAME_STATE->showDebugHUD)                  drawDebugHud();
+
+        if      (GAME_STATE->waitingForTextInput)           drawTextInput();
 
         drawSysMessages();
 
