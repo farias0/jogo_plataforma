@@ -1,6 +1,8 @@
 100 - Onde eu estou?
           Como posso voltar pra casa?
 
+120 - Aperte 'c' para colocar
+     uma bandeira.
 
 
 
