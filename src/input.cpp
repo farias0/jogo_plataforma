@@ -249,8 +249,6 @@ void GetTextInput(TextInputCallback *callback) {
     
     STATE.textInputCallback = callback;
 
-    RenderPrintSysMessage((char *) "Insira o ID do texto");
-
     TraceLog(LOG_TRACE, "Text input started.");
 }
 

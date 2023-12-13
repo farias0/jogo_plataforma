@@ -331,9 +331,13 @@ void LevelTextboxCheckAndAdd(Vector2 pos) {
     }
 
     pos = RectangleGetPos(hitbox);
-    TextInputCallback *callback = new TextInputCallback([pos] (std::string input) { 
-                                                            createTextboxFromIdInput(pos, input);
-                                                        });
+    TextInputCallback *callback = new TextInputCallback(
+        [pos] (std::string input) { 
+            createTextboxFromIdInput(pos, input);
+        }
+    );
+
+    RenderPrintSysMessage((char *) "Insira o ID do texto");
     Input::GetTextInput(callback);
 }
 
