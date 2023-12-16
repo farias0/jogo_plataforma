@@ -45,9 +45,16 @@ typedef struct Sprites {
 
 } Sprites;
 
+typedef struct Sounds {
 
-// Editor
+    Sound Jump;
+
+} Sounds;
+
+
 extern Sprites *SPRITES;
+
+extern Sounds *SOUNDS;
 
 // Shaders
 extern Shader ShaderLevelTransition;

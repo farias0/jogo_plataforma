@@ -4,6 +4,8 @@
 #include "assets.hpp"
 
 
+Sounds *SOUNDS = 0;
+
 Sprites *SPRITES = 0;
 
 // Shaders
@@ -29,33 +31,42 @@ static inline Sprite doubleSizeSprite(std::string texturePath) {
 void AssetsInitialize() {
 
     SPRITES = (Sprites *) MemAlloc(sizeof(Sprites));
-    Sprites *s = SPRITES;
+    Sprites *sp = SPRITES;
 
     // Editor
-    s->Eraser = doubleSizeSprite("../assets/eraser_1.png");
+    sp->Eraser = doubleSizeSprite("../assets/eraser_1.png");
 
     // In Level
-    s->PlayerDefault = doubleSizeSprite("../assets/player_default_1.png");
-    s->PlayerGlideOn = doubleSizeSprite("../assets/player_glide_on.png");
-    s->PlayerGlideFalling = doubleSizeSprite("../assets/player_glide_falling.png");
-    s->Enemy = doubleSizeSprite("../assets/enemy_default_1.png");
-    s->LevelEndOrb = doubleSizeSprite("../assets/level_end_orb_1.png");
-    s->LevelCheckpoint = doubleSizeSprite("../assets/player_child_1.png");
-    s->Block = normalSizeSprite("../assets/floor_tile_1.png");
-    s->Acid = normalSizeSprite("../assets/acid_tile_1.png");
-    s->GlideItem = normalSizeSprite("../assets/glide_item.png");
-    s->TextboxButton = normalSizeSprite("../assets/textbox_button.png");
+    sp->PlayerDefault = doubleSizeSprite("../assets/player_default_1.png");
+    sp->PlayerGlideOn = doubleSizeSprite("../assets/player_glide_on.png");
+    sp->PlayerGlideFalling = doubleSizeSprite("../assets/player_glide_falling.png");
+    sp->Enemy = doubleSizeSprite("../assets/enemy_default_1.png");
+    sp->LevelEndOrb = doubleSizeSprite("../assets/level_end_orb_1.png");
+    sp->LevelCheckpoint = doubleSizeSprite("../assets/player_child_1.png");
+    sp->Block = normalSizeSprite("../assets/floor_tile_1.png");
+    sp->Acid = normalSizeSprite("../assets/acid_tile_1.png");
+    sp->GlideItem = normalSizeSprite("../assets/glide_item.png");
+    sp->TextboxButton = normalSizeSprite("../assets/textbox_button.png");
 
     // Overworld
-    s->OverworldCursor = doubleSizeSprite("../assets/cursor_default_1.png");
-    s->LevelDot = doubleSizeSprite("../assets/level_dot_1.png");
-    s->PathTileJoin = doubleSizeSprite("../assets/path_tile_join_vertical.png");
-    s->PathTileStraight = doubleSizeSprite("../assets/path_tile_straight_vertical.png");
-    s->PathTileInL = doubleSizeSprite("../assets/path_tile_L.png");
+    sp->OverworldCursor = doubleSizeSprite("../assets/cursor_default_1.png");
+    sp->LevelDot = doubleSizeSprite("../assets/level_dot_1.png");
+    sp->PathTileJoin = doubleSizeSprite("../assets/path_tile_join_vertical.png");
+    sp->PathTileStraight = doubleSizeSprite("../assets/path_tile_straight_vertical.png");
+    sp->PathTileInL = doubleSizeSprite("../assets/path_tile_L.png");
 
     // Background
-    s->Nightclub = doubleSizeSprite("../assets/nightclub_1.png");
-    s->BGHouse = doubleSizeSprite("../assets/bg_house_1.png");
+    sp->Nightclub = doubleSizeSprite("../assets/nightclub_1.png");
+    sp->BGHouse = doubleSizeSprite("../assets/bg_house_1.png");
+
+
+
+    SOUNDS = (Sounds *) MemAlloc(sizeof(Sounds));
+    Sounds *sn = SOUNDS;
+
+    sn->Jump = LoadSound("../assets/sounds/jump.ogg");
+    SetSoundVolume(sn->Jump, 0.5f);
+
 
     // Shaders
     // ShaderDefault = (Shader) { rlGetShaderIdDefault(), rlGetShaderLocsDefault() };
@@ -63,6 +74,7 @@ void AssetsInitialize() {
     while (!IsShaderReady(ShaderLevelTransition)) {
         TraceLog(LOG_INFO, "Waiting for ShaderLevelTransition...");
     }
+
 
 
     TraceLog(LOG_INFO, "Assets initialized.");
