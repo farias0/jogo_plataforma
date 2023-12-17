@@ -11,6 +11,7 @@
 #include "debug.hpp"
 #include "text_bank.hpp"
 #include "input.hpp"
+#include "sounds.hpp"
 
 
 GameState *GAME_STATE = 0;
@@ -89,6 +90,7 @@ void SystemsInitialize() {
     LevelInitialize();
     RenderInitialize();
     TextBank::InitializeAndLoad();
+    Sounds::Initialize();
 }
 
 void GameUpdate() {

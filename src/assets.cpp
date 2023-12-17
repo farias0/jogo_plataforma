@@ -4,9 +4,9 @@
 #include "assets.hpp"
 
 
-Sounds *SOUNDS = 0;
+struct SoundBank *SOUNDS = 0;
 
-Sprites *SPRITES = 0;
+struct SpriteBank *SPRITES = 0;
 
 // Shaders
 Shader ShaderLevelTransition;
@@ -30,8 +30,8 @@ static inline Sprite doubleSizeSprite(std::string texturePath) {
 
 void AssetsInitialize() {
 
-    SPRITES = (Sprites *) MemAlloc(sizeof(Sprites));
-    Sprites *sp = SPRITES;
+    SPRITES = (SpriteBank *) MemAlloc(sizeof(SpriteBank));
+    SpriteBank *sp = SPRITES;
 
     // Editor
     sp->Eraser = doubleSizeSprite("../assets/eraser_1.png");
@@ -61,8 +61,8 @@ void AssetsInitialize() {
 
 
 
-    SOUNDS = (Sounds *) MemAlloc(sizeof(Sounds));
-    Sounds *sn = SOUNDS;
+    SOUNDS = (SoundBank *) MemAlloc(sizeof(SoundBank));
+    SoundBank *sn = SOUNDS;
 
     sn->Jump = LoadSound("../assets/sounds/jump.ogg");
     SetSoundVolume(sn->Jump, 0.5f);

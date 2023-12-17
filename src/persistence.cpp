@@ -111,10 +111,10 @@ skip_entity:
 
     if (FileSave(levelPath, filedata)) {
         TraceLog(LOG_INFO, "Level saved: %s.", levelName);
-        RenderPrintSysMessage((char *) "Fase salva.");
+        RenderPrintSysMessage("Fase salva.");
     } else {
         TraceLog(LOG_ERROR, "Could not save level %s.", levelName);
-        RenderPrintSysMessage((char *) "Erro salvando fase.");
+        RenderPrintSysMessage("Erro salvando fase.");
     }
 
     MemFree(data);
@@ -132,7 +132,7 @@ bool PersistenceLevelLoad(char *levelName) {
 
     if (!filedata.itemCount) {
         TraceLog(LOG_ERROR, "Could not load level %s.", levelName);
-        RenderPrintSysMessage((char *) "Erro carregando fase.");
+        RenderPrintSysMessage("Erro carregando fase.");
         return false;
     }
 
@@ -199,14 +199,14 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
         strcmp(GetFileName(fileDir), PERSISTENCE_DIR_NAME) != 0) {
 
             TraceLog(LOG_ERROR, "Dropped file is not on 'levels' directory.");
-            RenderPrintSysMessage((char *) "Arquivo não é parte do jogo");
+            RenderPrintSysMessage("Arquivo não é parte do jogo");
             goto return_result;
     }
 
     if (strcmp(GetFileExtension(filePath), LEVEL_FILE_EXTENSION) != 0) {
         TraceLog(LOG_ERROR, "Dropped file extension is not %s. Ignoring it",
                     LEVEL_FILE_EXTENSION);
-        RenderPrintSysMessage((char *) "Arquivo não é fase");
+        RenderPrintSysMessage("Arquivo não é fase");
         goto return_result;
     }
 
@@ -215,7 +215,7 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
 
             TraceLog(LOG_ERROR, "Dropped file has invalid level name %s.",
                         fileName);
-            RenderPrintSysMessage((char *) "Nome de fase proibido");
+            RenderPrintSysMessage("Nome de fase proibido");
             goto return_result;
     }
 
@@ -274,10 +274,10 @@ skip_entity:
 
     if (FileSave(filePath, filedata)) {
         TraceLog(LOG_INFO, "Overworld saved.");
-        RenderPrintSysMessage((char *) "Mundo salvo.");
+        RenderPrintSysMessage("Mundo salvo.");
     } else {
         TraceLog(LOG_ERROR, "Could not save overworld.");
-        RenderPrintSysMessage((char *) "Erro salvando mundo.");
+        RenderPrintSysMessage("Erro salvando mundo.");
     }
 
     MemFree(data);
@@ -295,7 +295,7 @@ bool PersistenceOverworldLoad() {
 
     if (!fileData.itemCount) {
         TraceLog(LOG_ERROR, "Could not overworld.");
-        RenderPrintSysMessage((char *) "Erro carregando mundo.");
+        RenderPrintSysMessage("Erro carregando mundo.");
         return false;
     }
 

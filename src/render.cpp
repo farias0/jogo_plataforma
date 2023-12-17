@@ -655,10 +655,12 @@ void RenderResizeWindow(int width, int height) {
     SetWindowSize(width, height);
 }
 
-void RenderPrintSysMessage(char *msg) {
+void RenderPrintSysMessage(const std::string &msg) {
+
+    // TODO move the whole SysMessage system to C++ strings
 
     char *msgCopy = (char *) MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
-    strcpy(msgCopy, msg); 
+    strcpy(msgCopy, msg.c_str()); 
 
     SysMessage *newMsg = (SysMessage *) MemAlloc(sizeof(SysMessage));
     newMsg->msg = msgCopy;

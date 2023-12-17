@@ -8,6 +8,7 @@
 #include "enemy.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
+#include "../sounds.hpp"
 
 
 // What % of the player's height is upperbody, for hitboxes
@@ -151,7 +152,7 @@ void PlayerCheckAndSetOrigin(Vector2 pos) {
     if (LevelCheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
             "Player's origin couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
-        RenderPrintSysMessage((char *) "Origem iria colidir.");
+        RenderPrintSysMessage("Origem iria colidir.");
         return;
     }
 
@@ -169,7 +170,7 @@ void PlayerCheckAndSetPos(Vector2 pos) {
     if (LevelCheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
             "Player couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
-        RenderPrintSysMessage((char *) "Jogador iria colidir.");
+        RenderPrintSysMessage("Jogador iria colidir.");
         return;
     }
     
@@ -278,7 +279,7 @@ void PlayerTick() {
         pState->yVelocity = jumpStartVelocity();
         pState->yVelocityTarget = 0.0f;
         pState->jumpSpeed = pState->speed;
-        PlaySound(SOUNDS->Jump);
+        Sounds::Play(SOUNDS->Jump);
 
         // Player hit enemy
         // -- this check is for the case the player jumps off the enemy,
@@ -496,7 +497,7 @@ void PlayerSetCheckpoint() {
     }
 
     if (LEVEL_STATE->checkpointsLeft < 1) {
-        RenderPrintSysMessage((char *) "Sem checkpoints disponíveis.");
+        RenderPrintSysMessage("Sem checkpoints disponíveis.");
         return;
     }
 
@@ -509,10 +510,7 @@ void PlayerSetCheckpoint() {
     pos.y += PLAYER_ENTITY->hitbox.height / 2;
     LEVEL_STATE->checkpoint = LevelCheckpointAdd(pos);
 
-    LEVEL_STATE->checkpointsLeft--;
-    char checkpointMsg[50];
-    sprintf(checkpointMsg, "Checkpoints disponívels: %d", LEVEL_STATE->checkpointsLeft);
-    RenderPrintSysMessage(checkpointMsg);
+    RenderPrintSysMessage("Checkpoints disponívels: " + std::to_string(--LEVEL_STATE->checkpointsLeft));
 
     TraceLog(LOG_DEBUG, "Player set checkpoint at x=%.1f, y=%.1f.", pos.x, pos.y);
 }
