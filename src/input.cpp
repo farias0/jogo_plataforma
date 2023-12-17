@@ -173,10 +173,7 @@ void handleDroppedFile() {
             TraceLog(LOG_INFO, "Dot on x=%.1f, y=%.1f associated with level %s.",
                         OW_STATE->tileUnderCursor->gridPos.x, OW_STATE->tileUnderCursor->gridPos.y, levelName);
             
-            char *sysMsg = (char *) MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
-            sprintf(sysMsg, "Associada fase %s", levelName);
-            RenderPrintSysMessage(sysMsg);
-            MemFree(sysMsg);
+            RenderPrintSysMessage("Associada fase " + std::string(levelName));
         }
     }
 

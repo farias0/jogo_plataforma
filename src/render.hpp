@@ -18,9 +18,6 @@ void Render();
 void RenderResizeWindow(int width, int height);
 
 // Prints a system message in the screen
-void RenderPrintSysMessage(char *msg);
-
-// Prints a system message in the screen
 void RenderPrintSysMessage(const std::string &msg);
 
 /*
