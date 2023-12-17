@@ -278,6 +278,7 @@ void PlayerTick() {
         pState->yVelocity = jumpStartVelocity();
         pState->yVelocityTarget = 0.0f;
         pState->jumpSpeed = pState->speed;
+        PlaySound(SOUNDS->Jump);
 
         // Player hit enemy
         // -- this check is for the case the player jumps off the enemy,

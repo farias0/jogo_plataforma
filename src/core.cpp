@@ -77,6 +77,9 @@ void GameStateReset() {
 
 void SystemsInitialize() {
 
+    InitAudioDevice();
+    // while (!IsAudioDeviceReady()) {}
+
     Input::Initialize();
     AssetsInitialize();
     GameStateInitialize();
