@@ -8,6 +8,7 @@
 #include "enemy.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
+#include "../sounds.hpp"
 
 
 // What % of the player's height is upperbody, for hitboxes
@@ -278,7 +279,7 @@ void PlayerTick() {
         pState->yVelocity = jumpStartVelocity();
         pState->yVelocityTarget = 0.0f;
         pState->jumpSpeed = pState->speed;
-        PlaySound(SOUNDS->Jump);
+        Sounds::Play(SOUNDS->Jump);
 
         // Player hit enemy
         // -- this check is for the case the player jumps off the enemy,

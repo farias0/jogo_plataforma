@@ -13,7 +13,7 @@ typedef struct Sprite {
     int rotation;
 } Sprite;
 
-typedef struct Sprites {
+struct SpriteBank {
 
     // TODO make it a hashmap
 
@@ -43,18 +43,18 @@ typedef struct Sprites {
     Sprite Nightclub;
     Sprite BGHouse;
 
-} Sprites;
+};
 
-typedef struct Sounds {
+struct SoundBank {
 
     Sound Jump;
 
-} Sounds;
+};
 
 
-extern Sprites *SPRITES;
+extern struct SpriteBank *SPRITES;
 
-extern Sounds *SOUNDS;
+extern struct SoundBank *SOUNDS;
 
 // Shaders
 extern Shader ShaderLevelTransition;
