@@ -152,7 +152,7 @@ void PlayerCheckAndSetOrigin(Vector2 pos) {
     if (LevelCheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
             "Player's origin couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
-        RenderPrintSysMessage((char *) "Origem iria colidir.");
+        RenderPrintSysMessage("Origem iria colidir.");
         return;
     }
 
@@ -170,7 +170,7 @@ void PlayerCheckAndSetPos(Vector2 pos) {
     if (LevelCheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
             "Player couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
-        RenderPrintSysMessage((char *) "Jogador iria colidir.");
+        RenderPrintSysMessage("Jogador iria colidir.");
         return;
     }
     
@@ -497,7 +497,7 @@ void PlayerSetCheckpoint() {
     }
 
     if (LEVEL_STATE->checkpointsLeft < 1) {
-        RenderPrintSysMessage((char *) "Sem checkpoints disponíveis.");
+        RenderPrintSysMessage("Sem checkpoints disponíveis.");
         return;
     }
 

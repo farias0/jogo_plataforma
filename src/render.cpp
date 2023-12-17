@@ -669,6 +669,11 @@ void RenderPrintSysMessage(char *msg) {
     TraceLog(LOG_TRACE, "Added sys message to list: '%s'.", msg);
 }
 
+void RenderPrintSysMessage(const std::string &msg) {
+
+    RenderPrintSysMessage((char *) msg.c_str());
+}
+
 void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
     levelTransitionShaderControl.timer = GetTime();

@@ -12,6 +12,7 @@
 #include "render.hpp"
 #include "editor.hpp"
 #include "debug.hpp"
+#include "sounds.hpp"
 
 
 namespace Input {
@@ -69,6 +70,7 @@ void handleDevInput() {
     if      (IsKeyPressed(KEY_F1))          { EditorEnabledToggle(); return; }
     if      (IsKeyPressed(KEY_F2))          DebugHudToggle();
     if      (IsKeyPressed(KEY_F3))          GAME_STATE->showDebugGrid = !GAME_STATE->showDebugGrid;
+    if      (IsKeyPressed(KEY_F6))          Sounds::Toggle();
 
 
     /* Mouse functionalities */

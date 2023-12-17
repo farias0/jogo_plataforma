@@ -1,6 +1,8 @@
 #ifndef _RENDER_H_INCLUDED_
 #define _RENDER_H_INCLUDED_
 
+#include "string"
+
 #include "level/level.hpp"
 
 
@@ -17,6 +19,9 @@ void RenderResizeWindow(int width, int height);
 
 // Prints a system message in the screen
 void RenderPrintSysMessage(char *msg);
+
+// Prints a system message in the screen
+void RenderPrintSysMessage(const std::string &msg);
 
 /*
     Starts the visual effect of transitioning from overworld to level or vice-versa.
