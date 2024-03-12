@@ -10,9 +10,10 @@ int main() {
     SetTraceLogLevel(LOG_DEBUG);
 
     // debug
-    int gamepadIdx = 0;
-    if (IsGamepadAvailable(gamepadIdx))
-        TraceLog(LOG_DEBUG, "Gamepad detected. Index=%i.", gamepadIdx);
+    for (int gamepadIdx = 0; gamepadIdx < 10000; gamepadIdx++) {
+        if (IsGamepadAvailable(gamepadIdx))
+            TraceLog(LOG_DEBUG, "Gamepad detected. Index=%i.", gamepadIdx);
+    }
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Jogo de plataforma");
     
