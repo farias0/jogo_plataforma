@@ -30,6 +30,10 @@ int main() {
     {
         Input::Handle();
 
+        if (GetKeyPressed()) {
+            TraceLog(LOG_DEBUG, "Key pressed=%i.", GetKeyPressed());
+        }
+
         GameUpdate();
 
         Render();
