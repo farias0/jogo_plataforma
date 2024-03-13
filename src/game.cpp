@@ -9,13 +9,6 @@ int main() {
 
     SetTraceLogLevel(LOG_DEBUG);
 
-    // debug
-    TraceLog(LOG_DEBUG, "Searching gamepads...");
-    for (int gamepadIdx = 0; gamepadIdx < 10000; gamepadIdx++) {
-        if (IsGamepadAvailable(gamepadIdx))
-            TraceLog(LOG_DEBUG, "Gamepad detected. Index=%i.", gamepadIdx);
-    }
-
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Jogo de plataforma");
     
     SetTargetFPS(60);
@@ -26,12 +19,20 @@ int main() {
 
     OverworldLoad();
 
+    // debug
+    TraceLog(LOG_DEBUG, "Searching gamepads...");
+    for (int gamepadIdx = 0; gamepadIdx < 10000; gamepadIdx++) {
+        if (IsGamepadAvailable(gamepadIdx))
+            TraceLog(LOG_DEBUG, "Gamepad detected. Index=%i.", gamepadIdx);
+    }
+
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         Input::Handle();
 
-        if (GetKeyPressed()) {
-            TraceLog(LOG_DEBUG, "Key pressed=%i.", GetKeyPressed());
+        int a = GetGamepadButtonPressed(); 
+        if (a) {
+            TraceLog(LOG_DEBUG, "Key pressed=%i.", a);
         }
 
         GameUpdate();
