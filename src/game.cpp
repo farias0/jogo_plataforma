@@ -28,6 +28,15 @@ int main() {
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+        int keyPressed = GetGamepadButtonPressed();
+        if (keyPressed) {
+            TraceLog(LOG_INFO, "GPPressed=%i.", keyPressed);
+        }
+        keyPressed = GetKeyPressed();
+        if (keyPressed) {
+            TraceLog(LOG_INFO, "KeyPressed=%i.", keyPressed);
+        }
+
         Input::Handle();
 
         int a = GetGamepadButtonPressed(); 
