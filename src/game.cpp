@@ -39,11 +39,6 @@ int main() {
 
         Input::Handle();
 
-        int a = GetGamepadButtonPressed(); 
-        if (a) {
-            TraceLog(LOG_DEBUG, "Key pressed=%i.", a);
-        }
-
         GameUpdate();
 
         Render();
