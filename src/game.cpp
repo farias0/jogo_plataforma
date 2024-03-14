@@ -19,6 +19,10 @@ int main() {
 
     OverworldLoad();
 
+    TraceLog(LOG_INFO, "Gamepad name::");
+    TraceLog(LOG_INFO, GetGamepadName(0));
+
+
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         int keyPressed = GetGamepadButtonPressed();
