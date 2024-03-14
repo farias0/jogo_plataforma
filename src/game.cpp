@@ -19,13 +19,6 @@ int main() {
 
     OverworldLoad();
 
-    // debug
-    TraceLog(LOG_DEBUG, "Searching gamepads...");
-    for (int gamepadIdx = 0; gamepadIdx < 10000; gamepadIdx++) {
-        if (IsGamepadAvailable(gamepadIdx))
-            TraceLog(LOG_DEBUG, "Gamepad detected. Index=%i.", gamepadIdx);
-    }
-
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         int keyPressed = GetGamepadButtonPressed();
