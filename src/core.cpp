@@ -106,6 +106,12 @@ void GameUpdate() {
     windowTitleUpdate();
 }
 
+void GameExit() {
+
+    TraceLog(LOG_INFO, "Exiting game.");
+    exit(0);
+}
+
 ListNode *GetEntityListHead() {
 
     if (GAME_STATE->mode == MODE_IN_LEVEL) return LEVEL_STATE->listHead;
