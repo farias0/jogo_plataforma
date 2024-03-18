@@ -32,6 +32,9 @@ int main() {
         keyPressed = GetKeyPressed();
         if (keyPressed) {
             TraceLog(LOG_INFO, "KeyPressed=%i.", keyPressed);
+            if (keyPressed == 32) {
+                TraceLog(LOG_INFO, "DEBUGGIGN");
+            }
         }
 
         Input::Handle();
