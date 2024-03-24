@@ -38,7 +38,7 @@ typedef enum {
     ANALOG_RIGHT = 2,
     ANALOG_UP = 4,
     ANALOG_DOWN = 8,
-} AnalogStickDigitalState;
+} AnalogStickDigitalDirection;
 
 class InputState {
 
