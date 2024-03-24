@@ -28,23 +28,31 @@ bool isGamepadDown(int button) {
     return IsGamepadButtonDown(GAME_STATE->gamepadIdx, button);
 }
 
-// Maps the left analog stick to one of the directionals
-bool isGamepadAnalogDown(int button) {
+bool isGamepadAnalogDown(char state, int button) {
 
     switch (button)
     {
     case GP_LEFT:
-        return (STATE.leftStickCurrentState & ANALOG_LEFT) == ANALOG_LEFT;
+        return (state & ANALOG_LEFT) == ANALOG_LEFT;
     case GP_RIGHT:
-        return (STATE.leftStickCurrentState & ANALOG_RIGHT) == ANALOG_RIGHT;
+        return (state & ANALOG_RIGHT) == ANALOG_RIGHT;
     case GP_UP:
-        return (STATE.leftStickCurrentState & ANALOG_UP) == ANALOG_UP;
+        return (state & ANALOG_UP) == ANALOG_UP;
     case GP_DOWN:
-        return (STATE.leftStickCurrentState & ANALOG_DOWN) == ANALOG_DOWN;
+        return (state & ANALOG_DOWN) == ANALOG_DOWN;
     default:
         TraceLog(LOG_ERROR, "Tried to read the left analog as the button %d");
         return false;
     }
+}
+
+bool isGamepadAnalogDown(int button) {
+    return isGamepadAnalogDown(STATE.leftStickCurrentState, button);   
+}
+
+bool isGamePadAnalogPressed(int button) {
+    return isGamepadAnalogDown(STATE.leftStickCurrentState, button) &&
+            !isGamepadAnalogDown(STATE.leftStickPreviousState, button);
 }
 
 void updateLeftStickState() {
@@ -59,8 +67,8 @@ void updateLeftStickState() {
     else if (reading < ANALOG_STICK_DIGITAL_THRESHOLD * -1) horizontal = ANALOG_LEFT;
 
     reading = GetGamepadAxisMovement(GAME_STATE->gamepadIdx, 1);
-    if (reading > ANALOG_STICK_DIGITAL_THRESHOLD) vertical = ANALOG_UP;
-    else if (reading < ANALOG_STICK_DIGITAL_THRESHOLD * -1) vertical = ANALOG_DOWN;
+    if (reading > ANALOG_STICK_DIGITAL_THRESHOLD) vertical = ANALOG_DOWN;
+    else if (reading < ANALOG_STICK_DIGITAL_THRESHOLD * -1) vertical = ANALOG_UP;
 
     STATE.leftStickCurrentState = horizontal | vertical; 
 }
@@ -134,16 +142,16 @@ void handleOverworldInput() {
         { OverworldLevelSelect(); return; };
 
 
-    if (IsKeyPressed(KEY_UP) || isGamepadPressed(GP_UP))
+    if (IsKeyPressed(KEY_UP) || isGamepadPressed(GP_UP) || isGamePadAnalogPressed(GP_UP))
         OverworldCursorMove(OW_CURSOR_UP);
 
-    else if (IsKeyPressed(KEY_DOWN) || isGamepadPressed(GP_DOWN))
+    else if (IsKeyPressed(KEY_DOWN) || isGamepadPressed(GP_DOWN) || isGamePadAnalogPressed(GP_DOWN))
         OverworldCursorMove(OW_CURSOR_DOWN);
 
-    else if (IsKeyPressed(KEY_LEFT) || isGamepadPressed(GP_LEFT))
+    else if (IsKeyPressed(KEY_LEFT) || isGamepadPressed(GP_LEFT) || isGamePadAnalogPressed(GP_LEFT))
         OverworldCursorMove(OW_CURSOR_LEFT);
         
-    else if (IsKeyPressed(KEY_RIGHT) || isGamepadPressed(GP_RIGHT))
+    else if (IsKeyPressed(KEY_RIGHT) || isGamepadPressed(GP_RIGHT) || isGamePadAnalogPressed(GP_RIGHT))
         OverworldCursorMove(OW_CURSOR_RIGHT);
 }
 
