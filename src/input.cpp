@@ -244,6 +244,10 @@ void Initialize() {
 
     STATE = InputState();
 
+    // For some reason IsGamepadAvailable only works from the second frame onwards,
+    // I have no idea why, and I didn't feel like debugging it
+    TraceLog(LOG_INFO, "Gamepad 0 name: %s", GetGamepadName(0));
+
     TraceLog(LOG_INFO, "Input initialized.");
 }
 

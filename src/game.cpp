@@ -19,24 +19,8 @@ int main() {
 
     OverworldLoad();
 
-    TraceLog(LOG_INFO, "Gamepad name::");
-    TraceLog(LOG_INFO, GetGamepadName(0));
-
-
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        int keyPressed = GetGamepadButtonPressed();
-        if (keyPressed) {
-            TraceLog(LOG_INFO, "GPPressed=%i.", keyPressed);
-        }
-        keyPressed = GetKeyPressed();
-        if (keyPressed) {
-            TraceLog(LOG_INFO, "KeyPressed=%i.", keyPressed);
-            if (keyPressed == 32) {
-                TraceLog(LOG_INFO, "DEBUGGIGN");
-            }
-        }
-
         Input::Handle();
 
         GameUpdate();
