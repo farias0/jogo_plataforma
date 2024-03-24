@@ -48,48 +48,79 @@ bool isGamepadDown(int button) {
 
 void handleInLevelInput() {
 
-    if      (IsKeyPressed(KEY_F5))          GAME_STATE->showBackground = !GAME_STATE->showBackground;
+    if (IsKeyPressed(KEY_F5))
+        GAME_STATE->showBackground = !GAME_STATE->showBackground;
 
 
     if (EDITOR_STATE->isEnabled) return;
 
 
-    if      (IsKeyPressed(KEY_BACKSPACE) || isGamepadPressed(GP_SELECT))    { LevelGoToOverworld(); return; }
+    if (IsKeyPressed(KEY_BACKSPACE) || isGamepadPressed(GP_SELECT))
+        { LevelGoToOverworld(); return; }
 
-    if      (IsKeyPressed(KEY_ENTER) || isGamepadPressed(GP_START))         { LevelPauseToggle(); return; }
+
+    if (IsKeyPressed(KEY_ENTER) || isGamepadPressed(GP_START))
+        { LevelPauseToggle(); return; }
 
 
     if (LEVEL_STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
 
 
-    if      (IsKeyDown(KEY_Z) || isGamepadDown(GP_X))                   PlayerStartRunning();
-    else                                    PlayerStopRunning();
+    if (IsKeyDown(KEY_Z) || isGamepadDown(GP_X))
+        PlayerStartRunning();
+    else
+        PlayerStopRunning();
 
-    if      (IsKeyDown(KEY_RIGHT) || isGamepadDown(GP_RIGHT))           PlayerMoveHorizontal(PLAYER_DIRECTION_RIGHT);
-    else if (IsKeyDown(KEY_LEFT) || isGamepadDown(GP_LEFT))             PlayerMoveHorizontal(PLAYER_DIRECTION_LEFT);
-    else                                    PlayerMoveHorizontal(PLAYER_DIRECTION_STOP);
 
-    if      (IsKeyPressed(KEY_X) || isGamepadPressed(GP_A))           PlayerJump();
+    if (IsKeyDown(KEY_RIGHT) || isGamepadDown(GP_RIGHT))
+        PlayerMoveHorizontal(PLAYER_DIRECTION_RIGHT);
 
-    if      (IsKeyPressed(KEY_C) || isGamepadPressed(GP_Y))           PlayerSetCheckpoint();
+    else if (IsKeyDown(KEY_LEFT) || isGamepadDown(GP_LEFT))
+        PlayerMoveHorizontal(PLAYER_DIRECTION_LEFT);
+
+    else
+        PlayerMoveHorizontal(PLAYER_DIRECTION_STOP);
+
+
+    if (IsKeyPressed(KEY_X) || isGamepadPressed(GP_A))
+        PlayerJump();
+
+    if (IsKeyPressed(KEY_C) || isGamepadPressed(GP_Y))
+        PlayerSetCheckpoint();
+
 
     // For debugging
-    if      (IsKeyPressed(KEY_ONE))         PlayerSetMode(PLAYER_MODE_DEFAULT);
-    if      (IsKeyPressed(KEY_TWO))         PlayerSetMode(PLAYER_MODE_GLIDE);
+    if (IsKeyPressed(KEY_ONE))
+        PlayerSetMode(PLAYER_MODE_DEFAULT);
+
+    if (IsKeyPressed(KEY_TWO))
+        PlayerSetMode(PLAYER_MODE_GLIDE);
 }
 
 void handleOverworldInput() {
 
     if (EDITOR_STATE->isEnabled) return;
 
-    if      (isGamepadPressed(GP_SELECT))                           GameExit();
 
-    if      (IsKeyPressed(KEY_X) || isGamepadPressed(GP_A))         { OverworldLevelSelect(); return; };
+    if (isGamepadPressed(GP_SELECT))
+        GameExit();
 
-    if      (IsKeyPressed(KEY_UP) || isGamepadPressed(GP_UP))       OverworldCursorMove(OW_CURSOR_UP);
-    else if (IsKeyPressed(KEY_DOWN) || isGamepadPressed(GP_DOWN))   OverworldCursorMove(OW_CURSOR_DOWN);
-    else if (IsKeyPressed(KEY_LEFT) || isGamepadPressed(GP_LEFT))   OverworldCursorMove(OW_CURSOR_LEFT);
-    else if (IsKeyPressed(KEY_RIGHT) || isGamepadPressed(GP_RIGHT)) OverworldCursorMove(OW_CURSOR_RIGHT);
+
+    if (IsKeyPressed(KEY_X) || isGamepadPressed(GP_A))
+        { OverworldLevelSelect(); return; };
+
+
+    if (IsKeyPressed(KEY_UP) || isGamepadPressed(GP_UP))
+        OverworldCursorMove(OW_CURSOR_UP);
+
+    else if (IsKeyPressed(KEY_DOWN) || isGamepadPressed(GP_DOWN))
+        OverworldCursorMove(OW_CURSOR_DOWN);
+
+    else if (IsKeyPressed(KEY_LEFT) || isGamepadPressed(GP_LEFT))
+        OverworldCursorMove(OW_CURSOR_LEFT);
+        
+    else if (IsKeyPressed(KEY_RIGHT) || isGamepadPressed(GP_RIGHT))
+        OverworldCursorMove(OW_CURSOR_RIGHT);
 }
 
 void handleDevInput() {
