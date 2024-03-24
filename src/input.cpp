@@ -20,49 +20,120 @@ namespace Input {
 InputState STATE;
 
 
+bool isGamepadPressed(int button) {
+    return IsGamepadButtonPressed(GAME_STATE->gamepadIdx, button);
+}
+
+bool isGamepadDown(int button) {
+    return IsGamepadButtonDown(GAME_STATE->gamepadIdx, button);
+}
+
+bool isGamepadAnalogDown(AnalogStickDigitalDirection dir) {
+    return (STATE.leftStickCurrentState & dir) == dir;
+}
+
+bool isGamePadAnalogPressed(AnalogStickDigitalDirection dir) {
+    return isGamepadAnalogDown(dir) && (STATE.leftStickPreviousState & dir) != dir;
+}
+
+void updateLeftStickState() {
+
+    STATE.leftStickPreviousState = STATE.leftStickCurrentState;
+
+    char horizontal = 0, vertical = 0;
+    float reading;
+
+    reading = GetGamepadAxisMovement(GAME_STATE->gamepadIdx, 0);
+    if (reading > ANALOG_STICK_DIGITAL_THRESHOLD) horizontal = ANALOG_RIGHT;
+    else if (reading < ANALOG_STICK_DIGITAL_THRESHOLD * -1) horizontal = ANALOG_LEFT;
+
+    reading = GetGamepadAxisMovement(GAME_STATE->gamepadIdx, 1);
+    if (reading > ANALOG_STICK_DIGITAL_THRESHOLD) vertical = ANALOG_DOWN;
+    else if (reading < ANALOG_STICK_DIGITAL_THRESHOLD * -1) vertical = ANALOG_UP;
+
+    STATE.leftStickCurrentState = horizontal | vertical; 
+}
+
+void updateInputStates() {
+
+    updateLeftStickState();
+}
+
 void handleInLevelInput() {
 
-    if      (IsKeyPressed(KEY_F5))          GAME_STATE->showBackground = !GAME_STATE->showBackground;
+    if (IsKeyPressed(KEY_F5))
+        GAME_STATE->showBackground = !GAME_STATE->showBackground;
 
 
     if (EDITOR_STATE->isEnabled) return;
 
 
-    if      (IsKeyPressed(KEY_BACKSPACE))   { LevelGoToOverworld(); return; }
+    if (IsKeyPressed(KEY_BACKSPACE) || isGamepadPressed(GP_SELECT))
+        { LevelGoToOverworld(); return; }
 
-    if      (IsKeyPressed(KEY_ENTER))       { LevelPauseToggle(); return; }
+
+    if (IsKeyPressed(KEY_ENTER) || isGamepadPressed(GP_START))
+        { LevelPauseToggle(); return; }
 
 
     if (LEVEL_STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
 
 
-    if      (IsKeyDown(KEY_Z))              PlayerStartRunning();
-    else                                    PlayerStopRunning();
+    if (IsKeyDown(KEY_Z) || isGamepadDown(GP_X))
+        PlayerStartRunning();
+    else
+        PlayerStopRunning();
 
-    if      (IsKeyDown(KEY_RIGHT))          PlayerMoveHorizontal(PLAYER_DIRECTION_RIGHT);
-    else if (IsKeyDown(KEY_LEFT))           PlayerMoveHorizontal(PLAYER_DIRECTION_LEFT);
-    else                                    PlayerMoveHorizontal(PLAYER_DIRECTION_STOP);
 
-    if      (IsKeyPressed(KEY_X))           PlayerJump();
+    if (IsKeyDown(KEY_RIGHT) || isGamepadDown(GP_RIGHT) || isGamepadAnalogDown(ANALOG_RIGHT))
+        PlayerMoveHorizontal(PLAYER_DIRECTION_RIGHT);
 
-    if      (IsKeyPressed(KEY_C))           PlayerSetCheckpoint();
+    else if (IsKeyDown(KEY_LEFT) || isGamepadDown(GP_LEFT) || isGamepadAnalogDown(ANALOG_LEFT))
+        PlayerMoveHorizontal(PLAYER_DIRECTION_LEFT);
+
+    else
+        PlayerMoveHorizontal(PLAYER_DIRECTION_STOP);
+
+
+    if (IsKeyPressed(KEY_X) || isGamepadPressed(GP_A))
+        PlayerJump();
+
+    if (IsKeyPressed(KEY_C) || isGamepadPressed(GP_Y))
+        PlayerSetCheckpoint();
+
 
     // For debugging
-    if      (IsKeyPressed(KEY_ONE))         PlayerSetMode(PLAYER_MODE_DEFAULT);
-    if      (IsKeyPressed(KEY_TWO))         PlayerSetMode(PLAYER_MODE_GLIDE);
+    if (IsKeyPressed(KEY_ONE))
+        PlayerSetMode(PLAYER_MODE_DEFAULT);
+
+    if (IsKeyPressed(KEY_TWO))
+        PlayerSetMode(PLAYER_MODE_GLIDE);
 }
 
 void handleOverworldInput() {
 
     if (EDITOR_STATE->isEnabled) return;
-    
 
-    if      (IsKeyPressed(KEY_X))           { OverworldLevelSelect(); return; };
 
-    if      (IsKeyPressed(KEY_UP))          OverworldCursorMove(OW_CURSOR_UP);
-    else if (IsKeyPressed(KEY_DOWN))        OverworldCursorMove(OW_CURSOR_DOWN);
-    else if (IsKeyPressed(KEY_LEFT))        OverworldCursorMove(OW_CURSOR_LEFT);
-    else if (IsKeyPressed(KEY_RIGHT))       OverworldCursorMove(OW_CURSOR_RIGHT);
+    if (isGamepadPressed(GP_SELECT))
+        GameExit();
+
+
+    if (IsKeyPressed(KEY_X) || isGamepadPressed(GP_A))
+        { OverworldLevelSelect(); return; };
+
+
+    if (IsKeyPressed(KEY_UP) || isGamepadPressed(GP_UP) || isGamePadAnalogPressed(ANALOG_UP))
+        OverworldCursorMove(OW_CURSOR_UP);
+
+    else if (IsKeyPressed(KEY_DOWN) || isGamepadPressed(GP_DOWN) || isGamePadAnalogPressed(ANALOG_DOWN))
+        OverworldCursorMove(OW_CURSOR_DOWN);
+
+    else if (IsKeyPressed(KEY_LEFT) || isGamepadPressed(GP_LEFT) || isGamePadAnalogPressed(ANALOG_LEFT))
+        OverworldCursorMove(OW_CURSOR_LEFT);
+        
+    else if (IsKeyPressed(KEY_RIGHT) || isGamepadPressed(GP_RIGHT) || isGamePadAnalogPressed(ANALOG_RIGHT))
+        OverworldCursorMove(OW_CURSOR_RIGHT);
 }
 
 void handleDevInput() {
@@ -217,10 +288,16 @@ void Initialize() {
 
     STATE = InputState();
 
+    // For some reason IsGamepadAvailable only works from the second frame onwards,
+    // I have no idea why, and I didn't feel like debugging it
+    TraceLog(LOG_INFO, "Gamepad 0 name: %s", GetGamepadName(0));
+
     TraceLog(LOG_INFO, "Input initialized.");
 }
 
 void Handle() {
+
+    updateInputStates();
 
     if (GAME_STATE->waitingForTextInput) {
         handleTextInput();

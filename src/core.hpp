@@ -64,6 +64,9 @@ typedef struct GameState {
     bool showDebugHUD;
     bool showDebugGrid;
     bool showBackground;
+
+    int gamepadIdx = 0;
+
 } GameState;
 
 
@@ -79,6 +82,8 @@ void SystemsInitialize();
 
 // Updates the logic of the game. To be called once every frame.
 void GameUpdate();
+
+void GameExit();
 
 // True if the given position is inside the game screen (doesn't include the editor)
 bool IsInPlayArea(Vector2 pos);
