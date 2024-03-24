@@ -20,24 +20,6 @@ namespace Input {
 InputState STATE;
 
 
-typedef enum {
-    GP_UP = 1,
-    GP_RIGHT = 2,
-    GP_DOWN = 3,
-    GP_LEFT = 4,
-    GP_Y = 5,
-    GP_B = 6,
-    GP_A = 7,
-    GP_X = 8,
-    GP_L1 = 9,
-    GP_R1 = 11,
-    GP_SELECT = 13,
-    GP_START = 15,
-    GP_L3 = 16,
-    GP_R3 = 17,
-} GamepadButton;
-
-
 bool isGamepadPressed(int button) {
     return IsGamepadButtonPressed(GAME_STATE->gamepadIdx, button);
 }
@@ -48,18 +30,44 @@ bool isGamepadDown(int button) {
 
 // Maps the left analog stick to one of the directionals
 bool isGamepadAnalogDown(int button) {
-    if (button < GP_UP || button > GP_LEFT) {
+
+    switch (button)
+    {
+    case GP_LEFT:
+        return (STATE.leftStickCurrentState & ANALOG_LEFT) == ANALOG_LEFT;
+    case GP_RIGHT:
+        return (STATE.leftStickCurrentState & ANALOG_RIGHT) == ANALOG_RIGHT;
+    case GP_UP:
+        return (STATE.leftStickCurrentState & ANALOG_UP) == ANALOG_UP;
+    case GP_DOWN:
+        return (STATE.leftStickCurrentState & ANALOG_DOWN) == ANALOG_DOWN;
+    default:
         TraceLog(LOG_ERROR, "Tried to read the left analog as the button %d");
         return false;
     }
+}
 
-    int axis = 0;
-    if (button == GP_UP || button == GP_DOWN) axis = 1;
+void updateLeftStickState() {
 
-    float reading = GetGamepadAxisMovement(GAME_STATE->gamepadIdx, axis);
+    STATE.leftStickPreviousState = STATE.leftStickCurrentState;
 
-    if (button == GP_RIGHT || button == GP_DOWN) return reading > ANALOG_STICK_DIGITAL_THRESHOLD;
-    else return reading < -1 * ANALOG_STICK_DIGITAL_THRESHOLD;
+    char horizontal = 0, vertical = 0;
+    float reading;
+
+    reading = GetGamepadAxisMovement(GAME_STATE->gamepadIdx, 0);
+    if (reading > ANALOG_STICK_DIGITAL_THRESHOLD) horizontal = ANALOG_RIGHT;
+    else if (reading < ANALOG_STICK_DIGITAL_THRESHOLD * -1) horizontal = ANALOG_LEFT;
+
+    reading = GetGamepadAxisMovement(GAME_STATE->gamepadIdx, 1);
+    if (reading > ANALOG_STICK_DIGITAL_THRESHOLD) vertical = ANALOG_UP;
+    else if (reading < ANALOG_STICK_DIGITAL_THRESHOLD * -1) vertical = ANALOG_DOWN;
+
+    STATE.leftStickCurrentState = horizontal | vertical; 
+}
+
+void updateInputStates() {
+
+    updateLeftStickState();
 }
 
 void handleInLevelInput() {
@@ -299,6 +307,8 @@ void Initialize() {
 }
 
 void Handle() {
+
+    updateInputStates();
 
     if (GAME_STATE->waitingForTextInput) {
         handleTextInput();
