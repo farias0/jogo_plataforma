@@ -46,6 +46,22 @@ bool isGamepadDown(int button) {
     return IsGamepadButtonDown(GAME_STATE->gamepadIdx, button);
 }
 
+// Maps the left analog stick to one of the directionals
+bool isGamepadAnalogDown(int button) {
+    if (button < GP_UP || button > GP_LEFT) {
+        TraceLog(LOG_ERROR, "Tried to read the left analog as the button %d");
+        return false;
+    }
+
+    int axis = 0;
+    if (button == GP_UP || button == GP_DOWN) axis = 1;
+
+    float reading = GetGamepadAxisMovement(GAME_STATE->gamepadIdx, axis);
+
+    if (button == GP_RIGHT || button == GP_DOWN) return reading > ANALOG_STICK_DIGITAL_THRESHOLD;
+    else return reading < -1 * ANALOG_STICK_DIGITAL_THRESHOLD;
+}
+
 void handleInLevelInput() {
 
     if (IsKeyPressed(KEY_F5))
@@ -72,10 +88,10 @@ void handleInLevelInput() {
         PlayerStopRunning();
 
 
-    if (IsKeyDown(KEY_RIGHT) || isGamepadDown(GP_RIGHT))
+    if (IsKeyDown(KEY_RIGHT) || isGamepadDown(GP_RIGHT) || isGamepadAnalogDown(GP_RIGHT))
         PlayerMoveHorizontal(PLAYER_DIRECTION_RIGHT);
 
-    else if (IsKeyDown(KEY_LEFT) || isGamepadDown(GP_LEFT))
+    else if (IsKeyDown(KEY_LEFT) || isGamepadDown(GP_LEFT) || isGamepadAnalogDown(GP_LEFT))
         PlayerMoveHorizontal(PLAYER_DIRECTION_LEFT);
 
     else
