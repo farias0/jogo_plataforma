@@ -61,7 +61,7 @@ static void initializePlayerState() {
     PLAYER_STATE = (PlayerState *) MemAlloc(sizeof(PlayerState));
 
     PLAYER_STATE->isAscending = false;
-    PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
+    PLAYER_STATE->isHoldingRun = false;
     PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
     PLAYER_STATE->lastPressedJump = -1;
     PLAYER_STATE->lastGroundBeneath = -1;
@@ -73,7 +73,7 @@ static void initializePlayerState() {
 // propulsion of a jump
 static float jumpStartVelocity() {
 
-    if (PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
+    if (PLAYER_STATE->isHoldingRun)
         return JUMP_START_VELOCITY_RUNNING;
     else
         return JUMP_START_VELOCITY_DEFAULT;
@@ -191,14 +191,9 @@ void PlayerMoveHorizontal(PlayerHorizontalDirection direction) {
     PLAYER_STATE->xDirection = direction;
 }
 
-void PlayerStartRunning() {
+void PlayerIsHoldingRunButton(bool isHolding) {
 
-    PLAYER_STATE->speed = PLAYER_MOVEMENT_RUNNING;
-}
-
-void PlayerStopRunning() {
-
-    PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
+    PLAYER_STATE->isHoldingRun = isHolding;
 }
 
 void PlayerJump() {
@@ -228,15 +223,14 @@ void PlayerTick() {
 
     if (pState->xDirection == PLAYER_DIRECTION_STOP)
         xVelocity = 0;
-    else if (PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
+    else if (PLAYER_STATE->isHoldingRun) {
         // Can't move fast in the air if started jumping with normal speed
-        if (pState->groundBeneath || pState->jumpSpeed == PLAYER_MOVEMENT_RUNNING)
+        if (pState->groundBeneath || pState->wasRunningOnJumpStart)
             xVelocity = X_VELOCITY_RUNNING;       
         else
             xVelocity = X_VELOCITY_DEFAULT;
     }
-    else if (PLAYER_STATE->speed == PLAYER_MOVEMENT_DEFAULT)
-        xVelocity = X_VELOCITY_DEFAULT;
+    else xVelocity = X_VELOCITY_DEFAULT;
 
     if (!PLAYER_ENTITY->isFacingRight)
         xVelocity *= -1;
@@ -278,7 +272,7 @@ void PlayerTick() {
         pState->isAscending = true;
         pState->yVelocity = jumpStartVelocity();
         pState->yVelocityTarget = 0.0f;
-        pState->jumpSpeed = pState->speed;
+        pState->wasRunningOnJumpStart = pState->isHoldingRun;
         Sounds::Play(SOUNDS->Jump);
 
         // Player hit enemy
@@ -424,7 +418,7 @@ next_entity:
 
         if (PLAYER_STATE->mode == PLAYER_MODE_GLIDE &&
                 !PLAYER_STATE->isAscending &&
-                PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
+                PLAYER_STATE->isHoldingRun) {
 
             // Is gliding
             pState->yVelocity = Y_VELOCITY_GLIDING;

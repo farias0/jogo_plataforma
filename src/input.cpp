@@ -79,10 +79,7 @@ void handleInLevelInput() {
     if (LEVEL_STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
 
 
-    if (IsKeyDown(KEY_Z) || isGamepadDown(GP_X))
-        PlayerStartRunning();
-    else
-        PlayerStopRunning();
+    PlayerIsHoldingRunButton(IsKeyDown(KEY_Z) || isGamepadDown(GP_X));
 
 
     if (IsKeyDown(KEY_RIGHT) || isGamepadDown(GP_RIGHT) || isGamepadAnalogDown(ANALOG_RIGHT))

@@ -7,11 +7,6 @@
 #include "level.hpp"
 
 
-typedef enum PlayerMovementSpeed {
-    PLAYER_MOVEMENT_DEFAULT,
-    PLAYER_MOVEMENT_RUNNING
-} PlayerMovementSpeed;
-
 typedef enum PlayerHorizontalDirection {
     PLAYER_DIRECTION_STOP,
     PLAYER_DIRECTION_LEFT,
@@ -44,10 +39,10 @@ typedef struct PlayerState {
     float yVelocityTarget;
     float xVelocity;
 
-    PlayerMovementSpeed speed;
+    bool isHoldingRun;
 
-    // The speed of the current jump (if jumping)
-    PlayerMovementSpeed jumpSpeed;
+    // If the player is jumping, if he was running at the jump's start
+    bool wasRunningOnJumpStart;
 
     PlayerMode mode;
 
@@ -76,9 +71,8 @@ void PlayerSetMode(PlayerMode mode);
 
 void PlayerMoveHorizontal(PlayerHorizontalDirection direction);
 
-void PlayerStartRunning();
-
-void PlayerStopRunning();
+// If the player is holding the run button
+void PlayerIsHoldingRunButton(bool isHolding);
 
 void PlayerJump();
 
