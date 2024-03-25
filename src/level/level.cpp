@@ -232,6 +232,8 @@ void LevelGoToOverworld() {
         return;    
     }
 
+    if (LEVEL_STATE->concludedAgo != -1) return;
+
     CameraPanningReset();
 
     RenderLevelTransitionEffectStart(
