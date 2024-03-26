@@ -40,6 +40,13 @@ typedef enum {
     ANALOG_DOWN = 8,
 } AnalogStickDigitalDirection;
 
+typedef enum {
+    PLAYER_DIRECTION_STOP,
+    PLAYER_DIRECTION_LEFT,
+    PLAYER_DIRECTION_RIGHT
+} PlayerMoveDirection;
+
+
 class InputState {
 
 public:
@@ -52,6 +59,9 @@ public:
 
     char leftStickCurrentState;
     char leftStickPreviousState;
+
+    bool isHoldingRun;
+    PlayerMoveDirection playerMoveDirection;
 
     InputState() {}
 };

@@ -9,6 +9,7 @@
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../sounds.hpp"
+#include "../input.hpp"
 
 
 // What % of the player's height is upperbody, for hitboxes
@@ -61,7 +62,6 @@ static void initializePlayerState() {
     PLAYER_STATE = (PlayerState *) MemAlloc(sizeof(PlayerState));
 
     PLAYER_STATE->isAscending = false;
-    PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
     PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
     PLAYER_STATE->lastPressedJump = -1;
     PLAYER_STATE->lastGroundBeneath = -1;
@@ -73,7 +73,7 @@ static void initializePlayerState() {
 // propulsion of a jump
 static float jumpStartVelocity() {
 
-    if (PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING)
+    if (Input::STATE.isHoldingRun)
         return JUMP_START_VELOCITY_RUNNING;
     else
         return JUMP_START_VELOCITY_DEFAULT;
@@ -186,21 +186,6 @@ void PlayerSetMode(PlayerMode mode) {
     TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
 }
 
-void PlayerMoveHorizontal(PlayerHorizontalDirection direction) {
-
-    PLAYER_STATE->xDirection = direction;
-}
-
-void PlayerStartRunning() {
-
-    PLAYER_STATE->speed = PLAYER_MOVEMENT_RUNNING;
-}
-
-void PlayerStopRunning() {
-
-    PLAYER_STATE->speed = PLAYER_MOVEMENT_DEFAULT;
-}
-
 void PlayerJump() {
 
     PLAYER_STATE->lastPressedJump = GetTime();
@@ -218,25 +203,24 @@ void PlayerTick() {
     pState->groundBeneath = LevelGetGroundBeneath(PLAYER_ENTITY);
 
 
-    if (pState->xDirection == PLAYER_DIRECTION_RIGHT)
+    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
         PLAYER_ENTITY->isFacingRight = true;
-    else if (pState->xDirection == PLAYER_DIRECTION_LEFT)
+    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
         PLAYER_ENTITY->isFacingRight = false;
         
 
     float xVelocity = fabs(pState->xVelocity);
 
-    if (pState->xDirection == PLAYER_DIRECTION_STOP)
+    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_STOP)
         xVelocity = 0;
-    else if (PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
+    else if (Input::STATE.isHoldingRun) {
         // Can't move fast in the air if started jumping with normal speed
-        if (pState->groundBeneath || pState->jumpSpeed == PLAYER_MOVEMENT_RUNNING)
+        if (pState->groundBeneath || pState->wasRunningOnJumpStart)
             xVelocity = X_VELOCITY_RUNNING;       
         else
             xVelocity = X_VELOCITY_DEFAULT;
     }
-    else if (PLAYER_STATE->speed == PLAYER_MOVEMENT_DEFAULT)
-        xVelocity = X_VELOCITY_DEFAULT;
+    else xVelocity = X_VELOCITY_DEFAULT;
 
     if (!PLAYER_ENTITY->isFacingRight)
         xVelocity *= -1;
@@ -278,7 +262,7 @@ void PlayerTick() {
         pState->isAscending = true;
         pState->yVelocity = jumpStartVelocity();
         pState->yVelocityTarget = 0.0f;
-        pState->jumpSpeed = pState->speed;
+        pState->wasRunningOnJumpStart = Input::STATE.isHoldingRun;
         Sounds::Play(SOUNDS->Jump);
 
         // Player hit enemy
@@ -424,7 +408,7 @@ next_entity:
 
         if (PLAYER_STATE->mode == PLAYER_MODE_GLIDE &&
                 !PLAYER_STATE->isAscending &&
-                PLAYER_STATE->speed == PLAYER_MOVEMENT_RUNNING) {
+                Input::STATE.isHoldingRun) {
 
             // Is gliding
             pState->yVelocity = Y_VELOCITY_GLIDING;
