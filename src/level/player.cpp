@@ -186,11 +186,6 @@ void PlayerSetMode(PlayerMode mode) {
     TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
 }
 
-void PlayerMoveHorizontal(PlayerHorizontalDirection direction) {
-
-    PLAYER_STATE->xDirection = direction;
-}
-
 void PlayerJump() {
 
     PLAYER_STATE->lastPressedJump = GetTime();
@@ -208,15 +203,15 @@ void PlayerTick() {
     pState->groundBeneath = LevelGetGroundBeneath(PLAYER_ENTITY);
 
 
-    if (pState->xDirection == PLAYER_DIRECTION_RIGHT)
+    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
         PLAYER_ENTITY->isFacingRight = true;
-    else if (pState->xDirection == PLAYER_DIRECTION_LEFT)
+    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
         PLAYER_ENTITY->isFacingRight = false;
         
 
     float xVelocity = fabs(pState->xVelocity);
 
-    if (pState->xDirection == PLAYER_DIRECTION_STOP)
+    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_STOP)
         xVelocity = 0;
     else if (Input::STATE.isHoldingRun) {
         // Can't move fast in the air if started jumping with normal speed

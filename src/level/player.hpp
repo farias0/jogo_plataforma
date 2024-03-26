@@ -7,12 +7,6 @@
 #include "level.hpp"
 
 
-typedef enum PlayerHorizontalDirection {
-    PLAYER_DIRECTION_STOP,
-    PLAYER_DIRECTION_LEFT,
-    PLAYER_DIRECTION_RIGHT
-} PlayerHorizontalDirection;
-
 typedef enum PlayerMode {
     PLAYER_MODE_DEFAULT,
     PLAYER_MODE_GLIDE
@@ -31,9 +25,6 @@ typedef struct PlayerState {
 
     // If the player is on mode 'GLIDE' and is actively gliding
     bool isGliding;
-
-    // The player's horizontal movement's direction
-    PlayerHorizontalDirection xDirection;
 
     float yVelocity;
     float yVelocityTarget;
@@ -66,8 +57,6 @@ void PlayerCheckAndSetOrigin(Vector2 pos);
 void PlayerCheckAndSetPos(Vector2 pos);
 
 void PlayerSetMode(PlayerMode mode);
-
-void PlayerMoveHorizontal(PlayerHorizontalDirection direction);
 
 void PlayerJump();
 

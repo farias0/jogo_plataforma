@@ -83,13 +83,13 @@ void handleInLevelInput() {
 
 
     if (IsKeyDown(KEY_RIGHT) || isGamepadDown(GP_RIGHT) || isGamepadAnalogDown(ANALOG_RIGHT))
-        PlayerMoveHorizontal(PLAYER_DIRECTION_RIGHT);
+        STATE.playerMoveDirection = PLAYER_DIRECTION_RIGHT; 
 
     else if (IsKeyDown(KEY_LEFT) || isGamepadDown(GP_LEFT) || isGamepadAnalogDown(ANALOG_LEFT))
-        PlayerMoveHorizontal(PLAYER_DIRECTION_LEFT);
+        STATE.playerMoveDirection = PLAYER_DIRECTION_LEFT;
 
     else
-        PlayerMoveHorizontal(PLAYER_DIRECTION_STOP);
+        STATE.playerMoveDirection = PLAYER_DIRECTION_STOP;
 
 
     if (IsKeyPressed(KEY_X) || isGamepadPressed(GP_A))
