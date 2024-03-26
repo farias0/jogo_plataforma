@@ -39,8 +39,6 @@ typedef struct PlayerState {
     float yVelocityTarget;
     float xVelocity;
 
-    bool isHoldingRun;
-
     // If the player is jumping, if he was running at the jump's start
     bool wasRunningOnJumpStart;
 
@@ -70,9 +68,6 @@ void PlayerCheckAndSetPos(Vector2 pos);
 void PlayerSetMode(PlayerMode mode);
 
 void PlayerMoveHorizontal(PlayerHorizontalDirection direction);
-
-// If the player is holding the run button
-void PlayerIsHoldingRunButton(bool isHolding);
 
 void PlayerJump();
 

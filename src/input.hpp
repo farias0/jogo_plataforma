@@ -53,6 +53,8 @@ public:
     char leftStickCurrentState;
     char leftStickPreviousState;
 
+    bool isHoldingRun;
+
     InputState() {}
 };
 
