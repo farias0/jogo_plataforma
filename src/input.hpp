@@ -8,7 +8,7 @@
 
 
 // The magnitude of the reading of an analog input to be read as a digital input
-#define ANALOG_STICK_DIGITAL_THRESHOLD 0.5
+#define ANALOG_STICK_DIGITAL_THRESHOLD 0.7
 
 
 typedef std::function<void(std::string)> TextInputCallback;
