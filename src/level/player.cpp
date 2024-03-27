@@ -209,8 +209,8 @@ void PlayerTick() {
         float xVelocity = fabs(pState->xVelocity);
 
         if (xVelocity != 0 &&
-            (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && PLAYER_ENTITY->isFacingRight ||
-            Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && !PLAYER_ENTITY->isFacingRight)) {
+            ((Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && PLAYER_ENTITY->isFacingRight) ||
+            (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && !PLAYER_ENTITY->isFacingRight))) {
 
             xVelocity -= X_DEACCELERATION_RATE_ACTIVE;
             if (xVelocity < 0) xVelocity = 0;
@@ -241,7 +241,7 @@ void PlayerTick() {
 END_HORIZONTAL_VELOCITY_CALCULATION:
 
         if (!PLAYER_ENTITY->isFacingRight) xVelocity *= -1;
-        
+
         pState->xVelocity = xVelocity;
 
     }
