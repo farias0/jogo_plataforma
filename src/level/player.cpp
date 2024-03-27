@@ -16,10 +16,10 @@
 #define PLAYERS_UPPERBODY_PROPORTION        0.90f
 
 #define X_MAX_SPEED_WALKING                 6.0f
-#define X_MAX_SPEED_RUNNING                 10.0f
+#define X_MAX_SPEED_RUNNING                 9.0f
 #define X_ACCELERATION_RATE                 0.25f
 #define X_DEACCELERATION_RATE_PASSIVE       0.3f // For when the player just stops moving
-#define X_DEACCELERATION_RATE_ACTIVE        0.6f // For when the player actively tries to stop in place
+#define X_DEACCELERATION_RATE_ACTIVE        0.45f // For when the player actively tries to stop in place
 
 // The Y velocity applied when starting a jump
 #define JUMP_START_VELOCITY_DEFAULT         10.0f
@@ -202,17 +202,26 @@ void PlayerTick() {
 
 
     pState->groundBeneath = LevelGetGroundBeneath(PLAYER_ENTITY);
-
-
-    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
-        PLAYER_ENTITY->isFacingRight = true;
-    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
-        PLAYER_ENTITY->isFacingRight = false;
         
 
     { // Horizontal velocity calculation
 
         float xVelocity = fabs(pState->xVelocity);
+
+        if (xVelocity != 0 &&
+            (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && PLAYER_ENTITY->isFacingRight ||
+            Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && !PLAYER_ENTITY->isFacingRight)) {
+
+            xVelocity -= X_DEACCELERATION_RATE_ACTIVE;
+            if (xVelocity < 0) xVelocity = 0;
+
+            goto END_HORIZONTAL_VELOCITY_CALCULATION;
+        }
+
+        if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
+            PLAYER_ENTITY->isFacingRight = true;
+        else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
+            PLAYER_ENTITY->isFacingRight = false;
 
 
         if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_STOP) {
@@ -221,13 +230,6 @@ void PlayerTick() {
             if (xVelocity < 0) xVelocity = 0;
 
         }
-        /*
-            TODO else if inputting in the opposite direction that the player is facing, 
-            deaccelerate with X_DEACCELERATION_RATE_ACTIVE, so the player doesn't turn
-            immediately.
-            Notice: It will have to somehow skip the following line after the if
-                if (!PLAYER_ENTITY->isFacingRight) xVelocity *= -1;
-        */
         else if (Input::STATE.isHoldingRun) {
 
             // Can't move fast in the air if started jumping with normal speed
@@ -252,6 +254,7 @@ void PlayerTick() {
 
         }
 
+END_HORIZONTAL_VELOCITY_CALCULATION:
 
         if (!PLAYER_ENTITY->isFacingRight) xVelocity *= -1;
 
