@@ -15,10 +15,11 @@
 // What % of the player's height is upperbody, for hitboxes
 #define PLAYERS_UPPERBODY_PROPORTION        0.90f
 
-
-#define X_VELOCITY_DEFAULT                  5.5f
-#define X_VELOCITY_RUNNING                  9.0f
-
+#define X_MAX_SPEED_WALKING                 6.0f
+#define X_MAX_SPEED_RUNNING                 9.0f
+#define X_ACCELERATION_RATE                 0.25f
+#define X_DEACCELERATION_RATE_PASSIVE       0.3f // For when the player just stops moving
+#define X_DEACCELERATION_RATE_ACTIVE        0.45f // For when the player actively tries to stop in place
 
 // The Y velocity applied when starting a jump
 #define JUMP_START_VELOCITY_DEFAULT         10.0f
@@ -201,31 +202,49 @@ void PlayerTick() {
 
 
     pState->groundBeneath = LevelGetGroundBeneath(PLAYER_ENTITY);
-
-
-    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
-        PLAYER_ENTITY->isFacingRight = true;
-    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
-        PLAYER_ENTITY->isFacingRight = false;
         
 
-    float xVelocity = fabs(pState->xVelocity);
+    { // Horizontal velocity calculation
 
-    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_STOP)
-        xVelocity = 0;
-    else if (Input::STATE.isHoldingRun) {
-        // Can't move fast in the air if started jumping with normal speed
-        if (pState->groundBeneath || pState->wasRunningOnJumpStart)
-            xVelocity = X_VELOCITY_RUNNING;       
-        else
-            xVelocity = X_VELOCITY_DEFAULT;
+        float xVelocity = fabs(pState->xVelocity);
+
+        if (xVelocity != 0 &&
+            ((Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && PLAYER_ENTITY->isFacingRight) ||
+            (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && !PLAYER_ENTITY->isFacingRight))) {
+
+            xVelocity -= X_DEACCELERATION_RATE_ACTIVE;
+            if (xVelocity < 0) xVelocity = 0;
+            goto END_HORIZONTAL_VELOCITY_CALCULATION;
+        }
+
+        if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
+            PLAYER_ENTITY->isFacingRight = true;
+        else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
+            PLAYER_ENTITY->isFacingRight = false;
+
+
+        if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_STOP) {
+            xVelocity -= X_DEACCELERATION_RATE_PASSIVE;
+            if (xVelocity < 0) xVelocity = 0;
+            goto END_HORIZONTAL_VELOCITY_CALCULATION;
+        }
+
+        if (Input::STATE.isHoldingRun & (pState->groundBeneath || pState->wasRunningOnJumpStart)) {
+            xVelocity += X_ACCELERATION_RATE;
+            if (xVelocity > X_MAX_SPEED_RUNNING) xVelocity = X_MAX_SPEED_RUNNING;
+            goto END_HORIZONTAL_VELOCITY_CALCULATION;
+        }
+        
+        xVelocity += X_ACCELERATION_RATE;
+        if (xVelocity > X_MAX_SPEED_WALKING) xVelocity = X_MAX_SPEED_WALKING;
+
+END_HORIZONTAL_VELOCITY_CALCULATION:
+
+        if (!PLAYER_ENTITY->isFacingRight) xVelocity *= -1;
+
+        pState->xVelocity = xVelocity;
+
     }
-    else xVelocity = X_VELOCITY_DEFAULT;
-
-    if (!PLAYER_ENTITY->isFacingRight)
-        xVelocity *= -1;
-
-    pState->xVelocity = xVelocity;
 
 
     if (pState->groundBeneath) {
@@ -466,6 +485,10 @@ void PlayerContinue() {
         RectangleSetPos(&PLAYER_ENTITY->hitbox, PLAYER_ENTITY->origin);
     }
     PLAYER_STATE->isAscending = false;
+    PLAYER_STATE->isGliding = false;
+    PLAYER_STATE->yVelocity = 0;
+    PLAYER_STATE->yVelocityTarget = 0;
+    PLAYER_STATE->xVelocity = 0;
 
     syncPlayersHitboxes();
     CameraLevelCentralizeOnPlayer();
