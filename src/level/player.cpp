@@ -203,48 +203,48 @@ void PlayerTick() {
 
     pState->groundBeneath = LevelGetGroundBeneath(PLAYER_ENTITY);
         
+    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
+        PLAYER_ENTITY->isFacingRight = true;
+    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
+        PLAYER_ENTITY->isFacingRight = false;
 
     { // Horizontal velocity calculation
 
         float xVelocity = fabs(pState->xVelocity);
 
-        if (xVelocity != 0 &&
-            ((Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && PLAYER_ENTITY->isFacingRight) ||
-            (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && !PLAYER_ENTITY->isFacingRight))) {
+        if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && pState->xVelocity > 0) {
 
-            xVelocity -= X_DEACCELERATION_RATE_ACTIVE;
-            if (xVelocity < 0) xVelocity = 0;
+            pState->xVelocity -= X_DEACCELERATION_RATE_ACTIVE;
+            if (pState->xVelocity < 0) pState->xVelocity = 0;
             goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
+        else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && pState->xVelocity < 0) {
 
-        if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
-            PLAYER_ENTITY->isFacingRight = true;
-        else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
-            PLAYER_ENTITY->isFacingRight = false;
-
+            pState->xVelocity += X_DEACCELERATION_RATE_ACTIVE;
+            if (pState->xVelocity > 0) pState->xVelocity = 0;
+            goto END_HORIZONTAL_VELOCITY_CALCULATION;
+        }
 
         if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_STOP) {
             xVelocity -= X_DEACCELERATION_RATE_PASSIVE;
             if (xVelocity < 0) xVelocity = 0;
-            goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
 
-        if (Input::STATE.isHoldingRun & (pState->groundBeneath || pState->wasRunningOnJumpStart)) {
+        else if (Input::STATE.isHoldingRun & (pState->groundBeneath || pState->wasRunningOnJumpStart)) {
             xVelocity += X_ACCELERATION_RATE;
             if (xVelocity > X_MAX_SPEED_RUNNING) xVelocity = X_MAX_SPEED_RUNNING;
-            goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
         
-        xVelocity += X_ACCELERATION_RATE;
-        if (xVelocity > X_MAX_SPEED_WALKING) xVelocity = X_MAX_SPEED_WALKING;
-
-END_HORIZONTAL_VELOCITY_CALCULATION:
+        else {
+            xVelocity += X_ACCELERATION_RATE;
+            if (xVelocity > X_MAX_SPEED_WALKING) xVelocity = X_MAX_SPEED_WALKING;
+        }
 
         if (!PLAYER_ENTITY->isFacingRight) xVelocity *= -1;
 
         pState->xVelocity = xVelocity;
-
     }
+END_HORIZONTAL_VELOCITY_CALCULATION:
 
 
     if (pState->groundBeneath) {
