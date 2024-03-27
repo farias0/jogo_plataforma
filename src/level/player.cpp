@@ -517,7 +517,7 @@ void PlayerSetCheckpoint() {
     pos.y += PLAYER_ENTITY->hitbox.height / 2;
     LEVEL_STATE->checkpoint = LevelCheckpointAdd(pos);
 
-    RenderPrintSysMessage("Checkpoints disponívels: " + std::to_string(--LEVEL_STATE->checkpointsLeft));
+    LEVEL_STATE->checkpointsLeft--;
 
     TraceLog(LOG_DEBUG, "Player set checkpoint at x=%.1f, y=%.1f.", pos.x, pos.y);
 }

@@ -333,6 +333,11 @@ static void drawLevelHud() {
         DrawText((*s).c_str(), 120, 100, 30, RAYWHITE);
     }
 
+    DrawTextureEx(SPRITES->LevelCheckpoint.sprite,
+                    { SCREEN_WIDTH-149, SCREEN_HEIGHT-65 }, 0, SPRITES->LevelCheckpoint.scale/1.7, WHITE);
+    DrawText(std::string("x " + std::to_string(LEVEL_STATE->checkpointsLeft)).c_str(),
+                SCREEN_WIDTH-100, SCREEN_HEIGHT-56, 30, RAYWHITE);
+
     if (LEVEL_STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
         DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
         
