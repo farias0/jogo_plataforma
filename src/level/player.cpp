@@ -214,7 +214,6 @@ void PlayerTick() {
 
             xVelocity -= X_DEACCELERATION_RATE_ACTIVE;
             if (xVelocity < 0) xVelocity = 0;
-
             goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
 
@@ -225,39 +224,24 @@ void PlayerTick() {
 
 
         if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_STOP) {
-
             xVelocity -= X_DEACCELERATION_RATE_PASSIVE;
             if (xVelocity < 0) xVelocity = 0;
-
+            goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
-        else if (Input::STATE.isHoldingRun) {
 
-            // Can't move fast in the air if started jumping with normal speed
-            if (pState->groundBeneath || pState->wasRunningOnJumpStart) {
-
-                xVelocity += X_ACCELERATION_RATE;
-                if (xVelocity > X_MAX_SPEED_RUNNING) xVelocity = X_MAX_SPEED_RUNNING;
-
-            }
-            else { // Same as if not pressing the run button
-
-                xVelocity += X_ACCELERATION_RATE;
-                if (xVelocity > X_MAX_SPEED_WALKING) xVelocity = X_MAX_SPEED_WALKING;
-                
-            }
-
-        }
-        else {
-
+        if (Input::STATE.isHoldingRun & (pState->groundBeneath || pState->wasRunningOnJumpStart)) {
             xVelocity += X_ACCELERATION_RATE;
-            if (xVelocity > X_MAX_SPEED_WALKING) xVelocity = X_MAX_SPEED_WALKING;
-
+            if (xVelocity > X_MAX_SPEED_RUNNING) xVelocity = X_MAX_SPEED_RUNNING;
+            goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
+        
+        xVelocity += X_ACCELERATION_RATE;
+        if (xVelocity > X_MAX_SPEED_WALKING) xVelocity = X_MAX_SPEED_WALKING;
 
 END_HORIZONTAL_VELOCITY_CALCULATION:
 
         if (!PLAYER_ENTITY->isFacingRight) xVelocity *= -1;
-
+        
         pState->xVelocity = xVelocity;
 
     }
