@@ -3,7 +3,10 @@
 #include "linked_list.hpp"
 
 
-ListNode *LinkedListAdd(ListNode **head, void *item) {
+namespace LinkedList {
+
+
+ListNode *Add(ListNode **head, NodeItem *item) {
 
     ListNode *node = (ListNode *) MemAlloc(sizeof(ListNode));
 
@@ -31,15 +34,15 @@ ListNode *LinkedListAdd(ListNode **head, void *item) {
     return node;
 }
 
-void LinkedListDestroyNode(ListNode **head, ListNode *node) {
+void DestroyNode(ListNode **head, ListNode *node) {
 
-    MemFree(node->item);
-    LinkedListRemoveNode(head, node);
+    delete node->item;
+    RemoveNode(head, node);
 
     TraceLog(LOG_TRACE, "Destroyed node with item from linked list.");
 }
 
-void LinkedListRemoveNode(ListNode **head, ListNode *node) {
+void RemoveNode(ListNode **head, ListNode *node) {
 
     if (*head == node) {
         *head = node->next;
@@ -52,7 +55,7 @@ void LinkedListRemoveNode(ListNode **head, ListNode *node) {
     TraceLog(LOG_TRACE, "Destroyed node from linked list.");
 }
 
-ListNode *LinkedListGetNode(ListNode *head, void *item) {
+ListNode *GetNode(ListNode *head, void *item) {
 
     while (head != 0 && head->item != item) {
         head = head->next;
@@ -61,16 +64,16 @@ ListNode *LinkedListGetNode(ListNode *head, void *item) {
     return head;
 }
 
-void LinkedListDestroyAll(ListNode **head) {
+void DestroyAll(ListNode **head) {
 
     while (*head) {
-        LinkedListDestroyNode(head, *head);
+        DestroyNode(head, *head);
     }
 
     TraceLog(LOG_TRACE, "Destroyed a linked list.");
 }
 
-void LinkedListRemoveAll(ListNode **head) {
+void RemoveAll(ListNode **head) {
 
     ListNode *node = *head;
     while (node) {
@@ -84,7 +87,7 @@ void LinkedListRemoveAll(ListNode **head) {
     TraceLog(LOG_TRACE, "Removed all items from a linked list.");
 }
 
-int LinkedListCountNodes(ListNode *head) {
+int CountNodes(ListNode *head) {
 
     ListNode *node = head;
     int counter = 0;
@@ -96,3 +99,6 @@ int LinkedListCountNodes(ListNode *head) {
 
     return counter;
 }
+
+
+} // namespace

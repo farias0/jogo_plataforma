@@ -33,7 +33,7 @@ static void editorUseEraser(Vector2 cursorPos) {
     switch (GAME_STATE->mode) {
         
     case MODE_IN_LEVEL:
-        LevelEntityRemoveAt(cursorPos);
+        Level::EntityRemoveAt(cursorPos);
         break;
     
     case MODE_OVERWORLD:
@@ -48,25 +48,25 @@ static void editorUseEraser(Vector2 cursorPos) {
 static EditorEntityButton *addEntityButton(
     EditorEntityType type, Sprite sprite, void (*handler)(Vector2), EditorInteractionType interaction) {
 
-        EditorEntityButton *newButton = (EditorEntityButton *) MemAlloc(sizeof(EditorEntityButton));
+        EditorEntityButton *newButton = new EditorEntityButton();
         newButton->type = type;
         newButton->handler = handler;
         newButton->sprite = sprite;
         newButton->interactionType = interaction;
 
-        LinkedListAdd(&EDITOR_STATE->entitiesHead, newButton);
+        LinkedList::Add(&EDITOR_STATE->entitiesHead, newButton);
 
         return newButton;
 }
 
 EditorControlButton *addControlButton(EditorControlType type, char *label, void (*handler)()) {
 
-    EditorControlButton *newButton = (EditorControlButton *) MemAlloc(sizeof(EditorControlButton));
+    EditorControlButton *newButton = new EditorControlButton();
     newButton->type = type;
     newButton->handler = handler;
     newButton->label = label;
 
-    LinkedListAdd(&EDITOR_STATE->controlHead, newButton);
+    LinkedList::Add(&EDITOR_STATE->controlHead, newButton);
 
     return newButton;
 }
@@ -78,12 +78,12 @@ void loadInLevelEditor() {
     EDITOR_STATE->defaultEntityButton =
         addEntityButton(EDITOR_ENTITY_BLOCK, SPRITES->Block, &BlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
     addEntityButton(EDITOR_ENTITY_ACID, SPRITES->Acid, &AcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
-    addEntityButton(EDITOR_ENTITY_EXIT, SPRITES->LevelEndOrb, &LevelExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_EXIT, SPRITES->LevelEndOrb, &Level::ExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_GLIDE, SPRITES->GlideItem, &GlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_TEXTBOX, SPRITES->TextboxButton, &LevelTextboxCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_TEXTBOX, SPRITES->TextboxButton, &Level::TextboxCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
-    addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &LevelSave);
-    addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &LevelLoadNew);
+    addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &Level::Save);
+    addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded in level itens.");
 }
@@ -98,7 +98,7 @@ void loadOverworldEditor() {
     addEntityButton(EDITOR_ENTITY_PATH_IN_L, SPRITES->PathTileInL, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
 
     addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar mundo", &OverworldSave);
-    addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &LevelLoadNew);
+    addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);
 
     TraceLog(LOG_TRACE, "Editor loaded overworld itens.");
 }
@@ -107,34 +107,34 @@ void loadOverworldEditor() {
 // based on its origin and current cursor pos
 static void updateEntitySelectionList() {
 
-    LinkedListRemoveAll(&EDITOR_STATE->selectedEntities);
+    LinkedList::RemoveAll(&EDITOR_STATE->selectedEntities);
 
     Rectangle selectionHitbox = EditorSelectionGetRect();
 
-    ListNode *node = GetEntityListHead();
+    LinkedList::ListNode *node = GetEntityListHead();
     while (node != 0) {
 
         if (GAME_STATE->mode == MODE_IN_LEVEL) {
-            LevelEntity *entity = (LevelEntity *) node->item;
+            Level::Entity *entity = (Level::Entity *) node->item;
             
-            if (entity->components & LEVEL_IS_PLAYER) goto next_entity;
+            if (entity->tags & Level::IS_PLAYER) goto next_entity;
 
             bool collisionWithEntity = !entity->isDead && CheckCollisionRecs(selectionHitbox, entity->hitbox);
-            bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, LevelEntityOriginHitbox(entity));
+            bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, Level::EntityOriginHitbox(entity));
             if (collisionWithEntity || collisionWithGhost) {
                 
-                LinkedListAdd(&EDITOR_STATE->selectedEntities, entity);
+                LinkedList::Add(&EDITOR_STATE->selectedEntities, entity);
             }
         }
         else if (GAME_STATE->mode == MODE_OVERWORLD) {
             
             OverworldEntity *entity = (OverworldEntity *) node->item;
             
-            if (entity->components & OW_IS_CURSOR) goto next_entity;
+            if (entity->tags & OW_IS_CURSOR) goto next_entity;
 
             if (CheckCollisionRecs(selectionHitbox, OverworldEntitySquare(entity))) {
                 
-                LinkedListAdd(&EDITOR_STATE->selectedEntities, entity);
+                LinkedList::Add(&EDITOR_STATE->selectedEntities, entity);
             }
         }
 
@@ -146,17 +146,17 @@ next_entity:
 void selectEntitiesApplyMove() {
 
     // Searches for collision 
-    ListNode *node = EDITOR_STATE->selectedEntities;
+    LinkedList::ListNode *node = EDITOR_STATE->selectedEntities;
     while (node) {
 
         switch (GAME_STATE->mode) {
 
         case MODE_IN_LEVEL: {
-            LevelEntity *entity = (LevelEntity *) node->item;
+            Level::Entity *entity = (Level::Entity *) node->item;
             Rectangle hitbox = entity->hitbox;
             Vector2 pos = EditorEntitySelectionCalcMove(RectangleGetPos(hitbox));
             RectangleSetPos(&hitbox, pos);
-            if (LevelCheckCollisionWithAnythingElse(hitbox, EDITOR_STATE->selectedEntities))
+            if (Level::CheckCollisionWithAnythingElse(hitbox, EDITOR_STATE->selectedEntities))
                 return;
             break;
         }
@@ -184,7 +184,7 @@ void selectEntitiesApplyMove() {
         switch (GAME_STATE->mode) {
 
         case MODE_IN_LEVEL: {
-            LevelEntity *entity = (LevelEntity *) node->item;
+            Level::Entity *entity = (Level::Entity *) node->item;
             newPos = EditorEntitySelectionCalcMove(RectangleGetPos(entity->hitbox));
             RectangleSetPos(&entity->hitbox, newPos);
             entity->origin = EditorEntitySelectionCalcMove(entity->origin);
@@ -242,8 +242,8 @@ void EditorSync() {
 
 void EditorEmpty() {
 
-    LinkedListDestroyAll(&EDITOR_STATE->entitiesHead);
-    LinkedListDestroyAll(&EDITOR_STATE->controlHead);
+    LinkedList::DestroyAll(&EDITOR_STATE->entitiesHead);
+    LinkedList::DestroyAll(&EDITOR_STATE->controlHead);
     EDITOR_STATE->defaultEntityButton = 0;
     EDITOR_STATE->toggledEntityButton = 0;
 
@@ -254,7 +254,7 @@ void EditorEnable() {
 
     EDITOR_STATE->isEnabled = true;
 
-    RenderResizeWindow(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+    Render::ResizeWindow(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
     MouseCursorEnable();
 
     buttonsSelectDefault();
@@ -266,7 +266,7 @@ void EditorDisable() {
 
     EDITOR_STATE->isEnabled = false;
 
-    RenderResizeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
+    Render::ResizeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     MouseCursorDisable();
 
@@ -329,7 +329,7 @@ void EditorSelectionCancel() {
     EDITOR_STATE->isSelectingEntities = false;
     EDITOR_STATE->selectedEntitiesThisFrame = false;
     EDITOR_STATE->isMovingSelectedEntities = false;
-    LinkedListRemoveAll(&EDITOR_STATE->selectedEntities);
+    LinkedList::RemoveAll(&EDITOR_STATE->selectedEntities);
 
     TraceLog(LOG_TRACE, "Editor's entity selection canceled.");
 }

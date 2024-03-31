@@ -89,7 +89,7 @@ void GameExit();
 bool IsInPlayArea(Vector2 pos);
 
 // Returns the entity list's head for the current selected game mode
-ListNode *GetEntityListHead();
+LinkedList::ListNode *GetEntityListHead();
 
 // Enables the debug HUD
 void DebugHudEnable();

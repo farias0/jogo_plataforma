@@ -8,7 +8,7 @@
 #include "level/level.hpp"
 
 
-extern ListNode *DEBUG_ENTITY_INFO_HEAD;
+extern LinkedList::ListNode *DEBUG_ENTITY_INFO_HEAD;
 
 
 // Searches for entity at pos and, if it finds one, shows

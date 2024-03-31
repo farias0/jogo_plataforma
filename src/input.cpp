@@ -69,14 +69,14 @@ void handleInLevelInput() {
 
 
     if (IsKeyPressed(KEY_BACKSPACE) || isGamepadPressed(GP_SELECT))
-        { LevelGoToOverworld(); return; }
+        { Level::GoToOverworld(); return; }
 
 
     if (IsKeyPressed(KEY_ENTER) || isGamepadPressed(GP_START))
-        { LevelPauseToggle(); return; }
+        { Level::PauseToggle(); return; }
 
 
-    if (LEVEL_STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
+    if (Level::STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
 
 
     STATE.isHoldingRun = IsKeyDown(KEY_Z) || isGamepadDown(GP_X);
@@ -232,16 +232,16 @@ void handleDroppedFile() {
     
     if (PersistenceGetDroppedLevelName(levelName)) {
         
-        LevelLoad(levelName);
+        Level::Load(levelName);
         
-        if (LEVEL_STATE->awaitingAssociation) {
+        if (Level::STATE->awaitingAssociation) {
 
             strcpy(OW_STATE->tileUnderCursor->levelName, levelName);
 
             TraceLog(LOG_INFO, "Dot on x=%.1f, y=%.1f associated with level %s.",
                         OW_STATE->tileUnderCursor->gridPos.x, OW_STATE->tileUnderCursor->gridPos.y, levelName);
             
-            RenderPrintSysMessage("Associada fase " + std::string(levelName));
+            Render::PrintSysMessage("Associada fase " + std::string(levelName));
         }
     }
 

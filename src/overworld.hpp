@@ -27,16 +27,17 @@ typedef enum OverworldTileType {
     OW_PATH_IN_L
 } OverworldTileType;
 
-typedef enum OverworldEntityComponent {
+typedef enum OverworldEntityTag {
     OW_IS_CURSOR            = 1,
     OW_IS_LEVEL_DOT         = 2,
     OW_IS_PATH              = 4,
     OW_IS_ROTATABLE         = 8,
-} OverworldEntityComponent;
+} OverworldEntityTag;
 
-typedef struct OverworldEntity {
+class OverworldEntity : public LinkedList::NodeItem {
 
-    unsigned long int components;
+public:
+    unsigned long int tags;
     OverworldTileType tileType;
     
     Vector2 gridPos;
@@ -45,12 +46,12 @@ typedef struct OverworldEntity {
     
     char *levelName;
 
-} OverworldEntity;
+};
 
 typedef struct OverworldState {
 
     // The head of the linked list of all the overworld entities
-    ListNode *listHead;
+    LinkedList::ListNode *listHead;
 
     // Reference to the tile the cursor is over, part of the overworld entity list 
     OverworldEntity *tileUnderCursor;
@@ -92,7 +93,7 @@ OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox);
 
 // Checks for collision between a hitbox and any tile in the overworld
 // that's NOT present in a given list. Returns the collided entity, or 0 if none.
-OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, ListNode *entityListHead);
+OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, LinkedList::ListNode *entityListHead);
 
 void OverworldTick();
 

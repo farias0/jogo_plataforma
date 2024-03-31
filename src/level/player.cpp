@@ -52,7 +52,7 @@
 #define JUMP_BUFFER_FORWARDS_SIZE           0.15f
 
 
-LevelEntity *PLAYER_ENTITY = 0;
+Level::Entity *PLAYER_ENTITY = 0;
 
 PlayerState *PLAYER_STATE = 0;
 
@@ -117,7 +117,7 @@ static void syncPlayersHitboxes() {
 static void die() {
 
     PLAYER_ENTITY->isDead = true;
-    LEVEL_STATE->isPaused = true;
+    Level::STATE->isPaused = true;
 
     TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isAscending=%d",
                 PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y, PLAYER_STATE->isAscending);
@@ -126,11 +126,11 @@ static void die() {
 
 void PlayerInitialize(Vector2 origin) {
 
-    LevelEntity *newPlayer = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
+    Level::Entity *newPlayer = new Level::Entity();
     PLAYER_ENTITY = newPlayer;
-    LinkedListAdd(&LEVEL_STATE->listHead, newPlayer);
+    LinkedList::Add(&Level::STATE->listHead, newPlayer);
  
-    newPlayer->components = LEVEL_IS_PLAYER;
+    newPlayer->tags = Level::IS_PLAYER;
     newPlayer->origin = origin;
     newPlayer->sprite = SPRITES->PlayerDefault;
     newPlayer->hitbox = SpriteHitboxFromEdge(newPlayer->sprite, newPlayer->origin);
@@ -150,10 +150,10 @@ void PlayerCheckAndSetOrigin(Vector2 pos) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->PlayerDefault, pos);
     
-    if (LevelCheckCollisionWithAnyEntity(hitbox)) {
+    if (Level::CheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
             "Player's origin couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
-        RenderPrintSysMessage("Origem iria colidir.");
+        Render::PrintSysMessage("Origem iria colidir.");
         return;
     }
 
@@ -168,10 +168,10 @@ void PlayerCheckAndSetPos(Vector2 pos) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(PLAYER_ENTITY->sprite, pos);
     
-    if (LevelCheckCollisionWithAnyEntity(hitbox)) {
+    if (Level::CheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
             "Player couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
-        RenderPrintSysMessage("Jogador iria colidir.");
+        Render::PrintSysMessage("Jogador iria colidir.");
         return;
     }
     
@@ -198,10 +198,10 @@ void PlayerTick() {
     bool collidedWithTextboxButton = false; // controls the exhibition of textboxes
 
 
-    if (LEVEL_STATE->concludedAgo >= 0) return;
+    if (Level::STATE->concludedAgo >= 0) return;
 
 
-    pState->groundBeneath = LevelGetGroundBeneath(PLAYER_ENTITY);
+    pState->groundBeneath = Level::GetGroundBeneath(PLAYER_ENTITY);
         
     if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
         PLAYER_ENTITY->isFacingRight = true;
@@ -288,7 +288,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
         // -- this check is for the case the player jumps off the enemy,
         // and only in the case the enemy wasn't already destroyed in the previous frame.
         if (pState->groundBeneath &&
-            pState->groundBeneath->components & LEVEL_IS_ENEMY) {
+            pState->groundBeneath->tags & Level::IS_ENEMY) {
 
             PLAYER_STATE->lastGroundBeneath = GetTime();
             EnemyKill(pState->groundBeneath);
@@ -309,13 +309,13 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
             return;
         }
 
-        ListNode *node = LEVEL_STATE->listHead;
+        LinkedList::ListNode *node = Level::STATE->listHead;
 
         while (node != 0) {
 
-            LevelEntity *entity = (LevelEntity *) node->item;
+            Level::Entity *entity = (Level::Entity *) node->item;
 
-            if ((entity->components & LEVEL_IS_ENEMY) && !entity->isDead) {
+            if ((entity->tags & Level::IS_ENEMY) && !entity->isDead) {
 
                 // Enemy hit player
                 if (CheckCollisionRecs(entity->hitbox, pState->upperbody)) {
@@ -331,13 +331,13 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
                 }
             }
 
-            else if (entity->components & LEVEL_IS_SCENARIO) {
+            else if (entity->tags & Level::IS_SCENARIO) {
 
                 // Check for collision with level geometry
 
                 Rectangle collisionRec = GetCollisionRec(entity->hitbox, PLAYER_ENTITY->hitbox);
 
-                if (entity->components & LEVEL_IS_DANGER &&
+                if (entity->tags & Level::IS_DANGER &&
                     (collisionRec.width > 0 || collisionRec.height > 0 || pState->groundBeneath == entity)) {
                     
                     // Player hit dangerous level element
@@ -369,7 +369,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
                         (isEntitysLeftWall && isEntityToTheRight && isPlayerMovingToTheRight)) {
 
 
-                        // if (GAME_STATE->showDebugHUD) RenderPrintSysMessage("Hit wall");
+                        // if (GAME_STATE->showDebugHUD) Render::PrintSysMessage("Hit wall");
 
                         PLAYER_ENTITY->hitbox.x = oldX;
 
@@ -379,7 +379,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
 
                 if (isACeiling && pState->isAscending) {
 
-                    // if (GAME_STATE->showDebugHUD) RenderPrintSysMessage("Hit ceiling");
+                    // if (GAME_STATE->showDebugHUD) Render::PrintSysMessage("Hit ceiling");
 
                     pState->isAscending = false;
                     PLAYER_ENTITY->hitbox.y = oldY;
@@ -390,28 +390,28 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
                 // TODO maybe ground check should be here as well
             }
 
-            else if (entity->components & LEVEL_IS_EXIT &&
+            else if (entity->tags & Level::IS_EXIT &&
                         CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox)) {
 
                 // Player exit level
 
-                LevelGoToOverworld();
+                Level::GoToOverworld();
             }
 
-            else if (entity->components & LEVEL_IS_GLIDE &&
+            else if (entity->tags & Level::IS_GLIDE &&
                         CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox) &&
                         PLAYER_STATE->mode != PLAYER_MODE_GLIDE) {
                 PlayerSetMode(PLAYER_MODE_GLIDE);
                 return;
             }
 
-            else if (entity->components & LEVEL_IS_TEXTBOX &&
+            else if (entity->tags & Level::IS_TEXTBOX &&
                         CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox)) {
 
                 collidedWithTextboxButton = true;
 
-                if (RenderGetTextboxTextId() == -1) {
-                    RenderDisplayTextbox(entity->textId);
+                if (Render::GetTextboxTextId() == -1) {
+                    Render::DisplayTextbox(entity->textId);
                     TraceLog(LOG_TRACE, "Textbox started displaying textId=%d.", entity->textId);
                 }
             }
@@ -441,8 +441,8 @@ next_entity:
     }
 
 
-    if (RenderGetTextboxTextId() != -1 && !collidedWithTextboxButton) {
-        RenderDisplayTextboxStop();
+    if (Render::GetTextboxTextId() != -1 && !collidedWithTextboxButton) {
+        Render::DisplayTextboxStop();
         TraceLog(LOG_TRACE, "Textbox stopped displaying.");
     }
 
@@ -463,13 +463,13 @@ next_entity:
 
 void PlayerContinue() {
 
-    LEVEL_STATE->isPaused = false;
+    Level::STATE->isPaused = false;
 
     // Reset all the entities to their origins
-    ListNode *node = LEVEL_STATE->listHead;
+    LinkedList::ListNode *node = Level::STATE->listHead;
     while (node) {
 
-        LevelEntity *entity = (LevelEntity *) node->item;
+        Level::Entity *entity = (Level::Entity *) node->item;
         entity->isDead = false;
         entity->hitbox.x = entity->origin.x;
         entity->hitbox.y = entity->origin.y;
@@ -477,9 +477,9 @@ void PlayerContinue() {
         node = node->next;
     }
 
-    if (LEVEL_STATE->checkpoint) {
-        Vector2 pos = RectangleGetPos(LEVEL_STATE->checkpoint->hitbox);
-        pos.y -= LEVEL_STATE->checkpoint->hitbox.height;
+    if (Level::STATE->checkpoint) {
+        Vector2 pos = RectangleGetPos(Level::STATE->checkpoint->hitbox);
+        pos.y -= Level::STATE->checkpoint->hitbox.height;
         RectangleSetPos(&PLAYER_ENTITY->hitbox, pos);
     } else {
         RectangleSetPos(&PLAYER_ENTITY->hitbox, PLAYER_ENTITY->origin);
@@ -503,21 +503,21 @@ void PlayerSetCheckpoint() {
         return;
     }
 
-    if (LEVEL_STATE->checkpointsLeft < 1) {
-        RenderPrintSysMessage("Sem checkpoints disponíveis.");
+    if (Level::STATE->checkpointsLeft < 1) {
+        Render::PrintSysMessage("Sem checkpoints disponíveis.");
         return;
     }
 
-    if (LEVEL_STATE->checkpoint) {
-        LevelEntityDestroy(
-            LinkedListGetNode(LEVEL_STATE->listHead, LEVEL_STATE->checkpoint));
+    if (Level::STATE->checkpoint) {
+        Level::EntityDestroy(
+            LinkedList::GetNode(Level::STATE->listHead, Level::STATE->checkpoint));
     }
 
     Vector2 pos = RectangleGetPos(PLAYER_ENTITY->hitbox);
     pos.y += PLAYER_ENTITY->hitbox.height / 2;
-    LEVEL_STATE->checkpoint = LevelCheckpointAdd(pos);
+    Level::STATE->checkpoint = Level::CheckpointAdd(pos);
 
-    LEVEL_STATE->checkpointsLeft--;
+    Level::STATE->checkpointsLeft--;
 
     TraceLog(LOG_DEBUG, "Player set checkpoint at x=%.1f, y=%.1f.", pos.x, pos.y);
 }

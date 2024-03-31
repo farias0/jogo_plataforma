@@ -15,7 +15,7 @@ typedef enum PlayerMode {
 typedef struct PlayerState {
 
     // The ground beneath the player, updated every frame, or 0 if there's no ground beneath
-    LevelEntity *groundBeneath;
+    Level::Entity *groundBeneath;
 
     // TODO maybe add multiple hitboxes support for every entity
     Rectangle upperbody, lowerbody;
@@ -41,8 +41,8 @@ typedef struct PlayerState {
 } PlayerState;
 
 
-// Reference to the player's LevelEntity, part of the level entity list
-extern LevelEntity *PLAYER_ENTITY; 
+// Reference to the player's Level::Entity, part of the level entity list
+extern Level::Entity *PLAYER_ENTITY; 
 
 extern PlayerState *PLAYER_STATE;
 

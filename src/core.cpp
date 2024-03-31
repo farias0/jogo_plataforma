@@ -41,8 +41,8 @@ void windowTitleUpdate() {
 
     char title[LEVEL_NAME_BUFFER_SIZE + 20];
 
-    if (LEVEL_STATE->levelName[0] != '\0')
-        sprintf(title, "%s - %d FPS", LEVEL_STATE->levelName, GetFPS());  
+    if (Level::STATE->levelName[0] != '\0')
+        sprintf(title, "%s - %d FPS", Level::STATE->levelName, GetFPS());  
     else
         sprintf(title, "Jogo de Plataforma - %d FPS", GetFPS());  
 
@@ -87,8 +87,8 @@ void SystemsInitialize() {
     CameraInitialize();
     EditorInitialize();
     OverworldInitialize();
-    LevelInitialize();
-    RenderInitialize();
+    Level::Initialize();
+    Render::Initialize();
     TextBank::InitializeAndLoad();
     Sounds::Initialize();
 }
@@ -96,7 +96,7 @@ void SystemsInitialize() {
 void GameUpdate() {
 
     if (GAME_STATE->mode == MODE_IN_LEVEL)
-        LevelTick();
+        Level::Tick();
     else if (GAME_STATE->mode == MODE_OVERWORLD)
         OverworldTick();
 
@@ -112,9 +112,9 @@ void GameExit() {
     exit(0);
 }
 
-ListNode *GetEntityListHead() {
+LinkedList::ListNode *GetEntityListHead() {
 
-    if (GAME_STATE->mode == MODE_IN_LEVEL) return LEVEL_STATE->listHead;
+    if (GAME_STATE->mode == MODE_IN_LEVEL) return Level::STATE->listHead;
     else if (GAME_STATE->mode == MODE_OVERWORLD) return OW_STATE->listHead;
     else return 0;
 }

@@ -60,7 +60,7 @@ static void getFilePath(char *pathBuffer, size_t bufferSize, char *fileName) {
 
 void PersistenceLevelSave(char *levelName) {
 
-    size_t levelItemCount = LinkedListCountNodes(LEVEL_STATE->listHead);
+    size_t levelItemCount = LinkedList::CountNodes(Level::STATE->listHead);
     size_t saveItemCount = levelItemCount;
     size_t entitySize = sizeof(PersistenceLevelEntity);
     PersistenceLevelEntity *data = (PersistenceLevelEntity *) MemAlloc(entitySize * saveItemCount);
@@ -68,29 +68,29 @@ void PersistenceLevelSave(char *levelName) {
     TraceLog(LOG_DEBUG, "Saving level %s... (struct size=%d, level item count=%d)",
                         levelName, entitySize, levelItemCount);
 
-    ListNode *node = LEVEL_STATE->listHead;
+    LinkedList::ListNode *node = Level::STATE->listHead;
     for (size_t i = 0; i < saveItemCount; ) {
 
-        LevelEntity *entity = (LevelEntity *) node->item;
+        Level::Entity *entity = (Level::Entity *) node->item;
 
-        if (entity->components & LEVEL_IS_PLAYER)
+        if (entity->tags & Level::IS_PLAYER)
             data[i].entityType = LEVEL_ENTITY_PLAYER;
-        else if (entity->components & LEVEL_IS_ENEMY)
+        else if (entity->tags & Level::IS_ENEMY)
             data[i].entityType = LEVEL_ENTITY_ENEMY;
-        else if (entity->components & LEVEL_IS_SCENARIO && entity->components & LEVEL_IS_DANGER)
+        else if (entity->tags & Level::IS_SCENARIO && entity->tags & Level::IS_DANGER)
             data[i].entityType = LEVEL_ENTITY_ACID;
-        else if (entity->components & LEVEL_IS_SCENARIO && !(entity->components & LEVEL_IS_DANGER))
+        else if (entity->tags & Level::IS_SCENARIO && !(entity->tags & Level::IS_DANGER))
             data[i].entityType = LEVEL_ENTITY_BLOCK;
-        else if (entity->components & LEVEL_IS_EXIT)
+        else if (entity->tags & Level::IS_EXIT)
             data[i].entityType = LEVEL_ENTITY_EXIT;
-        else if (entity->components & LEVEL_IS_GLIDE)
+        else if (entity->tags & Level::IS_GLIDE)
             data[i].entityType = LEVEL_ENTITY_GLIDE;
-        else if (entity->components & LEVEL_IS_TEXTBOX) {
+        else if (entity->tags & Level::IS_TEXTBOX) {
             data[i].entityType = LEVEL_ENTITY_TEXTBOX;
             memcpy(&data[i].textId, &entity->textId, sizeof(uint32_t));
         }
         else { 
-            TraceLog(LOG_WARNING, "Unknow entity type found when serializing level, components=%d. Skipping it...");
+            TraceLog(LOG_WARNING, "Unknow entity type found when serializing level, tags=%d. Skipping it...");
             saveItemCount--;
             goto skip_entity; 
         }
@@ -111,10 +111,10 @@ skip_entity:
 
     if (FileSave(levelPath, filedata)) {
         TraceLog(LOG_INFO, "Level saved: %s.", levelName);
-        RenderPrintSysMessage("Fase salva.");
+        Render::PrintSysMessage("Fase salva.");
     } else {
         TraceLog(LOG_ERROR, "Could not save level %s.", levelName);
-        RenderPrintSysMessage("Erro salvando fase.");
+        Render::PrintSysMessage("Erro salvando fase.");
     }
 
     MemFree(data);
@@ -132,7 +132,7 @@ bool PersistenceLevelLoad(char *levelName) {
 
     if (!filedata.itemCount) {
         TraceLog(LOG_ERROR, "Could not load level %s.", levelName);
-        RenderPrintSysMessage("Erro carregando fase.");
+        Render::PrintSysMessage("Erro carregando fase.");
         return false;
     }
 
@@ -158,11 +158,11 @@ bool PersistenceLevelLoad(char *levelName) {
         case LEVEL_ENTITY_ACID:
             AcidAdd(origin); break;
         case LEVEL_ENTITY_EXIT:
-            LevelExitAdd(origin); break;
+            Level::ExitAdd(origin); break;
         case LEVEL_ENTITY_GLIDE:
             GlideAdd(origin); break;
         case LEVEL_ENTITY_TEXTBOX:
-            LevelTextboxAdd(origin, textId); break;
+            Level::TextboxAdd(origin, textId); break;
         default:
             TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, type=%d.", data[i].entityType); 
         }
@@ -199,14 +199,14 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
         strcmp(GetFileName(fileDir), PERSISTENCE_DIR_NAME) != 0) {
 
             TraceLog(LOG_ERROR, "Dropped file is not on 'levels' directory.");
-            RenderPrintSysMessage("Arquivo não é parte do jogo");
+            Render::PrintSysMessage("Arquivo não é parte do jogo");
             goto return_result;
     }
 
     if (strcmp(GetFileExtension(filePath), LEVEL_FILE_EXTENSION) != 0) {
         TraceLog(LOG_ERROR, "Dropped file extension is not %s. Ignoring it",
                     LEVEL_FILE_EXTENSION);
-        RenderPrintSysMessage("Arquivo não é fase");
+        Render::PrintSysMessage("Arquivo não é fase");
         goto return_result;
     }
 
@@ -215,7 +215,7 @@ bool PersistenceGetDroppedLevelName(char *nameBuffer) {
 
             TraceLog(LOG_ERROR, "Dropped file has invalid level name %s.",
                         fileName);
-            RenderPrintSysMessage("Nome de fase proibido");
+            Render::PrintSysMessage("Nome de fase proibido");
             goto return_result;
     }
 
@@ -229,7 +229,7 @@ return_result:
 
 void PersistenceOverworldSave() {
 
-    size_t owItemCount = LinkedListCountNodes(OW_STATE->listHead);
+    size_t owItemCount = LinkedList::CountNodes(OW_STATE->listHead);
     size_t saveItemCount = owItemCount;
     size_t entitySize = sizeof(PersistenceOverworldEntity);
     PersistenceOverworldEntity *data = (PersistenceOverworldEntity *) MemAlloc(entitySize * saveItemCount);
@@ -237,7 +237,7 @@ void PersistenceOverworldSave() {
     TraceLog(LOG_DEBUG, "Saving overworld... (struct size=%d, level item count=%d)",
                         entitySize, owItemCount);
 
-    ListNode *node = OW_STATE->listHead;
+    LinkedList::ListNode *node = OW_STATE->listHead;
     for (size_t i = 0; i < saveItemCount; ) {
 
         OverworldEntity *entity = (OverworldEntity *) node->item;
@@ -274,10 +274,10 @@ skip_entity:
 
     if (FileSave(filePath, filedata)) {
         TraceLog(LOG_INFO, "Overworld saved.");
-        RenderPrintSysMessage("Mundo salvo.");
+        Render::PrintSysMessage("Mundo salvo.");
     } else {
         TraceLog(LOG_ERROR, "Could not save overworld.");
-        RenderPrintSysMessage("Erro salvando mundo.");
+        Render::PrintSysMessage("Erro salvando mundo.");
     }
 
     MemFree(data);
@@ -295,7 +295,7 @@ bool PersistenceOverworldLoad() {
 
     if (!fileData.itemCount) {
         TraceLog(LOG_ERROR, "Could not overworld.");
-        RenderPrintSysMessage("Erro carregando mundo.");
+        Render::PrintSysMessage("Erro carregando mundo.");
         return false;
     }
 

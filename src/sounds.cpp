@@ -27,11 +27,11 @@ void Toggle() {
     STATE.isEnabled = !STATE.isEnabled;
 
     if (STATE.isEnabled) {
-        RenderPrintSysMessage("Som ligado");
+        Render::PrintSysMessage("Som ligado");
         TraceLog(LOG_INFO, "Sound enabled.");
     }
     else {
-        RenderPrintSysMessage("Som desligado");
+        Render::PrintSysMessage("Som desligado");
         TraceLog(LOG_INFO, "Sound disabled.");
     }
 }
