@@ -40,11 +40,10 @@ void EnemyCheckAndAdd(Vector2 origin) {
     EnemyAdd({ hitbox.x, hitbox.y });
 }
 
-void EnemyTick(LinkedList::Node *enemyNode) {
+void EnemyTick(Level::Entity *enemy) {
 
     if (Level::STATE->concludedAgo >= 0) return;
 
-    Level::Entity *enemy = (Level::Entity *)enemyNode;
     if (enemy->isDead) return;
 
 
@@ -110,11 +109,11 @@ next_node:
     }
 }
 
-void EnemyKill(Level::Entity *entity) {
+void EnemyKill(Level::Entity *enemy) {
 
-    entity->isDead = true;
+    enemy->isDead = true;
 
-    DebugEntityStop(entity);
+    DebugEntityStop(enemy);
 
     TraceLog(LOG_TRACE, "Enemy died.");
 }

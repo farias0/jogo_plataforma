@@ -309,11 +309,9 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
             return;
         }
 
-        LinkedList::Node *node = Level::STATE->listHead;
+        Level::Entity *entity = (Level::Entity *) Level::STATE->listHead;
 
-        while (node != 0) {
-
-            Level::Entity *entity = (Level::Entity *) node;
+        while (entity != 0) {
 
             if ((entity->tags & Level::IS_ENEMY) && !entity->isDead) {
 
@@ -417,7 +415,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
             }
 
 next_entity:
-            node = node->next;
+            entity = (Level::Entity *)  entity->next;
         }
     }
 
@@ -466,15 +464,14 @@ void PlayerContinue() {
     Level::STATE->isPaused = false;
 
     // Reset all the entities to their origins
-    LinkedList::Node *node = Level::STATE->listHead;
-    while (node) {
+    Level::Entity *entity = (Level::Entity *) Level::STATE->listHead;
+    while (entity) {
 
-        Level::Entity *entity = (Level::Entity *) node;
         entity->isDead = false;
         entity->hitbox.x = entity->origin.x;
         entity->hitbox.y = entity->origin.y;
 
-        node = node->next;
+        entity = (Level::Entity *) entity->next;
     }
 
     if (Level::STATE->checkpoint) {

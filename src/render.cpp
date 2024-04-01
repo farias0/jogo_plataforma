@@ -256,21 +256,18 @@ next_entity:
 
 void drawSysMessages() {
 
-    LinkedList::Node *node = SYS_MESSAGES_HEAD;
-    LinkedList::Node *nextNode;
-    SysMessage *msg;
+    SysMessage *msg = (SysMessage *) SYS_MESSAGES_HEAD;
+    SysMessage *nextMsg;
     size_t currentMsg = 1;
     int x, y;
 
-    while (node) {
+    while (msg) {
 
-        nextNode = node->next;
-
-        msg = (SysMessage *) node;
+        nextMsg = (SysMessage *) msg->next;
 
         if (msg->secondsUntilDisappear <= 0) {
             MemFree(msg->msg);
-            LinkedList::DestroyNode(&SYS_MESSAGES_HEAD, node);
+            LinkedList::DestroyNode(&SYS_MESSAGES_HEAD, msg);
             goto next_node;
         }        
 
@@ -283,7 +280,7 @@ void drawSysMessages() {
         msg->secondsUntilDisappear -= GetFrameTime();
 
 next_node:
-        node = nextNode;
+        msg = nextMsg;
     } 
 }
 
@@ -412,7 +409,7 @@ void drawDebugHud() {
         DrawText(buffer, 600, 20, 20, WHITE);
     }
 
-    for (auto e = DEBUG_ENTITY_LIST.begin(); e < DEBUG_ENTITY_LIST.end(); e++) {
+    for (auto e = DEBUG_ENTITY_INFO_HEAD.begin(); e < DEBUG_ENTITY_INFO_HEAD.end(); e++) {
         drawDebugEntityInfo(*e);
     }
 }
@@ -421,28 +418,26 @@ void drawDebugHud() {
 void drawEditorEntityButtons() {
 
     int renderedCount = 0;
-    LinkedList::Node *node = EDITOR_STATE->entitiesHead;
+    EditorEntityButton *button = (EditorEntityButton *) EDITOR_STATE->entitiesHead;
 
-    while (node != 0) {
+    while (button != 0) {
 
-        EditorEntityButton *item = (EditorEntityButton *) node;
-
-        bool isItemSelected = EDITOR_STATE->toggledEntityButton == item;
+        bool isItemSelected = EDITOR_STATE->toggledEntityButton == button;
 
         Rectangle buttonRect = EditorEntityButtonRect(renderedCount);
 
         GuiToggleSprite(
             buttonRect,
-            item->sprite, 
+            button->sprite, 
             { buttonRect.x, buttonRect.y },
             &isItemSelected
         );
 
-        if (isItemSelected) EditorEntityButtonSelect(item);
+        if (isItemSelected) EditorEntityButtonSelect(button);
 
         renderedCount++;
 
-        node = node->next;
+        button = (EditorEntityButton *) button->next;
     }
 }
 
@@ -450,23 +445,21 @@ void drawEditorEntityButtons() {
 void drawEditorControlButtons() {
 
     int renderedCount = 0;
-    LinkedList::Node *node = EDITOR_STATE->controlHead;
+    EditorControlButton *button = (EditorControlButton *) EDITOR_STATE->controlHead;
 
-    while (node != 0) {
-
-        EditorControlButton *item = (EditorControlButton *) node;
+    while (button != 0) {
 
         Rectangle buttonRect = EditorControlButtonRect(renderedCount);
 
-        if (GuiButton(buttonRect, item->label)) {
+        if (GuiButton(buttonRect, button->label)) {
 
-            if (!item->handler) {
+            if (!button->handler) {
                 TraceLog(LOG_WARNING, "No handler to editor control button #%d, '%s'.",
-                            renderedCount, item->label);
+                            renderedCount, button->label);
                 goto next_button;
             }
 
-            item->handler();
+            button->handler();
 
             return;
         }
@@ -474,7 +467,7 @@ void drawEditorControlButtons() {
 next_button:
         renderedCount++;
 
-        node = node->next;
+        button = (EditorControlButton *) button->next;
     }
 }
 
@@ -483,13 +476,13 @@ void drawEditorEntitySelection() {
     if (EDITOR_STATE->isSelectingEntities)
         drawSceneRectangle(EditorSelectionGetRect(), EDITOR_SELECTION_RECT_COLOR);
 
-    for (auto node = EDITOR_STATE->selectedEntities.begin(); node < EDITOR_STATE->selectedEntities.end(); node++) {
+    for (auto e = EDITOR_STATE->selectedEntities.begin(); e < EDITOR_STATE->selectedEntities.end(); e++) {
 
         const Color color = EDITOR_SELECTION_ENTITY_COLOR;
 
         if (GAME_STATE->mode == MODE_IN_LEVEL) {
 
-            Level::Entity *entity = (Level::Entity *) *node;
+            Level::Entity *entity = (Level::Entity *) *e;
 
             if (EDITOR_STATE->isMovingSelectedEntities) {
                 drawLevelEntityMoveGhost(entity);
@@ -501,7 +494,7 @@ void drawEditorEntitySelection() {
         }
         else if (GAME_STATE->mode == MODE_OVERWORLD) {
 
-            OverworldEntity *entity = (OverworldEntity *) *node;
+            OverworldEntity *entity = (OverworldEntity *) *e;
 
             if (EDITOR_STATE->isMovingSelectedEntities) {
                 drawOverworldEntityMoveGhost(entity);

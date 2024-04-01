@@ -7,7 +7,7 @@
 #include "linked_list.hpp"
 
 
-std::vector<LinkedList::Node *> DEBUG_ENTITY_LIST = std::vector<LinkedList::Node *>();
+std::vector<LinkedList::Node *> DEBUG_ENTITY_INFO_HEAD = std::vector<LinkedList::Node *>();
 
 
 void DebugEntityToggle(Vector2 pos) {
@@ -24,29 +24,29 @@ void DebugEntityToggle(Vector2 pos) {
     
     if (!entity) return;
 
-    auto idx = std::find(DEBUG_ENTITY_LIST.begin(), DEBUG_ENTITY_LIST.end(), entity);
-    if (idx != DEBUG_ENTITY_LIST.end()) {
-        DEBUG_ENTITY_LIST.erase(idx);
+    auto idx = std::find(DEBUG_ENTITY_INFO_HEAD.begin(), DEBUG_ENTITY_INFO_HEAD.end(), entity);
+    if (idx != DEBUG_ENTITY_INFO_HEAD.end()) {
+        DEBUG_ENTITY_INFO_HEAD.erase(idx);
         TraceLog(LOG_TRACE, "Debug entity info disabled entity.");
     } else {
-        DEBUG_ENTITY_LIST.push_back(entity);
+        DEBUG_ENTITY_INFO_HEAD.push_back(entity);
         TraceLog(LOG_TRACE, "Debug entity info enabled entity.");
     }
 }
 
 void DebugEntityStop(LinkedList::Node *entity) {
 
-    auto idx = std::find(DEBUG_ENTITY_LIST.begin(), DEBUG_ENTITY_LIST.end(), entity);
+    auto idx = std::find(DEBUG_ENTITY_INFO_HEAD.begin(), DEBUG_ENTITY_INFO_HEAD.end(), entity);
 
-    if (idx != DEBUG_ENTITY_LIST.end()) {
-        DEBUG_ENTITY_LIST.erase(idx);
+    if (idx != DEBUG_ENTITY_INFO_HEAD.end()) {
+        DEBUG_ENTITY_INFO_HEAD.erase(idx);
         TraceLog(LOG_TRACE, "Debug entity info disabled entity.");
     }
 }
 
 void DebugEntityStopAll() {
 
-    DEBUG_ENTITY_LIST.clear();
+    DEBUG_ENTITY_INFO_HEAD.clear();
 
     TraceLog(LOG_TRACE, "Debug entity info disabled all entities.");
 }

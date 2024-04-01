@@ -3,7 +3,7 @@
 #include <string.h>
 #include <functional>
 #include <sstream>
-#include <algorithm>>
+#include <algorithm>
 
 #include "level.hpp"
 #include "player.hpp"
@@ -44,7 +44,7 @@ void resetState() {
     STATE->isPaused = false;
     STATE->awaitingAssociation = false;
     STATE->concludedAgo = -1;
-    STATE->exitNode = 0;
+    STATE->exit = 0;
     STATE->checkpoint = 0;
     STATE->checkpointsLeft = 0;
 
@@ -77,18 +77,16 @@ void leave() {
 // and returns its node, or 0 if not found.
 static LinkedList::Node *getEntityNodeAtPos(Vector2 pos) {
 
-    LinkedList::Node *node = STATE->listHead;
+    Entity *entity = (Entity *) STATE->listHead;
 
-    while (node != 0) {
-
-        Entity *entity = (Entity *) node;
+    while (entity != 0) {
 
         if (CheckCollisionPointRec(pos, entity->hitbox)) {
 
-            return node;
+            return entity;
         }
 
-        node = node->next;
+        entity = (Entity *) entity->next;
     };
 
     return 0;
@@ -96,19 +94,17 @@ static LinkedList::Node *getEntityNodeAtPos(Vector2 pos) {
 
 void tickAllEntities() {
 
-    LinkedList::Node *node = STATE->listHead;
-    LinkedList::Node *next;
+    Entity *entity = (Entity *) STATE->listHead;
+    Entity *next;
 
-    while (node != 0) {
+    while (entity != 0) {
 
-        next = node->next;
+        next = (Entity *) entity->next;
 
-        Entity *entity = (Entity *)node;
-
-        if (entity->tags & IS_ENEMY) EnemyTick(node);
+        if (entity->tags & IS_ENEMY) EnemyTick(entity);
         else if (entity->tags & IS_PLAYER) PlayerTick();
 
-        node = next;
+        entity = next;
     }
 }
 
@@ -126,13 +122,10 @@ static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
 
     int feetHeight = hitbox.y + hitbox.height;
 
-    LinkedList::Node *node = STATE->listHead;
-
+    Entity *possibleGround = (Entity *) STATE->listHead;
     Entity *foundGround = 0; 
 
-    while (node != 0) {
-
-        Entity *possibleGround = (Entity *)node;
+    while (possibleGround != 0) {
 
         if (possibleGround != entity &&
             possibleGround->tags & IS_GROUND &&
@@ -163,7 +156,7 @@ static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
                 else foundGround = possibleGround;
             } 
 
-        node = node->next;
+        possibleGround = (Entity *) possibleGround->next;
     }
 
     return foundGround;   
@@ -285,7 +278,7 @@ void ExitAdd(Vector2 pos) {
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
-    STATE->exitNode = LinkedList::AddNode(&STATE->listHead, newExit);
+    STATE->exit = (Entity *) LinkedList::AddNode(&STATE->listHead, newExit);
 
     TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
                 newExit->hitbox.x, newExit->hitbox.y);
@@ -301,8 +294,8 @@ void ExitCheckAndAdd(Vector2 pos) {
     }
 
     // Currently only one level exit is supported, but this should change in the future.
-    if (STATE->exitNode)
-        LinkedList::DestroyNode(&STATE->listHead, STATE->exitNode);
+    if (STATE->exit)
+        LinkedList::DestroyNode(&STATE->listHead, STATE->exit);
     
     ExitAdd({ hitbox.x, hitbox.y });
 }
@@ -358,17 +351,15 @@ Entity *GetGroundBeneathHitbox(Rectangle hitbox) {
     return getGroundBeneath(hitbox, 0);
 }
 
-void EntityDestroy(LinkedList::Node *node) {
+void EntityDestroy(Entity *entity) {
 
-    if (node == STATE->exitNode) STATE->exitNode = 0;
-
-    Entity *entity = (Entity *) node;
+    if (entity == STATE->exit) STATE->exit = 0;
 
     if (entity == STATE->checkpoint) STATE->checkpoint = 0;
 
     DebugEntityStop(entity);
 
-    LinkedList::DestroyNode(&STATE->listHead, node);
+    LinkedList::DestroyNode(&STATE->listHead, entity);
 
     TraceLog(LOG_TRACE, "Destroyed level entity.");
 }
@@ -387,12 +378,11 @@ void EntityRemoveAt(Vector2 pos) {
     // TODO This function is too big and should be broken up
     // in at least two others ASAP
 
-    LinkedList::Node *node = STATE->listHead;
-    while (node != 0) {
+    Entity *entity = (Entity *) STATE->listHead;
 
-        Entity *entity = (Entity *) node;
+    while (entity != 0) {
 
-        if (entity->tags & IS_PLAYER) goto next_node;
+        if (entity->tags & IS_PLAYER) goto next_entity;
 
         if (CheckCollisionPointRec(pos, EntityOriginHitbox(entity))) {
             break;
@@ -402,13 +392,11 @@ void EntityRemoveAt(Vector2 pos) {
             break;
         }
 
-next_node:
-        node = node->next;
+next_entity:
+        entity = (Entity *) entity->next;
     };
 
-    if (!node) return;
-
-    Entity *entity = (Entity *) node;
+    if (!entity) return;
 
     bool isPartOfSelection = std::find(EDITOR_STATE->selectedEntities.begin(), EDITOR_STATE->selectedEntities.end(), entity) != EDITOR_STATE->selectedEntities.end();
     if (isPartOfSelection) {
@@ -426,7 +414,7 @@ next_node:
 
     } else {
 
-        EntityDestroy(node);
+        EntityDestroy(entity);
     }
 }
 
@@ -469,19 +457,15 @@ void Tick() {
 
 bool CheckCollisionWithAnyEntity(Rectangle hitbox) {
 
-    LinkedList::Node *node = STATE->listHead;
+    Entity *entity = (Entity *) STATE->listHead;
 
-    while (node != 0) {
-    
-        Entity *entity = (Entity *) node;
+    while (entity != 0) {
 
         if (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox)) {
-
             return true;
         }
 
-        node = node->next;
-
+        entity = (Entity *) entity->next;
     }
 
     return false;
@@ -494,11 +478,9 @@ bool CheckCollisionWithAnything(Rectangle hitbox) {
 
 bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore) {
 
-    LinkedList::Node *node = STATE->listHead;
+    Entity *entity = (Entity *) STATE->listHead;
 
-    while (node != 0) {
-    
-        Entity *entity = (Entity *) node;
+    while (entity != 0) {
 
         Rectangle entitysOrigin = {
                                         entity->origin.x,       entity->origin.y,
@@ -509,15 +491,14 @@ bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::No
             (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox))) {
 
             for (auto e = entitiesToIgnore.begin(); e < entitiesToIgnore.end(); e++) {
-                if (*e == entity) goto next_node;
+                if (*e == entity) goto next_entity;
             }
 
             return true;
         }
 
-next_node:
-        node = node->next;
-
+next_entity:
+        entity = (Entity *) entity->next;
     }
 
     return false;

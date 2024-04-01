@@ -9,7 +9,7 @@
 #include "level/level.hpp"
 
 
-extern std::vector<LinkedList::Node *> DEBUG_ENTITY_LIST;
+extern std::vector<LinkedList::Node *> DEBUG_ENTITY_INFO_HEAD;
 
 
 // Searches for entity at pos and, if it finds one, shows

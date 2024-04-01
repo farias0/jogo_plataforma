@@ -11,7 +11,7 @@ public:
     Node *next;
     Node *previous;
 
-    virtual ~Node() = default; // so objects from derived classes can be deleted from a Node reference
+    virtual ~Node() = default; // so objects from derived classes can be deleted from a Node pointer
 };
 
 

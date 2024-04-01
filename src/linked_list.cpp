@@ -35,7 +35,7 @@ void DestroyNode(Node **head, Node *node) {
     RemoveNode(head, node);
     delete node;
 
-    TraceLog(LOG_TRACE, "Destroyed node with item from linked list.");
+    TraceLog(LOG_TRACE, "Destroyed node from linked list.");
 }
 
 void RemoveNode(Node **head, Node *node) {
@@ -56,7 +56,7 @@ void DestroyAll(Node **head) {
         DestroyNode(head, *head);
     }
 
-    TraceLog(LOG_TRACE, "Destroyed all items from a linked list.");
+    TraceLog(LOG_TRACE, "Destroyed all nodes from a linked list.");
 }
 
 void RemoveAll(Node **head) {
@@ -69,7 +69,7 @@ void RemoveAll(Node **head) {
 
     *head = 0;
 
-    TraceLog(LOG_TRACE, "Removed all items from a linked list.");
+    TraceLog(LOG_TRACE, "Removed all nodes from a linked list.");
 }
 
 int CountNodes(Node *head) {

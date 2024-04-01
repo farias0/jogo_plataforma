@@ -68,10 +68,8 @@ void PersistenceLevelSave(char *levelName) {
     TraceLog(LOG_DEBUG, "Saving level %s... (struct size=%d, level item count=%d)",
                         levelName, entitySize, levelItemCount);
 
-    LinkedList::Node *node = Level::STATE->listHead;
+    Level::Entity *entity = (Level::Entity *) Level::STATE->listHead;
     for (size_t i = 0; i < saveItemCount; ) {
-
-        Level::Entity *entity = (Level::Entity *) node;
 
         if (entity->tags & Level::IS_PLAYER)
             data[i].entityType = LEVEL_ENTITY_PLAYER;
@@ -101,7 +99,7 @@ void PersistenceLevelSave(char *levelName) {
         i++;
 
 skip_entity:
-        node = node->next;
+        entity = (Level::Entity *) entity->next;
     }
 
     FileData filedata = { data, entitySize, saveItemCount };
@@ -237,10 +235,8 @@ void PersistenceOverworldSave() {
     TraceLog(LOG_DEBUG, "Saving overworld... (struct size=%d, level item count=%d)",
                         entitySize, owItemCount);
 
-    LinkedList::Node *node = OW_STATE->listHead;
+    OverworldEntity *entity = (OverworldEntity *) OW_STATE->listHead;
     for (size_t i = 0; i < saveItemCount; ) {
-
-        OverworldEntity *entity = (OverworldEntity *) node;
 
         // Saves only OW_NOT_TILEs
         if (entity->tileType == OW_NOT_TILE) {
@@ -264,7 +260,7 @@ void PersistenceOverworldSave() {
         i++;
 
 skip_entity:
-        node = node->next;
+        entity = (OverworldEntity *) entity->next;
     }
 
     FileData filedata = { data, entitySize, saveItemCount };

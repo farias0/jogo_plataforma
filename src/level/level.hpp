@@ -38,6 +38,7 @@ typedef enum {
     IS_TEXTBOX      = 256,
 } EntityTag;
 
+
 class Entity : public LinkedList::Node, public Render::IDrawable {
 
 public:
@@ -59,6 +60,7 @@ public:
     void Draw();
 };
 
+
 typedef struct LevelState {
 
     // The head of the linked list of all the level entities
@@ -77,7 +79,7 @@ typedef struct LevelState {
     double concludedAgo;
 
     // Reference to the level exit in the level entity's list
-    LinkedList::Node *exitNode;
+    Entity *exit;
 
     // Reference to the current checkpoint in the level entity's list
     Entity *checkpoint;
@@ -125,7 +127,7 @@ Entity *GetGroundBeneath(Entity *entity);
 Entity *GetGroundBeneathHitbox(Rectangle hitbox);
 
 // Destroys a Entity
-void EntityDestroy(LinkedList::Node *node);
+void EntityDestroy(Entity *entity);
 
 // Searches for level entity in position
 Entity *EntityGetAt(Vector2 pos);
