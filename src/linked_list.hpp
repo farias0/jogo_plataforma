@@ -5,40 +5,33 @@
 namespace LinkedList {
 
 
-class NodeItem {
+class Node {
 
 public:
-    virtual ~NodeItem() = default; // so objects from derived classes can be deleted from a NodeItem reference
+    Node *next;
+    Node *previous;
+
+    virtual ~Node() = default; // so objects from derived classes can be deleted from a Node reference
 };
-
-typedef struct ListNode {
-    struct ListNode *next;
-    struct ListNode *previous;
-
-    NodeItem *item;
-} ListNode;
 
 
 // Adds new node containing 'item' to a linked list. Returns the new node.
-ListNode *Add(ListNode **head, NodeItem *item);
+Node *AddNode(Node **head, Node *node);
 
-// Returns list node containing item, or 0 if not found.
-ListNode *GetNode(ListNode *head, void *item);
+// Removes Node from a linked list and destroys it.
+void DestroyNode(Node **head, Node *node);
 
-// Removes and destroys node, with its item, from a linked list.
-void DestroyNode(ListNode **head, ListNode *node);
+// Removes all Nodes from a linked list and destroys them.
+void DestroyAll(Node **head);
 
-// Removes and destroys all nodes, with its items, from a linked list.
-void DestroyAll(ListNode **head);
+// Removes Node from a linked list, but doesn't destroy it.
+void RemoveNode(Node **head, Node *node);
 
-// Removes and destroys a node from a linked list, but doesn't destroy its item.
-void RemoveNode(ListNode **head, ListNode *node);
-
-// Removes all nodes from a linked list, but doesn't destroy the items.
-void RemoveAll(ListNode **head);
+// Removes all Nodes from a linked list, but doesn't destroy them.
+void RemoveAll(Node **head);
 
 // Counts how many nodes there are in a linked list.
-int CountNodes(ListNode *head);
+int CountNodes(Node *head);
 
 
 } // namespace

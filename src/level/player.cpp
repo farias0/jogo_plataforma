@@ -128,7 +128,7 @@ void PlayerInitialize(Vector2 origin) {
 
     Level::Entity *newPlayer = new Level::Entity();
     PLAYER_ENTITY = newPlayer;
-    LinkedList::Add(&Level::STATE->listHead, newPlayer);
+    LinkedList::AddNode(&Level::STATE->listHead, newPlayer);
  
     newPlayer->tags = Level::IS_PLAYER;
     newPlayer->origin = origin;
@@ -309,11 +309,11 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
             return;
         }
 
-        LinkedList::ListNode *node = Level::STATE->listHead;
+        LinkedList::Node *node = Level::STATE->listHead;
 
         while (node != 0) {
 
-            Level::Entity *entity = (Level::Entity *) node->item;
+            Level::Entity *entity = (Level::Entity *) node;
 
             if ((entity->tags & Level::IS_ENEMY) && !entity->isDead) {
 
@@ -466,10 +466,10 @@ void PlayerContinue() {
     Level::STATE->isPaused = false;
 
     // Reset all the entities to their origins
-    LinkedList::ListNode *node = Level::STATE->listHead;
+    LinkedList::Node *node = Level::STATE->listHead;
     while (node) {
 
-        Level::Entity *entity = (Level::Entity *) node->item;
+        Level::Entity *entity = (Level::Entity *) node;
         entity->isDead = false;
         entity->hitbox.x = entity->origin.x;
         entity->hitbox.y = entity->origin.y;
@@ -509,8 +509,7 @@ void PlayerSetCheckpoint() {
     }
 
     if (Level::STATE->checkpoint) {
-        Level::EntityDestroy(
-            LinkedList::GetNode(Level::STATE->listHead, Level::STATE->checkpoint));
+        Level::EntityDestroy(Level::STATE->checkpoint);
     }
 
     Vector2 pos = RectangleGetPos(PLAYER_ENTITY->hitbox);

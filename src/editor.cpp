@@ -54,7 +54,7 @@ static EditorEntityButton *addEntityButton(
         newButton->sprite = sprite;
         newButton->interactionType = interaction;
 
-        LinkedList::Add(&EDITOR_STATE->entitiesHead, newButton);
+        LinkedList::AddNode(&EDITOR_STATE->entitiesHead, newButton);
 
         return newButton;
 }
@@ -66,7 +66,7 @@ EditorControlButton *addControlButton(EditorControlType type, char *label, void 
     newButton->handler = handler;
     newButton->label = label;
 
-    LinkedList::Add(&EDITOR_STATE->controlHead, newButton);
+    LinkedList::AddNode(&EDITOR_STATE->controlHead, newButton);
 
     return newButton;
 }
@@ -107,15 +107,15 @@ void loadOverworldEditor() {
 // based on its origin and current cursor pos
 static void updateEntitySelectionList() {
 
-    LinkedList::RemoveAll(&EDITOR_STATE->selectedEntities);
+    EDITOR_STATE->selectedEntities.clear();
 
     Rectangle selectionHitbox = EditorSelectionGetRect();
 
-    LinkedList::ListNode *node = GetEntityListHead();
+    LinkedList::Node *node = GetEntityListHead();
     while (node != 0) {
 
         if (GAME_STATE->mode == MODE_IN_LEVEL) {
-            Level::Entity *entity = (Level::Entity *) node->item;
+            Level::Entity *entity = (Level::Entity *) node;
             
             if (entity->tags & Level::IS_PLAYER) goto next_entity;
 
@@ -123,18 +123,18 @@ static void updateEntitySelectionList() {
             bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, Level::EntityOriginHitbox(entity));
             if (collisionWithEntity || collisionWithGhost) {
                 
-                LinkedList::Add(&EDITOR_STATE->selectedEntities, entity);
+                EDITOR_STATE->selectedEntities.push_back(entity);
             }
         }
         else if (GAME_STATE->mode == MODE_OVERWORLD) {
             
-            OverworldEntity *entity = (OverworldEntity *) node->item;
+            OverworldEntity *entity = (OverworldEntity *) node;
             
             if (entity->tags & OW_IS_CURSOR) goto next_entity;
 
             if (CheckCollisionRecs(selectionHitbox, OverworldEntitySquare(entity))) {
                 
-                LinkedList::Add(&EDITOR_STATE->selectedEntities, entity);
+                EDITOR_STATE->selectedEntities.push_back(entity);
             }
         }
 
@@ -146,13 +146,12 @@ next_entity:
 void selectEntitiesApplyMove() {
 
     // Searches for collision 
-    LinkedList::ListNode *node = EDITOR_STATE->selectedEntities;
-    while (node) {
+    for (auto node = EDITOR_STATE->selectedEntities.begin(); node < EDITOR_STATE->selectedEntities.end(); node++) {
 
         switch (GAME_STATE->mode) {
 
         case MODE_IN_LEVEL: {
-            Level::Entity *entity = (Level::Entity *) node->item;
+            Level::Entity *entity = (Level::Entity *) *node;
             Rectangle hitbox = entity->hitbox;
             Vector2 pos = EditorEntitySelectionCalcMove(RectangleGetPos(hitbox));
             RectangleSetPos(&hitbox, pos);
@@ -162,7 +161,7 @@ void selectEntitiesApplyMove() {
         }
 
         case MODE_OVERWORLD: {
-            OverworldEntity *entity = (OverworldEntity *) node->item;
+            OverworldEntity *entity = (OverworldEntity *) *node;
             Rectangle hitbox = OverworldEntitySquare(entity);
             Vector2 pos = EditorEntitySelectionCalcMove(RectangleGetPos(hitbox));
             RectangleSetPos(&hitbox, pos);
@@ -172,19 +171,17 @@ void selectEntitiesApplyMove() {
         }
 
         }
-        node = node->next;
     }
 
     // Apply move
     Vector2 newPos;
-    node = EDITOR_STATE->selectedEntities;
 
-    while (node) {
+    for (auto node = EDITOR_STATE->selectedEntities.begin(); node < EDITOR_STATE->selectedEntities.end(); node++) {
         
         switch (GAME_STATE->mode) {
 
         case MODE_IN_LEVEL: {
-            Level::Entity *entity = (Level::Entity *) node->item;
+            Level::Entity *entity = (Level::Entity *) *node;
             newPos = EditorEntitySelectionCalcMove(RectangleGetPos(entity->hitbox));
             RectangleSetPos(&entity->hitbox, newPos);
             entity->origin = EditorEntitySelectionCalcMove(entity->origin);
@@ -192,13 +189,12 @@ void selectEntitiesApplyMove() {
         }
 
         case MODE_OVERWORLD: {
-            OverworldEntity *entity = (OverworldEntity *) node->item;
+            OverworldEntity *entity = (OverworldEntity *) *node;
             entity->gridPos = EditorEntitySelectionCalcMove(entity->gridPos);
             break;
         }
 
         }
-        node = node->next;
     }
     
     EDITOR_STATE->entitySelectionCoords.start =
@@ -212,6 +208,7 @@ void selectEntitiesApplyMove() {
 void EditorInitialize() {
 
     EDITOR_STATE = (EditorState *) MemAlloc(sizeof(EditorState));
+    EDITOR_STATE->selectedEntities = std::vector<LinkedList::Node *>();
 
     editorStateReset();
 
@@ -329,7 +326,7 @@ void EditorSelectionCancel() {
     EDITOR_STATE->isSelectingEntities = false;
     EDITOR_STATE->selectedEntitiesThisFrame = false;
     EDITOR_STATE->isMovingSelectedEntities = false;
-    LinkedList::RemoveAll(&EDITOR_STATE->selectedEntities);
+    EDITOR_STATE->selectedEntities.clear();
 
     TraceLog(LOG_TRACE, "Editor's entity selection canceled.");
 }
@@ -338,7 +335,7 @@ bool EditorSelectedEntitiesMove(Vector2 cursorPos) {
 
     EditorState *s = EDITOR_STATE;
 
-    if (!s->selectedEntities) {
+    if (s->selectedEntities.empty()) {
         TraceLog(LOG_ERROR,
                     "Editor tried to check selection move, but there are no entities selected.");
         return false;

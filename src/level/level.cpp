@@ -3,6 +3,7 @@
 #include <string.h>
 #include <functional>
 #include <sstream>
+#include <algorithm>>
 
 #include "level.hpp"
 #include "player.hpp"
@@ -74,13 +75,13 @@ void leave() {
 
 // Searches for an entity in a given position
 // and returns its node, or 0 if not found.
-static LinkedList::ListNode *getEntityNodeAtPos(Vector2 pos) {
+static LinkedList::Node *getEntityNodeAtPos(Vector2 pos) {
 
-    LinkedList::ListNode *node = STATE->listHead;
+    LinkedList::Node *node = STATE->listHead;
 
     while (node != 0) {
 
-        Entity *entity = (Entity *) node->item;
+        Entity *entity = (Entity *) node;
 
         if (CheckCollisionPointRec(pos, entity->hitbox)) {
 
@@ -95,14 +96,14 @@ static LinkedList::ListNode *getEntityNodeAtPos(Vector2 pos) {
 
 void tickAllEntities() {
 
-    LinkedList::ListNode *node = STATE->listHead;
-    LinkedList::ListNode *next;
+    LinkedList::Node *node = STATE->listHead;
+    LinkedList::Node *next;
 
     while (node != 0) {
 
         next = node->next;
 
-        Entity *entity = (Entity *)node->item;
+        Entity *entity = (Entity *)node;
 
         if (entity->tags & IS_ENEMY) EnemyTick(node);
         else if (entity->tags & IS_PLAYER) PlayerTick();
@@ -125,13 +126,13 @@ static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
 
     int feetHeight = hitbox.y + hitbox.height;
 
-    LinkedList::ListNode *node = STATE->listHead;
+    LinkedList::Node *node = STATE->listHead;
 
     Entity *foundGround = 0; 
 
     while (node != 0) {
 
-        Entity *possibleGround = (Entity *)node->item;
+        Entity *possibleGround = (Entity *)node;
 
         if (possibleGround != entity &&
             possibleGround->tags & IS_GROUND &&
@@ -263,7 +264,7 @@ Entity *CheckpointAdd(Vector2 pos) {
     newCheckpoint->isFacingRight = true;
     newCheckpoint->layer = -1;
 
-    LinkedList::Add(&STATE->listHead, newCheckpoint);
+    LinkedList::AddNode(&STATE->listHead, newCheckpoint);
 
     TraceLog(LOG_TRACE, "Added checkpoint to level (x=%.1f, y=%.1f)",
                 newCheckpoint->hitbox.x, newCheckpoint->hitbox.y);
@@ -284,7 +285,7 @@ void ExitAdd(Vector2 pos) {
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
-    STATE->exitNode = LinkedList::Add(&STATE->listHead, newExit);
+    STATE->exitNode = LinkedList::AddNode(&STATE->listHead, newExit);
 
     TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
                 newExit->hitbox.x, newExit->hitbox.y);
@@ -321,7 +322,7 @@ void TextboxAdd(Vector2 pos, int textId) {
     newTextbox->isFacingRight = true;
     newTextbox->textId = textId;
 
-    LinkedList::Add(&STATE->listHead, newTextbox);
+    LinkedList::AddNode(&STATE->listHead, newTextbox);
 
     TraceLog(LOG_TRACE, "Added textbox button to level (x=%.1f, y=%.1f)",
                 newTextbox->hitbox.x, newTextbox->hitbox.y);
@@ -357,11 +358,11 @@ Entity *GetGroundBeneathHitbox(Rectangle hitbox) {
     return getGroundBeneath(hitbox, 0);
 }
 
-void EntityDestroy(LinkedList::ListNode *node) {
+void EntityDestroy(LinkedList::Node *node) {
 
     if (node == STATE->exitNode) STATE->exitNode = 0;
 
-    Entity *entity = (Entity *) node->item;
+    Entity *entity = (Entity *) node;
 
     if (entity == STATE->checkpoint) STATE->checkpoint = 0;
 
@@ -374,11 +375,11 @@ void EntityDestroy(LinkedList::ListNode *node) {
 
 Entity *EntityGetAt(Vector2 pos) {
 
-    LinkedList::ListNode *node = getEntityNodeAtPos(pos);
+    LinkedList::Node *node = getEntityNodeAtPos(pos);
 
     if (!node) return 0;
 
-    return (Entity *) node->item;
+    return (Entity *) node;
 }
 
 void EntityRemoveAt(Vector2 pos) {
@@ -386,10 +387,10 @@ void EntityRemoveAt(Vector2 pos) {
     // TODO This function is too big and should be broken up
     // in at least two others ASAP
 
-    LinkedList::ListNode *node = STATE->listHead;
+    LinkedList::Node *node = STATE->listHead;
     while (node != 0) {
 
-        Entity *entity = (Entity *) node->item;
+        Entity *entity = (Entity *) node;
 
         if (entity->tags & IS_PLAYER) goto next_node;
 
@@ -407,24 +408,18 @@ next_node:
 
     if (!node) return;
 
-    Entity *entity = (Entity *) node->item;
+    Entity *entity = (Entity *) node;
 
-    bool isPartOfSelection = LinkedList::GetNode(EDITOR_STATE->selectedEntities, entity);
+    bool isPartOfSelection = std::find(EDITOR_STATE->selectedEntities.begin(), EDITOR_STATE->selectedEntities.end(), entity) != EDITOR_STATE->selectedEntities.end();
     if (isPartOfSelection) {
 
-        LinkedList::ListNode *selectedNode = EDITOR_STATE->selectedEntities;
-        while (selectedNode) {
+        for (auto e = EDITOR_STATE->selectedEntities.begin(); e < EDITOR_STATE->selectedEntities.end(); e++) {
 
-            LinkedList::ListNode *next = selectedNode->next;
-            Entity *selectedEntity = (Entity *) selectedNode->item;
+            Entity *selectedEntity = (Entity *) *e;
 
-            if (selectedEntity->tags & IS_PLAYER) goto next_selected_node;
+            if (selectedEntity->tags & IS_PLAYER) continue;
 
-            EntityDestroy(
-                LinkedList::GetNode(STATE->listHead, selectedEntity));
-
-next_selected_node:
-            selectedNode = next;
+            EntityDestroy(selectedEntity);
         }
 
         EditorSelectionCancel();
@@ -474,11 +469,11 @@ void Tick() {
 
 bool CheckCollisionWithAnyEntity(Rectangle hitbox) {
 
-    LinkedList::ListNode *node = STATE->listHead;
+    LinkedList::Node *node = STATE->listHead;
 
     while (node != 0) {
     
-        Entity *entity = (Entity *) node->item;
+        Entity *entity = (Entity *) node;
 
         if (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox)) {
 
@@ -494,16 +489,16 @@ bool CheckCollisionWithAnyEntity(Rectangle hitbox) {
 
 bool CheckCollisionWithAnything(Rectangle hitbox) {
 
-    return CheckCollisionWithAnythingElse(hitbox, 0);
+    return CheckCollisionWithAnythingElse(hitbox, std::vector<LinkedList::Node *>());
 }
 
-bool CheckCollisionWithAnythingElse(Rectangle hitbox, LinkedList::ListNode *entityListHead) {
+bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore) {
 
-    LinkedList::ListNode *node = STATE->listHead;
+    LinkedList::Node *node = STATE->listHead;
 
     while (node != 0) {
     
-        Entity *entity = (Entity *) node->item;
+        Entity *entity = (Entity *) node;
 
         Rectangle entitysOrigin = {
                                         entity->origin.x,       entity->origin.y,
@@ -513,10 +508,8 @@ bool CheckCollisionWithAnythingElse(Rectangle hitbox, LinkedList::ListNode *enti
         if (CheckCollisionRecs(hitbox, entitysOrigin) ||
             (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox))) {
 
-            LinkedList::ListNode *excludedNode = entityListHead;
-            while (excludedNode != 0) {
-                if (excludedNode->item == entity) goto next_node;
-                excludedNode = excludedNode->next;
+            for (auto e = entitiesToIgnore.begin(); e < entitiesToIgnore.end(); e++) {
+                if (*e == entity) goto next_node;
             }
 
             return true;

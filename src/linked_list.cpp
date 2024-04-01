@@ -6,13 +6,9 @@
 namespace LinkedList {
 
 
-ListNode *Add(ListNode **head, NodeItem *item) {
+Node *AddNode(Node **head, Node *node) {
 
-    ListNode *node = (ListNode *) MemAlloc(sizeof(ListNode));
-
-    node->item = item;
-
-    ListNode *lastItem = *head;
+    Node *lastItem = *head;
 
     if (*head) {
 
@@ -34,15 +30,15 @@ ListNode *Add(ListNode **head, NodeItem *item) {
     return node;
 }
 
-void DestroyNode(ListNode **head, ListNode *node) {
+void DestroyNode(Node **head, Node *node) {
 
-    delete node->item;
     RemoveNode(head, node);
+    delete node;
 
     TraceLog(LOG_TRACE, "Destroyed node with item from linked list.");
 }
 
-void RemoveNode(ListNode **head, ListNode *node) {
+void RemoveNode(Node **head, Node *node) {
 
     if (*head == node) {
         *head = node->next;
@@ -50,35 +46,24 @@ void RemoveNode(ListNode **head, ListNode *node) {
 
     if (node->next) node->next->previous = node->previous;
     if (node->previous) node->previous->next = node->next;
-    MemFree(node);
 
-    TraceLog(LOG_TRACE, "Destroyed node from linked list.");
+    TraceLog(LOG_TRACE, "Removed node from linked list.");
 }
 
-ListNode *GetNode(ListNode *head, void *item) {
-
-    while (head != 0 && head->item != item) {
-        head = head->next;
-    }
-
-    return head;
-}
-
-void DestroyAll(ListNode **head) {
+void DestroyAll(Node **head) {
 
     while (*head) {
         DestroyNode(head, *head);
     }
 
-    TraceLog(LOG_TRACE, "Destroyed a linked list.");
+    TraceLog(LOG_TRACE, "Destroyed all items from a linked list.");
 }
 
-void RemoveAll(ListNode **head) {
+void RemoveAll(Node **head) {
 
-    ListNode *node = *head;
+    Node *node = *head;
     while (node) {
-        ListNode *next = node->next;
-        MemFree(node);
+        Node *next = node->next;
         node = next;
     }
 
@@ -87,9 +72,9 @@ void RemoveAll(ListNode **head) {
     TraceLog(LOG_TRACE, "Removed all items from a linked list.");
 }
 
-int CountNodes(ListNode *head) {
+int CountNodes(Node *head) {
 
-    ListNode *node = head;
+    Node *node = head;
     int counter = 0;
 
     while (node != 0) {

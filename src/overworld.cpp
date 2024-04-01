@@ -42,9 +42,9 @@ static void updateCursorPosition() {
                     cursorDimensions.height;
 }
 
-static void destroyEntityOverworld(LinkedList::ListNode *node) {
+static void destroyEntityOverworld(LinkedList::Node *node) {
 
-    OverworldEntity *entity = (OverworldEntity *) node->item;
+    OverworldEntity *entity = (OverworldEntity *) node;
 
     DebugEntityStop(entity);
 
@@ -56,9 +56,9 @@ static void destroyEntityOverworld(LinkedList::ListNode *node) {
 }
 
 // Removes overworld tile, if possible 
-static void checkAndRemoveTile(LinkedList::ListNode *node) {
+static void checkAndRemoveTile(LinkedList::Node *node) {
 
-    OverworldEntity *entity = (OverworldEntity *) node->item;
+    OverworldEntity *entity = (OverworldEntity *) node;
 
     // Ideally the game would support removing the tile under the player,
     // but this would demand some logic to manage the tileUnder pointer.
@@ -81,7 +81,7 @@ static void initializeCursor() {
     newCursor->sprite = SPRITES->OverworldCursor;
     newCursor->layer = 1;
 
-    LinkedList::Add(&OW_STATE->listHead, newCursor);
+    LinkedList::AddNode(&OW_STATE->listHead, newCursor);
 
     OW_CURSOR = newCursor;
 
@@ -91,13 +91,13 @@ static void initializeCursor() {
 
 // Searches for an entity in a given position
 // and returns its node, or 0 if not found.
-static LinkedList::ListNode *getEntityNodeAtPos(Vector2 pos) {
+static LinkedList::Node *getEntityNodeAtPos(Vector2 pos) {
 
-    LinkedList::ListNode *node = OW_STATE->listHead;
+    LinkedList::Node *node = OW_STATE->listHead;
 
     while (node != 0) {
 
-        OverworldEntity *entity = (OverworldEntity *) node->item;
+        OverworldEntity *entity = (OverworldEntity *) node;
 
         if (CheckCollisionPointRec(pos, OverworldEntitySquare(entity))) {
 
@@ -175,7 +175,7 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
         TraceLog(LOG_ERROR, "Could not find sprite for overworld tile type %d.", type);
     }
 
-    LinkedList::Add(&OW_STATE->listHead, newTile);
+    LinkedList::AddNode(&OW_STATE->listHead, newTile);
 
     TraceLog(LOG_TRACE, "Added tile to overworld (x=%.1f, y=%.1f)",
                 newTile->gridPos.x, newTile->gridPos.y);
@@ -185,11 +185,11 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
 
 OverworldEntity *OverworldEntityGetAt(Vector2 pos) {
 
-    LinkedList::ListNode *node = getEntityNodeAtPos(pos);
+    LinkedList::Node *node = getEntityNodeAtPos(pos);
 
     if (!node) return 0;
 
-    return ((OverworldEntity *) node->item);
+    return ((OverworldEntity *) node);
 }
 
 void OverworldLevelSelect() {
@@ -227,11 +227,11 @@ void OverworldCursorMove(OverworldCursorDirection direction) {
 
     OverworldEntity *tileUnder = OW_STATE->tileUnderCursor;
 
-    LinkedList::ListNode *node = OW_STATE->listHead;
+    LinkedList::Node *node = OW_STATE->listHead;
 
     while (node != 0) {
 
-        OverworldEntity *entity = (OverworldEntity *) node->item;
+        OverworldEntity *entity = (OverworldEntity *) node;
         bool isOnTheSameRow;
         bool isOnTheSameColumn;
         bool foundPath;
@@ -357,61 +357,53 @@ void OverworldTileAddOrInteract(Vector2 pos) {
 
 void OverworldTileRemoveAt(Vector2 pos) {
 
-    LinkedList::ListNode *node = getEntityNodeAtPos(pos);
+    OverworldEntity *entity = (OverworldEntity *) getEntityNodeAtPos(pos);
 
-    if (!node) {
+    if (!entity) {
         TraceLog(LOG_TRACE, "Didn't find any tile to remove.");
         return;
     }
-
-    OverworldEntity *entity = (OverworldEntity *) node->item;
 
     if (entity == OW_CURSOR) {
         TraceLog(LOG_TRACE, "Can't remove overworld cursor.");
         return;
     }
 
-    bool isPartOfSelection = LinkedList::GetNode(EDITOR_STATE->selectedEntities, entity);
+    bool isPartOfSelection = std::find(EDITOR_STATE->selectedEntities.begin(), EDITOR_STATE->selectedEntities.end(), entity) != EDITOR_STATE->selectedEntities.end();
     if (isPartOfSelection) {
 
-        LinkedList::ListNode *node = EDITOR_STATE->selectedEntities;
-        while (node) {
-            LinkedList::ListNode *next = node->next;
-            LinkedList::ListNode *nodeInOW = LinkedList::GetNode(OW_STATE->listHead, (OverworldEntity *) node->item);
-            checkAndRemoveTile(nodeInOW);
-            node = next;
+        for (auto e = EDITOR_STATE->selectedEntities.begin(); e < EDITOR_STATE->selectedEntities.end(); e++) {
+            checkAndRemoveTile(*e);
         }
 
         EditorSelectionCancel();
 
     } else {
 
-        checkAndRemoveTile(node);
+        checkAndRemoveTile(entity);
     }
 }
 
 OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox) {
 
-    return OverworldCheckCollisionWithAnyTileExcept(hitbox, 0);
+    return OverworldCheckCollisionWithAnyTileExcept(hitbox, std::vector<LinkedList::Node *>());
 }
 
-OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, LinkedList::ListNode *ignoreListHead) {
+OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore) {
 
-    LinkedList::ListNode *node = OW_STATE->listHead;
+    LinkedList::Node *node = OW_STATE->listHead;
 
     while (node != 0) {
 
-        OverworldEntity *entity = (OverworldEntity *) node->item;
-        LinkedList::ListNode *toIgnore;
+        OverworldEntity *entity = (OverworldEntity *) node;
+        LinkedList::Node *toIgnore;
 
         if (entity->tileType == OW_NOT_TILE) goto next_entity;
 
         if (!CheckCollisionRecs(hitbox, OverworldEntitySquare(entity))) goto next_entity;
 
-        toIgnore = ignoreListHead;
-        while (toIgnore != 0) {
-            if (toIgnore->item == entity) goto next_entity;
-            toIgnore = toIgnore->next;
+        for (auto e = entitiesToIgnore.begin(); e < entitiesToIgnore.end(); e++) {
+            if (*e == entity) goto next_entity;
         }
 
         return entity;

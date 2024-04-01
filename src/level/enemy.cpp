@@ -22,7 +22,7 @@ void EnemyAdd(Vector2 origin) {
     newEnemy->isFacingRight = true;
     newEnemy->isFallingDown = true;
 
-    LinkedList::Add(&Level::STATE->listHead, newEnemy);
+    LinkedList::AddNode(&Level::STATE->listHead, newEnemy);
 
     TraceLog(LOG_TRACE, "Added enemy to level (x=%.1f, y=%.1f)",
                 newEnemy->hitbox.x, newEnemy->hitbox.y);
@@ -40,11 +40,11 @@ void EnemyCheckAndAdd(Vector2 origin) {
     EnemyAdd({ hitbox.x, hitbox.y });
 }
 
-void EnemyTick(LinkedList::ListNode *enemyNode) {
+void EnemyTick(LinkedList::Node *enemyNode) {
 
     if (Level::STATE->concludedAgo >= 0) return;
 
-    Level::Entity *enemy = (Level::Entity *)enemyNode->item;
+    Level::Entity *enemy = (Level::Entity *)enemyNode;
     if (enemy->isDead) return;
 
 
@@ -90,10 +90,10 @@ void EnemyTick(LinkedList::ListNode *enemyNode) {
     if (enemy->isFacingRight) enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
     else enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
 
-    LinkedList::ListNode *node = Level::STATE->listHead;
+    LinkedList::Node *node = Level::STATE->listHead;
     while (node) {
 
-        Level::Entity *entity = (Level::Entity *) node->item;
+        Level::Entity *entity = (Level::Entity *) node;
 
         if (entity == enemy) goto next_node;
 

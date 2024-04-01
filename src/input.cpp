@@ -158,7 +158,7 @@ void handleDevInput() {
         EditorSelectEntities(mousePosInScene);
         return;
     }
-    else if (EDITOR_STATE->isEnabled && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && EDITOR_STATE->selectedEntities) {
+    else if (EDITOR_STATE->isEnabled && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && !EDITOR_STATE->selectedEntities.empty()) {
 
         if (!IsInPlayArea(mousePosInScreen)) goto skip_selected_entities_actions;
 

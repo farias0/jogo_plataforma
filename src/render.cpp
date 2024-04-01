@@ -32,7 +32,7 @@
 namespace Render {
 
 
-class SysMessage : public LinkedList::NodeItem {
+class SysMessage : public LinkedList::Node {
 
 public:
     char *msg;
@@ -46,7 +46,7 @@ typedef struct LevelTransitionShaderControl {
 } LevelTransitionShaderControl;
 
 
-LinkedList::ListNode *SYS_MESSAGES_HEAD = 0;
+LinkedList::Node *SYS_MESSAGES_HEAD = 0;
 
 /*
     TODO create RenderState,
@@ -228,22 +228,22 @@ void drawEntities() {
 
     for (int layer = FIRST_LAYER; layer <= LAST_LAYER; layer++) {
 
-        LinkedList::ListNode *node = GetEntityListHead();
+        LinkedList::Node *node = GetEntityListHead();
 
         while (node != 0) {
 
             if (GAME_STATE->mode == MODE_IN_LEVEL) {
 
-                Level::Entity *entity = (Level::Entity *) node->item;
+                Level::Entity *entity = (Level::Entity *) node;
                 if (entity->layer != layer) goto next_entity;                
                 entity->Draw();
             }
 
             else if (GAME_STATE->mode == MODE_OVERWORLD) {
 
-                OverworldEntity *entity = (OverworldEntity *) node->item;
+                OverworldEntity *entity = (OverworldEntity *) node;
                 if (entity->layer != layer) goto next_entity;
-                drawOverworldEntity((OverworldEntity *) node->item);
+                drawOverworldEntity(entity);
             }
 
             else return;
@@ -256,8 +256,8 @@ next_entity:
 
 void drawSysMessages() {
 
-    LinkedList::ListNode *node = SYS_MESSAGES_HEAD;
-    LinkedList::ListNode *nextNode;
+    LinkedList::Node *node = SYS_MESSAGES_HEAD;
+    LinkedList::Node *nextNode;
     SysMessage *msg;
     size_t currentMsg = 1;
     int x, y;
@@ -266,7 +266,7 @@ void drawSysMessages() {
 
         nextNode = node->next;
 
-        msg = (SysMessage *) node->item;
+        msg = (SysMessage *) node;
 
         if (msg->secondsUntilDisappear <= 0) {
             MemFree(msg->msg);
@@ -354,7 +354,7 @@ void drawOverworldHud() {
     }
 }
 
-void drawDebugEntityInfo(void *entity) {
+void drawDebugEntityInfo(LinkedList::Node *entity) {
 
     Rectangle hitbox;
     Vector2 screenPos;
@@ -398,7 +398,7 @@ void drawDebugHud() {
     if (CameraIsPanned()) DrawText("Câmera deslocada",
                                     SCREEN_WIDTH - 300, SCREEN_HEIGHT - 45, 30, RAYWHITE);
 
-    LinkedList::ListNode *listHead = GetEntityListHead();
+    LinkedList::Node *listHead = GetEntityListHead();
     if (listHead) {
         char buffer[50];
         sprintf(buffer, "%d entidades", LinkedList::CountNodes(listHead));
@@ -412,11 +412,8 @@ void drawDebugHud() {
         DrawText(buffer, 600, 20, 20, WHITE);
     }
 
-    LinkedList::ListNode *node = DEBUG_ENTITY_INFO_HEAD;
-    while (node != 0) {
-        LinkedList::ListNode *nextNode = node->next;
-        drawDebugEntityInfo(node->item);
-        node = nextNode;
+    for (auto e = DEBUG_ENTITY_LIST.begin(); e < DEBUG_ENTITY_LIST.end(); e++) {
+        drawDebugEntityInfo(*e);
     }
 }
 
@@ -424,11 +421,11 @@ void drawDebugHud() {
 void drawEditorEntityButtons() {
 
     int renderedCount = 0;
-    LinkedList::ListNode *node = EDITOR_STATE->entitiesHead;
+    LinkedList::Node *node = EDITOR_STATE->entitiesHead;
 
     while (node != 0) {
 
-        EditorEntityButton *item = (EditorEntityButton *) node->item;
+        EditorEntityButton *item = (EditorEntityButton *) node;
 
         bool isItemSelected = EDITOR_STATE->toggledEntityButton == item;
 
@@ -453,11 +450,11 @@ void drawEditorEntityButtons() {
 void drawEditorControlButtons() {
 
     int renderedCount = 0;
-    LinkedList::ListNode *node = EDITOR_STATE->controlHead;
+    LinkedList::Node *node = EDITOR_STATE->controlHead;
 
     while (node != 0) {
 
-        EditorControlButton *item = (EditorControlButton *) node->item;
+        EditorControlButton *item = (EditorControlButton *) node;
 
         Rectangle buttonRect = EditorControlButtonRect(renderedCount);
 
@@ -486,14 +483,13 @@ void drawEditorEntitySelection() {
     if (EDITOR_STATE->isSelectingEntities)
         drawSceneRectangle(EditorSelectionGetRect(), EDITOR_SELECTION_RECT_COLOR);
 
-    LinkedList::ListNode *node = EDITOR_STATE->selectedEntities;
-    while (node != 0) {
+    for (auto node = EDITOR_STATE->selectedEntities.begin(); node < EDITOR_STATE->selectedEntities.end(); node++) {
 
         const Color color = EDITOR_SELECTION_ENTITY_COLOR;
 
         if (GAME_STATE->mode == MODE_IN_LEVEL) {
 
-            Level::Entity *entity = (Level::Entity *) node->item;
+            Level::Entity *entity = (Level::Entity *) *node;
 
             if (EDITOR_STATE->isMovingSelectedEntities) {
                 drawLevelEntityMoveGhost(entity);
@@ -505,7 +501,7 @@ void drawEditorEntitySelection() {
         }
         else if (GAME_STATE->mode == MODE_OVERWORLD) {
 
-            OverworldEntity *entity = (OverworldEntity *) node->item;
+            OverworldEntity *entity = (OverworldEntity *) *node;
 
             if (EDITOR_STATE->isMovingSelectedEntities) {
                 drawOverworldEntityMoveGhost(entity);
@@ -514,8 +510,6 @@ void drawEditorEntitySelection() {
             }
             
         }
-
-        node = node->next;
     }
 }
 
@@ -672,7 +666,7 @@ void PrintSysMessage(const std::string &msg) {
     newMsg->msg = msgCopy;
     newMsg->secondsUntilDisappear = SYS_MESSAGE_SECONDS;
     
-    LinkedList::Add(&SYS_MESSAGES_HEAD, newMsg);
+    LinkedList::AddNode(&SYS_MESSAGES_HEAD, newMsg);
 
     TraceLog(LOG_TRACE, "Added sys message to list: '%s'.", msg);
 }

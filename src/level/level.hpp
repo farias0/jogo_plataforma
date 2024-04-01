@@ -4,6 +4,7 @@
 
 #include <raylib.h>
 #include <string>
+#include <vector>
 
 #include "../linked_list.hpp"
 #include "../assets.hpp"
@@ -37,7 +38,7 @@ typedef enum {
     IS_TEXTBOX      = 256,
 } EntityTag;
 
-class Entity : public LinkedList::NodeItem, public Render::IDrawable {
+class Entity : public LinkedList::Node, public Render::IDrawable {
 
 public:
     unsigned long int tags;
@@ -61,7 +62,7 @@ public:
 typedef struct LevelState {
 
     // The head of the linked list of all the level entities
-    LinkedList::ListNode *listHead;
+    LinkedList::Node *listHead;
 
     // The current loaded level's name
     char levelName[LEVEL_NAME_BUFFER_SIZE];
@@ -76,7 +77,7 @@ typedef struct LevelState {
     double concludedAgo;
 
     // Reference to the level exit in the level entity's list
-    LinkedList::ListNode *exitNode;
+    LinkedList::Node *exitNode;
 
     // Reference to the current checkpoint in the level entity's list
     Entity *checkpoint;
@@ -124,7 +125,7 @@ Entity *GetGroundBeneath(Entity *entity);
 Entity *GetGroundBeneathHitbox(Rectangle hitbox);
 
 // Destroys a Entity
-void EntityDestroy(LinkedList::ListNode *node);
+void EntityDestroy(LinkedList::Node *node);
 
 // Searches for level entity in position
 Entity *EntityGetAt(Vector2 pos);
@@ -157,8 +158,8 @@ bool CheckCollisionWithAnyEntity(Rectangle hitbox);
 bool CheckCollisionWithAnything(Rectangle hitbox);
 
 // Checks for collision between a rectangle and any living entity in the level,
-// including their origins, as long as it's NOT present in a given entity list.
-bool CheckCollisionWithAnythingElse(Rectangle hitbox, LinkedList::ListNode *entityListHead);
+// including their origins, as long as it's NOT present in a given entity vector.
+bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore);
 
 
 } // namespace

@@ -1,6 +1,7 @@
 #ifndef _OVERWORLD_H_INCLUDED_
 #define _OVERWORLD_H_INCLUDED_
 
+#include <vector>
 
 #include "assets.hpp"
 #include "linked_list.hpp"
@@ -34,7 +35,7 @@ typedef enum OverworldEntityTag {
     OW_IS_ROTATABLE         = 8,
 } OverworldEntityTag;
 
-class OverworldEntity : public LinkedList::NodeItem {
+class OverworldEntity : public LinkedList::Node {
 
 public:
     unsigned long int tags;
@@ -51,7 +52,7 @@ public:
 typedef struct OverworldState {
 
     // The head of the linked list of all the overworld entities
-    LinkedList::ListNode *listHead;
+    LinkedList::Node *listHead;
 
     // Reference to the tile the cursor is over, part of the overworld entity list 
     OverworldEntity *tileUnderCursor;
@@ -92,8 +93,8 @@ void OverworldTileRemoveAt(Vector2 pos);
 OverworldEntity *OverworldCheckCollisionWithAnyTile(Rectangle hitbox);
 
 // Checks for collision between a hitbox and any tile in the overworld
-// that's NOT present in a given list. Returns the collided entity, or 0 if none.
-OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, LinkedList::ListNode *entityListHead);
+// that's NOT present in a given vector. Returns the collided entity, or 0 if none.
+OverworldEntity *OverworldCheckCollisionWithAnyTileExcept(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore);
 
 void OverworldTick();
 

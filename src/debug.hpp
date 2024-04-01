@@ -3,12 +3,13 @@
 
 
 #include <raylib.h>
+#include <vector>
 
 #include "linked_list.hpp"
 #include "level/level.hpp"
 
 
-extern LinkedList::ListNode *DEBUG_ENTITY_INFO_HEAD;
+extern std::vector<LinkedList::Node *> DEBUG_ENTITY_LIST;
 
 
 // Searches for entity at pos and, if it finds one, shows
@@ -16,7 +17,7 @@ extern LinkedList::ListNode *DEBUG_ENTITY_INFO_HEAD;
 void DebugEntityToggle(Vector2 pos);
 
 // Stops showing info about an entity. If it's not showing already, does nothing.
-void DebugEntityStop(void *entity);
+void DebugEntityStop(LinkedList::Node *entity);
 
 // Stops showing info about all entities.
 void DebugEntityStopAll();

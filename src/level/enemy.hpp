@@ -15,7 +15,7 @@ void EnemyAdd(Vector2 origin);
 void EnemyCheckAndAdd(Vector2 origin);
 
 // Runs the update routine of a given enemy
-void EnemyTick(LinkedList::ListNode *enemyNode);
+void EnemyTick(LinkedList::Node *enemyNode);
 
 // Kills a given enemy
 void EnemyKill(Level::Entity *entity);

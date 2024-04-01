@@ -112,7 +112,7 @@ void GameExit() {
     exit(0);
 }
 
-LinkedList::ListNode *GetEntityListHead() {
+LinkedList::Node *GetEntityListHead() {
 
     if (GAME_STATE->mode == MODE_IN_LEVEL) return Level::STATE->listHead;
     else if (GAME_STATE->mode == MODE_OVERWORLD) return OW_STATE->listHead;

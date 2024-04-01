@@ -3,6 +3,7 @@
 
 
 #include <raylib.h>
+#include <vector>
 
 #include "assets.hpp"
 #include "linked_list.hpp"
@@ -75,7 +76,7 @@ typedef enum {
     EDITOR_INTERACTION_HOLD
 } EditorInteractionType;
 
-class EditorEntityButton : public LinkedList::NodeItem {
+class EditorEntityButton : public LinkedList::Node {
 
 public:
     EditorEntityType type;
@@ -91,7 +92,7 @@ typedef enum {
     EDITOR_CONTROL_NEW_LEVEL
 } EditorControlType;
 
-class EditorControlButton : public LinkedList::NodeItem {
+class EditorControlButton : public LinkedList::Node {
 
 public:
     EditorControlType type;
@@ -107,19 +108,20 @@ typedef struct EditorState {
     bool isEnabled;
 
     // The heads for each button list
-    LinkedList::ListNode *entitiesHead;
-    LinkedList::ListNode *controlHead;
+    LinkedList::Node    *entitiesHead;
+    LinkedList::Node    *controlHead;
 
     // What entity button is currently selected in the editor
     EditorEntityButton *toggledEntityButton;
 
     EditorEntityButton *defaultEntityButton;
 
+
     // Entity selection
-    bool                    isSelectingEntities;
-    bool                    selectedEntitiesThisFrame;
-    Trajectory              entitySelectionCoords;
-    LinkedList::ListNode    *selectedEntities;
+    bool                            isSelectingEntities;
+    bool                            selectedEntitiesThisFrame;
+    Trajectory                      entitySelectionCoords;
+    std::vector<LinkedList::Node *> selectedEntities;
 
     // Moving selected entities
     bool        isMovingSelectedEntities;

@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <algorithm>
 
 #include "debug.hpp"
 #include "level/level.hpp"
@@ -6,12 +7,12 @@
 #include "linked_list.hpp"
 
 
-LinkedList::ListNode *DEBUG_ENTITY_INFO_HEAD = 0;
+std::vector<LinkedList::Node *> DEBUG_ENTITY_LIST = std::vector<LinkedList::Node *>();
 
 
 void DebugEntityToggle(Vector2 pos) {
 
-    LinkedList::NodeItem *entity;
+    LinkedList::Node *entity;
     switch (GAME_STATE->mode) {
     case MODE_IN_LEVEL:
         entity = Level::EntityGetAt(pos); break;
@@ -23,30 +24,29 @@ void DebugEntityToggle(Vector2 pos) {
     
     if (!entity) return;
 
-    LinkedList::ListNode *entitysNode = LinkedList::GetNode(DEBUG_ENTITY_INFO_HEAD, entity);
-
-    if (entitysNode) {
-        LinkedList::RemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
+    auto idx = std::find(DEBUG_ENTITY_LIST.begin(), DEBUG_ENTITY_LIST.end(), entity);
+    if (idx != DEBUG_ENTITY_LIST.end()) {
+        DEBUG_ENTITY_LIST.erase(idx);
         TraceLog(LOG_TRACE, "Debug entity info disabled entity.");
     } else {
-        LinkedList::Add(&DEBUG_ENTITY_INFO_HEAD, entity);
+        DEBUG_ENTITY_LIST.push_back(entity);
         TraceLog(LOG_TRACE, "Debug entity info enabled entity.");
     }
 }
 
-void DebugEntityStop(void *entity) {
-    
-    LinkedList::ListNode *entitysNode = LinkedList::GetNode(DEBUG_ENTITY_INFO_HEAD, entity);
+void DebugEntityStop(LinkedList::Node *entity) {
 
-    if (entitysNode) {
-        LinkedList::RemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
+    auto idx = std::find(DEBUG_ENTITY_LIST.begin(), DEBUG_ENTITY_LIST.end(), entity);
+
+    if (idx != DEBUG_ENTITY_LIST.end()) {
+        DEBUG_ENTITY_LIST.erase(idx);
         TraceLog(LOG_TRACE, "Debug entity info disabled entity.");
     }
 }
 
 void DebugEntityStopAll() {
 
-    LinkedList::RemoveAll(&DEBUG_ENTITY_INFO_HEAD);
+    DEBUG_ENTITY_LIST.clear();
 
     TraceLog(LOG_TRACE, "Debug entity info disabled all entities.");
 }
