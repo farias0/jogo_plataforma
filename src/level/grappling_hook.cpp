@@ -8,7 +8,7 @@
 
 #define ANGLE           PI/4
 #define MAX_LENGTH      350
-#define LAUNCH_ACCEL    2
+#define LAUNCH_ACCEL    0.3
 
 
 GrapplingHook *GrapplingHook::Initialize() {
@@ -26,6 +26,12 @@ GrapplingHook *GrapplingHook::Initialize() {
 }
 
 void GrapplingHook::Tick() {
+
+    if (attachedTo) {
+        // Do nothing, let the Player routine handle it
+        return;
+    }
+
 
     if (currentLength == MAX_LENGTH) {
         delete this;
@@ -56,6 +62,18 @@ void GrapplingHook::Tick() {
     float endY = y - currentLength * sin(ANGLE);
 
     this->end = { endX, endY };
+
+
+    Level::Entity *entity = (Level::Entity *) Level::STATE->listHead;
+    while (entity) {
+
+        if (entity->tags & Level::IS_HOOKABLE && CheckCollisionPointRec(this->end, entity->hitbox)) {
+            attachedTo = entity;
+            break;
+        }
+
+        entity = (Level::Entity *) entity->next;
+    }
 }
 
 void GrapplingHook::Draw() {

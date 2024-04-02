@@ -190,6 +190,15 @@ void PlayerSetMode(PlayerMode mode) {
 
 void PlayerJump() {
 
+    if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
+
+        delete PLAYER_STATE->hookLaunched;
+
+        // TODO Launches in the direction the player is holding
+        
+        return;
+    }
+
     PLAYER_STATE->lastPressedJump = GetTime();
 }
 
@@ -200,6 +209,23 @@ void PlayerTick() {
 
 
     if (Level::STATE->concludedAgo >= 0) return;
+
+
+    bool yVelocityWithinTarget;
+    double now;
+    float oldX, oldY;
+
+
+    if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
+
+        // TODO calculate player's new pos using some sort of physics simulation from GrapplingHook.
+        // It should try to project the Player's new pos while checking for collision,
+        // and ultimately adjust the GrapplingHook's start pos accordingly. 
+        // Fix the goto.
+
+        goto SKIP_VELOCITY_UPDATE;
+    }
+
 
 
     pState->groundBeneath = Level::GetGroundBeneath(PLAYER_ENTITY);
@@ -261,7 +287,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
     }
 
 
-    bool yVelocityWithinTarget =
+    yVelocityWithinTarget =
         abs((int) (pState->yVelocity - pState->yVelocityTarget)) < Y_VELOCITY_TARGET_TOLERANCE;
     
     if (yVelocityWithinTarget) {
@@ -273,7 +299,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
         }
     }
 
-    const double now = GetTime();
+    now = GetTime();
     if (!pState->isAscending &&
         (now - PLAYER_STATE->lastPressedJump < jumpBufferBackwardsSize()) &&
         (now - PLAYER_STATE->lastGroundBeneath < JUMP_BUFFER_FORWARDS_SIZE)) {
@@ -297,8 +323,8 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
         }
     }
 
-    float oldX = PLAYER_ENTITY->hitbox.x;
-    float oldY = PLAYER_ENTITY->hitbox.y;
+    oldX = PLAYER_ENTITY->hitbox.x;
+    oldY = PLAYER_ENTITY->hitbox.y;
     PLAYER_ENTITY->hitbox.x += pState->xVelocity;
     PLAYER_ENTITY->hitbox.y -= pState->yVelocity;
     syncPlayersHitboxes();
@@ -438,6 +464,7 @@ next_entity:
             pState->yVelocity -= Y_ACCELERATION_RATE;
         }
     }
+SKIP_VELOCITY_UPDATE:
 
 
     if (Render::GetTextboxTextId() != -1 && !collidedWithTextboxButton) {

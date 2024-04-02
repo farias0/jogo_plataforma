@@ -37,6 +37,7 @@ typedef enum {
     IS_CHECKPOINT   = 128,
     IS_TEXTBOX      = 256,
     IS_HOOK         = 512,
+    IS_HOOKABLE     = 1024,
 } EntityTag;
 
 

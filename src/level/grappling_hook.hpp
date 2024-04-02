@@ -10,6 +10,7 @@ public:
     Vector2 end;
 
     float currentLength;
+    Level::Entity *attachedTo;
 
     static GrapplingHook *Initialize();
     void Tick();

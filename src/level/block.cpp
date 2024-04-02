@@ -9,7 +9,8 @@ void BlockAdd(Vector2 origin) {
     Level::Entity *newBlock = new Level::Entity();
 
     newBlock->tags = Level::IS_SCENARIO +
-                            Level::IS_GROUND;
+                            Level::IS_GROUND +
+                            Level::IS_HOOKABLE;
     newBlock->origin = origin;
     newBlock->sprite = SPRITES->Block;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
@@ -36,7 +37,8 @@ void AcidAdd(Vector2 origin) {
 
     newBlock->tags = Level::IS_SCENARIO +
                             Level::IS_GROUND +
-                            Level::IS_DANGER;
+                            Level::IS_DANGER +
+                            Level::IS_HOOKABLE;
     newBlock->origin = origin;
     newBlock->sprite = SPRITES->Acid;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
