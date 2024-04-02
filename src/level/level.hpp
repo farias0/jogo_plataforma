@@ -36,6 +36,7 @@ typedef enum {
     IS_GLIDE        = 64,
     IS_CHECKPOINT   = 128,
     IS_TEXTBOX      = 256,
+    IS_HOOK         = 512,
 } EntityTag;
 
 

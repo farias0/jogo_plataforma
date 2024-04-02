@@ -8,6 +8,7 @@
 #include "level.hpp"
 #include "player.hpp"
 #include "enemy.hpp"
+#include "grappling_hook.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../editor.hpp"
@@ -103,6 +104,10 @@ void tickAllEntities() {
 
         if (entity->tags & IS_ENEMY) EnemyTick(entity);
         else if (entity->tags & IS_PLAYER) PlayerTick();
+        else if (entity->tags & IS_HOOK) { // TODO embed tick into Level::Entity
+            GrapplingHook *hook = (GrapplingHook *) entity;
+            hook->Tick();   
+        }
 
         entity = next;
     }

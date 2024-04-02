@@ -6,6 +6,7 @@
 #include "player.hpp"
 #include "level.hpp"
 #include "enemy.hpp"
+#include "grappling_hook.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../sounds.hpp"
@@ -487,6 +488,8 @@ void PlayerContinue() {
     PLAYER_STATE->yVelocityTarget = 0;
     PLAYER_STATE->xVelocity = 0;
 
+    if (PLAYER_STATE->hookLaunched) delete PLAYER_STATE->hookLaunched;
+
     syncPlayersHitboxes();
     CameraLevelCentralizeOnPlayer();
 
@@ -516,4 +519,10 @@ void PlayerSetCheckpoint() {
     Level::STATE->checkpointsLeft--;
 
     TraceLog(LOG_DEBUG, "Player set checkpoint at x=%.1f, y=%.1f.", pos.x, pos.y);
+}
+
+void PlayerLaunchGrapplingHook() {
+
+    if (PLAYER_STATE->hookLaunched) delete PLAYER_STATE->hookLaunched;
+    PLAYER_STATE->hookLaunched = GrapplingHook::Initialize();
 }
