@@ -3,6 +3,7 @@
 #include <string.h>
 #include <functional>
 #include <sstream>
+#include <algorithm>
 
 #include "level.hpp"
 #include "player.hpp"
@@ -13,6 +14,7 @@
 #include "../overworld.hpp"
 #include "../debug.hpp"
 #include "../input.hpp"
+#include "../render.hpp"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
@@ -29,39 +31,42 @@
 #define STARTING_CHECKPOINTS_NUMBER     1;
 
 
-LevelState *LEVEL_STATE = 0;
+namespace Level {
 
 
-void resetLevelState() {
+LevelState *STATE = 0;
 
-    LinkedListDestroyAll(&LEVEL_STATE->listHead);
-    memset(LEVEL_STATE->levelName, 0, sizeof(LEVEL_STATE->levelName));
-    LEVEL_STATE->isPaused = false;
-    LEVEL_STATE->awaitingAssociation = false;
-    LEVEL_STATE->concludedAgo = -1;
-    LEVEL_STATE->exitNode = 0;
-    LEVEL_STATE->checkpoint = 0;
-    LEVEL_STATE->checkpointsLeft = 0;
+
+void resetState() {
+
+    LinkedList::DestroyAll(&STATE->listHead);
+    memset(STATE->levelName, 0, sizeof(STATE->levelName));
+    STATE->isPaused = false;
+    STATE->awaitingAssociation = false;
+    STATE->concludedAgo = -1;
+    STATE->exit = 0;
+    STATE->checkpoint = 0;
+    STATE->checkpointsLeft = 0;
 
     PLAYER_ENTITY = 0;
 
     TraceLog(LOG_INFO, "Level State initialized.");
 }
 
-void initializeLevelState() {
+void initializeState() {
 
-    LEVEL_STATE = (LevelState *) MemAlloc(sizeof(LevelState));
+    STATE = (LevelState *) MemAlloc(sizeof(LevelState));
 
-    resetLevelState();
+    resetState();
 
     TraceLog(LOG_INFO, "Level State initialized.");
 }
 
-void leaveLevel() {
+void leave() {
     
-    RenderDisplayTextboxStop();
+    Render::DisplayTextboxStop();
     
-    resetLevelState();
+    resetState();
 
     OverworldLoad();
 
@@ -70,20 +75,18 @@ void leaveLevel() {
 
 // Searches for an entity in a given position
 // and returns its node, or 0 if not found.
-static ListNode *getEntityNodeAtPos(Vector2 pos) {
+static LinkedList::Node *getEntityNodeAtPos(Vector2 pos) {
 
-    ListNode *node = LEVEL_STATE->listHead;
+    Entity *entity = (Entity *) STATE->listHead;
 
-    while (node != 0) {
-
-        LevelEntity *entity = (LevelEntity *) node->item;
+    while (entity != 0) {
 
         if (CheckCollisionPointRec(pos, entity->hitbox)) {
 
-            return node;
+            return entity;
         }
 
-        node = node->next;
+        entity = (Entity *) entity->next;
     };
 
     return 0;
@@ -91,29 +94,27 @@ static ListNode *getEntityNodeAtPos(Vector2 pos) {
 
 void tickAllEntities() {
 
-    ListNode *node = LEVEL_STATE->listHead;
-    ListNode *next;
+    Entity *entity = (Entity *) STATE->listHead;
+    Entity *next;
 
-    while (node != 0) {
+    while (entity != 0) {
 
-        next = node->next;
+        next = (Entity *) entity->next;
 
-        LevelEntity *entity = (LevelEntity *)node->item;
+        if (entity->tags & IS_ENEMY) EnemyTick(entity);
+        else if (entity->tags & IS_PLAYER) PlayerTick();
 
-        if (entity->components & LEVEL_IS_ENEMY) EnemyTick(node);
-        else if (entity->components & LEVEL_IS_PLAYER) PlayerTick();
-
-        node = next;
+        entity = next;
     }
 }
 
 // Searches the level for a ground immediatelly beneath the hitbox.
 // Accepts an optional 'entity' reference, in case its checking for ground
 // beneath an existing level entity.
-static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
+static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
 
     // Virtual entity to use when checking only hitboxes
-    LevelEntity virtualEntity;
+    Entity virtualEntity;
     if (!entity) {
         virtualEntity.isFacingRight = false;
         entity = &virtualEntity;
@@ -121,16 +122,13 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
 
     int feetHeight = hitbox.y + hitbox.height;
 
-    ListNode *node = LEVEL_STATE->listHead;
+    Entity *possibleGround = (Entity *) STATE->listHead;
+    Entity *foundGround = 0; 
 
-    LevelEntity *foundGround = 0; 
-
-    while (node != 0) {
-
-        LevelEntity *possibleGround = (LevelEntity *)node->item;
+    while (possibleGround != 0) {
 
         if (possibleGround != entity &&
-            possibleGround->components & LEVEL_IS_GROUND &&
+            possibleGround->tags & IS_GROUND &&
 
             !(possibleGround->isDead) &&
 
@@ -158,7 +156,7 @@ static LevelEntity *getGroundBeneath(Rectangle hitbox, LevelEntity *entity) {
                 else foundGround = possibleGround;
             } 
 
-        node = node->next;
+        possibleGround = (Entity *) possibleGround->next;
     }
 
     return foundGround;   
@@ -172,25 +170,25 @@ void createTextboxFromIdInput(Vector2 pos, std::string input) {
         id = std::stoi(input);
     }
     catch (std::invalid_argument &e) {
-        RenderPrintSysMessage("ID inválido");
+        Render::PrintSysMessage("ID inválido");
         TraceLog(LOG_DEBUG, "Textbox ID input invalid: %s.", input.c_str());
         return; // does nothing
     }
 
-    LevelTextboxAdd(pos, id);
+    TextboxAdd(pos, id);
 }
 
-void LevelInitialize() {
+void Initialize() {
 
-    initializeLevelState();
+    initializeState();
     TraceLog(LOG_INFO, "Level system initialized.");
 }
 
-void LevelLoad(char *levelName) {
+void Load(char *levelName) {
 
     // Gambiarra. In case a level file was dragged and there was a level loaded already
     if (PLAYER_ENTITY) {
-        resetLevelState();
+        resetState();
     }
 
     GAME_STATE->mode = MODE_IN_LEVEL;
@@ -198,19 +196,19 @@ void LevelLoad(char *levelName) {
     if (levelName[0] == '\0') {
         EditorEmpty();
         CameraPanningReset();
-        LEVEL_STATE->awaitingAssociation = true;
+        STATE->awaitingAssociation = true;
         TraceLog(LOG_INFO, "Level waiting for file drop.");
         return;
     }
 
     if (!PersistenceLevelLoad(levelName)) {
-        leaveLevel();
+        leave();
         return;
     }
 
-    LEVEL_STATE->checkpointsLeft = STARTING_CHECKPOINTS_NUMBER;
+    STATE->checkpointsLeft = STARTING_CHECKPOINTS_NUMBER;
 
-    strcpy(LEVEL_STATE->levelName, levelName);
+    strcpy(STATE->levelName, levelName);
 
     EditorSync();
 
@@ -218,48 +216,48 @@ void LevelLoad(char *levelName) {
 
     CameraFollow();
 
-    RenderLevelTransitionEffectStart(
+    Render::LevelTransitionEffectStart(
         SpritePosMiddlePoint(
             {PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), false);
 
     TraceLog(LOG_INFO, "Level loaded: %s.", levelName);
 }
 
-void LevelGoToOverworld() {
+void GoToOverworld() {
 
     if (!PLAYER_ENTITY) {
-        leaveLevel();
+        leave();
         return;    
     }
 
-    if (LEVEL_STATE->concludedAgo != -1) return;
+    if (STATE->concludedAgo != -1) return;
 
     CameraPanningReset();
 
-    RenderLevelTransitionEffectStart(
+    Render::LevelTransitionEffectStart(
         SpritePosMiddlePoint(
             {PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), true);
 
     DebugEntityStopAll();
 
-    LEVEL_STATE->concludedAgo = GetTime();
+    STATE->concludedAgo = GetTime();
 }
 
-LevelEntity *LevelCheckpointAdd(Vector2 pos) {
+Entity *CheckpointAdd(Vector2 pos) {
 
-    LevelEntity *newCheckpoint = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
+    Entity *newCheckpoint = new Entity();
 
     Sprite sprite = SPRITES->LevelCheckpoint;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newCheckpoint->components = LEVEL_IS_CHECKPOINT;
+    newCheckpoint->tags = IS_CHECKPOINT;
     newCheckpoint->hitbox = hitbox;
     newCheckpoint->origin = pos;
     newCheckpoint->sprite = sprite;
     newCheckpoint->isFacingRight = true;
     newCheckpoint->layer = -1;
 
-    LinkedListAdd(&LEVEL_STATE->listHead, newCheckpoint);
+    LinkedList::AddNode(&STATE->listHead, newCheckpoint);
 
     TraceLog(LOG_TRACE, "Added checkpoint to level (x=%.1f, y=%.1f)",
                 newCheckpoint->hitbox.x, newCheckpoint->hitbox.y);
@@ -267,49 +265,49 @@ LevelEntity *LevelCheckpointAdd(Vector2 pos) {
     return newCheckpoint;
 }
 
-void LevelExitAdd(Vector2 pos) {
+void ExitAdd(Vector2 pos) {
 
-    LevelEntity *newExit = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
+    Entity *newExit = new Entity();
 
     Sprite sprite = SPRITES->LevelEndOrb;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newExit->components = LEVEL_IS_EXIT;
+    newExit->tags = IS_EXIT;
     newExit->hitbox = hitbox;
     newExit->origin = pos;
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
-    LEVEL_STATE->exitNode = LinkedListAdd(&LEVEL_STATE->listHead, newExit);
+    STATE->exit = (Entity *) LinkedList::AddNode(&STATE->listHead, newExit);
 
     TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
                 newExit->hitbox.x, newExit->hitbox.y);
 }
 
-void LevelExitCheckAndAdd(Vector2 pos) {
+void ExitCheckAndAdd(Vector2 pos) {
     
     Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->LevelEndOrb, pos);
 
-    if (LevelCheckCollisionWithAnything(hitbox)) {
+    if (CheckCollisionWithAnything(hitbox)) {
         TraceLog(LOG_DEBUG, "Couldn't add level exit, collision with entity.");
         return;
     }
 
     // Currently only one level exit is supported, but this should change in the future.
-    if (LEVEL_STATE->exitNode)
-        LinkedListDestroyNode(&LEVEL_STATE->listHead, LEVEL_STATE->exitNode);
+    if (STATE->exit)
+        LinkedList::DestroyNode(&STATE->listHead, STATE->exit);
     
-    LevelExitAdd({ hitbox.x, hitbox.y });
+    ExitAdd({ hitbox.x, hitbox.y });
 }
 
-void LevelTextboxAdd(Vector2 pos, int textId) {
+void TextboxAdd(Vector2 pos, int textId) {
 
-    LevelEntity *newTextbox = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
+    Entity *newTextbox = new Entity();
 
     Sprite sprite = SPRITES->TextboxButton;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newTextbox->components = LEVEL_IS_TEXTBOX;
+    newTextbox->tags = IS_TEXTBOX;
     newTextbox->hitbox = hitbox;
     newTextbox->origin = pos;
     newTextbox->sprite = sprite;
@@ -317,17 +315,17 @@ void LevelTextboxAdd(Vector2 pos, int textId) {
     newTextbox->isFacingRight = true;
     newTextbox->textId = textId;
 
-    LinkedListAdd(&LEVEL_STATE->listHead, newTextbox);
+    LinkedList::AddNode(&STATE->listHead, newTextbox);
 
     TraceLog(LOG_TRACE, "Added textbox button to level (x=%.1f, y=%.1f)",
                 newTextbox->hitbox.x, newTextbox->hitbox.y);
 }
 
-void LevelTextboxCheckAndAdd(Vector2 pos) {
+void TextboxCheckAndAdd(Vector2 pos) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->TextboxButton, pos);
 
-    if (LevelCheckCollisionWithAnything(hitbox)) {
+    if (CheckCollisionWithAnything(hitbox)) {
         TraceLog(LOG_DEBUG, "Couldn't add textbox button, collision with entity.");
         return;
     }
@@ -339,57 +337,54 @@ void LevelTextboxCheckAndAdd(Vector2 pos) {
         }
     );
 
-    RenderPrintSysMessage("Insira o ID do texto");
+    Render::PrintSysMessage("Insira o ID do texto");
     Input::GetTextInput(callback);
 }
 
-LevelEntity *LevelGetGroundBeneath(LevelEntity *entity) {
+Entity *GetGroundBeneath(Entity *entity) {
 
     return getGroundBeneath(entity->hitbox, entity);    
 }
 
-LevelEntity *LevelGetGroundBeneathHitbox(Rectangle hitbox) {
+Entity *GetGroundBeneathHitbox(Rectangle hitbox) {
 
     return getGroundBeneath(hitbox, 0);
 }
 
-void LevelEntityDestroy(ListNode *node) {
+void EntityDestroy(Entity *entity) {
 
-    if (node == LEVEL_STATE->exitNode) LEVEL_STATE->exitNode = 0;
+    if (entity == STATE->exit) STATE->exit = 0;
 
-    LevelEntity *entity = (LevelEntity *) node->item;
-
-    if (entity == LEVEL_STATE->checkpoint) LEVEL_STATE->checkpoint = 0;
+    if (entity == STATE->checkpoint) STATE->checkpoint = 0;
 
     DebugEntityStop(entity);
 
-    LinkedListDestroyNode(&LEVEL_STATE->listHead, node);
+    LinkedList::DestroyNode(&STATE->listHead, entity);
 
     TraceLog(LOG_TRACE, "Destroyed level entity.");
 }
 
-LevelEntity *LevelEntityGetAt(Vector2 pos) {
+Entity *EntityGetAt(Vector2 pos) {
 
-    ListNode *node = getEntityNodeAtPos(pos);
+    LinkedList::Node *node = getEntityNodeAtPos(pos);
 
     if (!node) return 0;
 
-    return (LevelEntity *) node->item;
+    return (Entity *) node;
 }
 
-void LevelEntityRemoveAt(Vector2 pos) {
+void EntityRemoveAt(Vector2 pos) {
 
     // TODO This function is too big and should be broken up
     // in at least two others ASAP
 
-    ListNode *node = LEVEL_STATE->listHead;
-    while (node != 0) {
+    Entity *entity = (Entity *) STATE->listHead;
 
-        LevelEntity *entity = (LevelEntity *) node->item;
+    while (entity != 0) {
 
-        if (entity->components & LEVEL_IS_PLAYER) goto next_node;
+        if (entity->tags & IS_PLAYER) goto next_entity;
 
-        if (CheckCollisionPointRec(pos, LevelEntityOriginHitbox(entity))) {
+        if (CheckCollisionPointRec(pos, EntityOriginHitbox(entity))) {
             break;
         }
 
@@ -397,109 +392,95 @@ void LevelEntityRemoveAt(Vector2 pos) {
             break;
         }
 
-next_node:
-        node = node->next;
+next_entity:
+        entity = (Entity *) entity->next;
     };
 
-    if (!node) return;
+    if (!entity) return;
 
-    LevelEntity *entity = (LevelEntity *) node->item;
-
-    bool isPartOfSelection = LinkedListGetNode(EDITOR_STATE->selectedEntities, entity);
+    bool isPartOfSelection = std::find(EDITOR_STATE->selectedEntities.begin(), EDITOR_STATE->selectedEntities.end(), entity) != EDITOR_STATE->selectedEntities.end();
     if (isPartOfSelection) {
 
-        ListNode *selectedNode = EDITOR_STATE->selectedEntities;
-        while (selectedNode) {
+        for (auto e = EDITOR_STATE->selectedEntities.begin(); e < EDITOR_STATE->selectedEntities.end(); e++) {
 
-            ListNode *next = selectedNode->next;
-            LevelEntity *selectedEntity = (LevelEntity *) selectedNode->item;
+            Entity *selectedEntity = (Entity *) *e;
 
-            if (selectedEntity->components & LEVEL_IS_PLAYER) goto next_selected_node;
+            if (selectedEntity->tags & IS_PLAYER) continue;
 
-            LevelEntityDestroy(
-                LinkedListGetNode(LEVEL_STATE->listHead, selectedEntity));
-
-next_selected_node:
-            selectedNode = next;
+            EntityDestroy(selectedEntity);
         }
 
         EditorSelectionCancel();
 
     } else {
 
-        LevelEntityDestroy(node);
+        EntityDestroy(entity);
     }
 }
 
-void LevelPauseToggle() {
+void PauseToggle() {
 
-    if (LEVEL_STATE->isPaused) {
+    if (STATE->isPaused) {
 
         if (PLAYER_ENTITY && PLAYER_ENTITY->isDead) {
             PlayerContinue();
         }
 
-        LEVEL_STATE->isPaused = false;
+        STATE->isPaused = false;
 
     } else {
-        LEVEL_STATE->isPaused = true;
+        STATE->isPaused = true;
     }
 }
 
-void LevelTick() {
+void Tick() {
 
     if (GAME_STATE->waitingForTextInput) return;
 
     // TODO check if having the first check before saves on processing,
     // of if it's just redundant. 
-    if (LEVEL_STATE->concludedAgo != -1 &&
-        GetTime() - LEVEL_STATE->concludedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
+    if (STATE->concludedAgo != -1 &&
+        GetTime() - STATE->concludedAgo > LEVEL_TRANSITION_ANIMATION_DURATION) {
 
-        leaveLevel();
+        leave();
 
-        LEVEL_STATE->concludedAgo = -1;
+        STATE->concludedAgo = -1;
 
         return;
     }
 
-    if (!LEVEL_STATE->isPaused && !EDITOR_STATE->isEnabled)
+    if (!STATE->isPaused && !EDITOR_STATE->isEnabled)
         tickAllEntities();
 
     CameraTick();
 }
 
-bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox) {
+bool CheckCollisionWithAnyEntity(Rectangle hitbox) {
 
-    ListNode *node = LEVEL_STATE->listHead;
+    Entity *entity = (Entity *) STATE->listHead;
 
-    while (node != 0) {
-    
-        LevelEntity *entity = (LevelEntity *) node->item;
+    while (entity != 0) {
 
         if (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox)) {
-
             return true;
         }
 
-        node = node->next;
-
+        entity = (Entity *) entity->next;
     }
 
     return false;
 }
 
-bool LevelCheckCollisionWithAnything(Rectangle hitbox) {
+bool CheckCollisionWithAnything(Rectangle hitbox) {
 
-    return LevelCheckCollisionWithAnythingElse(hitbox, 0);
+    return CheckCollisionWithAnythingElse(hitbox, std::vector<LinkedList::Node *>());
 }
 
-bool LevelCheckCollisionWithAnythingElse(Rectangle hitbox, ListNode *entityListHead) {
+bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore) {
 
-    ListNode *node = LEVEL_STATE->listHead;
+    Entity *entity = (Entity *) STATE->listHead;
 
-    while (node != 0) {
-    
-        LevelEntity *entity = (LevelEntity *) node->item;
+    while (entity != 0) {
 
         Rectangle entitysOrigin = {
                                         entity->origin.x,       entity->origin.y,
@@ -509,42 +490,52 @@ bool LevelCheckCollisionWithAnythingElse(Rectangle hitbox, ListNode *entityListH
         if (CheckCollisionRecs(hitbox, entitysOrigin) ||
             (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox))) {
 
-            ListNode *excludedNode = entityListHead;
-            while (excludedNode != 0) {
-                if (excludedNode->item == entity) goto next_node;
-                excludedNode = excludedNode->next;
+            for (auto e = entitiesToIgnore.begin(); e < entitiesToIgnore.end(); e++) {
+                if (*e == entity) goto next_entity;
             }
 
             return true;
         }
 
-next_node:
-        node = node->next;
-
+next_entity:
+        entity = (Entity *) entity->next;
     }
 
     return false;
 }
 
-void LevelSave() {
-    PersistenceLevelSave(LEVEL_STATE->levelName);
+void Save() {
+    PersistenceLevelSave(STATE->levelName);
 }
 
-void LevelLoadNew() {
+void LoadNew() {
 
-    LevelLoad((char *) LEVEL_BLUEPRINT_NAME);
+    Load((char *) LEVEL_BLUEPRINT_NAME);
 
     PLAYER_ENTITY->origin = PLAYERS_ORIGIN;
     PLAYER_ENTITY->hitbox.x = PLAYER_ENTITY->origin.x;
     PLAYER_ENTITY->hitbox.y = PLAYER_ENTITY->origin.y;
 
-    strcpy(LEVEL_STATE->levelName, NEW_LEVEL_NAME);
+    strcpy(STATE->levelName, NEW_LEVEL_NAME);
 }
 
-Rectangle LevelEntityOriginHitbox(LevelEntity *entity) {
+Rectangle EntityOriginHitbox(Entity *entity) {
 
     return {
         entity->origin.x, entity->origin.y,
         entity->hitbox.width, entity->hitbox.height
     };
 }
+
+
+void Entity::Draw() {            
+
+    if (!(tags & IS_ENEMY) || !isDead)
+        Render::DrawLevelEntity(this);
+
+    if (EDITOR_STATE->isEnabled)
+        Render::DrawLevelEntityOrigin(this);
+}
+
+
+} // namespace

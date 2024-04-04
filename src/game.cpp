@@ -25,7 +25,7 @@ int main() {
 
         GameUpdate();
 
-        Render();
+        Render::Render();
     }
 
     CloseWindow();

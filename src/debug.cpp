@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <algorithm>
 
 #include "debug.hpp"
 #include "level/level.hpp"
@@ -6,15 +7,15 @@
 #include "linked_list.hpp"
 
 
-ListNode *DEBUG_ENTITY_INFO_HEAD = 0;
+std::vector<LinkedList::Node *> DEBUG_ENTITY_INFO_HEAD = std::vector<LinkedList::Node *>();
 
 
 void DebugEntityToggle(Vector2 pos) {
 
-    void *entity;
+    LinkedList::Node *entity;
     switch (GAME_STATE->mode) {
     case MODE_IN_LEVEL:
-        entity = LevelEntityGetAt(pos); break;
+        entity = Level::EntityGetAt(pos); break;
     case MODE_OVERWORLD:
         entity = OverworldEntityGetAt(pos); break;
     default:
@@ -23,30 +24,29 @@ void DebugEntityToggle(Vector2 pos) {
     
     if (!entity) return;
 
-    ListNode *entitysNode = LinkedListGetNode(DEBUG_ENTITY_INFO_HEAD, entity);
-
-    if (entitysNode) {
-        LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
+    auto idx = std::find(DEBUG_ENTITY_INFO_HEAD.begin(), DEBUG_ENTITY_INFO_HEAD.end(), entity);
+    if (idx != DEBUG_ENTITY_INFO_HEAD.end()) {
+        DEBUG_ENTITY_INFO_HEAD.erase(idx);
         TraceLog(LOG_TRACE, "Debug entity info disabled entity.");
     } else {
-        LinkedListAdd(&DEBUG_ENTITY_INFO_HEAD, entity);
+        DEBUG_ENTITY_INFO_HEAD.push_back(entity);
         TraceLog(LOG_TRACE, "Debug entity info enabled entity.");
     }
 }
 
-void DebugEntityStop(void *entity) {
-    
-    ListNode *entitysNode = LinkedListGetNode(DEBUG_ENTITY_INFO_HEAD, entity);
+void DebugEntityStop(LinkedList::Node *entity) {
 
-    if (entitysNode) {
-        LinkedListRemoveNode(&DEBUG_ENTITY_INFO_HEAD, entitysNode);
+    auto idx = std::find(DEBUG_ENTITY_INFO_HEAD.begin(), DEBUG_ENTITY_INFO_HEAD.end(), entity);
+
+    if (idx != DEBUG_ENTITY_INFO_HEAD.end()) {
+        DEBUG_ENTITY_INFO_HEAD.erase(idx);
         TraceLog(LOG_TRACE, "Debug entity info disabled entity.");
     }
 }
 
 void DebugEntityStopAll() {
 
-    LinkedListRemoveAll(&DEBUG_ENTITY_INFO_HEAD);
+    DEBUG_ENTITY_INFO_HEAD.clear();
 
     TraceLog(LOG_TRACE, "Debug entity info disabled all entities.");
 }

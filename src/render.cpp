@@ -29,10 +29,15 @@
 #define SYS_MESSAGE_SECONDS 2
 
 
-typedef struct SysMessage {
+namespace Render {
+
+
+class SysMessage : public LinkedList::Node {
+
+public:
     char *msg;
     float secondsUntilDisappear;
-} SysMessage;
+};
 
 typedef struct LevelTransitionShaderControl {
     double timer;
@@ -41,7 +46,7 @@ typedef struct LevelTransitionShaderControl {
 } LevelTransitionShaderControl;
 
 
-ListNode *SYS_MESSAGES_HEAD = 0;
+LinkedList::Node *SYS_MESSAGES_HEAD = 0;
 
 /*
     TODO create RenderState,
@@ -51,31 +56,31 @@ ListNode *SYS_MESSAGES_HEAD = 0;
 */
 
 // Texture covering the whole screen, used to render shaders
-static RenderTexture2D shaderRenderTexture;
-static LevelTransitionShaderControl levelTransitionShaderControl;
+RenderTexture2D shaderRenderTexture;
+LevelTransitionShaderControl levelTransitionShaderControl;
 
 // Text that's being displayed in a textbox
-static int textboxTextId;
+int textboxTextId;
 // Text that's displayed in a textbox if the id has no match
-static std::string textboxTextMissing("[sem texto]");
+std::string textboxTextMissing("[sem texto]");
 
 
 // Returns the given color, with the given transparency level. 
-static Color getColorTransparency(Color color, int transparency) {
+Color getColorTransparency(Color color, int transparency) {
 
     return { color.r, color.g, color.b,
                 (unsigned char) transparency };
 }
 
 // Draws rectangle with scene-based position
-static void drawSceneRectangle(Rectangle rect, Color color) {
+void drawSceneRectangle(Rectangle rect, Color color) {
 
     Vector2 scenePos = PosInSceneToScreen({ rect.x, rect.y });
     Rectangle screenRect = { scenePos.x, scenePos.y, rect.width, rect.height };
     DrawRectangleRec(screenRect, color);
 }
 
-static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
+void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
 
     Dimensions dimensions = SpriteScaledDimensions(sprite);
 
@@ -122,7 +127,7 @@ static void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizon
 }
 
 // Draws sprite in the background, with effects applied.
-static void drawSpriteInBackground(Sprite sprite, Vector2 pos, int layer) {
+void drawSpriteInBackground(Sprite sprite, Vector2 pos, int layer) {
 
     float scale = 1;
     Color tint = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -156,7 +161,7 @@ static void drawSpriteInBackground(Sprite sprite, Vector2 pos, int layer) {
     DrawTextureEx(sprite.sprite, pos, 0, (scale * sprite.scale), tint);
 }
 
-static void drawBackground() {
+void drawBackground() {
 
     if (GAME_STATE->mode == MODE_OVERWORLD) {
         DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 39, 39, 54, 255 }); 
@@ -164,7 +169,7 @@ static void drawBackground() {
 
 
     else if (GAME_STATE->mode == MODE_IN_LEVEL) {
-        if (LEVEL_STATE->levelName[0] == '\0') {
+        if (Level::STATE->levelName[0] == '\0') {
             DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
             return;
         }
@@ -180,7 +185,7 @@ static void drawBackground() {
     }
 }
 
-static void drawOverworldEntity(OverworldEntity *entity) {
+void drawOverworldEntity(OverworldEntity *entity) {
 
     Vector2 pos = PosInSceneToScreen({
                                         entity->gridPos.x,
@@ -190,7 +195,7 @@ static void drawOverworldEntity(OverworldEntity *entity) {
 }
 
 // Draws the ghost of an editor's selected entity being moved
-static void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
+void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
 
     Vector2 pos = EditorEntitySelectionCalcMove({
                                                     entity->gridPos.x,
@@ -204,17 +209,8 @@ static void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
     drawTexture(entity->sprite, pos, color, false);
 }
 
-static void drawLevelEntity(LevelEntity *entity) {
-
-    Vector2 pos = PosInSceneToScreen({
-                                        entity->hitbox.x,
-                                        entity->hitbox.y });
-
-    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, !entity->isFacingRight);
-}
-
 // Draws the ghost of an editor's selected entity being moved
-static void drawLevelEntityMoveGhost(LevelEntity *entity) {
+void drawLevelEntityMoveGhost(Level::Entity *entity) {
 
     Vector2 pos = EditorEntitySelectionCalcMove({
                                                     entity->hitbox.x,
@@ -228,40 +224,26 @@ static void drawLevelEntityMoveGhost(LevelEntity *entity) {
     drawTexture(entity->sprite, pos, color, !entity->isFacingRight);
 }
 
-static void drawLevelEntityOrigin(LevelEntity *entity) {
-
-    Vector2 pos = PosInSceneToScreen({
-                                        entity->origin.x,
-                                        entity->origin.y });
-
-    drawTexture(entity->sprite, { pos.x, pos.y },
-                 { WHITE.r, WHITE.g, WHITE.b, 30 }, false);
-}
-
-static void drawEntities() {
+void drawEntities() {
 
     for (int layer = FIRST_LAYER; layer <= LAST_LAYER; layer++) {
 
-        ListNode *node = GetEntityListHead();
+        LinkedList::Node *node = GetEntityListHead();
 
         while (node != 0) {
 
             if (GAME_STATE->mode == MODE_IN_LEVEL) {
-                LevelEntity *entity = (LevelEntity *) node->item;
-                if (entity->layer != layer) goto next_entity;
-                
-                if (!(entity->components & LEVEL_IS_ENEMY) ||
-                    !entity->isDead)
-                        drawLevelEntity(entity);
 
-                if (EDITOR_STATE->isEnabled)
-                        drawLevelEntityOrigin(entity);
+                Level::Entity *entity = (Level::Entity *) node;
+                if (entity->layer != layer) goto next_entity;                
+                entity->Draw();
             }
 
             else if (GAME_STATE->mode == MODE_OVERWORLD) {
-                OverworldEntity *entity = (OverworldEntity *) node->item;
+
+                OverworldEntity *entity = (OverworldEntity *) node;
                 if (entity->layer != layer) goto next_entity;
-                drawOverworldEntity((OverworldEntity *) node->item);
+                drawOverworldEntity(entity);
             }
 
             else return;
@@ -272,23 +254,20 @@ next_entity:
     }
 }
 
-static void drawSysMessages() {
+void drawSysMessages() {
 
-    ListNode *node = SYS_MESSAGES_HEAD;
-    ListNode *nextNode;
-    SysMessage *msg;
+    SysMessage *msg = (SysMessage *) SYS_MESSAGES_HEAD;
+    SysMessage *nextMsg;
     size_t currentMsg = 1;
     int x, y;
 
-    while (node) {
+    while (msg) {
 
-        nextNode = node->next;
-
-        msg = (SysMessage *) node->item;
+        nextMsg = (SysMessage *) msg->next;
 
         if (msg->secondsUntilDisappear <= 0) {
             MemFree(msg->msg);
-            LinkedListDestroyNode(&SYS_MESSAGES_HEAD, node);
+            LinkedList::DestroyNode(&SYS_MESSAGES_HEAD, msg);
             goto next_node;
         }        
 
@@ -301,11 +280,11 @@ static void drawSysMessages() {
         msg->secondsUntilDisappear -= GetFrameTime();
 
 next_node:
-        node = nextNode;
+        msg = nextMsg;
     } 
 }
 
-static void drawDebugGrid() {
+void drawDebugGrid() {
 
     Dimensions grid;
     if (GAME_STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
@@ -323,7 +302,7 @@ static void drawDebugGrid() {
     }
 }
 
-static void drawLevelHud() {
+void drawLevelHud() {
 
     if (EDITOR_STATE->isEnabled) return;
 
@@ -335,20 +314,20 @@ static void drawLevelHud() {
 
     DrawTextureEx(SPRITES->LevelCheckpoint.sprite,
                     { SCREEN_WIDTH-149, SCREEN_HEIGHT-65 }, 0, SPRITES->LevelCheckpoint.scale/1.7, WHITE);
-    DrawText(std::string("x " + std::to_string(LEVEL_STATE->checkpointsLeft)).c_str(),
+    DrawText(std::string("x " + std::to_string(Level::STATE->checkpointsLeft)).c_str(),
                 SCREEN_WIDTH-100, SCREEN_HEIGHT-56, 30, RAYWHITE);
 
-    if (LEVEL_STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
+    if (Level::STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
         DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
         
     if (PLAYER_ENTITY && PLAYER_ENTITY->isDead)
         DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
     
-    if (LEVEL_STATE->levelName[0] == '\0')
+    if (Level::STATE->levelName[0] == '\0')
         DrawText("Arraste uma fase para cá", 400, 350, 40, RAYWHITE);
 }
 
-static void drawOverworldHud() {
+void drawOverworldHud() {
 
     OverworldEntity *tile = OW_STATE->tileUnderCursor;
 
@@ -372,7 +351,7 @@ static void drawOverworldHud() {
     }
 }
 
-void drawDebugEntityInfo(void *entity) {
+void drawDebugEntityInfo(LinkedList::Node *entity) {
 
     Rectangle hitbox;
     Vector2 screenPos;
@@ -380,7 +359,7 @@ void drawDebugEntityInfo(void *entity) {
 
     switch (GAME_STATE->mode) {
     case MODE_IN_LEVEL:
-        hitbox = ((LevelEntity *) entity)->hitbox;
+        hitbox = ((Level::Entity *) entity)->hitbox;
         break;
 
     case MODE_OVERWORLD:
@@ -403,23 +382,23 @@ void drawDebugEntityInfo(void *entity) {
                         "\ny=" + std::to_string((int) hitbox.y));
 
     if (GAME_STATE->mode == MODE_IN_LEVEL) {
-        LevelEntity *le = (LevelEntity *) entity;
-        if (le->components & LEVEL_IS_TEXTBOX)
+        Level::Entity *le = (Level::Entity *) entity;
+        if (le->tags & Level::IS_TEXTBOX)
             str += "\ntextId=" + std::to_string(le->textId);
     }
 
     DrawText(str.c_str(), screenPos.x, screenPos.y, 20, WHITE);
 }
 
-static void drawDebugHud() {
+void drawDebugHud() {
 
     if (CameraIsPanned()) DrawText("Câmera deslocada",
                                     SCREEN_WIDTH - 300, SCREEN_HEIGHT - 45, 30, RAYWHITE);
 
-    ListNode *listHead = GetEntityListHead();
+    LinkedList::Node *listHead = GetEntityListHead();
     if (listHead) {
         char buffer[50];
-        sprintf(buffer, "%d entidades", LinkedListCountNodes(listHead));
+        sprintf(buffer, "%d entidades", LinkedList::CountNodes(listHead));
         DrawText(buffer, 10, 20, 20, WHITE);
     }
 
@@ -430,64 +409,57 @@ static void drawDebugHud() {
         DrawText(buffer, 600, 20, 20, WHITE);
     }
 
-    ListNode *node = DEBUG_ENTITY_INFO_HEAD;
-    while (node != 0) {
-        ListNode *nextNode = node->next;
-        drawDebugEntityInfo(node->item);
-        node = nextNode;
+    for (auto e = DEBUG_ENTITY_INFO_HEAD.begin(); e < DEBUG_ENTITY_INFO_HEAD.end(); e++) {
+        drawDebugEntityInfo(*e);
     }
 }
 
 // Render editor buttons of game entities
-static void drawEditorEntityButtons() {
+void drawEditorEntityButtons() {
 
     int renderedCount = 0;
-    ListNode *node = EDITOR_STATE->entitiesHead;
+    EditorEntityButton *button = (EditorEntityButton *) EDITOR_STATE->entitiesHead;
 
-    while (node != 0) {
+    while (button != 0) {
 
-        EditorEntityButton *item = (EditorEntityButton *) node->item;
-
-        bool isItemSelected = EDITOR_STATE->toggledEntityButton == item;
+        bool isItemSelected = EDITOR_STATE->toggledEntityButton == button;
 
         Rectangle buttonRect = EditorEntityButtonRect(renderedCount);
 
         GuiToggleSprite(
             buttonRect,
-            item->sprite, 
+            button->sprite, 
             { buttonRect.x, buttonRect.y },
             &isItemSelected
         );
 
-        if (isItemSelected) EditorEntityButtonSelect(item);
+        if (isItemSelected) EditorEntityButtonSelect(button);
 
         renderedCount++;
 
-        node = node->next;
+        button = (EditorEntityButton *) button->next;
     }
 }
 
 // Render editor buttons related to control functions
-static void drawEditorControlButtons() {
+void drawEditorControlButtons() {
 
     int renderedCount = 0;
-    ListNode *node = EDITOR_STATE->controlHead;
+    EditorControlButton *button = (EditorControlButton *) EDITOR_STATE->controlHead;
 
-    while (node != 0) {
-
-        EditorControlButton *item = (EditorControlButton *) node->item;
+    while (button != 0) {
 
         Rectangle buttonRect = EditorControlButtonRect(renderedCount);
 
-        if (GuiButton(buttonRect, item->label)) {
+        if (GuiButton(buttonRect, button->label)) {
 
-            if (!item->handler) {
+            if (!button->handler) {
                 TraceLog(LOG_WARNING, "No handler to editor control button #%d, '%s'.",
-                            renderedCount, item->label);
+                            renderedCount, button->label);
                 goto next_button;
             }
 
-            item->handler();
+            button->handler();
 
             return;
         }
@@ -495,35 +467,34 @@ static void drawEditorControlButtons() {
 next_button:
         renderedCount++;
 
-        node = node->next;
+        button = (EditorControlButton *) button->next;
     }
 }
 
-static void drawEditorEntitySelection() {
+void drawEditorEntitySelection() {
 
     if (EDITOR_STATE->isSelectingEntities)
         drawSceneRectangle(EditorSelectionGetRect(), EDITOR_SELECTION_RECT_COLOR);
 
-    ListNode *node = EDITOR_STATE->selectedEntities;
-    while (node != 0) {
+    for (auto e = EDITOR_STATE->selectedEntities.begin(); e < EDITOR_STATE->selectedEntities.end(); e++) {
 
         const Color color = EDITOR_SELECTION_ENTITY_COLOR;
 
         if (GAME_STATE->mode == MODE_IN_LEVEL) {
 
-            LevelEntity *entity = (LevelEntity *) node->item;
+            Level::Entity *entity = (Level::Entity *) *e;
 
             if (EDITOR_STATE->isMovingSelectedEntities) {
                 drawLevelEntityMoveGhost(entity);
             } else {
                 if (!entity->isDead) drawSceneRectangle(entity->hitbox, color);
-                drawSceneRectangle(LevelEntityOriginHitbox(entity), color);
+                drawSceneRectangle(Level::EntityOriginHitbox(entity), color);
             }
 
         }
         else if (GAME_STATE->mode == MODE_OVERWORLD) {
 
-            OverworldEntity *entity = (OverworldEntity *) node->item;
+            OverworldEntity *entity = (OverworldEntity *) *e;
 
             if (EDITOR_STATE->isMovingSelectedEntities) {
                 drawOverworldEntityMoveGhost(entity);
@@ -532,12 +503,10 @@ static void drawEditorEntitySelection() {
             }
             
         }
-
-        node = node->next;
     }
 }
 
-static void drawEditorCursor() {
+void drawEditorCursor() {
 
     EditorEntityButton* b = EDITOR_STATE->toggledEntityButton;
     if (!b) return;
@@ -548,7 +517,7 @@ static void drawEditorCursor() {
     DrawTexture(b->sprite.sprite, m.x, m.y, getColorTransparency(WHITE, 96));
 }
 
-static void drawEditor() {
+void drawEditor() {
 
     drawEditorEntitySelection();
 
@@ -578,7 +547,7 @@ static void drawEditor() {
     drawEditorCursor();
 }
 
-static void drawLevelTransitionShader() {
+void drawLevelTransitionShader() {
 
     double elapsedTime = GetTime() - levelTransitionShaderControl.timer;
 
@@ -613,7 +582,7 @@ void drawTextInput() {
     DrawText(std::string("> " + Input::STATE.textInputed).c_str(), 120, 100, 60, RAYWHITE);
 }
 
-void RenderInitialize() {
+void Initialize() {
 
     shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
 
@@ -655,28 +624,47 @@ void Render() {
     EndDrawing();
 }
 
-void RenderResizeWindow(int width, int height) {
+void ResizeWindow(int width, int height) {
 
     SetWindowSize(width, height);
 }
 
-void RenderPrintSysMessage(const std::string &msg) {
+void DrawLevelEntity(Level::Entity *entity) {
+
+    Vector2 pos = PosInSceneToScreen({
+                                        entity->hitbox.x,
+                                        entity->hitbox.y });
+
+    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, !entity->isFacingRight);
+}
+
+void DrawLevelEntityOrigin(Level::Entity *entity) {
+
+    Vector2 pos = PosInSceneToScreen({
+                                        entity->origin.x,
+                                        entity->origin.y });
+
+    drawTexture(entity->sprite, { pos.x, pos.y },
+                 { WHITE.r, WHITE.g, WHITE.b, 30 }, false);
+}
+
+void PrintSysMessage(const std::string &msg) {
 
     // TODO move the whole SysMessage system to C++ strings
 
     char *msgCopy = (char *) MemAlloc(sizeof(char) * SYS_MSG_BUFFER_SIZE);
     strcpy(msgCopy, msg.c_str()); 
 
-    SysMessage *newMsg = (SysMessage *) MemAlloc(sizeof(SysMessage));
+    SysMessage *newMsg = new SysMessage();
     newMsg->msg = msgCopy;
     newMsg->secondsUntilDisappear = SYS_MESSAGE_SECONDS;
     
-    LinkedListAdd(&SYS_MESSAGES_HEAD, newMsg);
+    LinkedList::AddNode(&SYS_MESSAGES_HEAD, newMsg);
 
     TraceLog(LOG_TRACE, "Added sys message to list: '%s'.", msg);
 }
 
-void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
+void LevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
     levelTransitionShaderControl.timer = GetTime();
     levelTransitionShaderControl.focusPoint = PosInSceneToScreen(sceneFocusPoint);
@@ -689,14 +677,17 @@ void RenderLevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
 }
 
-void RenderDisplayTextbox(int textId) {
+void DisplayTextbox(int textId) {
     textboxTextId = textId;
 }
 
-void RenderDisplayTextboxStop() {
+void DisplayTextboxStop() {
     textboxTextId = -1;
 }
 
-int RenderGetTextboxTextId() {
+int GetTextboxTextId() {
     return textboxTextId;
 }
+
+
+} // namespace

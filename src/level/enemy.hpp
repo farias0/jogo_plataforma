@@ -15,10 +15,10 @@ void EnemyAdd(Vector2 origin);
 void EnemyCheckAndAdd(Vector2 origin);
 
 // Runs the update routine of a given enemy
-void EnemyTick(ListNode *enemyNode);
+void EnemyTick(Level::Entity *enemy);
 
 // Kills a given enemy
-void EnemyKill(LevelEntity *entity);
+void EnemyKill(Level::Entity *enemy);
 
 
 #endif // _ENEMY_H_INCLUDED_

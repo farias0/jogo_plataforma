@@ -11,18 +11,18 @@
 
 void EnemyAdd(Vector2 origin) {
 
-    LevelEntity *newEnemy = (LevelEntity *) MemAlloc(sizeof(LevelEntity));
+    Level::Entity *newEnemy = new Level::Entity();
 
-    newEnemy->components = LEVEL_IS_ENEMY +
-                            LEVEL_IS_GROUND +
-                            LEVEL_IS_DANGER;
+    newEnemy->tags = Level::IS_ENEMY +
+                            Level::IS_GROUND +
+                            Level::IS_DANGER;
     newEnemy->origin = origin;
     newEnemy->sprite = SPRITES->Enemy;
     newEnemy->hitbox = SpriteHitboxFromEdge(newEnemy->sprite, newEnemy->origin);
     newEnemy->isFacingRight = true;
     newEnemy->isFallingDown = true;
 
-    LinkedListAdd(&LEVEL_STATE->listHead, newEnemy);
+    LinkedList::AddNode(&Level::STATE->listHead, newEnemy);
 
     TraceLog(LOG_TRACE, "Added enemy to level (x=%.1f, y=%.1f)",
                 newEnemy->hitbox.x, newEnemy->hitbox.y);
@@ -32,7 +32,7 @@ void EnemyCheckAndAdd(Vector2 origin) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->Enemy, origin);
 
-    if (LevelCheckCollisionWithAnything(hitbox)) {
+    if (Level::CheckCollisionWithAnything(hitbox)) {
         TraceLog(LOG_DEBUG, "Couldn't add enemy to level, collision with entity.");
         return;
     }
@@ -40,15 +40,14 @@ void EnemyCheckAndAdd(Vector2 origin) {
     EnemyAdd({ hitbox.x, hitbox.y });
 }
 
-void EnemyTick(ListNode *enemyNode) {
+void EnemyTick(Level::Entity *enemy) {
 
-    if (LEVEL_STATE->concludedAgo >= 0) return;
+    if (Level::STATE->concludedAgo >= 0) return;
 
-    LevelEntity *enemy = (LevelEntity *)enemyNode->item;
     if (enemy->isDead) return;
 
 
-    LevelEntity *groundBeneath = LevelGetGroundBeneath(enemy);
+    Level::Entity *groundBeneath = Level::GetGroundBeneath(enemy);
 
     if (!groundBeneath) enemy->isFallingDown = true;
 
@@ -90,14 +89,14 @@ void EnemyTick(ListNode *enemyNode) {
     if (enemy->isFacingRight) enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
     else enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
 
-    ListNode *node = LEVEL_STATE->listHead;
+    LinkedList::Node *node = Level::STATE->listHead;
     while (node) {
 
-        LevelEntity *entity = (LevelEntity *) node->item;
+        Level::Entity *entity = (Level::Entity *) node;
 
         if (entity == enemy) goto next_node;
 
-        if (entity->components & LEVEL_IS_SCENARIO &&
+        if (entity->tags & Level::IS_SCENARIO &&
             CheckCollisionRecs(entity->hitbox, enemy->hitbox)) {
 
                 enemy->isFacingRight = !enemy->isFacingRight;
@@ -110,11 +109,11 @@ next_node:
     }
 }
 
-void EnemyKill(LevelEntity *entity) {
+void EnemyKill(Level::Entity *enemy) {
 
-    entity->isDead = true;
+    enemy->isDead = true;
 
-    DebugEntityStop(entity);
+    DebugEntityStop(enemy);
 
     TraceLog(LOG_TRACE, "Enemy died.");
 }

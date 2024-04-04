@@ -4,11 +4,13 @@
 
 #include <raylib.h>
 #include <string>
+#include <vector>
 
 #include "../linked_list.hpp"
 #include "../assets.hpp"
 #include "../core.hpp"
 #include "../persistence.hpp"
+#include "../render.hpp"
 
 
 // The level used as a basis for new levels
@@ -21,22 +23,26 @@
 #define FLOOR_DEATH_HEIGHT      800
 
 
-// TODO rename from 'component' to 'tag'
-typedef enum LevelEntityComponent {
-    LEVEL_IS_PLAYER         = 1,
-    LEVEL_IS_ENEMY          = 2,
-    LEVEL_IS_SCENARIO       = 4, // the meaning of this component isnt clear
-    LEVEL_IS_EXIT           = 8,
-    LEVEL_IS_GROUND         = 16,
-    LEVEL_IS_DANGER         = 32,
-    LEVEL_IS_GLIDE          = 64,
-    LEVEL_IS_CHECKPOINT     = 128,
-    LEVEL_IS_TEXTBOX        = 256,
-} LevelEntityComponent;
+namespace Level {
 
-typedef struct LevelEntity {
 
-    unsigned long int components;
+typedef enum {
+    IS_PLAYER       = 1,
+    IS_ENEMY        = 2,
+    IS_SCENARIO     = 4, // the meaning of this component isnt clear
+    IS_EXIT         = 8,
+    IS_GROUND       = 16,
+    IS_DANGER       = 32,
+    IS_GLIDE        = 64,
+    IS_CHECKPOINT   = 128,
+    IS_TEXTBOX      = 256,
+} EntityTag;
+
+
+class Entity : public LinkedList::Node, public Render::IDrawable {
+
+public:
+    unsigned long int tags;
     Vector2 origin;
     Rectangle hitbox;
 
@@ -50,13 +56,15 @@ typedef struct LevelEntity {
 
     // Used by Textbox Buttons
     int textId;
-    
-} LevelEntity;
+
+    void Draw();
+};
+
 
 typedef struct LevelState {
 
     // The head of the linked list of all the level entities
-    ListNode *listHead;
+    LinkedList::Node *listHead;
 
     // The current loaded level's name
     char levelName[LEVEL_NAME_BUFFER_SIZE];
@@ -71,10 +79,10 @@ typedef struct LevelState {
     double concludedAgo;
 
     // Reference to the level exit in the level entity's list
-    ListNode *exitNode;
+    Entity *exit;
 
     // Reference to the current checkpoint in the level entity's list
-    LevelEntity *checkpoint;
+    Entity *checkpoint;
 
     // How many checkpoints the player has left
     int checkpointsLeft;
@@ -82,78 +90,81 @@ typedef struct LevelState {
 } LevelState;
 
 
-extern LevelState *LEVEL_STATE;
+extern LevelState *STATE;
 
 
 // Initialize the level system
-void LevelInitialize();
+void Initialize();
 
 // Loads and goes to the given level
-void LevelLoad(char *levelName);
+void Load(char *levelName);
 
 // Starts "go to Overworld" routine
-void LevelGoToOverworld();
+void GoToOverworld();
+
+// Adds a level checkpoint in the given position
+Entity *CheckpointAdd(Vector2 pos);
 
 // Initializes and adds an exit to the level
-void LevelExitAdd(Vector2 pos);
+void ExitAdd(Vector2 pos);
 
 // Initializes and adds an exit to the level in the given origin,
 // if there are no other entities there already
-void LevelExitCheckAndAdd(Vector2 pos);
+void ExitCheckAndAdd(Vector2 pos);
 
 // Initializes and adds a textbox button to the level
-void LevelTextboxAdd(Vector2 pos, int textId);
+void TextboxAdd(Vector2 pos, int textId);
 
 // Initializes and adds a a textbox button to the level in the
 // given origin, if there are no other entities there already
-void LevelTextboxCheckAndAdd(Vector2 pos);
+void TextboxCheckAndAdd(Vector2 pos);
 
 // The ground beneath the entity, or 0 if not on the ground.
 // Gives priority to the tile in the direction the player is looking at.
-LevelEntity *LevelGetGroundBeneath(LevelEntity *entity);
+Entity *GetGroundBeneath(Entity *entity);
 
 // The ground beneath a hitbox, or 0 if not on the ground.
-LevelEntity *LevelGetGroundBeneathHitbox(Rectangle hitbox);
+Entity *GetGroundBeneathHitbox(Rectangle hitbox);
 
-// Destroys a LevelEntity
-void LevelEntityDestroy(ListNode *node);
+// Destroys a Entity
+void EntityDestroy(Entity *entity);
 
 // Searches for level entity in position
-LevelEntity *LevelEntityGetAt(Vector2 pos);
+Entity *EntityGetAt(Vector2 pos);
 
 // Removes level entity in position from the
 // list and destroys it, if found and if allowed.
-void LevelEntityRemoveAt(Vector2 pos);
+void EntityRemoveAt(Vector2 pos);
 
 // Toggles between paused and unpaused game
-void LevelPauseToggle();
+void PauseToggle();
 
 // Runs the update routine of the level's entities
-void LevelTick();
+void Tick();
 
 // Saves to file the current loaded level's data
-void LevelSave();
+void Save();
 
 // Loads a new, default level
-void LevelLoadNew();
+void LoadNew();
 
 // Get this entity's origin hitbox, based on the current hitbox.
-Rectangle LevelEntityOriginHitbox(LevelEntity *entity);
+Rectangle EntityOriginHitbox(Entity *entity);
 
 // Checks for collision between a rectangle and any 
 // living entity in the level.
-bool LevelCheckCollisionWithAnyEntity(Rectangle hitbox);
+bool CheckCollisionWithAnyEntity(Rectangle hitbox);
 
 // Checks for collision between a rectangle and any 
 // living entity in the level, including their origins.
-bool LevelCheckCollisionWithAnything(Rectangle hitbox);
+bool CheckCollisionWithAnything(Rectangle hitbox);
 
 // Checks for collision between a rectangle and any living entity in the level,
-// including their origins, as long as it's NOT present in a given entity list.
-bool LevelCheckCollisionWithAnythingElse(Rectangle hitbox, ListNode *entityListHead);
+// including their origins, as long as it's NOT present in a given entity vector.
+bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore);
 
-// Adds a level checkpoint in the given position
-LevelEntity *LevelCheckpointAdd(Vector2 pos);
+
+} // namespace
 
 
 #endif // _LEVEL_H_INCLUDED_
