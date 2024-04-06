@@ -61,6 +61,9 @@ void PlayerCheckAndSetOrigin(Vector2 pos);
 // Moves the player to pos, if there aren't other things there already.
 void PlayerCheckAndSetPos(Vector2 pos);
 
+// Syncs the player state's hitbox with the player entity's data 
+void PlayerSyncHitboxes();
+
 void PlayerSetMode(PlayerMode mode);
 
 void PlayerJump();

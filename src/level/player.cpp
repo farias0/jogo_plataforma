@@ -91,30 +91,6 @@ static float jumpBufferBackwardsSize() {
         return JUMP_BUFFER_BACKWARDS_SIZE;
 }
 
-// Syncs the player state's hitbox with the player entity's data 
-static void syncPlayersHitboxes() {
-
-    PLAYER_STATE->upperbody = {
-        PLAYER_ENTITY->hitbox.x + 1,
-        PLAYER_ENTITY->hitbox.y - 1,
-        PLAYER_ENTITY->hitbox.width + 2,
-        PLAYER_ENTITY->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
-    };
-
-    /*
-        playersLowerbody has one extra pixel in its sides and below it.
-        This has game feel implications, but it was included so the collision check would work more consistently
-        (this seems to be related with the use of raylib's CheckCollisionRecs for player-enemy collision).
-        This is something that should not be needed in a more robust implementation.
-    */
-    PLAYER_STATE->lowerbody = {
-        PLAYER_ENTITY->hitbox.x - 1,
-        PLAYER_ENTITY->hitbox.y + PLAYER_STATE->upperbody.height,
-        PLAYER_ENTITY->hitbox.width + 2,
-        PLAYER_ENTITY->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
-    };
-}
-
 static void die() {
 
     PLAYER_ENTITY->isDead = true;
@@ -139,7 +115,7 @@ void PlayerInitialize(Vector2 origin) {
 
     initializePlayerState();
     
-    syncPlayersHitboxes();
+    PlayerSyncHitboxes();
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
@@ -177,8 +153,31 @@ void PlayerCheckAndSetPos(Vector2 pos) {
     }
     
     PLAYER_ENTITY->hitbox = hitbox;
-    syncPlayersHitboxes();
+    PlayerSyncHitboxes();
     TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y);
+}
+
+void PlayerSyncHitboxes() {
+
+    PLAYER_STATE->upperbody = {
+        PLAYER_ENTITY->hitbox.x + 1,
+        PLAYER_ENTITY->hitbox.y - 1,
+        PLAYER_ENTITY->hitbox.width + 2,
+        PLAYER_ENTITY->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
+    };
+
+    /*
+        playersLowerbody has one extra pixel in its sides and below it.
+        This has game feel implications, but it was included so the collision check would work more consistently
+        (this seems to be related with the use of raylib's CheckCollisionRecs for player-enemy collision).
+        This is something that should not be needed in a more robust implementation.
+    */
+    PLAYER_STATE->lowerbody = {
+        PLAYER_ENTITY->hitbox.x - 1,
+        PLAYER_ENTITY->hitbox.y + PLAYER_STATE->upperbody.height,
+        PLAYER_ENTITY->hitbox.width + 2,
+        PLAYER_ENTITY->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
+    };
 }
 
 void PlayerSetMode(PlayerMode mode) {
@@ -218,10 +217,11 @@ void PlayerTick() {
 
     if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
 
-        // TODO calculate player's new pos using some sort of physics simulation from GrapplingHook.
-        // It should try to project the Player's new pos while checking for collision,
-        // and ultimately adjust the GrapplingHook's start pos accordingly. 
-        // Fix the goto.
+        PLAYER_STATE->hookLaunched->Swing();
+
+        // TODO check for collision and respond accordingly. Should it apply physics back?
+
+        //PLAYER_STATE->hookLaunched->UpdateStartPos();
 
         goto SKIP_VELOCITY_UPDATE;
     }
@@ -327,7 +327,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
     oldY = PLAYER_ENTITY->hitbox.y;
     PLAYER_ENTITY->hitbox.x += pState->xVelocity;
     PLAYER_ENTITY->hitbox.y -= pState->yVelocity;
-    syncPlayersHitboxes();
+    PlayerSyncHitboxes();
 
     // Collision checking
     {
@@ -517,7 +517,7 @@ void PlayerContinue() {
 
     if (PLAYER_STATE->hookLaunched) delete PLAYER_STATE->hookLaunched;
 
-    syncPlayersHitboxes();
+    PlayerSyncHitboxes();
     CameraLevelCentralizeOnPlayer();
 
     TraceLog(LOG_DEBUG, "Player continue.");
