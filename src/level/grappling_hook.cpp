@@ -9,10 +9,10 @@
 #include "../camera.hpp"
 
 #define ANGLE           PI/3 // With the end being y0 and start being y, 0 <= ANGLE < PI/2
-#define MAX_LENGTH      350
+#define MAX_LENGTH      400
 #define THICKNESS       2.0f
-#define LAUNCH_ACCEL    0.9
-
+#define LAUNCH_ACCEL    1
+ 
 // Swinging constants
 #define GRAVITY_ACCEL               12
 #define SWINGING_TIME_STEP          0.1

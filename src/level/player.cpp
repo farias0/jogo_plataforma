@@ -100,6 +100,15 @@ static void die() {
                 PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y, PLAYER_STATE->isAscending);
 }
 
+static void jump() {
+
+    PLAYER_STATE->isAscending = true;
+    PLAYER_STATE->yVelocity = jumpStartVelocity();
+    PLAYER_STATE->yVelocityTarget = 0.0f;
+    PLAYER_STATE->wasRunningOnJumpStart = Input::STATE.isHoldingRun;
+    Sounds::Play(SOUNDS->Jump);
+}
+
 
 void PlayerInitialize(Vector2 origin) {
 
@@ -190,11 +199,9 @@ void PlayerSetMode(PlayerMode mode) {
 void PlayerJump() {
 
     if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
-
         delete PLAYER_STATE->hookLaunched;
-
-        // TODO Launches in the direction the player is holding
-        
+        jump();
+        // TODO horizontal impulse
         return;
     }
 
@@ -215,7 +222,20 @@ void PlayerTick() {
     float oldX, oldY;
 
 
+    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
+        PLAYER_ENTITY->isFacingRight = true;
+    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
+        PLAYER_ENTITY->isFacingRight = false;
+
+
     if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
+
+        //      Hooked!!
+
+        // Uses its own system for velocity calculation
+        PLAYER_STATE->xVelocity = 0;
+        PLAYER_STATE->yVelocity = 0;
+        PLAYER_STATE->yVelocityTarget = 0;
 
         PLAYER_STATE->hookLaunched->Swing();
 
@@ -227,13 +247,8 @@ void PlayerTick() {
     }
 
 
-
     pState->groundBeneath = Level::GetGroundBeneath(PLAYER_ENTITY);
-        
-    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
-        PLAYER_ENTITY->isFacingRight = true;
-    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
-        PLAYER_ENTITY->isFacingRight = false;
+
 
     { // Horizontal velocity calculation
 
@@ -304,12 +319,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
         (now - PLAYER_STATE->lastPressedJump < jumpBufferBackwardsSize()) &&
         (now - PLAYER_STATE->lastGroundBeneath < JUMP_BUFFER_FORWARDS_SIZE)) {
 
-        // Starts jump
-        pState->isAscending = true;
-        pState->yVelocity = jumpStartVelocity();
-        pState->yVelocityTarget = 0.0f;
-        pState->wasRunningOnJumpStart = Input::STATE.isHoldingRun;
-        Sounds::Play(SOUNDS->Jump);
+        jump();
 
         // Player hit enemy
         // -- this check is for the case the player jumps off the enemy,
@@ -550,6 +560,10 @@ void PlayerSetCheckpoint() {
 
 void PlayerLaunchGrapplingHook() {
 
-    if (PLAYER_STATE->hookLaunched) delete PLAYER_STATE->hookLaunched;
+    if (PLAYER_STATE->hookLaunched) {
+        delete PLAYER_STATE->hookLaunched;
+        return;
+    }
+
     PLAYER_STATE->hookLaunched = GrapplingHook::Initialize();
 }
