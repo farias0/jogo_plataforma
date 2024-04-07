@@ -3,6 +3,10 @@
 #include "raylib.h"
 #include <cmath>
 
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#include "raymath.h"
+#pragma GCC diagnostic pop
+
 #include "level.hpp"
 #include "player.hpp"
 #include "../linked_list.hpp"
@@ -28,6 +32,9 @@ GrapplingHook *GrapplingHook::Initialize() {
 
     hook->tags = Level::IS_HOOK;
     hook->isFacingRight = PLAYER_ENTITY->isFacingRight;
+
+    hook->UpdateStartPos();
+    hook->end = hook->start;
 
     if (hook->isFacingRight) hook->currentAngle = PI + ANGLE;
     else hook->currentAngle = 2*PI - ANGLE;
@@ -66,19 +73,37 @@ void GrapplingHook::Tick() {
 
     // calculate hook's end based on start + angle
 
-    float endX;
-    if (isFacingRight) endX = this->start.x + currentLength * cos(currentAngle - PI); 
-    else endX = this->start.x - currentLength * cos(currentAngle); 
+    Vector2 projectedEnd;
+    if (isFacingRight) projectedEnd.x = this->start.x + currentLength * cos(currentAngle - PI); 
+    else projectedEnd.x = this->start.x - currentLength * cos(currentAngle); 
+    projectedEnd.y = this->start.y + currentLength * sin(currentAngle);
 
-    float endY = this->start.y + currentLength * sin(currentAngle);
 
-    this->end = { endX, endY };
+    /*
+        If a collision against an IS_HOOKABLE is checked just for the new 'end' coord, an entity that's
+        in the hook's path might not collide with 'end' because 'end' traversed it in between frames.
+
+        This is by remedied by also checking for various inbetween points between last frame's and this frame's 'end',
+        which lowers the chance of this happening but still has the same fundamental flaw.
+    */
+
+    const Vector2 projectedEndPartway2 = { (this->end.x + projectedEnd.x)/2, (this->end.y + projectedEnd.y)/2};
+    const Vector2 projectedEndPartway1 = { (this->end.x + projectedEndPartway2.x)/2, (this->end.y + projectedEndPartway2.y)/2 };
+    const Vector2 projectedEndPartway3 = { (projectedEndPartway2.x + projectedEnd.x)/2, (projectedEndPartway2.y + projectedEnd.y)/2 };
+
+
+    this->end = projectedEnd; // In case of collision the end should be different
 
 
     Level::Entity *entity = (Level::Entity *) Level::STATE->listHead;
     while (entity) {
 
-        if (entity->tags & Level::IS_HOOKABLE && CheckCollisionPointRec(this->end, entity->hitbox)) {
+        if (entity->tags & Level::IS_HOOKABLE &&
+                (CheckCollisionPointRec(projectedEnd, entity->hitbox) ||
+                CheckCollisionPointRec(projectedEndPartway1, entity->hitbox) ||
+                CheckCollisionPointRec(projectedEndPartway2, entity->hitbox) ||
+                CheckCollisionPointRec(projectedEndPartway3, entity->hitbox))
+            ) {
 
             // Hook it!
 

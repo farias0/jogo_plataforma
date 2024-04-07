@@ -20,7 +20,7 @@
 #define LEVEL_GRID              Dimensions(32, 32)
 
 // Below this y entities die
-#define FLOOR_DEATH_HEIGHT      800
+#define FLOOR_DEATH_HEIGHT      1400
 
 
 namespace Level {

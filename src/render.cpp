@@ -404,8 +404,9 @@ void drawDebugHud() {
 
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         Vector2 mousePos = GetMousePosition();
+        Vector2 mousePosScene = PosInScreenToScene(mousePos); 
         char buffer[50];
-        sprintf(buffer, "Botão esquerdo: x=%.0f, y=%.0f", mousePos.x, mousePos.y);
+        sprintf(buffer, "Tela: x=%.0f, y=%.0f; Cena: x=%.0f, y=%.0f", mousePos.x, mousePos.y, mousePosScene.x, mousePosScene.y);
         DrawText(buffer, 600, 20, 20, WHITE);
     }
 
