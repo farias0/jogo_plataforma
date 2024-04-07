@@ -2,6 +2,9 @@
 
 #include "raylib.h"
 #include <cmath>
+#include <algorithm>
+#include <stdlib.h>
+#include <time.h>
 
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #include "raymath.h"
@@ -42,6 +45,8 @@ GrapplingHook *GrapplingHook::Initialize() {
     LinkedList::AddNode(&Level::STATE->listHead, hook);
 
     TraceLog(LOG_TRACE, "Initialized grappling hook");
+
+    srand(time(NULL)); // initialize rand
 
     return hook;
 }
@@ -162,7 +167,17 @@ void GrapplingHook::Draw() {
     
     Vector2 posStart = PosInSceneToScreen(start);
     Vector2 posEnd = PosInSceneToScreen(end);
-    DrawLineEx(posStart, posEnd, THICKNESS, RAYWHITE);
+
+    float thickness = THICKNESS;
+    Color color = RAYWHITE;
+    if (!attachedTo) {
+        thickness = std::max(THICKNESS/2.0f, THICKNESS * (currentLength/MAX_LENGTH));
+        color.r = rand();
+        color.g = rand();
+        color.b = rand();
+    }
+
+    DrawLineEx(posStart, posEnd, thickness, color);
 }
 
 GrapplingHook::~GrapplingHook() {
