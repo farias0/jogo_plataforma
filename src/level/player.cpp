@@ -23,8 +23,10 @@
 #define X_DEACCELERATION_RATE_ACTIVE        0.45f // For when the player actively tries to stop in place
 
 // The Y velocity applied when starting a jump
-#define JUMP_START_VELOCITY_DEFAULT         10.0f
-#define JUMP_START_VELOCITY_RUNNING         12.0f
+#define JUMP_START_VELOCITY_DEFAULT             10.0f
+#define JUMP_START_VELOCITY_RUNNING             12.0f
+#define JUMP_START_VELOCITY_HOOKED_BASE         5.0f    // Min Y speed when jumping from a hook
+#define JUMP_START_VELOCITY_HOOKED_EXTRA_MAX    13.0f   // How much Y speed can be added to BASE depending on launch params
 
 #define DOWNWARDS_VELOCITY_TARGET           -10.0f
 #define Y_VELOCITY_TARGET_TOLERANCE         1
@@ -75,8 +77,28 @@ static void initializePlayerState() {
 // propulsion of a jump
 static float jumpStartVelocity() {
 
+    if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
+        
+        auto h = PLAYER_STATE->hookLaunched;
+        float vel = JUMP_START_VELOCITY_HOOKED_BASE;
+        bool isSwingingClockwise = h->angularVelocity >= 0;
+        // where the hook start is in the cartesian plane
+        bool isInSecondOrThirdQuadrants = h->currentAngle > PI/2 && h->currentAngle <= (3.0f/2.0f)*PI;
+
+        if ((isSwingingClockwise && !isInSecondOrThirdQuadrants) ||
+                (!isSwingingClockwise && isInSecondOrThirdQuadrants)) {
+            
+            // adds extra Y velocity if the hook is swinging upwards
+
+            vel += JUMP_START_VELOCITY_HOOKED_EXTRA_MAX * (1 + sin(h->currentAngle));
+        }
+
+        return vel;
+    }
+
     if (Input::STATE.isHoldingRun)
         return JUMP_START_VELOCITY_RUNNING;
+
     else
         return JUMP_START_VELOCITY_DEFAULT;
 }
@@ -199,9 +221,9 @@ void PlayerSetMode(PlayerMode mode) {
 void PlayerJump() {
 
     if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
-        delete PLAYER_STATE->hookLaunched;
         jump();
-        // TODO horizontal impulse
+        // TODO horizontal impulse according to direction the player is looking, inputs and angular velocity of the hook
+        delete PLAYER_STATE->hookLaunched;
         return;
     }
 
