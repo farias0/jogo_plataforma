@@ -23,10 +23,16 @@
 #define X_DEACCELERATION_RATE_ACTIVE        0.45f // For when the player actively tries to stop in place
 
 // The Y velocity applied when starting a jump
-#define JUMP_START_VELOCITY_DEFAULT             10.0f
-#define JUMP_START_VELOCITY_RUNNING             12.0f
-#define JUMP_START_VELOCITY_HOOKED_BASE         5.0f    // Min Y speed when jumping from a hook
-#define JUMP_START_VELOCITY_HOOKED_EXTRA_MAX    13.0f   // How much Y speed can be added to BASE depending on launch params
+#define JUMP_START_Y_VELOCITY_DEFAULT                       10.0f
+#define JUMP_START_Y_VELOCITY_RUNNING                       12.0f
+
+// The velocities applied when jumping from a hook
+#define HOOK_JUMP_Y_VELOCITY_BASE                   04.0f // Base Y speed when jumping from a hook
+#define HOOK_JUMP_Y_VELOCITY_FROM_ANGLE             13.0f // How much Y speed can be added to BASE depending on launch angle
+#define HOOK_JUMP_Y_VELOCITY_RUNNING_MULTIPLIER     1.40f // How much Y speed is multiplied by if holding 'run'
+#define HOOK_JUMP_X_VELOCITY_BASE                   07.5f // Base X boost when jumping from a hook
+#define HOOK_JUMP_X_VELOCITY_DIR_MULTIPLIER         1.25f // How much X speed is multiplied by if holding the direction of the jump
+#define HOOK_JUMP_X_VELOCITY_RUNNING_MULTIPLIER     1.45f // How much X speed is multiplied by if holding 'run'
 
 #define DOWNWARDS_VELOCITY_TARGET           -10.0f
 #define Y_VELOCITY_TARGET_TOLERANCE         1
@@ -77,10 +83,11 @@ static void initializePlayerState() {
 // propulsion of a jump
 static float jumpStartVelocity() {
 
+    // Velocity if player's swinging from a hook
     if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
         
         auto h = PLAYER_STATE->hookLaunched;
-        float vel = JUMP_START_VELOCITY_HOOKED_BASE;
+        float vel = HOOK_JUMP_Y_VELOCITY_BASE;
         bool isSwingingClockwise = h->angularVelocity >= 0;
         // where the hook start is in the cartesian plane
         bool isInSecondOrThirdQuadrants = h->currentAngle > PI/2 && h->currentAngle <= (3.0f/2.0f)*PI;
@@ -90,17 +97,19 @@ static float jumpStartVelocity() {
             
             // adds extra Y velocity if the hook is swinging upwards
 
-            vel += JUMP_START_VELOCITY_HOOKED_EXTRA_MAX * (1 + sin(h->currentAngle));
+            vel += HOOK_JUMP_Y_VELOCITY_FROM_ANGLE* (1 + sin(h->currentAngle));
         }
+
+        if (Input::STATE.isHoldingRun) vel *= HOOK_JUMP_Y_VELOCITY_RUNNING_MULTIPLIER;
 
         return vel;
     }
 
     if (Input::STATE.isHoldingRun)
-        return JUMP_START_VELOCITY_RUNNING;
+        return JUMP_START_Y_VELOCITY_RUNNING;
 
     else
-        return JUMP_START_VELOCITY_DEFAULT;
+        return JUMP_START_Y_VELOCITY_DEFAULT;
 }
 
 // The size of the backwards jump buffer, that varies in function
@@ -221,11 +230,41 @@ void PlayerSetMode(PlayerMode mode) {
 void PlayerJump() {
 
     if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
+        
         jump();
-        // TODO horizontal impulse according to direction the player is looking, inputs and angular velocity of the hook
+
+
+        //  Horizontal velocity calculation
+
+        float xVelocity = 0;
+        const float angleCos = cos(PLAYER_STATE->hookLaunched->currentAngle);
+        const float angularVel = PLAYER_STATE->hookLaunched->angularVelocity;
+
+        if (PLAYER_ENTITY->isFacingRight && angularVel > 0) { // facing + swinging to the right
+            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * (angleCos + 1) / 2;
+        }
+        else if (!PLAYER_ENTITY->isFacingRight && angularVel < 0) { // facing + swinging to the left
+            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * (angleCos - 1) / 2;
+        }
+
+        // if the player is holding the direction they're facing
+        if ((PLAYER_ENTITY->isFacingRight && Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT) ||
+                (!PLAYER_ENTITY->isFacingRight && Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT))
+            xVelocity *= HOOK_JUMP_X_VELOCITY_DIR_MULTIPLIER;
+
+        if (Input::STATE.isHoldingRun)
+            xVelocity *= HOOK_JUMP_X_VELOCITY_RUNNING_MULTIPLIER;
+
+        PLAYER_STATE->xVelocity = xVelocity;
+        
+
         delete PLAYER_STATE->hookLaunched;
+        
         return;
     }
+
+
+    // Normal jump from the ground 
 
     PLAYER_STATE->lastPressedJump = GetTime();
 }
@@ -295,13 +334,13 @@ void PlayerTick() {
         }
 
         else if (Input::STATE.isHoldingRun & (pState->groundBeneath || pState->wasRunningOnJumpStart)) {
-            xVelocity += X_ACCELERATION_RATE;
-            if (xVelocity > X_MAX_SPEED_RUNNING) xVelocity = X_MAX_SPEED_RUNNING;
+            if (xVelocity < X_MAX_SPEED_RUNNING) xVelocity += X_ACCELERATION_RATE;
+            else xVelocity -= X_DEACCELERATION_RATE_PASSIVE;
         }
         
         else {
-            xVelocity += X_ACCELERATION_RATE;
-            if (xVelocity > X_MAX_SPEED_WALKING) xVelocity = X_MAX_SPEED_WALKING;
+            if (xVelocity < X_MAX_SPEED_WALKING) xVelocity += X_ACCELERATION_RATE;
+            else xVelocity -= X_DEACCELERATION_RATE_PASSIVE;
         }
 
         if (!PLAYER_ENTITY->isFacingRight) xVelocity *= -1;
