@@ -34,6 +34,9 @@
 #define HOOK_JUMP_X_VELOCITY_DIR_MULTIPLIER         1.25f // How much X speed is multiplied by if holding the direction of the jump
 #define HOOK_JUMP_X_VELOCITY_RUNNING_MULTIPLIER     1.45f // How much X speed is multiplied by if holding 'run'
 
+#define HOOK_PUSH_ANGULAR_VELOCITY_DELTA            0.0025f // How much the angular velocity of the hook will change
+                                                            // when the player is pushing it to one side. In radians/frame.
+
 #define DOWNWARDS_VELOCITY_TARGET           -10.0f
 #define Y_VELOCITY_TARGET_TOLERANCE         1
 
@@ -289,13 +292,26 @@ void PlayerTick() {
     if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
 
         //      Hooked!!
+        const auto hook = PLAYER_STATE->hookLaunched;
 
         // Uses its own system for velocity calculation
         PLAYER_STATE->xVelocity = 0;
         PLAYER_STATE->yVelocity = 0;
         PLAYER_STATE->yVelocityTarget = 0;
 
-        PLAYER_STATE->hookLaunched->Swing();
+        if (Input::STATE.playerMoveDirection != Input::PLAYER_DIRECTION_STOP &&
+                (hook->currentAngle > PI && hook->currentAngle < 2*PI)) {
+
+            // Player push on hook
+
+            const bool isPushingToTheLeft = Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT;
+            float angularVelocityDelta = HOOK_PUSH_ANGULAR_VELOCITY_DELTA;
+            if (isPushingToTheLeft) angularVelocityDelta *= -1; 
+            hook->angularVelocity += angularVelocityDelta;
+
+        }
+
+        hook->Swing();
 
         // TODO check for collision and respond accordingly. Should it apply physics back?
 

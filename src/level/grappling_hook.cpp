@@ -53,6 +53,10 @@ GrapplingHook *GrapplingHook::Initialize() {
 
 void GrapplingHook::Tick() {
 
+    if (currentAngle >= 2*PI) currentAngle -= 2*PI;
+    else if (currentAngle < 0) currentAngle += 2*PI;
+    
+
     if (attachedTo) {
         // Do nothing, let the Player routine handle it
         return;
