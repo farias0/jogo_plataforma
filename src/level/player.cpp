@@ -28,7 +28,7 @@
 
 // The velocities applied when jumping from a hook
 #define HOOK_JUMP_Y_VELOCITY_BASE                   04.0f // Base Y speed when jumping from a hook
-#define HOOK_JUMP_Y_VELOCITY_FROM_ANGLE             13.0f // How much Y speed can be added to BASE depending on launch angle
+#define HOOK_JUMP_Y_VELOCITY_FROM_ANGLE             07.5f // How much Y speed can be added to BASE depending on launch angle
 #define HOOK_JUMP_Y_VELOCITY_RUNNING_MULTIPLIER     1.40f // How much Y speed is multiplied by if holding 'run'
 #define HOOK_JUMP_X_VELOCITY_BASE                   07.5f // Base X boost when jumping from a hook
 #define HOOK_JUMP_X_VELOCITY_DIR_MULTIPLIER         1.25f // How much X speed is multiplied by if holding the direction of the jump
@@ -92,13 +92,11 @@ static float jumpStartVelocity() {
         // where the hook start is in the cartesian plane
         bool isInSecondOrThirdQuadrants = h->currentAngle > PI/2 && h->currentAngle <= (3.0f/2.0f)*PI;
 
-        if ((isSwingingClockwise && !isInSecondOrThirdQuadrants) ||
-                (!isSwingingClockwise && isInSecondOrThirdQuadrants)) {
-            
-            // adds extra Y velocity if the hook is swinging upwards
-
-            vel += HOOK_JUMP_Y_VELOCITY_FROM_ANGLE* (1 + sin(h->currentAngle));
-        }
+        // adds extra Y velocity if the hook is swinging upwards
+        if (isSwingingClockwise && !isInSecondOrThirdQuadrants)
+            vel += HOOK_JUMP_Y_VELOCITY_FROM_ANGLE * cos(h->currentAngle);
+        else if (!isSwingingClockwise && isInSecondOrThirdQuadrants)
+            vel += HOOK_JUMP_Y_VELOCITY_FROM_ANGLE * cos(h->currentAngle) * -1;
 
         if (Input::STATE.isHoldingRun) vel *= HOOK_JUMP_Y_VELOCITY_RUNNING_MULTIPLIER;
 
@@ -237,14 +235,13 @@ void PlayerJump() {
         //  Horizontal velocity calculation
 
         float xVelocity = 0;
-        const float angleCos = cos(PLAYER_STATE->hookLaunched->currentAngle);
         const float angularVel = PLAYER_STATE->hookLaunched->angularVelocity;
 
         if (PLAYER_ENTITY->isFacingRight && angularVel > 0) { // facing + swinging to the right
-            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * (angleCos + 1) / 2;
+            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * sin(PLAYER_STATE->hookLaunched->currentAngle + PI);
         }
         else if (!PLAYER_ENTITY->isFacingRight && angularVel < 0) { // facing + swinging to the left
-            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * (angleCos - 1) / 2;
+            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * sin(PLAYER_STATE->hookLaunched->currentAngle + PI) * -1;
         }
 
         // if the player is holding the direction they're facing
