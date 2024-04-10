@@ -24,10 +24,7 @@ public:
     void Swing();
 
     // Sets this this hook's start position to where the Player's hands are
-    void UpdateStartPos();
-    
-    // Sets the Player's position based on the hook's start
-    void UpdatePlayersPos();
+    void FollowPlayer();
 
     void Draw();
 

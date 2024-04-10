@@ -26,9 +26,6 @@
 #define ANGULAR_VELOCITY_INITIAL    0.24
 #define DAMPING_FACTOR              0.02
 
-#define ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE       15  // Used when converting hook's angular vel to player's linear vel.
-                                                        // Found by testing, changing may lead to bug with collision.
-
 
 
 GrapplingHook *GrapplingHook::Initialize() {
@@ -38,7 +35,7 @@ GrapplingHook *GrapplingHook::Initialize() {
     hook->tags = Level::IS_HOOK;
     hook->isFacingRight = PLAYER_ENTITY->isFacingRight;
 
-    hook->UpdateStartPos();
+    hook->FollowPlayer();
     hook->end = hook->start;
 
     if (hook->isFacingRight) hook->currentAngle = PI + ANGLE;
@@ -79,10 +76,10 @@ void GrapplingHook::Tick() {
     }
 
 
-    UpdateStartPos(); // hook follows player while not attached
+    FollowPlayer(); // hook follows player while not attached
 
 
-    // calculate hook's end based on start + angle
+    // calculate hook's new end point based on start + angle
 
     Vector2 projectedEnd;
     if (isFacingRight) projectedEnd.x = this->start.x + currentLength * cos(currentAngle - PI); 
@@ -141,12 +138,9 @@ void GrapplingHook::Swing() {
     // calculate hook's start based on end + new angle
     start.x = end.x + currentLength * cos(currentAngle);
     start.y = end.y + currentLength * sin(currentAngle) * -1; // -1 to compensate for raylib's coord system
-
-
-    PLAYER_STATE->hookLaunched->UpdatePlayersPos();
 }
 
-void GrapplingHook::UpdateStartPos() {
+void GrapplingHook::FollowPlayer() {
 
     float x = PLAYER_ENTITY->hitbox.x;
     if (isFacingRight) x += PLAYER_ENTITY->hitbox.width;
@@ -154,27 +148,6 @@ void GrapplingHook::UpdateStartPos() {
     float y = PLAYER_ENTITY->hitbox.y + (PLAYER_ENTITY->hitbox.height/4);
     
     this->start = { x, y };
-}
-
-void GrapplingHook::UpdatePlayersPos() {
-    
-    float x = start.x;
-    if (isFacingRight) x -= PLAYER_ENTITY->hitbox.width;
-
-    float y = start.y - (PLAYER_ENTITY->hitbox.height/4);
-
-    PLAYER_ENTITY->hitbox.x = x;
-    PLAYER_ENTITY->hitbox.y = y;
-
-    PlayerSyncHitboxes();
-
-
-    PLAYER_STATE->xVelocity = (angularVelocity * ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * sin(currentAngle) * -1;
-    PLAYER_STATE->yVelocity = (angularVelocity * ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * cos(currentAngle);
-
-    bool isSwingingClockwise = angularVelocity > 0;
-    bool isInSecondOrThirdQuadrants = currentAngle > PI/2 && currentAngle <= (3.0f/2.0f)*PI;
-    PLAYER_STATE->isAscending = isSwingingClockwise != isInSecondOrThirdQuadrants;
 }
 
 void GrapplingHook::Draw() {

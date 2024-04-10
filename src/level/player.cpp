@@ -37,6 +37,9 @@
 #define HOOK_PUSH_ANGULAR_VELOCITY_DELTA            0.0025f // How much the angular velocity of the hook will change
                                                             // when the player is pushing it to one side. In radians/frame.
 
+#define HOOK_ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE  15  // Used when converting hook's angular vel to player's linear vel.
+                                                        // Found by testing, changing may lead to bug with collision.
+
 #define DOWNWARDS_VELOCITY_TARGET           -10.0f
 #define Y_VELOCITY_TARGET_TOLERANCE         1
 
@@ -314,7 +317,29 @@ void PlayerTick() {
 
         }
 
+
         hook->Swing();
+
+
+        // Update player's data according to the hook's new data
+
+        float x = hook->start.x;
+        if (hook->isFacingRight) x -= PLAYER_ENTITY->hitbox.width;
+
+        float y = hook->start.y - (PLAYER_ENTITY->hitbox.height/4);
+
+        PLAYER_ENTITY->hitbox.x = x;
+        PLAYER_ENTITY->hitbox.y = y;
+
+        PlayerSyncHitboxes();
+
+
+        PLAYER_STATE->xVelocity = (hook->angularVelocity * HOOK_ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * sin(hook->currentAngle) * -1;
+        PLAYER_STATE->yVelocity = (hook->angularVelocity * HOOK_ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * cos(hook->currentAngle);
+
+        bool isSwingingClockwise = hook->angularVelocity > 0;
+        bool isInSecondOrThirdQuadrants = hook->currentAngle > PI/2 && hook->currentAngle <= (3.0f/2.0f)*PI;
+        PLAYER_STATE->isAscending = isSwingingClockwise != isInSecondOrThirdQuadrants;
 
 
         goto COLISION_CHECKING;
@@ -553,7 +578,7 @@ next_entity:
         }
     }
 
-    if (isHooked) PLAYER_STATE->hookLaunched->UpdateStartPos();
+    if (isHooked) PLAYER_STATE->hookLaunched->FollowPlayer();
 
     if (Render::GetTextboxTextId() != -1 && !collidedWithTextboxButton) {
         Render::DisplayTextboxStop();
