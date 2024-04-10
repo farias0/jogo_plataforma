@@ -26,6 +26,8 @@
 #define ANGULAR_VELOCITY_INITIAL    0.24
 #define DAMPING_FACTOR              0.02
 
+#define ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE       15  // Used when converting hook's angular vel to player's linear vel.
+                                                        // Found by testing, changing may lead to bug with collision.
 
 
 
@@ -165,6 +167,14 @@ void GrapplingHook::UpdatePlayersPos() {
     PLAYER_ENTITY->hitbox.y = y;
 
     PlayerSyncHitboxes();
+
+
+    PLAYER_STATE->xVelocity = (angularVelocity * ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * sin(currentAngle) * -1;
+    PLAYER_STATE->yVelocity = (angularVelocity * ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * cos(currentAngle);
+
+    bool isSwingingClockwise = angularVelocity > 0;
+    bool isInSecondOrThirdQuadrants = currentAngle > PI/2 && currentAngle <= (3.0f/2.0f)*PI;
+    PLAYER_STATE->isAscending = isSwingingClockwise != isInSecondOrThirdQuadrants;
 }
 
 void GrapplingHook::Draw() {

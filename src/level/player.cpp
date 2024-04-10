@@ -280,7 +280,9 @@ void PlayerTick() {
 
     bool yVelocityWithinTarget;
     double now;
-    float oldX, oldY;
+    const float oldX = PLAYER_ENTITY->hitbox.x;
+    const float oldY = PLAYER_ENTITY->hitbox.y;
+    const bool isHooked = PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo;
 
 
     if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
@@ -289,15 +291,16 @@ void PlayerTick() {
         PLAYER_ENTITY->isFacingRight = false;
 
 
-    if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
+    if (isHooked) {
 
         //      Hooked!!
         const auto hook = PLAYER_STATE->hookLaunched;
 
-        // Uses its own system for velocity calculation
+        // Uses its own system for player's pos calculation
         PLAYER_STATE->xVelocity = 0;
         PLAYER_STATE->yVelocity = 0;
         PLAYER_STATE->yVelocityTarget = 0;
+
 
         if (Input::STATE.playerMoveDirection != Input::PLAYER_DIRECTION_STOP &&
                 (hook->currentAngle > PI && hook->currentAngle < 2*PI)) {
@@ -313,11 +316,8 @@ void PlayerTick() {
 
         hook->Swing();
 
-        // TODO check for collision and respond accordingly. Should it apply physics back?
 
-        //PLAYER_STATE->hookLaunched->UpdateStartPos();
-
-        goto SKIP_VELOCITY_UPDATE;
+        goto COLISION_CHECKING;
     }
 
 
@@ -407,12 +407,12 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
         }
     }
 
-    oldX = PLAYER_ENTITY->hitbox.x;
-    oldY = PLAYER_ENTITY->hitbox.y;
     PLAYER_ENTITY->hitbox.x += pState->xVelocity;
     PLAYER_ENTITY->hitbox.y -= pState->yVelocity;
     PlayerSyncHitboxes();
 
+
+COLISION_CHECKING:
     // Collision checking
     {
         if (PLAYER_ENTITY->hitbox.y + PLAYER_ENTITY->hitbox.height > FLOOR_DEATH_HEIGHT) {
@@ -482,6 +482,8 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
 
                         PLAYER_ENTITY->hitbox.x = oldX;
 
+                        if (isHooked) pState->hookLaunched->angularVelocity *= -1;
+
                     }
                 }
 
@@ -489,11 +491,13 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
                 if (isACeiling && pState->isAscending) {
 
                     // if (GAME_STATE->showDebugHUD) Render::PrintSysMessage("Hit ceiling");
-
+                    
                     pState->isAscending = false;
                     PLAYER_ENTITY->hitbox.y = oldY;
                     pState->yVelocity = (pState->yVelocity * -1) * CEILING_VELOCITY_FACTOR;
                     pState->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
+
+                    if (isHooked) pState->hookLaunched->angularVelocity *= -1;
                 }
 
                 // TODO maybe ground check should be here as well
@@ -532,7 +536,7 @@ next_entity:
 
 
     PLAYER_STATE->isGliding = false;
-    if (pState->yVelocity > pState->yVelocityTarget) {
+    if (pState->yVelocity > pState->yVelocityTarget && !isHooked) {
 
         if (PLAYER_STATE->mode == PLAYER_MODE_GLIDE &&
                 !PLAYER_STATE->isAscending &&
@@ -548,8 +552,8 @@ next_entity:
             pState->yVelocity -= Y_ACCELERATION_RATE;
         }
     }
-SKIP_VELOCITY_UPDATE:
 
+    if (isHooked) PLAYER_STATE->hookLaunched->UpdateStartPos();
 
     if (Render::GetTextboxTextId() != -1 && !collidedWithTextboxButton) {
         Render::DisplayTextboxStop();
