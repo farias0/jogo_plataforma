@@ -356,11 +356,16 @@ Entity *GetGroundBeneathHitbox(Rectangle hitbox) {
     return getGroundBeneath(hitbox, 0);
 }
 
+// TODO put this in the Entity's destructor
 void EntityDestroy(Entity *entity) {
 
     if (entity == STATE->exit) STATE->exit = 0;
 
     if (entity == STATE->checkpoint) STATE->checkpoint = 0;
+
+    if (PLAYER_STATE->hookLaunched)
+        if (entity == PLAYER_STATE->hookLaunched->attachedTo)
+            PLAYER_STATE->hookLaunched->attachedTo = 0;
 
     DebugEntityStop(entity);
 
