@@ -72,6 +72,16 @@ public:
     void SetCheckpoint();
 
     void LaunchGrapplingHook();
+
+
+private:
+    void jump();
+
+    void die();
+
+    float jumpStartVelocity();
+
+    float jumpBufferBackwardsSize();
 };
 
 

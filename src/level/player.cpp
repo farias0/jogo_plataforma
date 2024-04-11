@@ -70,66 +70,6 @@
 Player *PLAYER = 0;
 
 
-// The vertical velocity that works as the initial
-// propulsion of a jump
-static float jumpStartVelocity() {
-
-    // Velocity if player's swinging from a hook
-    if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo) {
-        
-        auto h = PLAYER->hookLaunched;
-        float vel = HOOK_JUMP_Y_VELOCITY_BASE;
-        bool isSwingingClockwise = h->angularVelocity >= 0;
-        // where the hook start is in the cartesian plane
-        bool isInSecondOrThirdQuadrants = h->currentAngle > PI/2 && h->currentAngle <= (3.0f/2.0f)*PI;
-
-        // adds extra Y velocity if the hook is swinging upwards
-        if (isSwingingClockwise && !isInSecondOrThirdQuadrants)
-            vel += HOOK_JUMP_Y_VELOCITY_FROM_ANGLE * cos(h->currentAngle);
-        else if (!isSwingingClockwise && isInSecondOrThirdQuadrants)
-            vel += HOOK_JUMP_Y_VELOCITY_FROM_ANGLE * cos(h->currentAngle) * -1;
-
-        if (Input::STATE.isHoldingRun) vel *= HOOK_JUMP_Y_VELOCITY_RUNNING_MULTIPLIER;
-
-        return vel;
-    }
-
-    if (Input::STATE.isHoldingRun)
-        return JUMP_START_Y_VELOCITY_RUNNING;
-
-    else
-        return JUMP_START_Y_VELOCITY_DEFAULT;
-}
-
-// The size of the backwards jump buffer, that varies in function
-// of its vertical velocity
-static float jumpBufferBackwardsSize() {
-
-    if (PLAYER->isGliding)
-        return JUMP_BUFFER_BACKWARDS_SIZE_GLIDING;
-    else
-        return JUMP_BUFFER_BACKWARDS_SIZE;
-}
-
-static void die() {
-
-    PLAYER->isDead = true;
-    Level::STATE->isPaused = true;
-
-    TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isAscending=%d",
-                PLAYER->hitbox.x, PLAYER->hitbox.y, PLAYER->isAscending);
-}
-
-static void jump() {
-
-    PLAYER->isAscending = true;
-    PLAYER->yVelocity = jumpStartVelocity();
-    PLAYER->yVelocityTarget = 0.0f;
-    PLAYER->wasRunningOnJumpStart = Input::STATE.isHoldingRun;
-    Sounds::Play(SOUNDS->Jump);
-}
-
-
 void Player::Initialize(Vector2 origin) {
 
     Player *newPlayer = new Player();
@@ -155,42 +95,42 @@ void Player::CheckAndSetOrigin(Vector2 pos) {
 
     if (!PLAYER) return;
 
-    Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->PlayerDefault, pos);
+    Rectangle newHitbox = SpriteHitboxFromMiddle(SPRITES->PlayerDefault, pos);
     
-    if (Level::CheckCollisionWithAnyEntity(hitbox)) {
+    if (Level::CheckCollisionWithAnyEntity(newHitbox)) {
         TraceLog(LOG_DEBUG,
             "Player's origin couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
         Render::PrintSysMessage("Origem iria colidir.");
         return;
     }
 
-    PLAYER->origin = { hitbox.x, hitbox.y };
+    origin = { newHitbox.x, newHitbox.y };
 
-    TraceLog(LOG_DEBUG, "Player's origin set to x=%.1f, y=%.1f.", PLAYER->origin.x, PLAYER->origin.y);
+    TraceLog(LOG_DEBUG, "Player's origin set to x=%.1f, y=%.1f.", origin.x, origin.y);
 }
 
 void Player::CheckAndSetPos(Vector2 pos) {
 
     if (!PLAYER) return;
 
-    Rectangle hitbox = SpriteHitboxFromMiddle(PLAYER->sprite, pos);
+    Rectangle newHitbox = SpriteHitboxFromMiddle(sprite, pos);
     
-    if (Level::CheckCollisionWithAnyEntity(hitbox)) {
+    if (Level::CheckCollisionWithAnyEntity(newHitbox)) {
         TraceLog(LOG_DEBUG,
             "Player couldn't be set at pos x=%.1f, y=%.1f; would collide with a different entity.", pos.x, pos.y);
         Render::PrintSysMessage("Jogador iria colidir.");
         return;
     }
     
-    PLAYER->SetHitbox(hitbox);
+    SetHitbox(newHitbox);
 
-    TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", PLAYER->hitbox.x, PLAYER->hitbox.y);
+    TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", newHitbox.x, newHitbox.y);
 }
 
-void Player::SetHitbox(Rectangle hitbox) {
+void Player::SetHitbox(Rectangle newHitbox) {
 
-    SetPos({ hitbox.x, hitbox.y });
-    this->hitbox = hitbox;
+    SetPos({ newHitbox.x, newHitbox.y });
+    this->hitbox = newHitbox;
 
 }
 
@@ -220,11 +160,11 @@ void Player::SetPos(Vector2 pos) {
     };
 }
 
-void Player::SetMode(PlayerMode mode) {
+void Player::SetMode(PlayerMode newMode) {
 
-    PLAYER->mode = mode;
+    PLAYER->mode = newMode;
 
-    TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
+    TraceLog(LOG_DEBUG, "Player set mode to %d.", newMode);
 }
 
 void Player::Jump() {
@@ -236,25 +176,25 @@ void Player::Jump() {
 
         //  Horizontal velocity calculation
 
-        float xVelocity = 0;
+        float newXVel = 0;
         const float angularVel = PLAYER->hookLaunched->angularVelocity;
 
         if (PLAYER->isFacingRight && angularVel > 0) { // facing + swinging to the right
-            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * sin(PLAYER->hookLaunched->currentAngle + PI);
+            newXVel = HOOK_JUMP_X_VELOCITY_BASE * sin(PLAYER->hookLaunched->currentAngle + PI);
         }
         else if (!PLAYER->isFacingRight && angularVel < 0) { // facing + swinging to the left
-            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * sin(PLAYER->hookLaunched->currentAngle + PI) * -1;
+            newXVel = HOOK_JUMP_X_VELOCITY_BASE * sin(PLAYER->hookLaunched->currentAngle + PI) * -1;
         }
 
         // if the player is holding the direction they're facing
         if ((PLAYER->isFacingRight && Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT) ||
                 (!PLAYER->isFacingRight && Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT))
-            xVelocity *= HOOK_JUMP_X_VELOCITY_DIR_MULTIPLIER;
+            newXVel *= HOOK_JUMP_X_VELOCITY_DIR_MULTIPLIER;
 
         if (Input::STATE.isHoldingRun)
-            xVelocity *= HOOK_JUMP_X_VELOCITY_RUNNING_MULTIPLIER;
+            newXVel *= HOOK_JUMP_X_VELOCITY_RUNNING_MULTIPLIER;
 
-        PLAYER->xVelocity = xVelocity;
+        PLAYER->xVelocity = newXVel;
         
 
         delete PLAYER->hookLaunched;
@@ -343,7 +283,7 @@ void Player::Tick() {
 
     { // Horizontal velocity calculation
 
-        float xVelocity = fabs(PLAYER->xVelocity);
+        float newXVel = fabs(PLAYER->xVelocity);
 
         if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && PLAYER->xVelocity > 0) {
 
@@ -359,23 +299,23 @@ void Player::Tick() {
         }
 
         if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_STOP) {
-            xVelocity -= X_DEACCELERATION_RATE_PASSIVE;
-            if (xVelocity < 0) xVelocity = 0;
+            newXVel -= X_DEACCELERATION_RATE_PASSIVE;
+            if (newXVel < 0) newXVel = 0;
         }
 
         else if (Input::STATE.isHoldingRun & (PLAYER->groundBeneath || PLAYER->wasRunningOnJumpStart)) {
-            if (xVelocity < X_MAX_SPEED_RUNNING) xVelocity += X_ACCELERATION_RATE;
-            else xVelocity -= X_DEACCELERATION_RATE_PASSIVE;
+            if (newXVel < X_MAX_SPEED_RUNNING) newXVel += X_ACCELERATION_RATE;
+            else newXVel -= X_DEACCELERATION_RATE_PASSIVE;
         }
         
         else {
-            if (xVelocity < X_MAX_SPEED_WALKING) xVelocity += X_ACCELERATION_RATE;
-            else xVelocity -= X_DEACCELERATION_RATE_PASSIVE;
+            if (newXVel < X_MAX_SPEED_WALKING) newXVel += X_ACCELERATION_RATE;
+            else newXVel -= X_DEACCELERATION_RATE_PASSIVE;
         }
 
-        if (!PLAYER->isFacingRight) xVelocity *= -1;
+        if (!PLAYER->isFacingRight) newXVel *= -1;
 
-        PLAYER->xVelocity = xVelocity;
+        PLAYER->xVelocity = newXVel;
     }
 END_HORIZONTAL_VELOCITY_CALCULATION:
 
@@ -663,4 +603,63 @@ void Player::LaunchGrapplingHook() {
     }
 
     PLAYER->hookLaunched = GrapplingHook::Initialize();
+}
+
+void Player::jump() {
+
+    PLAYER->isAscending = true;
+    PLAYER->yVelocity = jumpStartVelocity();
+    PLAYER->yVelocityTarget = 0.0f;
+    PLAYER->wasRunningOnJumpStart = Input::STATE.isHoldingRun;
+    Sounds::Play(SOUNDS->Jump);
+}
+
+void Player::die() {
+
+    PLAYER->isDead = true;
+    Level::STATE->isPaused = true;
+
+    TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isAscending=%d",
+                PLAYER->hitbox.x, PLAYER->hitbox.y, PLAYER->isAscending);
+}
+
+// The vertical velocity that works as the initial
+// propulsion of a jump
+float Player::jumpStartVelocity() {
+
+    // Velocity if player's swinging from a hook
+    if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo) {
+        
+        auto h = PLAYER->hookLaunched;
+        float vel = HOOK_JUMP_Y_VELOCITY_BASE;
+        bool isSwingingClockwise = h->angularVelocity >= 0;
+        // where the hook start is in the cartesian plane
+        bool isInSecondOrThirdQuadrants = h->currentAngle > PI/2 && h->currentAngle <= (3.0f/2.0f)*PI;
+
+        // adds extra Y velocity if the hook is swinging upwards
+        if (isSwingingClockwise && !isInSecondOrThirdQuadrants)
+            vel += HOOK_JUMP_Y_VELOCITY_FROM_ANGLE * cos(h->currentAngle);
+        else if (!isSwingingClockwise && isInSecondOrThirdQuadrants)
+            vel += HOOK_JUMP_Y_VELOCITY_FROM_ANGLE * cos(h->currentAngle) * -1;
+
+        if (Input::STATE.isHoldingRun) vel *= HOOK_JUMP_Y_VELOCITY_RUNNING_MULTIPLIER;
+
+        return vel;
+    }
+
+    if (Input::STATE.isHoldingRun)
+        return JUMP_START_Y_VELOCITY_RUNNING;
+
+    else
+        return JUMP_START_Y_VELOCITY_DEFAULT;
+}
+
+// The size of the backwards jump buffer, that varies in function
+// of its vertical velocity
+float Player::jumpBufferBackwardsSize() {
+
+    if (PLAYER->isGliding)
+        return JUMP_BUFFER_BACKWARDS_SIZE_GLIDING;
+    else
+        return JUMP_BUFFER_BACKWARDS_SIZE;
 }
