@@ -120,6 +120,13 @@ void GrapplingHook::Tick() {
             angularVelocity = ANGULAR_VELOCITY_INITIAL;
             if (!isFacingRight) angularVelocity *= -1;
 
+            
+            // This is ugly as hell
+            if (CheckCollisionPointRec(projectedEndPartway1, entity->hitbox)) this->end = projectedEndPartway1;
+            if (CheckCollisionPointRec(projectedEndPartway2, entity->hitbox)) this->end = projectedEndPartway2;
+            if (CheckCollisionPointRec(projectedEndPartway3, entity->hitbox)) this->end = projectedEndPartway3;
+
+
             break;
         }
 
