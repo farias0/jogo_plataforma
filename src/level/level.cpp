@@ -103,7 +103,7 @@ void tickAllEntities() {
         next = (Entity *) entity->next;
 
         if (entity->tags & IS_ENEMY) EnemyTick(entity);
-        else if (entity->tags & IS_PLAYER) PlayerTick();
+        else if (entity->tags & IS_PLAYER) PLAYER->Tick();
         else if (entity->tags & IS_HOOK) { // TODO embed tick into Level::Entity
             GrapplingHook *hook = (GrapplingHook *) entity;
             hook->Tick();   
@@ -433,7 +433,7 @@ void PauseToggle() {
     if (STATE->isPaused) {
 
         if (PLAYER && PLAYER->isDead) {
-            PlayerContinue();
+            PLAYER->Continue();
         }
 
         STATE->isPaused = false;

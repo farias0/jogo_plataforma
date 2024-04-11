@@ -13,6 +13,7 @@ typedef enum PlayerMode {
     PLAYER_MODE_GLIDE
 } PlayerMode;
 
+
 class Player : public Level::Entity {
 
 public:
@@ -44,37 +45,36 @@ public:
     // A reference to the launched grappling hook, if there's one  
     GrapplingHook *hookLaunched;
 
+
+    // Initializes and adds the player to the level in the given origin
+    static void Initialize(Vector2 origin);
+
+    // Sets the player's origin based on pos, if there aren't other things there already.
+    void CheckAndSetOrigin(Vector2 pos);
+
+    // Moves the player to pos, if there aren't other things there already.
+    void CheckAndSetPos(Vector2 pos);
+
+    // Syncs the player state's hitbox with the player entity's data 
+    void SyncHitboxes();
+
+    void SetMode(PlayerMode mode);
+
+    void Jump();
+
+    void Tick();
+
+    // Continues the game after dying.
+    void Continue();
+
+    void SetCheckpoint();
+
+    void LaunchGrapplingHook();
 };
 
 
 // Reference to the player entity, part of the level entity list
 extern Player *PLAYER;
-
-
-// Initializes and adds the player to the level in the given origin
-void PlayerInitialize(Vector2 origin);
-
-// Sets the player's origin based on pos, if there aren't other things there already.
-void PlayerCheckAndSetOrigin(Vector2 pos);
-
-// Moves the player to pos, if there aren't other things there already.
-void PlayerCheckAndSetPos(Vector2 pos);
-
-// Syncs the player state's hitbox with the player entity's data 
-void PlayerSyncHitboxes();
-
-void PlayerSetMode(PlayerMode mode);
-
-void PlayerJump();
-
-void PlayerTick();
-
-// Continues the game after dying.
-void PlayerContinue();
-
-void PlayerSetCheckpoint();
-
-void PlayerLaunchGrapplingHook();
 
 
 #endif // _PLAYER_H_INCLUDED_

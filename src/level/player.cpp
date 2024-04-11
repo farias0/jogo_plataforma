@@ -130,7 +130,7 @@ static void jump() {
 }
 
 
-void PlayerInitialize(Vector2 origin) {
+void Player::Initialize(Vector2 origin) {
 
     Player *newPlayer = new Player();
     PLAYER = newPlayer;
@@ -147,13 +147,13 @@ void PlayerInitialize(Vector2 origin) {
     newPlayer->lastPressedJump = -1;
     newPlayer->lastGroundBeneath = -1;
     
-    PlayerSyncHitboxes();
+    newPlayer->SyncHitboxes();
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
 }
 
-void PlayerCheckAndSetOrigin(Vector2 pos) {
+void Player::CheckAndSetOrigin(Vector2 pos) {
 
     if (!PLAYER) return;
 
@@ -171,7 +171,7 @@ void PlayerCheckAndSetOrigin(Vector2 pos) {
     TraceLog(LOG_DEBUG, "Player's origin set to x=%.1f, y=%.1f.", PLAYER->origin.x, PLAYER->origin.y);
 }
 
-void PlayerCheckAndSetPos(Vector2 pos) {
+void Player::CheckAndSetPos(Vector2 pos) {
 
     if (!PLAYER) return;
 
@@ -185,11 +185,11 @@ void PlayerCheckAndSetPos(Vector2 pos) {
     }
     
     PLAYER->hitbox = hitbox;
-    PlayerSyncHitboxes();
+    PLAYER->SyncHitboxes();
     TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", PLAYER->hitbox.x, PLAYER->hitbox.y);
 }
 
-void PlayerSyncHitboxes() {
+void Player::SyncHitboxes() {
 
     PLAYER->upperbody = {
         PLAYER->hitbox.x + 1,
@@ -212,14 +212,14 @@ void PlayerSyncHitboxes() {
     };
 }
 
-void PlayerSetMode(PlayerMode mode) {
+void Player::SetMode(PlayerMode mode) {
 
     PLAYER->mode = mode;
 
     TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
 }
 
-void PlayerJump() {
+void Player::Jump() {
 
     if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo) {
         
@@ -260,7 +260,7 @@ void PlayerJump() {
     PLAYER->lastPressedJump = GetTime();
 }
 
-void PlayerTick() {
+void Player::Tick() {
 
     bool collidedWithTextboxButton = false; // controls the exhibition of textboxes
 
@@ -318,7 +318,7 @@ void PlayerTick() {
         PLAYER->hitbox.x = x;
         PLAYER->hitbox.y = y;
 
-        PlayerSyncHitboxes();
+        PLAYER->SyncHitboxes();
 
 
         PLAYER->xVelocity = (hook->angularVelocity * HOOK_ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * sin(hook->currentAngle) * -1;
@@ -421,7 +421,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
 
     PLAYER->hitbox.x += PLAYER->xVelocity;
     PLAYER->hitbox.y -= PLAYER->yVelocity;
-    PlayerSyncHitboxes();
+    PLAYER->SyncHitboxes();
 
 
 COLISION_CHECKING:
@@ -526,7 +526,7 @@ COLISION_CHECKING:
             else if (entity->tags & Level::IS_GLIDE &&
                         CheckCollisionRecs(entity->hitbox, PLAYER->hitbox) &&
                         PLAYER->mode != PLAYER_MODE_GLIDE) {
-                PlayerSetMode(PLAYER_MODE_GLIDE);
+                PLAYER->SetMode(PLAYER_MODE_GLIDE);
                 return;
             }
 
@@ -591,7 +591,7 @@ next_entity:
     PLAYER->sprite.sprite = currentSprite.sprite;
 }
 
-void PlayerContinue() {
+void Player::Continue() {
 
     Level::STATE->isPaused = false;
 
@@ -621,13 +621,13 @@ void PlayerContinue() {
 
     if (PLAYER->hookLaunched) delete PLAYER->hookLaunched;
 
-    PlayerSyncHitboxes();
+    PLAYER->SyncHitboxes();
     CameraLevelCentralizeOnPlayer();
 
     TraceLog(LOG_DEBUG, "Player continue.");
 }
 
-void PlayerSetCheckpoint() {
+void Player::SetCheckpoint() {
 
     if (!PLAYER->groundBeneath) {
         TraceLog(LOG_DEBUG, "Player didn't set checkpoint, not on the ground.");
@@ -652,7 +652,7 @@ void PlayerSetCheckpoint() {
     TraceLog(LOG_DEBUG, "Player set checkpoint at x=%.1f, y=%.1f.", pos.x, pos.y);
 }
 
-void PlayerLaunchGrapplingHook() {
+void Player::LaunchGrapplingHook() {
 
     if (PLAYER->hookLaunched) {
         delete PLAYER->hookLaunched;
