@@ -67,32 +67,17 @@
 #define JUMP_BUFFER_FORWARDS_SIZE           0.15f
 
 
-Level::Entity *PLAYER_ENTITY = 0;
+Player *PLAYER = 0;
 
-PlayerState *PLAYER_STATE = 0;
-
-
-static void initializePlayerState() {
-
-    MemFree(PLAYER_STATE);
-    PLAYER_STATE = (PlayerState *) MemAlloc(sizeof(PlayerState));
-
-    PLAYER_STATE->isAscending = false;
-    PLAYER_STATE->mode = PLAYER_MODE_DEFAULT;
-    PLAYER_STATE->lastPressedJump = -1;
-    PLAYER_STATE->lastGroundBeneath = -1;
-
-    TraceLog(LOG_DEBUG, "Player state initialized.");
-}
 
 // The vertical velocity that works as the initial
 // propulsion of a jump
 static float jumpStartVelocity() {
 
     // Velocity if player's swinging from a hook
-    if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
+    if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo) {
         
-        auto h = PLAYER_STATE->hookLaunched;
+        auto h = PLAYER->hookLaunched;
         float vel = HOOK_JUMP_Y_VELOCITY_BASE;
         bool isSwingingClockwise = h->angularVelocity >= 0;
         // where the hook start is in the cartesian plane
@@ -120,7 +105,7 @@ static float jumpStartVelocity() {
 // of its vertical velocity
 static float jumpBufferBackwardsSize() {
 
-    if (PLAYER_STATE->isGliding)
+    if (PLAYER->isGliding)
         return JUMP_BUFFER_BACKWARDS_SIZE_GLIDING;
     else
         return JUMP_BUFFER_BACKWARDS_SIZE;
@@ -128,27 +113,27 @@ static float jumpBufferBackwardsSize() {
 
 static void die() {
 
-    PLAYER_ENTITY->isDead = true;
+    PLAYER->isDead = true;
     Level::STATE->isPaused = true;
 
     TraceLog(LOG_DEBUG, "You Died.\n\tx=%f, y=%f, isAscending=%d",
-                PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y, PLAYER_STATE->isAscending);
+                PLAYER->hitbox.x, PLAYER->hitbox.y, PLAYER->isAscending);
 }
 
 static void jump() {
 
-    PLAYER_STATE->isAscending = true;
-    PLAYER_STATE->yVelocity = jumpStartVelocity();
-    PLAYER_STATE->yVelocityTarget = 0.0f;
-    PLAYER_STATE->wasRunningOnJumpStart = Input::STATE.isHoldingRun;
+    PLAYER->isAscending = true;
+    PLAYER->yVelocity = jumpStartVelocity();
+    PLAYER->yVelocityTarget = 0.0f;
+    PLAYER->wasRunningOnJumpStart = Input::STATE.isHoldingRun;
     Sounds::Play(SOUNDS->Jump);
 }
 
 
 void PlayerInitialize(Vector2 origin) {
 
-    Level::Entity *newPlayer = new Level::Entity();
-    PLAYER_ENTITY = newPlayer;
+    Player *newPlayer = new Player();
+    PLAYER = newPlayer;
     LinkedList::AddNode(&Level::STATE->listHead, newPlayer);
  
     newPlayer->tags = Level::IS_PLAYER;
@@ -157,7 +142,10 @@ void PlayerInitialize(Vector2 origin) {
     newPlayer->hitbox = SpriteHitboxFromEdge(newPlayer->sprite, newPlayer->origin);
     newPlayer->isFacingRight = true;
 
-    initializePlayerState();
+    newPlayer->isAscending = false;
+    newPlayer->mode = PLAYER_MODE_DEFAULT;
+    newPlayer->lastPressedJump = -1;
+    newPlayer->lastGroundBeneath = -1;
     
     PlayerSyncHitboxes();
 
@@ -167,7 +155,7 @@ void PlayerInitialize(Vector2 origin) {
 
 void PlayerCheckAndSetOrigin(Vector2 pos) {
 
-    if (!PLAYER_ENTITY) return;
+    if (!PLAYER) return;
 
     Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->PlayerDefault, pos);
     
@@ -178,16 +166,16 @@ void PlayerCheckAndSetOrigin(Vector2 pos) {
         return;
     }
 
-    PLAYER_ENTITY->origin = { hitbox.x, hitbox.y };
+    PLAYER->origin = { hitbox.x, hitbox.y };
 
-    TraceLog(LOG_DEBUG, "Player's origin set to x=%.1f, y=%.1f.", PLAYER_ENTITY->origin.x, PLAYER_ENTITY->origin.y);
+    TraceLog(LOG_DEBUG, "Player's origin set to x=%.1f, y=%.1f.", PLAYER->origin.x, PLAYER->origin.y);
 }
 
 void PlayerCheckAndSetPos(Vector2 pos) {
 
-    if (!PLAYER_ENTITY) return;
+    if (!PLAYER) return;
 
-    Rectangle hitbox = SpriteHitboxFromMiddle(PLAYER_ENTITY->sprite, pos);
+    Rectangle hitbox = SpriteHitboxFromMiddle(PLAYER->sprite, pos);
     
     if (Level::CheckCollisionWithAnyEntity(hitbox)) {
         TraceLog(LOG_DEBUG,
@@ -196,18 +184,18 @@ void PlayerCheckAndSetPos(Vector2 pos) {
         return;
     }
     
-    PLAYER_ENTITY->hitbox = hitbox;
+    PLAYER->hitbox = hitbox;
     PlayerSyncHitboxes();
-    TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y);
+    TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", PLAYER->hitbox.x, PLAYER->hitbox.y);
 }
 
 void PlayerSyncHitboxes() {
 
-    PLAYER_STATE->upperbody = {
-        PLAYER_ENTITY->hitbox.x + 1,
-        PLAYER_ENTITY->hitbox.y - 1,
-        PLAYER_ENTITY->hitbox.width + 2,
-        PLAYER_ENTITY->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
+    PLAYER->upperbody = {
+        PLAYER->hitbox.x + 1,
+        PLAYER->hitbox.y - 1,
+        PLAYER->hitbox.width + 2,
+        PLAYER->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
     };
 
     /*
@@ -216,24 +204,24 @@ void PlayerSyncHitboxes() {
         (this seems to be related with the use of raylib's CheckCollisionRecs for player-enemy collision).
         This is something that should not be needed in a more robust implementation.
     */
-    PLAYER_STATE->lowerbody = {
-        PLAYER_ENTITY->hitbox.x - 1,
-        PLAYER_ENTITY->hitbox.y + PLAYER_STATE->upperbody.height,
-        PLAYER_ENTITY->hitbox.width + 2,
-        PLAYER_ENTITY->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
+    PLAYER->lowerbody = {
+        PLAYER->hitbox.x - 1,
+        PLAYER->hitbox.y + PLAYER->upperbody.height,
+        PLAYER->hitbox.width + 2,
+        PLAYER->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
     };
 }
 
 void PlayerSetMode(PlayerMode mode) {
 
-    PLAYER_STATE->mode = mode;
+    PLAYER->mode = mode;
 
     TraceLog(LOG_DEBUG, "Player set mode to %d.", mode);
 }
 
 void PlayerJump() {
 
-    if (PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo) {
+    if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo) {
         
         jump();
 
@@ -241,27 +229,27 @@ void PlayerJump() {
         //  Horizontal velocity calculation
 
         float xVelocity = 0;
-        const float angularVel = PLAYER_STATE->hookLaunched->angularVelocity;
+        const float angularVel = PLAYER->hookLaunched->angularVelocity;
 
-        if (PLAYER_ENTITY->isFacingRight && angularVel > 0) { // facing + swinging to the right
-            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * sin(PLAYER_STATE->hookLaunched->currentAngle + PI);
+        if (PLAYER->isFacingRight && angularVel > 0) { // facing + swinging to the right
+            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * sin(PLAYER->hookLaunched->currentAngle + PI);
         }
-        else if (!PLAYER_ENTITY->isFacingRight && angularVel < 0) { // facing + swinging to the left
-            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * sin(PLAYER_STATE->hookLaunched->currentAngle + PI) * -1;
+        else if (!PLAYER->isFacingRight && angularVel < 0) { // facing + swinging to the left
+            xVelocity = HOOK_JUMP_X_VELOCITY_BASE * sin(PLAYER->hookLaunched->currentAngle + PI) * -1;
         }
 
         // if the player is holding the direction they're facing
-        if ((PLAYER_ENTITY->isFacingRight && Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT) ||
-                (!PLAYER_ENTITY->isFacingRight && Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT))
+        if ((PLAYER->isFacingRight && Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT) ||
+                (!PLAYER->isFacingRight && Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT))
             xVelocity *= HOOK_JUMP_X_VELOCITY_DIR_MULTIPLIER;
 
         if (Input::STATE.isHoldingRun)
             xVelocity *= HOOK_JUMP_X_VELOCITY_RUNNING_MULTIPLIER;
 
-        PLAYER_STATE->xVelocity = xVelocity;
+        PLAYER->xVelocity = xVelocity;
         
 
-        delete PLAYER_STATE->hookLaunched;
+        delete PLAYER->hookLaunched;
         
         return;
     }
@@ -269,12 +257,11 @@ void PlayerJump() {
 
     // Normal jump from the ground 
 
-    PLAYER_STATE->lastPressedJump = GetTime();
+    PLAYER->lastPressedJump = GetTime();
 }
 
 void PlayerTick() {
 
-    PlayerState *pState = PLAYER_STATE;
     bool collidedWithTextboxButton = false; // controls the exhibition of textboxes
 
 
@@ -283,26 +270,26 @@ void PlayerTick() {
 
     bool yVelocityWithinTarget;
     double now;
-    const float oldX = PLAYER_ENTITY->hitbox.x;
-    const float oldY = PLAYER_ENTITY->hitbox.y;
-    const bool isHooked = PLAYER_STATE->hookLaunched && PLAYER_STATE->hookLaunched->attachedTo;
+    const float oldX = PLAYER->hitbox.x;
+    const float oldY = PLAYER->hitbox.y;
+    const bool isHooked = PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo;
 
 
     if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
-        PLAYER_ENTITY->isFacingRight = true;
+        PLAYER->isFacingRight = true;
     else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
-        PLAYER_ENTITY->isFacingRight = false;
+        PLAYER->isFacingRight = false;
 
 
     if (isHooked) {
 
         //      Hooked!!
-        const auto hook = PLAYER_STATE->hookLaunched;
+        const auto hook = PLAYER->hookLaunched;
 
         // Uses its own system for player's pos calculation
-        PLAYER_STATE->xVelocity = 0;
-        PLAYER_STATE->yVelocity = 0;
-        PLAYER_STATE->yVelocityTarget = 0;
+        PLAYER->xVelocity = 0;
+        PLAYER->yVelocity = 0;
+        PLAYER->yVelocityTarget = 0;
 
 
         if (Input::STATE.playerMoveDirection != Input::PLAYER_DIRECTION_STOP &&
@@ -324,45 +311,45 @@ void PlayerTick() {
         // Update player's data according to the hook's new data
 
         float x = hook->start.x;
-        if (hook->isFacingRight) x -= PLAYER_ENTITY->hitbox.width;
+        if (hook->isFacingRight) x -= PLAYER->hitbox.width;
 
-        float y = hook->start.y - (PLAYER_ENTITY->hitbox.height/4);
+        float y = hook->start.y - (PLAYER->hitbox.height/4);
 
-        PLAYER_ENTITY->hitbox.x = x;
-        PLAYER_ENTITY->hitbox.y = y;
+        PLAYER->hitbox.x = x;
+        PLAYER->hitbox.y = y;
 
         PlayerSyncHitboxes();
 
 
-        PLAYER_STATE->xVelocity = (hook->angularVelocity * HOOK_ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * sin(hook->currentAngle) * -1;
-        PLAYER_STATE->yVelocity = (hook->angularVelocity * HOOK_ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * cos(hook->currentAngle);
+        PLAYER->xVelocity = (hook->angularVelocity * HOOK_ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * sin(hook->currentAngle) * -1;
+        PLAYER->yVelocity = (hook->angularVelocity * HOOK_ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * cos(hook->currentAngle);
 
         bool isSwingingClockwise = hook->angularVelocity > 0;
         bool isInSecondOrThirdQuadrants = hook->currentAngle > PI/2 && hook->currentAngle <= (3.0f/2.0f)*PI;
-        PLAYER_STATE->isAscending = isSwingingClockwise != isInSecondOrThirdQuadrants;
+        PLAYER->isAscending = isSwingingClockwise != isInSecondOrThirdQuadrants;
 
 
         goto COLISION_CHECKING;
     }
 
 
-    pState->groundBeneath = Level::GetGroundBeneath(PLAYER_ENTITY);
+    PLAYER->groundBeneath = Level::GetGroundBeneath(PLAYER);
 
 
     { // Horizontal velocity calculation
 
-        float xVelocity = fabs(pState->xVelocity);
+        float xVelocity = fabs(PLAYER->xVelocity);
 
-        if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && pState->xVelocity > 0) {
+        if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && PLAYER->xVelocity > 0) {
 
-            pState->xVelocity -= X_DEACCELERATION_RATE_ACTIVE;
-            if (pState->xVelocity < 0) pState->xVelocity = 0;
+            PLAYER->xVelocity -= X_DEACCELERATION_RATE_ACTIVE;
+            if (PLAYER->xVelocity < 0) PLAYER->xVelocity = 0;
             goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
-        else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && pState->xVelocity < 0) {
+        else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && PLAYER->xVelocity < 0) {
 
-            pState->xVelocity += X_DEACCELERATION_RATE_ACTIVE;
-            if (pState->xVelocity > 0) pState->xVelocity = 0;
+            PLAYER->xVelocity += X_DEACCELERATION_RATE_ACTIVE;
+            if (PLAYER->xVelocity > 0) PLAYER->xVelocity = 0;
             goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
 
@@ -371,7 +358,7 @@ void PlayerTick() {
             if (xVelocity < 0) xVelocity = 0;
         }
 
-        else if (Input::STATE.isHoldingRun & (pState->groundBeneath || pState->wasRunningOnJumpStart)) {
+        else if (Input::STATE.isHoldingRun & (PLAYER->groundBeneath || PLAYER->wasRunningOnJumpStart)) {
             if (xVelocity < X_MAX_SPEED_RUNNING) xVelocity += X_ACCELERATION_RATE;
             else xVelocity -= X_DEACCELERATION_RATE_PASSIVE;
         }
@@ -381,66 +368,66 @@ void PlayerTick() {
             else xVelocity -= X_DEACCELERATION_RATE_PASSIVE;
         }
 
-        if (!PLAYER_ENTITY->isFacingRight) xVelocity *= -1;
+        if (!PLAYER->isFacingRight) xVelocity *= -1;
 
-        pState->xVelocity = xVelocity;
+        PLAYER->xVelocity = xVelocity;
     }
 END_HORIZONTAL_VELOCITY_CALCULATION:
 
 
-    if (pState->groundBeneath) {
+    if (PLAYER->groundBeneath) {
 
-        PLAYER_STATE->lastGroundBeneath = GetTime();
+        PLAYER->lastGroundBeneath = GetTime();
 
-        if (!pState->isAscending) {
+        if (!PLAYER->isAscending) {
             // Is on the ground
-            PLAYER_ENTITY->hitbox.y = pState->groundBeneath->hitbox.y - PLAYER_ENTITY->hitbox.height;
-            pState->yVelocity = 0;
-            pState->yVelocityTarget = 0;
+            PLAYER->hitbox.y = PLAYER->groundBeneath->hitbox.y - PLAYER->hitbox.height;
+            PLAYER->yVelocity = 0;
+            PLAYER->yVelocityTarget = 0;
         }
     }
 
 
     yVelocityWithinTarget =
-        abs((int) (pState->yVelocity - pState->yVelocityTarget)) < Y_VELOCITY_TARGET_TOLERANCE;
+        abs((int) (PLAYER->yVelocity - PLAYER->yVelocityTarget)) < Y_VELOCITY_TARGET_TOLERANCE;
     
     if (yVelocityWithinTarget) {
-        pState->isAscending = false;
+        PLAYER->isAscending = false;
 
-        if (!pState->groundBeneath) {
+        if (!PLAYER->groundBeneath) {
             // Starts falling down
-            pState->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
+            PLAYER->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
         }
     }
 
     now = GetTime();
-    if (!pState->isAscending &&
-        (now - PLAYER_STATE->lastPressedJump < jumpBufferBackwardsSize()) &&
-        (now - PLAYER_STATE->lastGroundBeneath < JUMP_BUFFER_FORWARDS_SIZE)) {
+    if (!PLAYER->isAscending &&
+        (now - PLAYER->lastPressedJump < jumpBufferBackwardsSize()) &&
+        (now - PLAYER->lastGroundBeneath < JUMP_BUFFER_FORWARDS_SIZE)) {
 
         jump();
 
         // Player hit enemy
         // -- this check is for the case the player jumps off the enemy,
         // and only in the case the enemy wasn't already destroyed in the previous frame.
-        if (pState->groundBeneath &&
-            pState->groundBeneath->tags & Level::IS_ENEMY) {
+        if (PLAYER->groundBeneath &&
+            PLAYER->groundBeneath->tags & Level::IS_ENEMY) {
 
-            PLAYER_STATE->lastGroundBeneath = GetTime();
-            EnemyKill(pState->groundBeneath);
-            pState->groundBeneath = 0;
+            PLAYER->lastGroundBeneath = GetTime();
+            EnemyKill(PLAYER->groundBeneath);
+            PLAYER->groundBeneath = 0;
         }
     }
 
-    PLAYER_ENTITY->hitbox.x += pState->xVelocity;
-    PLAYER_ENTITY->hitbox.y -= pState->yVelocity;
+    PLAYER->hitbox.x += PLAYER->xVelocity;
+    PLAYER->hitbox.y -= PLAYER->yVelocity;
     PlayerSyncHitboxes();
 
 
 COLISION_CHECKING:
     // Collision checking
     {
-        if (PLAYER_ENTITY->hitbox.y + PLAYER_ENTITY->hitbox.height > FLOOR_DEATH_HEIGHT) {
+        if (PLAYER->hitbox.y + PLAYER->hitbox.height > FLOOR_DEATH_HEIGHT) {
             die();
             return;
         }
@@ -452,14 +439,14 @@ COLISION_CHECKING:
             if ((entity->tags & Level::IS_ENEMY) && !entity->isDead) {
 
                 // Enemy hit player
-                if (CheckCollisionRecs(entity->hitbox, pState->upperbody)) {
+                if (CheckCollisionRecs(entity->hitbox, PLAYER->upperbody)) {
                     die();
                     break;
                 }
 
                 // Player hit enemy
-                if (CheckCollisionRecs(entity->hitbox, pState->lowerbody)) {
-                    PLAYER_STATE->lastGroundBeneath = GetTime();
+                if (CheckCollisionRecs(entity->hitbox, PLAYER->lowerbody)) {
+                    PLAYER->lastGroundBeneath = GetTime();
                     EnemyKill(entity);
                     goto next_entity;
                 }
@@ -469,10 +456,10 @@ COLISION_CHECKING:
 
                 // Check for collision with level geometry
 
-                Rectangle collisionRec = GetCollisionRec(entity->hitbox, PLAYER_ENTITY->hitbox);
+                Rectangle collisionRec = GetCollisionRec(entity->hitbox, PLAYER->hitbox);
 
                 if (entity->tags & Level::IS_DANGER &&
-                    (collisionRec.width > 0 || collisionRec.height > 0 || pState->groundBeneath == entity)) {
+                    (collisionRec.width > 0 || collisionRec.height > 0 || PLAYER->groundBeneath == entity)) {
                     
                     // Player hit dangerous level element
                     die();
@@ -483,7 +470,7 @@ COLISION_CHECKING:
             
                 const bool isAWall = collisionRec.width <= collisionRec.height;
                 const bool isACeiling = (collisionRec.width >= collisionRec.height) &&
-                                    (entity->hitbox.y < PLAYER_ENTITY->hitbox.y);
+                                    (entity->hitbox.y < PLAYER->hitbox.y);
 
 
                 if (isAWall && collisionRec.width > 0) {
@@ -491,11 +478,11 @@ COLISION_CHECKING:
                     const bool isEntitysRightWall = collisionRec.x > entity->hitbox.x; 
                     const bool isEntitysLeftWall = !isEntitysRightWall;
 
-                    const bool isEntityToTheLeft = entity->hitbox.x < PLAYER_ENTITY->hitbox.x;
+                    const bool isEntityToTheLeft = entity->hitbox.x < PLAYER->hitbox.x;
                     const bool isEntityToTheRight = !isEntityToTheLeft;
 
-                    const bool isPlayerMovingToTheLeft = PLAYER_ENTITY->hitbox.x < oldX;
-                    const bool isPlayerMovingToTheRight = PLAYER_ENTITY->hitbox.x > oldX;
+                    const bool isPlayerMovingToTheLeft = PLAYER->hitbox.x < oldX;
+                    const bool isPlayerMovingToTheRight = PLAYER->hitbox.x > oldX;
 
                     // So when the player hits the entity to its left,
                     // he can only collide with its left wall.
@@ -505,31 +492,31 @@ COLISION_CHECKING:
 
                         // if (GAME_STATE->showDebugHUD) Render::PrintSysMessage("Hit wall");
 
-                        PLAYER_ENTITY->hitbox.x = oldX;
+                        PLAYER->hitbox.x = oldX;
 
-                        if (isHooked) pState->hookLaunched->angularVelocity *= -1;
+                        if (isHooked) PLAYER->hookLaunched->angularVelocity *= -1;
 
                     }
                 }
 
 
-                if (isACeiling && pState->isAscending) {
+                if (isACeiling && PLAYER->isAscending) {
 
                     // if (GAME_STATE->showDebugHUD) Render::PrintSysMessage("Hit ceiling");
                     
-                    pState->isAscending = false;
-                    PLAYER_ENTITY->hitbox.y = oldY;
-                    pState->yVelocity = (pState->yVelocity * -1) * CEILING_VELOCITY_FACTOR;
-                    pState->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
+                    PLAYER->isAscending = false;
+                    PLAYER->hitbox.y = oldY;
+                    PLAYER->yVelocity = (PLAYER->yVelocity * -1) * CEILING_VELOCITY_FACTOR;
+                    PLAYER->yVelocityTarget = DOWNWARDS_VELOCITY_TARGET;
 
-                    if (isHooked) pState->hookLaunched->angularVelocity *= -1;
+                    if (isHooked) PLAYER->hookLaunched->angularVelocity *= -1;
                 }
 
                 // TODO maybe ground check should be here as well
             }
 
             else if (entity->tags & Level::IS_EXIT &&
-                        CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox)) {
+                        CheckCollisionRecs(entity->hitbox, PLAYER->hitbox)) {
 
                 // Player exit level
 
@@ -537,14 +524,14 @@ COLISION_CHECKING:
             }
 
             else if (entity->tags & Level::IS_GLIDE &&
-                        CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox) &&
-                        PLAYER_STATE->mode != PLAYER_MODE_GLIDE) {
+                        CheckCollisionRecs(entity->hitbox, PLAYER->hitbox) &&
+                        PLAYER->mode != PLAYER_MODE_GLIDE) {
                 PlayerSetMode(PLAYER_MODE_GLIDE);
                 return;
             }
 
             else if (entity->tags & Level::IS_TEXTBOX &&
-                        CheckCollisionRecs(entity->hitbox, PLAYER_ENTITY->hitbox)) {
+                        CheckCollisionRecs(entity->hitbox, PLAYER->hitbox)) {
 
                 collidedWithTextboxButton = true;
 
@@ -560,25 +547,25 @@ next_entity:
     }
 
 
-    PLAYER_STATE->isGliding = false;
-    if (pState->yVelocity > pState->yVelocityTarget && !isHooked) {
+    PLAYER->isGliding = false;
+    if (PLAYER->yVelocity > PLAYER->yVelocityTarget && !isHooked) {
 
-        if (PLAYER_STATE->mode == PLAYER_MODE_GLIDE &&
-                !PLAYER_STATE->isAscending &&
+        if (PLAYER->mode == PLAYER_MODE_GLIDE &&
+                !PLAYER->isAscending &&
                 Input::STATE.isHoldingRun) {
 
             // Is gliding
-            pState->yVelocity = Y_VELOCITY_GLIDING;
-            PLAYER_STATE->isGliding = true;
+            PLAYER->yVelocity = Y_VELOCITY_GLIDING;
+            PLAYER->isGliding = true;
 
         } else {
 
             // Accelerates jump's vertical movement
-            pState->yVelocity -= Y_ACCELERATION_RATE;
+            PLAYER->yVelocity -= Y_ACCELERATION_RATE;
         }
     }
 
-    if (isHooked) PLAYER_STATE->hookLaunched->FollowPlayer();
+    if (isHooked) PLAYER->hookLaunched->FollowPlayer();
 
     if (Render::GetTextboxTextId() != -1 && !collidedWithTextboxButton) {
         Render::DisplayTextboxStop();
@@ -589,15 +576,19 @@ next_entity:
     // "Animation"
     Sprite currentSprite;
 
-    if (PLAYER_STATE->mode == PLAYER_MODE_GLIDE) {
-        if (PLAYER_STATE->isGliding)
+    if (PLAYER->mode == PLAYER_MODE_GLIDE) {
+        if (PLAYER->isGliding)
             currentSprite =     SPRITES->PlayerGlideFalling;
         else
             currentSprite =     SPRITES->PlayerGlideOn;
     }
+
+    // else if (PLAYER->groundBeneath && abs(PLAYER->xVelocity) > 0.5)
+    //     currentSprite= SPRITES->PlayerWalking1;
+
     else currentSprite =        SPRITES->PlayerDefault;
 
-    PLAYER_ENTITY->sprite.sprite = currentSprite.sprite;
+    PLAYER->sprite.sprite = currentSprite.sprite;
 }
 
 void PlayerContinue() {
@@ -618,17 +609,17 @@ void PlayerContinue() {
     if (Level::STATE->checkpoint) {
         Vector2 pos = RectangleGetPos(Level::STATE->checkpoint->hitbox);
         pos.y -= Level::STATE->checkpoint->hitbox.height;
-        RectangleSetPos(&PLAYER_ENTITY->hitbox, pos);
+        RectangleSetPos(&PLAYER->hitbox, pos);
     } else {
-        RectangleSetPos(&PLAYER_ENTITY->hitbox, PLAYER_ENTITY->origin);
+        RectangleSetPos(&PLAYER->hitbox, PLAYER->origin);
     }
-    PLAYER_STATE->isAscending = false;
-    PLAYER_STATE->isGliding = false;
-    PLAYER_STATE->yVelocity = 0;
-    PLAYER_STATE->yVelocityTarget = 0;
-    PLAYER_STATE->xVelocity = 0;
+    PLAYER->isAscending = false;
+    PLAYER->isGliding = false;
+    PLAYER->yVelocity = 0;
+    PLAYER->yVelocityTarget = 0;
+    PLAYER->xVelocity = 0;
 
-    if (PLAYER_STATE->hookLaunched) delete PLAYER_STATE->hookLaunched;
+    if (PLAYER->hookLaunched) delete PLAYER->hookLaunched;
 
     PlayerSyncHitboxes();
     CameraLevelCentralizeOnPlayer();
@@ -638,7 +629,7 @@ void PlayerContinue() {
 
 void PlayerSetCheckpoint() {
 
-    if (!PLAYER_STATE->groundBeneath) {
+    if (!PLAYER->groundBeneath) {
         TraceLog(LOG_DEBUG, "Player didn't set checkpoint, not on the ground.");
         return;
     }
@@ -652,8 +643,8 @@ void PlayerSetCheckpoint() {
         Level::EntityDestroy(Level::STATE->checkpoint);
     }
 
-    Vector2 pos = RectangleGetPos(PLAYER_ENTITY->hitbox);
-    pos.y += PLAYER_ENTITY->hitbox.height / 2;
+    Vector2 pos = RectangleGetPos(PLAYER->hitbox);
+    pos.y += PLAYER->hitbox.height / 2;
     Level::STATE->checkpoint = Level::CheckpointAdd(pos);
 
     Level::STATE->checkpointsLeft--;
@@ -663,10 +654,10 @@ void PlayerSetCheckpoint() {
 
 void PlayerLaunchGrapplingHook() {
 
-    if (PLAYER_STATE->hookLaunched) {
-        delete PLAYER_STATE->hookLaunched;
+    if (PLAYER->hookLaunched) {
+        delete PLAYER->hookLaunched;
         return;
     }
 
-    PLAYER_STATE->hookLaunched = GrapplingHook::Initialize();
+    PLAYER->hookLaunched = GrapplingHook::Initialize();
 }

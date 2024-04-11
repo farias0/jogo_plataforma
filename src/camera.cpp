@@ -34,22 +34,22 @@ static void followOverworldCamera() {
 
 static void followLevelCamera() {
 
-    if (!PLAYER_ENTITY) {
+    if (!PLAYER) {
         TraceLog(LOG_WARNING, "Camera can't follow player, no reference to them.");
         return;
     }
 
-    if (PLAYER_ENTITY->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT) {
-        CAMERA->pos.x = PLAYER_ENTITY->hitbox.x - CAMERA_FOLLOW_LEFT;
+    if (PLAYER->hitbox.x < CAMERA->pos.x + CAMERA_FOLLOW_LEFT) {
+        CAMERA->pos.x = PLAYER->hitbox.x - CAMERA_FOLLOW_LEFT;
     }
-    else if (PLAYER_ENTITY->hitbox.x + PLAYER_ENTITY->hitbox.width > CAMERA->pos.x + CAMERA_FOLLOW_RIGHT) {
-        CAMERA->pos.x = PLAYER_ENTITY->hitbox.x + PLAYER_ENTITY->hitbox.width - CAMERA_FOLLOW_RIGHT;
+    else if (PLAYER->hitbox.x + PLAYER->hitbox.width > CAMERA->pos.x + CAMERA_FOLLOW_RIGHT) {
+        CAMERA->pos.x = PLAYER->hitbox.x + PLAYER->hitbox.width - CAMERA_FOLLOW_RIGHT;
     }
-    if (PLAYER_ENTITY->hitbox.y < CAMERA->pos.y + CAMERA_FOLLOW_UP) {
-        CAMERA->pos.y = PLAYER_ENTITY->hitbox.y - CAMERA_FOLLOW_UP;
+    if (PLAYER->hitbox.y < CAMERA->pos.y + CAMERA_FOLLOW_UP) {
+        CAMERA->pos.y = PLAYER->hitbox.y - CAMERA_FOLLOW_UP;
     }
-    else if (PLAYER_ENTITY->hitbox.y + PLAYER_ENTITY->hitbox.height > CAMERA->pos.y + CAMERA_FOLLOW_DOWN) {
-        CAMERA->pos.y = PLAYER_ENTITY->hitbox.y + PLAYER_ENTITY->hitbox.height - CAMERA_FOLLOW_DOWN;
+    else if (PLAYER->hitbox.y + PLAYER->hitbox.height > CAMERA->pos.y + CAMERA_FOLLOW_DOWN) {
+        CAMERA->pos.y = PLAYER->hitbox.y + PLAYER->hitbox.height - CAMERA_FOLLOW_DOWN;
     }
 }
 
@@ -61,7 +61,7 @@ static void tickOverworldCamera() {
 
 static void tickLevelCamera() {
 
-    if (!PLAYER_ENTITY) return;
+    if (!PLAYER) return;
     followLevelCamera();
 }
 
@@ -106,13 +106,13 @@ void CameraFollow() {
 
 void CameraLevelCentralizeOnPlayer() {
 
-    if (!PLAYER_ENTITY) {
+    if (!PLAYER) {
         TraceLog(LOG_ERROR, "Camera can't centralize on Player because Player instance couldn't be found.");
         return;
     }
 
-    CAMERA->pos.x = PLAYER_ENTITY->hitbox.x - SCREEN_WIDTH/3;
-    CAMERA->pos.y = PLAYER_ENTITY->hitbox.y - SCREEN_HEIGHT/2;
+    CAMERA->pos.x = PLAYER->hitbox.x - SCREEN_WIDTH/3;
+    CAMERA->pos.y = PLAYER->hitbox.y - SCREEN_HEIGHT/2;
 
     CameraPanningReset();
     TraceLog(LOG_TRACE, "Camera centralized on Player.");

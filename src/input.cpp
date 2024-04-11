@@ -76,7 +76,7 @@ void handleInLevelInput() {
         { Level::PauseToggle(); return; }
 
 
-    if (Level::STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
+    if (Level::STATE->isPaused || !PLAYER || PLAYER->isDead) return;
 
 
     STATE.isHoldingRun = IsKeyDown(KEY_Z) || isGamepadDown(GP_X);

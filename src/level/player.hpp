@@ -13,8 +13,9 @@ typedef enum PlayerMode {
     PLAYER_MODE_GLIDE
 } PlayerMode;
 
-typedef struct PlayerState {
+class Player : public Level::Entity {
 
+public:
     // The ground beneath the player, updated every frame, or 0 if there's no ground beneath
     Level::Entity *groundBeneath;
 
@@ -43,13 +44,11 @@ typedef struct PlayerState {
     // A reference to the launched grappling hook, if there's one  
     GrapplingHook *hookLaunched;
 
-} PlayerState;
+};
 
 
-// Reference to the player's Level::Entity, part of the level entity list
-extern Level::Entity *PLAYER_ENTITY; 
-
-extern PlayerState *PLAYER_STATE;
+// Reference to the player entity, part of the level entity list
+extern Player *PLAYER;
 
 
 // Initializes and adds the player to the level in the given origin
