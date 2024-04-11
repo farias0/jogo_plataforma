@@ -139,15 +139,13 @@ void Player::Initialize(Vector2 origin) {
     newPlayer->tags = Level::IS_PLAYER;
     newPlayer->origin = origin;
     newPlayer->sprite = SPRITES->PlayerDefault;
-    newPlayer->hitbox = SpriteHitboxFromEdge(newPlayer->sprite, newPlayer->origin);
+    newPlayer->SetHitbox(SpriteHitboxFromEdge(newPlayer->sprite, newPlayer->origin));
     newPlayer->isFacingRight = true;
 
     newPlayer->isAscending = false;
     newPlayer->mode = PLAYER_MODE_DEFAULT;
     newPlayer->lastPressedJump = -1;
     newPlayer->lastGroundBeneath = -1;
-    
-    newPlayer->SyncHitboxes();
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
@@ -184,18 +182,28 @@ void Player::CheckAndSetPos(Vector2 pos) {
         return;
     }
     
-    PLAYER->hitbox = hitbox;
-    PLAYER->SyncHitboxes();
+    PLAYER->SetHitbox(hitbox);
+
     TraceLog(LOG_DEBUG, "Player set to pos x=%.1f, y=%.1f.", PLAYER->hitbox.x, PLAYER->hitbox.y);
 }
 
-void Player::SyncHitboxes() {
+void Player::SetHitbox(Rectangle hitbox) {
 
-    PLAYER->upperbody = {
-        PLAYER->hitbox.x + 1,
-        PLAYER->hitbox.y - 1,
-        PLAYER->hitbox.width + 2,
-        PLAYER->hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
+    SetPos({ hitbox.x, hitbox.y });
+    this->hitbox = hitbox;
+
+}
+
+void Player::SetPos(Vector2 pos) {
+
+    hitbox.x = pos.x;
+    hitbox.y = pos.y;
+
+    upperbody = {
+        hitbox.x + 1,
+        hitbox.y - 1,
+        hitbox.width + 2,
+        hitbox.height * PLAYERS_UPPERBODY_PROPORTION + 1
     };
 
     /*
@@ -204,11 +212,11 @@ void Player::SyncHitboxes() {
         (this seems to be related with the use of raylib's CheckCollisionRecs for player-enemy collision).
         This is something that should not be needed in a more robust implementation.
     */
-    PLAYER->lowerbody = {
-        PLAYER->hitbox.x - 1,
-        PLAYER->hitbox.y + PLAYER->upperbody.height,
-        PLAYER->hitbox.width + 2,
-        PLAYER->hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
+    lowerbody = {
+        hitbox.x - 1,
+        hitbox.y + upperbody.height,
+        hitbox.width + 2,
+        hitbox.height * (1 - PLAYERS_UPPERBODY_PROPORTION) + 1
     };
 }
 
@@ -315,10 +323,7 @@ void Player::Tick() {
 
         float y = hook->start.y - (PLAYER->hitbox.height/4);
 
-        PLAYER->hitbox.x = x;
-        PLAYER->hitbox.y = y;
-
-        PLAYER->SyncHitboxes();
+        PLAYER->SetPos({ x, y });
 
 
         PLAYER->xVelocity = (hook->angularVelocity * HOOK_ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * sin(hook->currentAngle) * -1;
@@ -419,9 +424,8 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
         }
     }
 
-    PLAYER->hitbox.x += PLAYER->xVelocity;
-    PLAYER->hitbox.y -= PLAYER->yVelocity;
-    PLAYER->SyncHitboxes();
+    PLAYER->SetPos({ PLAYER->hitbox.x + PLAYER->xVelocity,
+                        PLAYER->hitbox.y - PLAYER->yVelocity });
 
 
 COLISION_CHECKING:
@@ -609,9 +613,9 @@ void Player::Continue() {
     if (Level::STATE->checkpoint) {
         Vector2 pos = RectangleGetPos(Level::STATE->checkpoint->hitbox);
         pos.y -= Level::STATE->checkpoint->hitbox.height;
-        RectangleSetPos(&PLAYER->hitbox, pos);
+        PLAYER->SetPos(pos);
     } else {
-        RectangleSetPos(&PLAYER->hitbox, PLAYER->origin);
+        PLAYER->SetPos(PLAYER->origin);
     }
     PLAYER->isAscending = false;
     PLAYER->isGliding = false;
@@ -621,7 +625,6 @@ void Player::Continue() {
 
     if (PLAYER->hookLaunched) delete PLAYER->hookLaunched;
 
-    PLAYER->SyncHitboxes();
     CameraLevelCentralizeOnPlayer();
 
     TraceLog(LOG_DEBUG, "Player continue.");

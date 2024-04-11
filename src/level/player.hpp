@@ -55,8 +55,10 @@ public:
     // Moves the player to pos, if there aren't other things there already.
     void CheckAndSetPos(Vector2 pos);
 
-    // Syncs the player state's hitbox with the player entity's data 
-    void SyncHitboxes();
+    void SetHitbox(Rectangle hitbox);
+
+    // Moves the player to pos, updating the collision hitboxes in the proccess
+    void SetPos(Vector2 pos);
 
     void SetMode(PlayerMode mode);
 
