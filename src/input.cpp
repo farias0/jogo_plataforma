@@ -98,6 +98,9 @@ void handleInLevelInput() {
     if (IsKeyPressed(KEY_C) || isGamepadPressed(GP_Y))
         PlayerSetCheckpoint();
 
+    if (IsKeyPressed(KEY_A) || isGamepadPressed(GP_R1))
+        PlayerLaunchGrapplingHook();
+
 
     // For debugging
     if (IsKeyPressed(KEY_ONE))

@@ -5,6 +5,7 @@
 #include <raylib.h>
 
 #include "level.hpp"
+#include "grappling_hook.hpp"
 
 
 typedef enum PlayerMode {
@@ -38,6 +39,10 @@ typedef struct PlayerState {
     // timestamps, for jump buffers
     double lastPressedJump;
     double lastGroundBeneath;
+
+    // A reference to the launched grappling hook, if there's one  
+    GrapplingHook *hookLaunched;
+
 } PlayerState;
 
 
@@ -56,6 +61,9 @@ void PlayerCheckAndSetOrigin(Vector2 pos);
 // Moves the player to pos, if there aren't other things there already.
 void PlayerCheckAndSetPos(Vector2 pos);
 
+// Syncs the player state's hitbox with the player entity's data 
+void PlayerSyncHitboxes();
+
 void PlayerSetMode(PlayerMode mode);
 
 void PlayerJump();
@@ -66,6 +74,8 @@ void PlayerTick();
 void PlayerContinue();
 
 void PlayerSetCheckpoint();
+
+void PlayerLaunchGrapplingHook();
 
 
 #endif // _PLAYER_H_INCLUDED_

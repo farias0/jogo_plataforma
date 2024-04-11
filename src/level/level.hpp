@@ -20,7 +20,7 @@
 #define LEVEL_GRID              Dimensions(32, 32)
 
 // Below this y entities die
-#define FLOOR_DEATH_HEIGHT      800
+#define FLOOR_DEATH_HEIGHT      1400
 
 
 namespace Level {
@@ -36,6 +36,8 @@ typedef enum {
     IS_GLIDE        = 64,
     IS_CHECKPOINT   = 128,
     IS_TEXTBOX      = 256,
+    IS_HOOK         = 512,
+    IS_HOOKABLE     = 1024,
 } EntityTag;
 
 
