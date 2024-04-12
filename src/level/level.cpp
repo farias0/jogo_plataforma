@@ -102,14 +102,11 @@ void tickAllEntities() {
 
         next = (Entity *) entity->next;
 
-        if (entity->tags & IS_ENEMY) EnemyTick(entity);
-        else if (entity->tags & IS_PLAYER) PLAYER->Tick();
-        else if (entity->tags & IS_HOOK) { // TODO embed tick into Level::Entity
-            GrapplingHook *hook = (GrapplingHook *) entity;
-            hook->Tick();   
-        }
+        // ATTENTION: If the 'next' entity is deleted during Tick() this will break.
+        // Honestly, it's a miracle this hasn't broken so far.
 
-        entity = next;
+        entity->Tick();
+        entity = next;        
     }
 }
 
@@ -537,6 +534,13 @@ Rectangle EntityOriginHitbox(Entity *entity) {
     };
 }
 
+
+void Entity::Tick() {            
+
+    // TODO create Enemy class
+    if (tags & IS_ENEMY) EnemyTick(this);
+    
+}
 
 void Entity::Draw() {            
 
