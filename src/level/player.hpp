@@ -82,6 +82,8 @@ private:
     float jumpStartVelocity();
 
     float jumpBufferBackwardsSize();
+
+    Sprite getCurrentAnimationSprite();
 };
 
 

@@ -517,22 +517,7 @@ next_entity:
     }
 
 
-    // "Animation"
-    Sprite currentSprite;
-
-    if (mode == PLAYER_MODE_GLIDE) {
-        if (isGliding)
-            currentSprite =     SPRITES->PlayerGlideFalling;
-        else
-            currentSprite =     SPRITES->PlayerGlideOn;
-    }
-
-    // else if (groundBeneath && abs(xVelocity) > 0.5)
-    //     currentSprite= SPRITES->PlayerWalking1;
-
-    else currentSprite =        SPRITES->PlayerDefault;
-
-    sprite.sprite = currentSprite.sprite;
+    sprite = getCurrentAnimationSprite();
 }
 
 void Player::Continue() {
@@ -662,4 +647,23 @@ float Player::jumpBufferBackwardsSize() {
         return JUMP_BUFFER_BACKWARDS_SIZE_GLIDING;
     else
         return JUMP_BUFFER_BACKWARDS_SIZE;
+}
+
+Sprite Player::getCurrentAnimationSprite() {
+
+    Sprite sprite;
+
+    if (mode == PLAYER_MODE_GLIDE) {
+        if (isGliding)
+            sprite =        SPRITES->PlayerGlideFalling;
+        else
+            sprite =        SPRITES->PlayerGlideOn;
+    }
+
+    else if (groundBeneath && abs(xVelocity) > 0.5)
+        sprite =            SPRITES->PlayerWalking1;
+
+    else sprite =           SPRITES->PlayerDefault;
+
+    return sprite;
 }

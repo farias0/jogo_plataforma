@@ -38,6 +38,7 @@ void AssetsInitialize() {
 
     // In Level
     sp->PlayerDefault = doubleSizeSprite("../assets/player_default_1.png");
+    sp->PlayerWalking1 = doubleSizeSprite("../assets/player_walking_1.png");
     sp->PlayerGlideOn = doubleSizeSprite("../assets/player_glide_on.png");
     sp->PlayerGlideFalling = doubleSizeSprite("../assets/player_glide_falling.png");
     sp->Enemy = doubleSizeSprite("../assets/enemy_default_1.png");

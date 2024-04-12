@@ -22,6 +22,7 @@ struct SpriteBank {
 
     // In Level
     Sprite PlayerDefault;
+    Sprite PlayerWalking1;
     Sprite PlayerGlideOn;
     Sprite PlayerGlideFalling;
     Sprite Enemy;
