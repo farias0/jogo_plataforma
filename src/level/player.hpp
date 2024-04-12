@@ -13,8 +13,10 @@ typedef enum PlayerMode {
     PLAYER_MODE_GLIDE
 } PlayerMode;
 
-typedef struct PlayerState {
 
+class Player : public Level::Entity {
+
+public:
     // The ground beneath the player, updated every frame, or 0 if there's no ground beneath
     Level::Entity *groundBeneath;
 
@@ -43,39 +45,48 @@ typedef struct PlayerState {
     // A reference to the launched grappling hook, if there's one  
     GrapplingHook *hookLaunched;
 
-} PlayerState;
+
+    // Initializes and adds the player to the level in the given origin
+    static void Initialize(Vector2 origin);
+
+    // Sets the player's origin based on pos, if there aren't other things there already.
+    void CheckAndSetOrigin(Vector2 pos);
+
+    // Moves the player to pos, if there aren't other things there already.
+    void CheckAndSetPos(Vector2 pos);
+
+    void SetHitbox(Rectangle hitbox);
+
+    // Moves the player to pos, updating the collision hitboxes in the proccess
+    void SetPos(Vector2 pos);
+
+    void SetMode(PlayerMode mode);
+
+    void Jump();
+
+    void Tick();
+
+    // Continues the game after dying.
+    void Continue();
+
+    void SetCheckpoint();
+
+    void LaunchGrapplingHook();
 
 
-// Reference to the player's Level::Entity, part of the level entity list
-extern Level::Entity *PLAYER_ENTITY; 
+private:
+    void jump();
 
-extern PlayerState *PLAYER_STATE;
+    void die();
+
+    float jumpStartVelocity();
+
+    float jumpBufferBackwardsSize();
+};
 
 
-// Initializes and adds the player to the level in the given origin
-void PlayerInitialize(Vector2 origin);
-
-// Sets the player's origin based on pos, if there aren't other things there already.
-void PlayerCheckAndSetOrigin(Vector2 pos);
-
-// Moves the player to pos, if there aren't other things there already.
-void PlayerCheckAndSetPos(Vector2 pos);
-
-// Syncs the player state's hitbox with the player entity's data 
-void PlayerSyncHitboxes();
-
-void PlayerSetMode(PlayerMode mode);
-
-void PlayerJump();
-
-void PlayerTick();
-
-// Continues the game after dying.
-void PlayerContinue();
-
-void PlayerSetCheckpoint();
-
-void PlayerLaunchGrapplingHook();
+// Reference to the player entity, part of the level entity list
+extern Player *PLAYER;
 
 
 #endif // _PLAYER_H_INCLUDED_

@@ -76,7 +76,7 @@ void handleInLevelInput() {
         { Level::PauseToggle(); return; }
 
 
-    if (Level::STATE->isPaused || !PLAYER_ENTITY || PLAYER_ENTITY->isDead) return;
+    if (Level::STATE->isPaused || !PLAYER || PLAYER->isDead) return;
 
 
     STATE.isHoldingRun = IsKeyDown(KEY_Z) || isGamepadDown(GP_X);
@@ -93,21 +93,21 @@ void handleInLevelInput() {
 
 
     if (IsKeyPressed(KEY_X) || isGamepadPressed(GP_A))
-        PlayerJump();
+        PLAYER->Jump();
 
     if (IsKeyPressed(KEY_C) || isGamepadPressed(GP_Y))
-        PlayerSetCheckpoint();
+        PLAYER->SetCheckpoint();
 
     if (IsKeyPressed(KEY_A) || isGamepadPressed(GP_R1))
-        PlayerLaunchGrapplingHook();
+        PLAYER->LaunchGrapplingHook();
 
 
     // For debugging
     if (IsKeyPressed(KEY_ONE))
-        PlayerSetMode(PLAYER_MODE_DEFAULT);
+        PLAYER->SetMode(PLAYER_MODE_DEFAULT);
 
     if (IsKeyPressed(KEY_TWO))
-        PlayerSetMode(PLAYER_MODE_GLIDE);
+        PLAYER->SetMode(PLAYER_MODE_GLIDE);
 }
 
 void handleOverworldInput() {
@@ -184,7 +184,7 @@ skip_selected_entities_actions:
     if (GAME_STATE->showDebugHUD || EDITOR_STATE->isEnabled) {
 
         if (IsKeyDown(KEY_SPACE) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            PlayerCheckAndSetPos(mousePosInScene);
+            PLAYER->CheckAndSetPos(mousePosInScene);
             return;
         }
     }
@@ -200,7 +200,7 @@ skip_selected_entities_actions:
     if (EDITOR_STATE->isEnabled) {
 
         if (IsKeyDown(KEY_O) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            PlayerCheckAndSetOrigin(mousePosInScene);
+            PLAYER->CheckAndSetOrigin(mousePosInScene);
             return;
         }
 

@@ -49,7 +49,7 @@ void resetState() {
     STATE->checkpoint = 0;
     STATE->checkpointsLeft = 0;
 
-    PLAYER_ENTITY = 0;
+    PLAYER = 0;
 
     TraceLog(LOG_INFO, "Level State initialized.");
 }
@@ -102,14 +102,11 @@ void tickAllEntities() {
 
         next = (Entity *) entity->next;
 
-        if (entity->tags & IS_ENEMY) EnemyTick(entity);
-        else if (entity->tags & IS_PLAYER) PlayerTick();
-        else if (entity->tags & IS_HOOK) { // TODO embed tick into Level::Entity
-            GrapplingHook *hook = (GrapplingHook *) entity;
-            hook->Tick();   
-        }
+        // ATTENTION: If the 'next' entity is deleted during Tick() this will break.
+        // Honestly, it's a miracle this hasn't broken so far.
 
-        entity = next;
+        entity->Tick();
+        entity = next;        
     }
 }
 
@@ -192,7 +189,7 @@ void Initialize() {
 void Load(char *levelName) {
 
     // Gambiarra. In case a level file was dragged and there was a level loaded already
-    if (PLAYER_ENTITY) {
+    if (PLAYER) {
         resetState();
     }
 
@@ -223,14 +220,14 @@ void Load(char *levelName) {
 
     Render::LevelTransitionEffectStart(
         SpritePosMiddlePoint(
-            {PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), false);
+            {PLAYER->hitbox.x, PLAYER->hitbox.y}, PLAYER->sprite), false);
 
     TraceLog(LOG_INFO, "Level loaded: %s.", levelName);
 }
 
 void GoToOverworld() {
 
-    if (!PLAYER_ENTITY) {
+    if (!PLAYER) {
         leave();
         return;    
     }
@@ -241,7 +238,7 @@ void GoToOverworld() {
 
     Render::LevelTransitionEffectStart(
         SpritePosMiddlePoint(
-            {PLAYER_ENTITY->hitbox.x, PLAYER_ENTITY->hitbox.y}, PLAYER_ENTITY->sprite), true);
+            {PLAYER->hitbox.x, PLAYER->hitbox.y}, PLAYER->sprite), true);
 
     DebugEntityStopAll();
 
@@ -363,9 +360,9 @@ void EntityDestroy(Entity *entity) {
 
     if (entity == STATE->checkpoint) STATE->checkpoint = 0;
 
-    if (PLAYER_STATE->hookLaunched)
-        if (entity == PLAYER_STATE->hookLaunched->attachedTo)
-            PLAYER_STATE->hookLaunched->attachedTo = 0;
+    if (PLAYER->hookLaunched)
+        if (entity == PLAYER->hookLaunched->attachedTo)
+            PLAYER->hookLaunched->attachedTo = 0;
 
     DebugEntityStop(entity);
 
@@ -432,8 +429,8 @@ void PauseToggle() {
 
     if (STATE->isPaused) {
 
-        if (PLAYER_ENTITY && PLAYER_ENTITY->isDead) {
-            PlayerContinue();
+        if (PLAYER && PLAYER->isDead) {
+            PLAYER->Continue();
         }
 
         STATE->isPaused = false;
@@ -522,9 +519,9 @@ void LoadNew() {
 
     Load((char *) LEVEL_BLUEPRINT_NAME);
 
-    PLAYER_ENTITY->origin = PLAYERS_ORIGIN;
-    PLAYER_ENTITY->hitbox.x = PLAYER_ENTITY->origin.x;
-    PLAYER_ENTITY->hitbox.y = PLAYER_ENTITY->origin.y;
+    PLAYER->origin = PLAYERS_ORIGIN;
+    PLAYER->hitbox.x = PLAYER->origin.x;
+    PLAYER->hitbox.y = PLAYER->origin.y;
 
     strcpy(STATE->levelName, NEW_LEVEL_NAME);
 }
@@ -537,6 +534,13 @@ Rectangle EntityOriginHitbox(Entity *entity) {
     };
 }
 
+
+void Entity::Tick() {            
+
+    // TODO create Enemy class
+    if (tags & IS_ENEMY) EnemyTick(this);
+    
+}
 
 void Entity::Draw() {            
 
