@@ -125,6 +125,8 @@ void GrapplingHook::Tick() {
             if (CheckCollisionPointRec(projectedEndPartway1, entity->hitbox)) this->end = projectedEndPartway1;
             if (CheckCollisionPointRec(projectedEndPartway2, entity->hitbox)) this->end = projectedEndPartway2;
             if (CheckCollisionPointRec(projectedEndPartway3, entity->hitbox)) this->end = projectedEndPartway3;
+            if (this->end.x != projectedEnd.x && this->end.y != projectedEnd.y)
+                currentLength = Vector2Distance(start, end);
 
 
             break;
