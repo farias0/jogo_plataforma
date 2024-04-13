@@ -87,6 +87,10 @@ void Player::Initialize(Vector2 origin) {
     newPlayer->lastPressedJump = -1;
     newPlayer->lastGroundBeneath = -1;
 
+
+    newPlayer->createAnimations();
+
+
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
 }
@@ -517,7 +521,7 @@ next_entity:
     }
 
 
-    sprite = getCurrentAnimationSprite();
+    sprite = *animationTick();
 }
 
 void Player::Continue() {
@@ -649,21 +653,36 @@ float Player::jumpBufferBackwardsSize() {
         return JUMP_BUFFER_BACKWARDS_SIZE;
 }
 
-Sprite Player::getCurrentAnimationSprite() {
 
-    Sprite sprite;
+void Player::createAnimations() {
+
+    animationInPlace.stills.push_back(Animation::Still{ &SPRITES->PlayerDefault, 1 });
+
+    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking1, 20 }));
+    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 20 }));
+
+    animationGlideWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerGlideOn, 1 }));
+
+    animationGlideFalling.stills.push_back(Animation::Still({ &SPRITES->PlayerGlideFalling, 1 }));
+}
+
+Animation::Animation *Player::getCurrentAnimation() {
+
+    Animation::Animation *animation;
+
 
     if (mode == PLAYER_MODE_GLIDE) {
         if (isGliding)
-            sprite =        SPRITES->PlayerGlideFalling;
+            animation =        &animationGlideFalling;
         else
-            sprite =        SPRITES->PlayerGlideOn;
+            animation =        &animationGlideWalking;
     }
 
-    else if (groundBeneath && abs(xVelocity) > 0.5)
-        sprite =            SPRITES->PlayerWalking1;
+    else if (groundBeneath && abs(xVelocity) > 0.5) // TODO create a default for this value
+        animation =            &animaitonWalking;
 
-    else sprite =           SPRITES->PlayerDefault;
+    else animation =           &animationInPlace;
 
-    return sprite;
+
+    return animation;
 }

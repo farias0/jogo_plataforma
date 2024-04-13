@@ -48,7 +48,7 @@ public:
     Vector2 origin;
     Rectangle hitbox;
 
-    Sprite sprite;
+    Sprite sprite; // TODO change to "Sprite *sprite"
     int layer;
 
     bool isDead;

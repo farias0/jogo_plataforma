@@ -6,6 +6,7 @@
 
 #include "level.hpp"
 #include "grappling_hook.hpp"
+#include "../animation.hpp"
 
 
 typedef enum PlayerMode {
@@ -14,7 +15,7 @@ typedef enum PlayerMode {
 } PlayerMode;
 
 
-class Player : public Level::Entity {
+class Player : public Level::Entity, private Animation::IAnimated {
 
 public:
     // The ground beneath the player, updated every frame, or 0 if there's no ground beneath
@@ -75,6 +76,13 @@ public:
 
 
 private:
+
+    Animation::Animation animationInPlace;
+    Animation::Animation animaitonWalking;
+    Animation::Animation animationGlideWalking;
+    Animation::Animation animationGlideFalling;
+
+
     void jump();
 
     void die();
@@ -83,7 +91,8 @@ private:
 
     float jumpBufferBackwardsSize();
 
-    Sprite getCurrentAnimationSprite();
+    void createAnimations();
+    Animation::Animation *getCurrentAnimation();
 };
 
 
