@@ -59,6 +59,8 @@ public:
     // Used by Textbox Buttons
     int textId;
 
+    virtual void Tick();
+
     void Draw();
 };
 

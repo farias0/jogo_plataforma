@@ -317,10 +317,10 @@ void drawLevelHud() {
     DrawText(std::string("x " + std::to_string(Level::STATE->checkpointsLeft)).c_str(),
                 SCREEN_WIDTH-100, SCREEN_HEIGHT-56, 30, RAYWHITE);
 
-    if (Level::STATE->isPaused && PLAYER_ENTITY && !PLAYER_ENTITY->isDead)
+    if (Level::STATE->isPaused && PLAYER && !PLAYER->isDead)
         DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
         
-    if (PLAYER_ENTITY && PLAYER_ENTITY->isDead)
+    if (PLAYER && PLAYER->isDead)
         DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
     
     if (Level::STATE->levelName[0] == '\0')

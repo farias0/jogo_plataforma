@@ -33,7 +33,7 @@ GrapplingHook *GrapplingHook::Initialize() {
     GrapplingHook *hook = new GrapplingHook();
 
     hook->tags = Level::IS_HOOK;
-    hook->isFacingRight = PLAYER_ENTITY->isFacingRight;
+    hook->isFacingRight = PLAYER->isFacingRight;
 
     hook->FollowPlayer();
     hook->end = hook->start;
@@ -151,10 +151,10 @@ void GrapplingHook::Swing() {
 
 void GrapplingHook::FollowPlayer() {
 
-    float x = PLAYER_ENTITY->hitbox.x;
-    if (isFacingRight) x += PLAYER_ENTITY->hitbox.width;
+    float x = PLAYER->hitbox.x;
+    if (isFacingRight) x += PLAYER->hitbox.width;
 
-    float y = PLAYER_ENTITY->hitbox.y + (PLAYER_ENTITY->hitbox.height/4);
+    float y = PLAYER->hitbox.y + (PLAYER->hitbox.height/4);
     
     this->start = { x, y };
 }
@@ -179,7 +179,7 @@ void GrapplingHook::Draw() {
 GrapplingHook::~GrapplingHook() {
 
     LinkedList::RemoveNode(&Level::STATE->listHead, this);
-    PLAYER_STATE->hookLaunched = 0;
+    PLAYER->hookLaunched = 0;
     
     TraceLog(LOG_TRACE, "Destroying grappling hook");
 }
