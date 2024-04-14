@@ -25,6 +25,7 @@ struct SpriteBank {
     Sprite PlayerWalking1;
     Sprite PlayerWalking2;
     Sprite PlayerJumpingUp;
+    Sprite PlayerJumpingDown;
     Sprite PlayerGlideOn;
     Sprite PlayerGlideFalling;
     Sprite PlayerSwinging;
