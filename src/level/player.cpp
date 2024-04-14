@@ -658,7 +658,7 @@ void Player::createAnimations() {
 
     animationInPlace.stills.push_back(Animation::Still{ &SPRITES->PlayerDefault, 1 });
 
-    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking1, 10 }));
+    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking1, 10 })); // TODO create a define for this value
     animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
     animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking2, 10 }));
     animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
@@ -666,6 +666,8 @@ void Player::createAnimations() {
     animationGlideWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerGlideOn, 1 }));
 
     animationGlideFalling.stills.push_back(Animation::Still({ &SPRITES->PlayerGlideFalling, 1 }));
+
+    animationSwinging.stills.push_back(Animation::Still({ &SPRITES->PlayerSwinging, 1 }));
 }
 
 Animation::Animation *Player::getCurrentAnimation() {
@@ -675,15 +677,18 @@ Animation::Animation *Player::getCurrentAnimation() {
 
     if (mode == PLAYER_MODE_GLIDE) {
         if (isGliding)
-            animation =        &animationGlideFalling;
+            animation =         &animationGlideFalling;
         else
-            animation =        &animationGlideWalking;
+            animation =         &animationGlideWalking;
     }
 
-    else if (groundBeneath && abs(xVelocity) > 0.5) // TODO create a default for this value
-        animation =            &animaitonWalking;
+    else if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo)
+        animation =             &animationSwinging;
 
-    else animation =           &animationInPlace;
+    else if (groundBeneath && abs(xVelocity) > 0.5) // TODO create a default for this value
+        animation =             &animaitonWalking;
+
+    else animation =            &animationInPlace;
 
 
     return animation;

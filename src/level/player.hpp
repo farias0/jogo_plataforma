@@ -81,6 +81,7 @@ private:
     Animation::Animation animaitonWalking;
     Animation::Animation animationGlideWalking;
     Animation::Animation animationGlideFalling;
+    Animation::Animation animationSwinging;
 
 
     void jump();
