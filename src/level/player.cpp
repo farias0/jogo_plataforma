@@ -658,8 +658,10 @@ void Player::createAnimations() {
 
     animationInPlace.stills.push_back(Animation::Still{ &SPRITES->PlayerDefault, 1 });
 
-    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking1, 20 }));
-    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 20 }));
+    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking1, 10 }));
+    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
+    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking2, 10 }));
+    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
 
     animationGlideWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerGlideOn, 1 }));
 
