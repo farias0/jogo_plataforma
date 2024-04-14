@@ -663,6 +663,8 @@ void Player::createAnimations() {
     animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking2, 10 }));
     animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
 
+    animaitonJumpingUp.stills.push_back(Animation::Still({ &SPRITES->PlayerJumpingUp, 1 }));
+
     animationGlideWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerGlideOn, 1 }));
 
     animationGlideFalling.stills.push_back(Animation::Still({ &SPRITES->PlayerGlideFalling, 1 }));
@@ -684,6 +686,9 @@ Animation::Animation *Player::getCurrentAnimation() {
 
     else if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo)
         animation =             &animationSwinging;
+
+    else if (!groundBeneath && PLAYER->isAscending)
+        animation =             &animaitonJumpingUp;
 
     else if (groundBeneath && abs(xVelocity) > 0.5) // TODO create a default for this value
         animation =             &animaitonWalking;

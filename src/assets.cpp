@@ -40,6 +40,7 @@ void AssetsInitialize() {
     sp->PlayerDefault = doubleSizeSprite("../assets/player_default_1.png");
     sp->PlayerWalking1 = doubleSizeSprite("../assets/player_walking_1.png");
     sp->PlayerWalking2 = doubleSizeSprite("../assets/player_walking_2.png");
+    sp->PlayerJumpingUp = doubleSizeSprite("../assets/player_jumping_up.png");
     sp->PlayerGlideOn = doubleSizeSprite("../assets/player_glide_on.png");
     sp->PlayerGlideFalling = doubleSizeSprite("../assets/player_glide_falling.png");
     sp->PlayerSwinging = doubleSizeSprite("../assets/player_swinging_1.png");
