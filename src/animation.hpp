@@ -61,7 +61,7 @@ public:
                 currentStillIndex++;
                 framesElapsedThisStill = 0;
 
-                if (currentStillIndex > oldAnimation->stills.size() - 1)
+                if (currentStillIndex > static_cast<int>(oldAnimation->stills.size()) - 1)
                     currentStillIndex = 0;
 
                 currentStill = currentAnimation->stills.at(currentStillIndex);
