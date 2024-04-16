@@ -78,7 +78,8 @@ public:
 private:
 
     Animation::Animation animationInPlace;
-    Animation::Animation animaitonWalking;
+    Animation::Animation animationWalking;
+    Animation::Animation animationRunning;
     Animation::Animation animaitonJumpingUp;
     Animation::Animation animationJumpingDown;
     Animation::Animation animationGlideWalking;

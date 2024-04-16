@@ -658,10 +658,13 @@ void Player::createAnimations() {
 
     animationInPlace.stills.push_back(Animation::Still{ &SPRITES->PlayerDefault, 1 });
 
-    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking1, 10 })); // TODO create a define for this value
-    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
-    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking2, 10 }));
-    animaitonWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
+    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking1, 10 })); // TODO create a define for this value
+    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
+    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking2, 10 }));
+    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
+
+    animationRunning.stills.push_back(Animation::Still({ &SPRITES->PlayerRunning1, 15 }));
+    animationRunning.stills.push_back(Animation::Still({ &SPRITES->PlayerRunning2, 15 }));
 
     animaitonJumpingUp.stills.push_back(Animation::Still({ &SPRITES->PlayerJumpingUp, 1 }));
 
@@ -694,8 +697,11 @@ Animation::Animation *Player::getCurrentAnimation() {
     else if (!groundBeneath && !PLAYER->isAscending)
         animation =             &animationJumpingDown;
 
-    else if (groundBeneath && abs(xVelocity) > 0.5) // TODO create a default for this value
-        animation =             &animaitonWalking;
+    else if (groundBeneath && abs(xVelocity) > 0.5 && abs(xVelocity) < 6.5f) // TODO create a default for this value
+        animation =             &animationWalking;
+
+    else if (groundBeneath && abs(xVelocity) >= 6.5f) // TODO create a default for this value
+        animation =             &animationRunning;
 
     else animation =            &animationInPlace;
 
