@@ -69,7 +69,7 @@ extern Shader ShaderLevelTransition;
 
 void AssetsInitialize();
 
-void AssetsReinitialize();
+void AssetsHotReload();
 
 // Get a Sprite's dimensions, scaled
 Dimensions SpriteScaledDimensions(Sprite *sprite);

@@ -29,7 +29,8 @@ static inline Sprite doubleSizeSprite(std::string texturePath) {
     };
 }
 
-static void clearAssets() {
+// Unload the resources loaded by each asset
+static void unloadAssets() {
 
     // TODO this is awful. Assets should exist in a hashmap.
 
@@ -41,9 +42,7 @@ static void clearAssets() {
         UnloadTexture(s->sprite);
     }
 
-    MemFree(SPRITES);
-
-    TraceLog(LOG_INFO, "Sprites cleared.");
+    TraceLog(LOG_INFO, "Sprites unloaded.");
 
 
     for (Sound *s = (Sound *) SOUNDS;
@@ -53,14 +52,16 @@ static void clearAssets() {
         UnloadSound(*s);
     }
 
-    MemFree(SOUNDS);
+    TraceLog(LOG_INFO, "Sounds unloaded.");
 
-    TraceLog(LOG_INFO, "Sounds cleared.");
+
+    UnloadShader(ShaderLevelTransition);
+    TraceLog(LOG_INFO, "Shaders unloaded.");
 }
 
-void AssetsInitialize() {
+// Load the resources for each asset
+static void loadAssets() {
 
-    SPRITES = (SpriteBank *) MemAlloc(sizeof(SpriteBank));
     SpriteBank *sp = SPRITES;
 
     // Editor
@@ -96,31 +97,47 @@ void AssetsInitialize() {
     sp->Nightclub = doubleSizeSprite("../assets/nightclub_1.png");
     sp->BGHouse = doubleSizeSprite("../assets/bg_house_1.png");
 
+    TraceLog(LOG_INFO, "Sprites loaded.");
 
+    //
 
-    SOUNDS = (SoundBank *) MemAlloc(sizeof(SoundBank));
     SoundBank *sn = SOUNDS;
 
     sn->Jump = LoadSound("../assets/sounds/jump.ogg");
     SetSoundVolume(sn->Jump, 0.5f);
 
+    TraceLog(LOG_INFO, "Sounds loaded.");
 
-    // Shaders
+    //
+
+    /*
+        !! ATTENTION !!  Each new shader added must be individually unloaded in unloadAssets()
+    */
+
     // ShaderDefault = (Shader) { rlGetShaderIdDefault(), rlGetShaderLocsDefault() };
+    
     ShaderLevelTransition = LoadShader(0, "../assets/shaders/level_transition.fs");
     while (!IsShaderReady(ShaderLevelTransition)) {
         TraceLog(LOG_INFO, "Waiting for ShaderLevelTransition...");
     }
 
+    TraceLog(LOG_INFO, "Shaders loaded.");
+}
 
+void AssetsInitialize() {
+
+    SPRITES = (SpriteBank *) MemAlloc(sizeof(SpriteBank));
+    SOUNDS = (SoundBank *) MemAlloc(sizeof(SoundBank));
+
+    loadAssets();
 
     TraceLog(LOG_INFO, "Assets initialized.");
 }
 
-void AssetsReinitialize() {
+void AssetsHotReload() {
 
-    clearAssets();
-    AssetsInitialize();
+    unloadAssets();
+    loadAssets();
     Render::PrintSysMessage("Assets recarregados");
 }
 
