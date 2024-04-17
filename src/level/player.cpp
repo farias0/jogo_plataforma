@@ -78,7 +78,7 @@ void Player::Initialize(Vector2 origin) {
  
     newPlayer->tags = Level::IS_PLAYER;
     newPlayer->origin = origin;
-    newPlayer->sprite = SPRITES->PlayerDefault;
+    newPlayer->sprite = &SPRITES->PlayerDefault;
     newPlayer->SetHitbox(SpriteHitboxFromEdge(newPlayer->sprite, newPlayer->origin));
     newPlayer->isFacingRight = true;
 
@@ -99,7 +99,7 @@ void Player::CheckAndSetOrigin(Vector2 pos) {
 
     if (!PLAYER) return;
 
-    Rectangle newHitbox = SpriteHitboxFromMiddle(SPRITES->PlayerDefault, pos);
+    Rectangle newHitbox = SpriteHitboxFromMiddle(&SPRITES->PlayerDefault, pos);
     
     if (Level::CheckCollisionWithAnyEntity(newHitbox)) {
         TraceLog(LOG_DEBUG,
@@ -521,7 +521,7 @@ next_entity:
     }
 
 
-    sprite = *animationTick();
+    sprite = animationTick();
 }
 
 void Player::Continue() {

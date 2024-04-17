@@ -2,6 +2,7 @@
 #include <string>
 
 #include "assets.hpp"
+#include "render.hpp"
 
 
 struct SoundBank *SOUNDS = 0;
@@ -26,6 +27,35 @@ static inline Sprite doubleSizeSprite(std::string texturePath) {
         2,
         0
     };
+}
+
+static void clearAssets() {
+
+    // TODO this is awful. Assets should exist in a hashmap.
+
+
+    for (Sprite *s = (Sprite *) SPRITES;
+            s < (Sprite *) SPRITES + sizeof(SpriteBank);
+            s += sizeof(Sprite)) {
+
+        UnloadTexture(s->sprite);
+    }
+
+    MemFree(SPRITES);
+
+    TraceLog(LOG_INFO, "Sprites cleared.");
+
+
+    for (Sound *s = (Sound *) SOUNDS;
+            s < (Sound *) SOUNDS + sizeof(SoundBank);
+            s += sizeof(Sound)) {
+                
+        UnloadSound(*s);
+    }
+
+    MemFree(SOUNDS);
+
+    TraceLog(LOG_INFO, "Sounds cleared.");
 }
 
 void AssetsInitialize() {
@@ -87,14 +117,21 @@ void AssetsInitialize() {
     TraceLog(LOG_INFO, "Assets initialized.");
 }
 
-Dimensions SpriteScaledDimensions(Sprite s) {
+void AssetsReinitialize() {
+
+    clearAssets();
+    AssetsInitialize();
+    Render::PrintSysMessage("Assets recarregados");
+}
+
+Dimensions SpriteScaledDimensions(Sprite *s) {
     return {
-        s.sprite.width * s.scale,
-        s.sprite.height * s.scale
+        s->sprite.width * s->scale,
+        s->sprite.height * s->scale
     };
 }
 
-Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite sprite) {
+Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite *sprite) {
     Dimensions dimensions = SpriteScaledDimensions(sprite);
 
     return {
@@ -113,7 +150,7 @@ void SpriteRotate(Sprite *sprite, int degrees) {
     TraceLog(LOG_TRACE, "Rotated sprite in %d degrees. Now it's %d degrees.", degrees, sprite->rotation);
 }
 
-Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin) {
+Rectangle SpriteHitboxFromEdge(Sprite *sprite, Vector2 origin) {
     Dimensions dimensions = SpriteScaledDimensions(sprite);
     return {
         origin.x,
@@ -123,7 +160,7 @@ Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin) {
     };
 }
 
-Rectangle SpriteHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
+Rectangle SpriteHitboxFromMiddle(Sprite *sprite, Vector2 middlePoint) {
     Dimensions dimensions = SpriteScaledDimensions(sprite);
     return {
         middlePoint.x - (dimensions.width / 2),

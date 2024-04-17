@@ -46,7 +46,7 @@ static void editorUseEraser(Vector2 cursorPos) {
 }
 
 static EditorEntityButton *addEntityButton(
-    EditorEntityType type, Sprite sprite, void (*handler)(Vector2), EditorInteractionType interaction) {
+    EditorEntityType type, Sprite *sprite, void (*handler)(Vector2), EditorInteractionType interaction) {
 
         EditorEntityButton *newButton = new EditorEntityButton();
         newButton->type = type;
@@ -73,14 +73,14 @@ EditorControlButton *addControlButton(EditorControlType type, char *label, void 
 
 void loadInLevelEditor() {
 
-    addEntityButton(EDITOR_ENTITY_ERASER, SPRITES->Eraser, &editorUseEraser, EDITOR_INTERACTION_HOLD);
-    addEntityButton(EDITOR_ENTITY_ENEMY, SPRITES->Enemy, &EnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_ERASER, &SPRITES->Eraser, &editorUseEraser, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->Enemy, &EnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
     EDITOR_STATE->defaultEntityButton =
-        addEntityButton(EDITOR_ENTITY_BLOCK, SPRITES->Block, &BlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
-    addEntityButton(EDITOR_ENTITY_ACID, SPRITES->Acid, &AcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
-    addEntityButton(EDITOR_ENTITY_EXIT, SPRITES->LevelEndOrb, &Level::ExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_GLIDE, SPRITES->GlideItem, &GlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_TEXTBOX, SPRITES->TextboxButton, &Level::TextboxCheckAndAdd, EDITOR_INTERACTION_CLICK);
+        addEntityButton(EDITOR_ENTITY_BLOCK, &SPRITES->Block, &BlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ACID, &SPRITES->Acid, &AcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
+    addEntityButton(EDITOR_ENTITY_EXIT, &SPRITES->LevelEndOrb, &Level::ExitCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_GLIDE, &SPRITES->GlideItem, &GlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_TEXTBOX, &SPRITES->TextboxButton, &Level::TextboxCheckAndAdd, EDITOR_INTERACTION_CLICK);
 
     addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &Level::Save);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);
@@ -90,12 +90,12 @@ void loadInLevelEditor() {
 
 void loadOverworldEditor() {
 
-    addEntityButton(EDITOR_ENTITY_ERASER, SPRITES->Eraser, &editorUseEraser, EDITOR_INTERACTION_HOLD);
+    addEntityButton(EDITOR_ENTITY_ERASER, &SPRITES->Eraser, &editorUseEraser, EDITOR_INTERACTION_HOLD);
     EDITOR_STATE->defaultEntityButton =
-        addEntityButton(EDITOR_ENTITY_LEVEL_DOT, SPRITES->LevelDot, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_PATH_JOIN, SPRITES->PathTileJoin, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_STRAIGHT, SPRITES->PathTileStraight, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_PATH_IN_L, SPRITES->PathTileInL, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+        addEntityButton(EDITOR_ENTITY_LEVEL_DOT, &SPRITES->LevelDot, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_PATH_JOIN, &SPRITES->PathTileJoin, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_STRAIGHT, &SPRITES->PathTileStraight, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_PATH_IN_L, &SPRITES->PathTileInL, &OverworldTileAddOrInteract, EDITOR_INTERACTION_CLICK);
 
     addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar mundo", &OverworldSave);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);

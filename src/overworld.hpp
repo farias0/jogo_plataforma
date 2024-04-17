@@ -42,7 +42,7 @@ public:
     OverworldTileType tileType;
     
     Vector2 gridPos;
-    Sprite sprite;
+    Sprite *sprite;
     int layer; // currently, only used to put the cursor in front of the tiles
     
     char *levelName;

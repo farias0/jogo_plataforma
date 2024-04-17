@@ -69,20 +69,22 @@ extern Shader ShaderLevelTransition;
 
 void AssetsInitialize();
 
+void AssetsReinitialize();
+
 // Get a Sprite's dimensions, scaled
-Dimensions SpriteScaledDimensions(Sprite sprite);
+Dimensions SpriteScaledDimensions(Sprite *sprite);
 
 // Get a sprite's middle point given its position
-Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite sprite);
+Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite *sprite);
 
 // Rotates sprite in a number of degrees
 void SpriteRotate(Sprite *sprite, int degrees);
 
 // Returns a hitbox in the shape of sprite.
-Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin);
+Rectangle SpriteHitboxFromEdge(Sprite *sprite, Vector2 origin);
 
 // Returns a hitbox in the shape of sprite, centered around middlePoint.
-Rectangle SpriteHitboxFromMiddle(Sprite sprite, Vector2 middlePoint);
+Rectangle SpriteHitboxFromMiddle(Sprite *sprite, Vector2 middlePoint);
 
 /*
     Configures the uniforms ShaderLevelTransition will use in each execution.
