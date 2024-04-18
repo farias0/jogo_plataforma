@@ -80,24 +80,24 @@ void drawSceneRectangle(Rectangle rect, Color color) {
     DrawRectangleRec(screenRect, color);
 }
 
-void drawTexture(Sprite *sprite, Vector2 pos, Color tint, bool flipHorizontally) {
+void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
 
     Dimensions dimensions = SpriteScaledDimensions(sprite);
 
 
     // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
     // Maybe this should be fixed in a way that works for any angle. 
-    if (sprite->rotation == 90)          pos = { pos.x + dimensions.width, pos.y };
-    else if (sprite->rotation == 180)    pos = { pos.x + dimensions.width,
+    if (rotation == 90)          pos = { pos.x + dimensions.width, pos.y };
+    else if (rotation == 180)    pos = { pos.x + dimensions.width,
                                                             pos.y + dimensions.height };
-    else if (sprite->rotation == 270)    pos = { pos.x, pos.y + dimensions.height };
+    else if (rotation == 270)    pos = { pos.x, pos.y + dimensions.height };
 
 
 
     if (!flipHorizontally) {
         DrawTextureEx(sprite->sprite,
                     pos,
-                    sprite->rotation,
+                    rotation,
                     sprite->scale,
                     tint);    
         
@@ -122,7 +122,7 @@ void drawTexture(Sprite *sprite, Vector2 pos, Color tint, bool flipHorizontally)
                     source,
                     destination,
                     { 0, 0 },
-                    sprite->rotation,
+                    rotation,
                     tint);    
 }
 
@@ -191,7 +191,7 @@ void drawOverworldEntity(OverworldEntity *entity) {
                                         entity->gridPos.x,
                                         entity->gridPos.y });
 
-    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, false);
+    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, entity->rotation, false);
 }
 
 // Draws the ghost of an editor's selected entity being moved
@@ -206,7 +206,7 @@ void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
     Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
-    drawTexture(entity->sprite, pos, color, false);
+    drawTexture(entity->sprite, pos, color, entity->rotation, false);
 }
 
 // Draws the ghost of an editor's selected entity being moved
@@ -221,7 +221,7 @@ void drawLevelEntityMoveGhost(Level::Entity *entity) {
     Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
-    drawTexture(entity->sprite, pos, color, !entity->isFacingRight);
+    drawTexture(entity->sprite, pos, color, 0, !entity->isFacingRight);
 }
 
 void drawEntities() {
@@ -636,7 +636,7 @@ void DrawLevelEntity(Level::Entity *entity) {
                                         entity->hitbox.x,
                                         entity->hitbox.y });
 
-    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, !entity->isFacingRight);
+    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, 0, !entity->isFacingRight);
 }
 
 void DrawLevelEntityOrigin(Level::Entity *entity) {
@@ -646,7 +646,7 @@ void DrawLevelEntityOrigin(Level::Entity *entity) {
                                         entity->origin.y });
 
     drawTexture(entity->sprite, { pos.x, pos.y },
-                 { WHITE.r, WHITE.g, WHITE.b, 30 }, false);
+                 { WHITE.r, WHITE.g, WHITE.b, 30 }, 0, false);
 }
 
 void PrintSysMessage(const std::string &msg) {

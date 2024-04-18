@@ -10,7 +10,6 @@
 typedef struct Sprite {
     Texture2D sprite;
     float scale;
-    int rotation;
 } Sprite;
 
 struct SpriteBank {
@@ -76,9 +75,6 @@ Dimensions SpriteScaledDimensions(Sprite *sprite);
 
 // Get a sprite's middle point given its position
 Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite *sprite);
-
-// Rotates sprite in a number of degrees
-void SpriteRotate(Sprite *sprite, int degrees);
 
 // Returns a hitbox in the shape of sprite.
 Rectangle SpriteHitboxFromEdge(Sprite *sprite, Vector2 origin);

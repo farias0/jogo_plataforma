@@ -16,16 +16,14 @@ Shader ShaderLevelTransition;
 static inline Sprite normalSizeSprite(std::string texturePath) {
     return {
         LoadTexture(texturePath.c_str()),
-        1,
-        0
+        1
     };
 }
 
 static inline Sprite doubleSizeSprite(std::string texturePath) {
     return {
         LoadTexture(texturePath.c_str()),
-        2,
-        0
+        2
     };
 }
 
@@ -35,23 +33,17 @@ static void unloadAssets() {
     // TODO this is awful. Assets should exist in a hashmap.
 
 
-    for (Sprite *s = (Sprite *) SPRITES;
-            s < (Sprite *) SPRITES + sizeof(SpriteBank);
-            s += sizeof(Sprite)) {
-
-        UnloadTexture(s->sprite);
+    Sprite *sprites = (Sprite *) SPRITES;
+    for (int idx = 0; idx < sizeof(SpriteBank)/sizeof(Sprite); idx++) {
+        UnloadTexture(sprites[idx].sprite);
     }
-
     TraceLog(LOG_INFO, "Sprites unloaded.");
 
 
-    for (Sound *s = (Sound *) SOUNDS;
-            s < (Sound *) SOUNDS + sizeof(SoundBank);
-            s += sizeof(Sound)) {
-                
-        UnloadSound(*s);
+    Sound *sound = (Sound *) SOUNDS;
+    for (int idx = 0; idx < sizeof(SoundBank)/sizeof(Sound); idx++) {
+        UnloadSound(sound[idx]);
     }
-
     TraceLog(LOG_INFO, "Sounds unloaded.");
 
 
@@ -115,7 +107,7 @@ static void loadAssets() {
     */
 
     // ShaderDefault = (Shader) { rlGetShaderIdDefault(), rlGetShaderLocsDefault() };
-    
+
     ShaderLevelTransition = LoadShader(0, "../assets/shaders/level_transition.fs");
     while (!IsShaderReady(ShaderLevelTransition)) {
         TraceLog(LOG_INFO, "Waiting for ShaderLevelTransition...");
@@ -155,16 +147,6 @@ Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite *sprite) {
         pos.x + (dimensions.width / 2),
         pos.y + (dimensions.height / 2),
     };
-}
-
-void SpriteRotate(Sprite *sprite, int degrees) {
-    sprite->rotation += degrees;
-    
-    if (sprite->rotation >= 360 || sprite->rotation < 0) {
-        sprite->rotation %= 360;
-    }
-
-    TraceLog(LOG_TRACE, "Rotated sprite in %d degrees. Now it's %d degrees.", degrees, sprite->rotation);
 }
 
 Rectangle SpriteHitboxFromEdge(Sprite *sprite, Vector2 origin) {

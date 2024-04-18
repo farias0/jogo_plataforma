@@ -119,6 +119,11 @@ void OverworldLoad() {
 
 OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degrees) {
 
+    if (degrees >= 360 || degrees < 0) {
+        degrees %= 360;
+    }
+
+
     OverworldEntity *newTile = new OverworldEntity();
 
     newTile->tileType = type;
@@ -134,17 +139,17 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
     case OW_STRAIGHT_PATH:
         newTile->tags = OW_IS_PATH + OW_IS_ROTATABLE;
         newTile->sprite = &SPRITES->PathTileStraight;
-        SpriteRotate(newTile->sprite, degrees);
+        newTile->rotation = degrees;
         break;
     case OW_JOIN_PATH:
         newTile->tags = OW_IS_PATH + OW_IS_ROTATABLE;
         newTile->sprite = &SPRITES->PathTileJoin;
-        SpriteRotate(newTile->sprite, degrees);
+        newTile->rotation = degrees;
         break;
     case OW_PATH_IN_L:
         newTile->tags = OW_IS_PATH + OW_IS_ROTATABLE;
         newTile->sprite = &SPRITES->PathTileInL;
-        SpriteRotate(newTile->sprite, degrees);
+        newTile->rotation = degrees;
         break;
     default:
         TraceLog(LOG_ERROR, "Could not find sprite for overworld tile type %d.", type);
@@ -303,7 +308,9 @@ void OverworldTileAddOrInteract(Vector2 pos) {
         }
 
         // Interacting
-        SpriteRotate(entity->sprite, 90);
+        entity->rotation += 90;
+        if (entity->rotation >= 360) entity->rotation -= 360;
+
         TraceLog(LOG_TRACE, "Rotated tile component=%d, x=%.1f, y=%.1f",
                 entity->tags, entity->gridPos.x, entity->gridPos.y);
         return;
