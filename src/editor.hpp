@@ -80,7 +80,7 @@ class EditorEntityButton : public LinkedList::Node {
 
 public:
     EditorEntityType type;
-    Sprite sprite;
+    Sprite *sprite;
     void (*handler)(Vector2); // Receives the click scene pos
     EditorInteractionType interactionType;
 

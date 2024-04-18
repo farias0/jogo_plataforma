@@ -2,6 +2,7 @@
 #include <string>
 
 #include "assets.hpp"
+#include "render.hpp"
 
 
 struct SoundBank *SOUNDS = 0;
@@ -15,22 +16,44 @@ Shader ShaderLevelTransition;
 static inline Sprite normalSizeSprite(std::string texturePath) {
     return {
         LoadTexture(texturePath.c_str()),
-        1,
-        0
+        1
     };
 }
 
 static inline Sprite doubleSizeSprite(std::string texturePath) {
     return {
         LoadTexture(texturePath.c_str()),
-        2,
-        0
+        2
     };
 }
 
-void AssetsInitialize() {
+// Unload the resources loaded by each asset
+static void unloadAssets() {
 
-    SPRITES = (SpriteBank *) MemAlloc(sizeof(SpriteBank));
+    // TODO this is awful. Assets should exist in a hashmap.
+
+
+    Sprite *sprites = (Sprite *) SPRITES;
+    for (int idx = 0; idx < sizeof(SpriteBank)/sizeof(Sprite); idx++) {
+        UnloadTexture(sprites[idx].sprite);
+    }
+    TraceLog(LOG_INFO, "Sprites unloaded.");
+
+
+    Sound *sound = (Sound *) SOUNDS;
+    for (int idx = 0; idx < sizeof(SoundBank)/sizeof(Sound); idx++) {
+        UnloadSound(sound[idx]);
+    }
+    TraceLog(LOG_INFO, "Sounds unloaded.");
+
+
+    UnloadShader(ShaderLevelTransition);
+    TraceLog(LOG_INFO, "Shaders unloaded.");
+}
+
+// Load the resources for each asset
+static void loadAssets() {
+
     SpriteBank *sp = SPRITES;
 
     // Editor
@@ -66,35 +89,58 @@ void AssetsInitialize() {
     sp->Nightclub = doubleSizeSprite("../assets/nightclub_1.png");
     sp->BGHouse = doubleSizeSprite("../assets/bg_house_1.png");
 
+    TraceLog(LOG_INFO, "Sprites loaded.");
 
+    //
 
-    SOUNDS = (SoundBank *) MemAlloc(sizeof(SoundBank));
     SoundBank *sn = SOUNDS;
 
     sn->Jump = LoadSound("../assets/sounds/jump.ogg");
     SetSoundVolume(sn->Jump, 0.5f);
 
+    TraceLog(LOG_INFO, "Sounds loaded.");
 
-    // Shaders
+    //
+
+    /*
+        !! ATTENTION !!  Each new shader added must be individually unloaded in unloadAssets()
+    */
+
     // ShaderDefault = (Shader) { rlGetShaderIdDefault(), rlGetShaderLocsDefault() };
+
     ShaderLevelTransition = LoadShader(0, "../assets/shaders/level_transition.fs");
     while (!IsShaderReady(ShaderLevelTransition)) {
         TraceLog(LOG_INFO, "Waiting for ShaderLevelTransition...");
     }
 
+    TraceLog(LOG_INFO, "Shaders loaded.");
+}
 
+void AssetsInitialize() {
+
+    SPRITES = (SpriteBank *) MemAlloc(sizeof(SpriteBank));
+    SOUNDS = (SoundBank *) MemAlloc(sizeof(SoundBank));
+
+    loadAssets();
 
     TraceLog(LOG_INFO, "Assets initialized.");
 }
 
-Dimensions SpriteScaledDimensions(Sprite s) {
+void AssetsHotReload() {
+
+    unloadAssets();
+    loadAssets();
+    Render::PrintSysMessage("Assets recarregados");
+}
+
+Dimensions SpriteScaledDimensions(Sprite *s) {
     return {
-        s.sprite.width * s.scale,
-        s.sprite.height * s.scale
+        s->sprite.width * s->scale,
+        s->sprite.height * s->scale
     };
 }
 
-Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite sprite) {
+Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite *sprite) {
     Dimensions dimensions = SpriteScaledDimensions(sprite);
 
     return {
@@ -103,17 +149,7 @@ Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite sprite) {
     };
 }
 
-void SpriteRotate(Sprite *sprite, int degrees) {
-    sprite->rotation += degrees;
-    
-    if (sprite->rotation >= 360 || sprite->rotation < 0) {
-        sprite->rotation %= 360;
-    }
-
-    TraceLog(LOG_TRACE, "Rotated sprite in %d degrees. Now it's %d degrees.", degrees, sprite->rotation);
-}
-
-Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin) {
+Rectangle SpriteHitboxFromEdge(Sprite *sprite, Vector2 origin) {
     Dimensions dimensions = SpriteScaledDimensions(sprite);
     return {
         origin.x,
@@ -123,7 +159,7 @@ Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin) {
     };
 }
 
-Rectangle SpriteHitboxFromMiddle(Sprite sprite, Vector2 middlePoint) {
+Rectangle SpriteHitboxFromMiddle(Sprite *sprite, Vector2 middlePoint) {
     Dimensions dimensions = SpriteScaledDimensions(sprite);
     return {
         middlePoint.x - (dimensions.width / 2),

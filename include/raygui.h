@@ -2072,7 +2072,7 @@ int GuiToggle(Rectangle bounds, const char *text, bool *active)
 }
 
 // GuiToggle customized to display a sprite
-int GuiToggleSprite(Rectangle bounds, Sprite sprite, Vector2 pos, bool *active)
+int GuiToggleSprite(Rectangle bounds, Sprite *sprite, Vector2 pos, bool *active)
 {
     int result = 0;
     GuiState state = guiState;
@@ -2114,9 +2114,9 @@ int GuiToggleSprite(Rectangle bounds, Sprite sprite, Vector2 pos, bool *active)
     }
 
     // Centralizes the sprite inside the button
-    pos.x += (bounds.width - (sprite.sprite.width * sprite.scale)) / 2;
-    pos.y += (bounds.height - (sprite.sprite.height * sprite.scale)) / 2;
-    DrawTextureEx(sprite.sprite, pos, 0, sprite.scale, WHITE);
+    pos.x += (bounds.width - (sprite->sprite.width * sprite->scale)) / 2;
+    pos.y += (bounds.height - (sprite->sprite.height * sprite->scale)) / 2;
+    DrawTextureEx(sprite->sprite, pos, 0, sprite->scale, WHITE);
 
     if (state == STATE_FOCUSED) GuiTooltip(bounds);
     //--------------------------------------------------------------------

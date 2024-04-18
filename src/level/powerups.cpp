@@ -10,7 +10,7 @@ void GlideAdd(Vector2 origin) {
 
     glide->tags = Level::IS_GLIDE;
     glide->origin = origin;
-    glide->sprite = SPRITES->GlideItem;
+    glide->sprite = &SPRITES->GlideItem;
     glide->hitbox = SpriteHitboxFromEdge(glide->sprite, glide->origin);
 
     LinkedList::AddNode(&Level::STATE->listHead, glide);
@@ -23,7 +23,7 @@ void GlideCheckAndAdd(Vector2 origin) {
 
     origin = SnapToGrid(origin, LEVEL_GRID);
 
-    Rectangle hitbox = SpriteHitboxFromEdge(SPRITES->GlideItem, origin);
+    Rectangle hitbox = SpriteHitboxFromEdge(&SPRITES->GlideItem, origin);
     if (Level::CheckCollisionWithAnything(hitbox)) return;
 
     if (!Level::GetGroundBeneathHitbox(hitbox)) {
