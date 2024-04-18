@@ -80,11 +80,16 @@ private:
     Animation::Animation animationInPlace;
     Animation::Animation animationWalking;
     Animation::Animation animationRunning;
+    Animation::Animation animationSkidding;
     Animation::Animation animaitonJumpingUp;
     Animation::Animation animationJumpingDown;
     Animation::Animation animationGlideWalking;
     Animation::Animation animationGlideFalling;
     Animation::Animation animationSwinging;
+
+
+    // TODO turn this into a state machine
+    bool isSkidding;
 
 
     void jump();

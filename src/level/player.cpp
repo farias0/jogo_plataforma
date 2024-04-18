@@ -293,14 +293,18 @@ void Player::Tick() {
 
             xVelocity -= X_DEACCELERATION_RATE_ACTIVE;
             if (xVelocity < 0) xVelocity = 0;
+            if (xVelocity > X_MAX_SPEED_WALKING) isSkidding = true; // becomes true after a threshold,
+                                                                    // and only becomes false again when it stops skidding
             goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
         else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && xVelocity < 0) {
 
             xVelocity += X_DEACCELERATION_RATE_ACTIVE;
             if (xVelocity > 0) xVelocity = 0;
+            if (xVelocity < -1 * X_MAX_SPEED_WALKING) isSkidding = true;
             goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
+        isSkidding = false;
 
         if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_STOP) {
             newXVel -= X_DEACCELERATION_RATE_PASSIVE;
@@ -666,6 +670,8 @@ void Player::createAnimations() {
     animationRunning.stills.push_back(Animation::Still({ &SPRITES->PlayerRunning1, 15 }));
     animationRunning.stills.push_back(Animation::Still({ &SPRITES->PlayerRunning2, 15 }));
 
+    animationSkidding.stills.push_back(Animation::Still({ &SPRITES->PlayerSkidding, 1 }));
+
     animaitonJumpingUp.stills.push_back(Animation::Still({ &SPRITES->PlayerJumpingUp, 1 }));
 
     animationJumpingDown.stills.push_back(Animation::Still({ &SPRITES->PlayerJumpingDown, 1 }));
@@ -696,6 +702,11 @@ Animation::Animation *Player::getCurrentAnimation() {
         animation =             &animaitonJumpingUp;
     else if (!groundBeneath && !PLAYER->isAscending)
         animation =             &animationJumpingDown;
+
+    else if (((Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && xVelocity > 0) ||
+                (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && xVelocity < 0)) &&
+                isSkidding)
+        animation =             &animationSkidding;
 
     else if (groundBeneath && abs(xVelocity) > 0.5 && abs(xVelocity) < 6.5f) // TODO create a default for this value
         animation =             &animationWalking;
