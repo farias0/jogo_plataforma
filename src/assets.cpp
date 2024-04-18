@@ -34,14 +34,14 @@ static void unloadAssets() {
 
 
     Sprite *sprites = (Sprite *) SPRITES;
-    for (int idx = 0; idx < sizeof(SpriteBank)/sizeof(Sprite); idx++) {
+    for (int idx = 0; idx < (int) (sizeof(SpriteBank)/sizeof(Sprite)); idx++) {
         UnloadTexture(sprites[idx].sprite);
     }
     TraceLog(LOG_INFO, "Sprites unloaded.");
 
 
     Sound *sound = (Sound *) SOUNDS;
-    for (int idx = 0; idx < sizeof(SoundBank)/sizeof(Sound); idx++) {
+    for (int idx = 0; idx < (int) (sizeof(SoundBank)/sizeof(Sound)); idx++) {
         UnloadSound(sound[idx]);
     }
     TraceLog(LOG_INFO, "Sounds unloaded.");
