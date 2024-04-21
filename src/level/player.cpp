@@ -227,12 +227,6 @@ void Player::Tick() {
     const bool isHooked = hookLaunched && hookLaunched->attachedTo;
 
 
-    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
-        isFacingRight = true;
-    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
-        isFacingRight = false;
-
-
     if (isHooked) {
 
         //      Hooked!!
@@ -280,6 +274,12 @@ void Player::Tick() {
 
         goto COLISION_CHECKING;
     }
+
+
+    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
+        isFacingRight = true;
+    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
+        isFacingRight = false;
 
 
     groundBeneath = Level::GetGroundBeneath(PLAYER);
