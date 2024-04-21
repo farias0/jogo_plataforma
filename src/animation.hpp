@@ -19,7 +19,17 @@ typedef struct {
 class Animation {
 
 public:
-    std::vector<Still> stills;    
+    std::vector<Still> stills;   
+
+    /*
+        Receives the frames that compose the animation, one at a time, in order of exhibition.
+        
+        @param sprite The sprite to be shown in this frame.
+        @param duration For how many game frames this animation frame will be shown. 
+    */
+    void AddFrame(Sprite *sprite, int duration) {
+        stills.push_back(Still{ sprite, duration });
+    }
 
 };
 

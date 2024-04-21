@@ -660,31 +660,31 @@ float Player::jumpBufferBackwardsSize() {
 
 void Player::createAnimations() {
 
-    animationInPlace.stills.push_back(Animation::Still{ &SPRITES->PlayerDefault, 1 });
+    animationInPlace.AddFrame(&SPRITES->PlayerDefault, 1);
 
-    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking1, 8 })); // TODO create a define for this value
-    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 8 }));
-    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking2, 8 }));
-    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 8 }));
+    animationWalking.AddFrame(&SPRITES->PlayerWalking1, 8); // TODO create a define for this value
+    animationWalking.AddFrame(&SPRITES->PlayerDefault, 8);
+    animationWalking.AddFrame(&SPRITES->PlayerWalking2, 8);
+    animationWalking.AddFrame(&SPRITES->PlayerDefault, 8);
 
-    animationRunning.stills.push_back(Animation::Still({ &SPRITES->PlayerRunning1, 12 }));
-    animationRunning.stills.push_back(Animation::Still({ &SPRITES->PlayerRunning2, 12 }));
+    animationRunning.AddFrame(&SPRITES->PlayerRunning1, 12);
+    animationRunning.AddFrame(&SPRITES->PlayerRunning2, 12);
 
-    animationSkidding.stills.push_back(Animation::Still({ &SPRITES->PlayerSkidding, 1 }));
+    animationSkidding.AddFrame(&SPRITES->PlayerSkidding, 1);
 
-    animaitonJumpingUp.stills.push_back(Animation::Still({ &SPRITES->PlayerJumpingUp, 1 }));
+    animaitonJumpingUp.AddFrame(&SPRITES->PlayerJumpingUp, 1);
 
-    animationJumpingDown.stills.push_back(Animation::Still({ &SPRITES->PlayerJumpingDown, 1 }));
+    animationJumpingDown.AddFrame(&SPRITES->PlayerJumpingDown, 1);
 
-    animationGlideWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerGlideOn, 1 }));
+    animationGlideWalking.AddFrame(&SPRITES->PlayerGlideOn, 1);
 
-    animationGlideFalling.stills.push_back(Animation::Still({ &SPRITES->PlayerGlideFalling, 1 }));
+    animationGlideFalling.AddFrame(&SPRITES->PlayerGlideFalling, 1);
 
-    animationSwinging.stills.push_back(Animation::Still({ &SPRITES->PlayerSwinging, 1 }));
+    animationSwinging.AddFrame(&SPRITES->PlayerSwinging, 1);
 
-    animationSwingingForwards.stills.push_back(Animation::Still({ &SPRITES->PlayerSwingingForwards, 1 }));
+    animationSwingingForwards.AddFrame(&SPRITES->PlayerSwingingForwards, 1);
 
-    animationSwingingBackwards.stills.push_back(Animation::Still({ &SPRITES->PlayerSwingingBackwards, 1 }));
+    animationSwingingBackwards.AddFrame(&SPRITES->PlayerSwingingBackwards, 1);
 }
 
 Animation::Animation *Player::getCurrentAnimation() {
