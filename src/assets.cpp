@@ -71,6 +71,8 @@ static void loadAssets() {
     sp->PlayerGlideOn = doubleSizeSprite("../assets/player_glide_on.png");
     sp->PlayerGlideFalling = doubleSizeSprite("../assets/player_glide_falling.png");
     sp->PlayerSwinging = doubleSizeSprite("../assets/player_swinging_1.png");
+    sp->PlayerSwingingForwards = doubleSizeSprite("../assets/player_swinging_forwards.png");
+    sp->PlayerSwingingBackwards = doubleSizeSprite("../assets/player_swinging_backwards.png");
     sp->Enemy = doubleSizeSprite("../assets/enemy_default_1.png");
     sp->LevelEndOrb = doubleSizeSprite("../assets/level_end_orb_1.png");
     sp->LevelCheckpoint = doubleSizeSprite("../assets/player_child_1.png");

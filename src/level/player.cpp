@@ -681,6 +681,10 @@ void Player::createAnimations() {
     animationGlideFalling.stills.push_back(Animation::Still({ &SPRITES->PlayerGlideFalling, 1 }));
 
     animationSwinging.stills.push_back(Animation::Still({ &SPRITES->PlayerSwinging, 1 }));
+
+    animationSwingingForwards.stills.push_back(Animation::Still({ &SPRITES->PlayerSwingingForwards, 1 }));
+
+    animationSwingingBackwards.stills.push_back(Animation::Still({ &SPRITES->PlayerSwingingBackwards, 1 }));
 }
 
 Animation::Animation *Player::getCurrentAnimation() {
@@ -696,7 +700,13 @@ Animation::Animation *Player::getCurrentAnimation() {
     }
 
     else if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo)
-        animation =             &animationSwinging;
+        if (Input::STATE.playerMoveDirection != Input::PLAYER_DIRECTION_STOP)
+            if ((Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT) == PLAYER->isFacingRight)
+                animation =             &animationSwingingForwards;
+            else
+                animation =             &animationSwingingBackwards;
+        else
+            animation =             &animationSwinging;
 
     else if (!groundBeneath && PLAYER->isAscending)
         animation =             &animaitonJumpingUp;

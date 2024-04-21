@@ -86,6 +86,8 @@ private:
     Animation::Animation animationGlideWalking;
     Animation::Animation animationGlideFalling;
     Animation::Animation animationSwinging;
+    Animation::Animation animationSwingingForwards;
+    Animation::Animation animationSwingingBackwards;
 
 
     // TODO turn this into a state machine
