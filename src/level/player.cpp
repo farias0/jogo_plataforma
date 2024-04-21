@@ -662,13 +662,13 @@ void Player::createAnimations() {
 
     animationInPlace.stills.push_back(Animation::Still{ &SPRITES->PlayerDefault, 1 });
 
-    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking1, 10 })); // TODO create a define for this value
-    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
-    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking2, 10 }));
-    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 10 }));
+    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking1, 8 })); // TODO create a define for this value
+    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 8 }));
+    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerWalking2, 8 }));
+    animationWalking.stills.push_back(Animation::Still({ &SPRITES->PlayerDefault, 8 }));
 
-    animationRunning.stills.push_back(Animation::Still({ &SPRITES->PlayerRunning1, 15 }));
-    animationRunning.stills.push_back(Animation::Still({ &SPRITES->PlayerRunning2, 15 }));
+    animationRunning.stills.push_back(Animation::Still({ &SPRITES->PlayerRunning1, 12 }));
+    animationRunning.stills.push_back(Animation::Still({ &SPRITES->PlayerRunning2, 12 }));
 
     animationSkidding.stills.push_back(Animation::Still({ &SPRITES->PlayerSkidding, 1 }));
 
