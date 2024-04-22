@@ -77,17 +77,17 @@ public:
 
 private:
 
-    Animation::Animation animationInPlace;
-    Animation::Animation animationWalking;
-    Animation::Animation animationRunning;
-    Animation::Animation animationSkidding;
-    Animation::Animation animaitonJumpingUp;
-    Animation::Animation animationJumpingDown;
-    Animation::Animation animationGlideWalking;
-    Animation::Animation animationGlideFalling;
-    Animation::Animation animationSwinging;
-    Animation::Animation animationSwingingForwards;
-    Animation::Animation animationSwingingBackwards;
+    static Animation::Animation animationInPlace;
+    static Animation::Animation animationWalking;
+    static Animation::Animation animationRunning;
+    static Animation::Animation animationSkidding;
+    static Animation::Animation animaitonJumpingUp;
+    static Animation::Animation animationJumpingDown;
+    static Animation::Animation animationGlideWalking;
+    static Animation::Animation animationGlideFalling;
+    static Animation::Animation animationSwinging;
+    static Animation::Animation animationSwingingForwards;
+    static Animation::Animation animationSwingingBackwards;
 
 
     // TODO turn this into a state machine
@@ -103,6 +103,7 @@ private:
     float jumpBufferBackwardsSize();
 
     void createAnimations();
+    
     Animation::Animation *getCurrentAnimation();
 };
 

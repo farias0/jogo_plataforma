@@ -69,6 +69,18 @@
 
 Player *PLAYER = 0;
 
+Animation::Animation Player::animationInPlace;
+Animation::Animation Player::animationWalking;
+Animation::Animation Player::animationRunning;
+Animation::Animation Player::animationSkidding;
+Animation::Animation Player::animaitonJumpingUp;
+Animation::Animation Player::animationJumpingDown;
+Animation::Animation Player::animationGlideWalking;
+Animation::Animation Player::animationGlideFalling;
+Animation::Animation Player::animationSwinging;
+Animation::Animation Player::animationSwingingForwards;
+Animation::Animation Player::animationSwingingBackwards;
+
 
 void Player::Initialize(Vector2 origin) {
 
@@ -88,7 +100,7 @@ void Player::Initialize(Vector2 origin) {
     newPlayer->lastGroundBeneath = -1;
 
 
-    newPlayer->createAnimations();
+    newPlayer->initializeAnimationSystem();
 
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",

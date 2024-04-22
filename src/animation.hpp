@@ -19,7 +19,7 @@ typedef struct {
 class Animation {
 
 public:
-    std::vector<Still> stills;   
+    std::vector<Still> stills;
 
     /*
         Receives the frames that compose the animation, one at a time, in order of exhibition.
@@ -37,21 +37,26 @@ public:
 class IAnimated {
 
 public:
- 
-    // Defines all Animations part of an animated entity's class.
-    // Enforces that the entity has the animations it will use initialized,
-    // ideally as attributes to its class (ex. Animation animationWalking).
-    // TODO should be virtual so all instances of a class share the name animations
+
+    // Where the entity sets up its animations (which should be static).
     // TODO try to make it private to the class
-    // TODO call it as part of constructor
     virtual void createAnimations() = 0;
 
-    // Uses the entity's internal state to decide which Animation
-    // is right for the current frame;
+    // Where the entity decides which Animation is right for the current game frame,
+    // acording to its internal state.
     virtual Animation *getCurrentAnimation() = 0;
 
+    // To be called during the entity initialization.
+    // Creating animations during the entity's intiialization guarantees that the sprites
+    // are already initialized.
+    void initializeAnimationSystem() {
+        if (!isInitialized) {
+            createAnimations();
+        }
+    }
+
     // Returns the sprite for the current frame of the current animation.
-    // To be called once every frame, as it moves the animation logic one step forwards.
+    // To be called once every frame. It moves the animation logic one step forwards.
     Sprite *animationTick() {
 
         Animation *oldAnimation = currentAnimation;
@@ -90,6 +95,7 @@ public:
 
 private:
 
+    static bool isInitialized; // Controls if the static animations for this entity type were already created
     Animation *currentAnimation;
     int currentStillIndex;
     int framesElapsedThisStill;
