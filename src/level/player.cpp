@@ -712,41 +712,36 @@ Animation::Animation *Player::getCurrentAnimation() {
 
     Animation::Animation *animation;
 
+    bool isModeGlide = mode == PLAYER_MODE_GLIDE;
 
-    if (mode == PLAYER_MODE_GLIDE) {
-        if (isGliding)
-            animation =         &animationGlideFalling;
-        else
-            animation =         &animationGlideWalking;
-    }
 
-    else if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo)
+    if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo)
         if (Input::STATE.playerMoveDirection != Input::PLAYER_DIRECTION_STOP)
             if ((Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT) == PLAYER->isFacingRight)
                 animation =             &animationSwingingForwards;
             else
                 animation =             &animationSwingingBackwards;
         else
-            animation =             &animationSwinging;
+            animation =                 &animationSwinging;
 
     else if (!groundBeneath && PLAYER->isAscending)
-        animation =             &animaitonJumpingUp;
+        animation =                     &animaitonJumpingUp;
     else if (!groundBeneath && !PLAYER->isAscending)
-        animation =             &animationJumpingDown;
+        animation =                     (isModeGlide && isGliding) ? &animationGlideFalling : &animationJumpingDown;
 
     else if (((Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && xVelocity > 0) ||
                 (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && xVelocity < 0)) &&
                 isSkidding)
-        animation =             &animationSkidding;
+        animation =                     &animationSkidding;
 
     else if (groundBeneath && abs(xVelocity) > ANIMATION_WALKING_XVELOCITY_MIN
                 && abs(xVelocity) < ANIMATION_RUNNING_XVELOCITY_MIN)
-        animation =             &animationWalking;
+        animation =                     &animationWalking;
 
     else if (groundBeneath && abs(xVelocity) >= ANIMATION_RUNNING_XVELOCITY_MIN)
-        animation =             &animationRunning;
+        animation =                     &animationRunning;
 
-    else animation =            &animationInPlace;
+    else animation =                    (isModeGlide) ? &animationGlideWalking : &animationInPlace;
 
 
     return animation;
