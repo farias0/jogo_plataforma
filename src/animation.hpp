@@ -38,8 +38,7 @@ class IAnimated {
 
 public:
 
-    // Where the entity sets up its animations (which should be static).
-    // TODO try to make it private to the class
+    // Where the entity sets up its animations (which should be static to the entity).
     virtual void createAnimations() = 0;
 
     // Where the entity decides which Animation is right for the current game frame,
@@ -95,9 +94,14 @@ public:
 
 private:
 
-    static bool isInitialized; // Controls if the static animations for this entity type were already created
+    // Controls if the static animations for this entity type were already created
+    static bool isInitialized;
+
+    // Animation to be used in the current frame
     Animation *currentAnimation;
+    // In which Still currentAnimation is
     int currentStillIndex;
+    // For how long the entity has been in this still
     int framesElapsedThisStill;
 
 };
