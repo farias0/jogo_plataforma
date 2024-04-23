@@ -33,7 +33,7 @@ static void initializeOverworldState() {
 // Updates the position for the cursor according to the tile under it
 static void updateCursorPosition() {
 
-    Dimensions cursorDimensions = SpriteScaledDimensions(SPRITES->OverworldCursor);
+    Dimensions cursorDimensions = SpriteScaledDimensions(&SPRITES->OverworldCursor);
 
     OW_CURSOR->gridPos.x = OW_STATE->tileUnderCursor->gridPos.x;
 
@@ -74,7 +74,7 @@ static void initializeCursor() {
     OverworldEntity *newCursor = new OverworldEntity();
 
     newCursor->tags = OW_IS_CURSOR;
-    newCursor->sprite = SPRITES->OverworldCursor;
+    newCursor->sprite = &SPRITES->OverworldCursor;
     newCursor->layer = 1;
 
     LinkedList::AddNode(&OW_STATE->listHead, newCursor);
@@ -119,6 +119,11 @@ void OverworldLoad() {
 
 OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degrees) {
 
+    if (degrees >= 360 || degrees < 0) {
+        degrees %= 360;
+    }
+
+
     OverworldEntity *newTile = new OverworldEntity();
 
     newTile->tileType = type;
@@ -129,22 +134,22 @@ OverworldEntity *OverworldTileAdd(Vector2 pos, OverworldTileType type, int degre
     {
     case OW_LEVEL_DOT:
         newTile->tags = OW_IS_LEVEL_DOT;
-        newTile->sprite = SPRITES->LevelDot;
+        newTile->sprite = &SPRITES->LevelDot;
         break;
     case OW_STRAIGHT_PATH:
         newTile->tags = OW_IS_PATH + OW_IS_ROTATABLE;
-        newTile->sprite = SPRITES->PathTileStraight;
-        SpriteRotate(&newTile->sprite, degrees);
+        newTile->sprite = &SPRITES->PathTileStraight;
+        newTile->rotation = degrees;
         break;
     case OW_JOIN_PATH:
         newTile->tags = OW_IS_PATH + OW_IS_ROTATABLE;
-        newTile->sprite = SPRITES->PathTileJoin;
-        SpriteRotate(&newTile->sprite, degrees);
+        newTile->sprite = &SPRITES->PathTileJoin;
+        newTile->rotation = degrees;
         break;
     case OW_PATH_IN_L:
         newTile->tags = OW_IS_PATH + OW_IS_ROTATABLE;
-        newTile->sprite = SPRITES->PathTileInL;
-        SpriteRotate(&newTile->sprite, degrees);
+        newTile->sprite = &SPRITES->PathTileInL;
+        newTile->rotation = degrees;
         break;
     default:
         TraceLog(LOG_ERROR, "Could not find sprite for overworld tile type %d.", type);
@@ -303,7 +308,9 @@ void OverworldTileAddOrInteract(Vector2 pos) {
         }
 
         // Interacting
-        SpriteRotate(&entity->sprite, 90);
+        entity->rotation += 90;
+        if (entity->rotation >= 360) entity->rotation -= 360;
+
         TraceLog(LOG_TRACE, "Rotated tile component=%d, x=%.1f, y=%.1f",
                 entity->tags, entity->gridPos.x, entity->gridPos.y);
         return;

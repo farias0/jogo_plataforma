@@ -67,7 +67,30 @@
 #define JUMP_BUFFER_FORWARDS_SIZE           0.15f
 
 
+// For how many frames each animation still in this animation will be shown
+#define ANIMATION_DURATION_WALKING          8
+#define ANIMATION_DURATION_RUNNING          12
+#define ANIMATION_DURATION_GLIDE_IN_PLACE   12
+#define ANIMATION_DURATION_GLIDE_GLIDING    6
+
+// Player's animation state machine parameters
+#define ANIMATION_WALKING_XVELOCITY_MIN     0.5
+#define ANIMATION_RUNNING_XVELOCITY_MIN     6.5
+
+
 Player *PLAYER = 0;
+
+Animation::Animation Player::animationInPlace;
+Animation::Animation Player::animationWalking;
+Animation::Animation Player::animationRunning;
+Animation::Animation Player::animationSkidding;
+Animation::Animation Player::animaitonJumpingUp;
+Animation::Animation Player::animationJumpingDown;
+Animation::Animation Player::animationGlideInPlace;
+Animation::Animation Player::animationGlideGliding;
+Animation::Animation Player::animationSwinging;
+Animation::Animation Player::animationSwingingForwards;
+Animation::Animation Player::animationSwingingBackwards;
 
 
 void Player::Initialize(Vector2 origin) {
@@ -78,7 +101,7 @@ void Player::Initialize(Vector2 origin) {
  
     newPlayer->tags = Level::IS_PLAYER;
     newPlayer->origin = origin;
-    newPlayer->sprite = SPRITES->PlayerDefault;
+    newPlayer->sprite = &SPRITES->PlayerDefault;
     newPlayer->SetHitbox(SpriteHitboxFromEdge(newPlayer->sprite, newPlayer->origin));
     newPlayer->isFacingRight = true;
 
@@ -86,6 +109,10 @@ void Player::Initialize(Vector2 origin) {
     newPlayer->mode = PLAYER_MODE_DEFAULT;
     newPlayer->lastPressedJump = -1;
     newPlayer->lastGroundBeneath = -1;
+
+
+    newPlayer->initializeAnimationSystem();
+
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
@@ -95,7 +122,7 @@ void Player::CheckAndSetOrigin(Vector2 pos) {
 
     if (!PLAYER) return;
 
-    Rectangle newHitbox = SpriteHitboxFromMiddle(SPRITES->PlayerDefault, pos);
+    Rectangle newHitbox = SpriteHitboxFromMiddle(&SPRITES->PlayerDefault, pos);
     
     if (Level::CheckCollisionWithAnyEntity(newHitbox)) {
         TraceLog(LOG_DEBUG,
@@ -223,12 +250,6 @@ void Player::Tick() {
     const bool isHooked = hookLaunched && hookLaunched->attachedTo;
 
 
-    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
-        isFacingRight = true;
-    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
-        isFacingRight = false;
-
-
     if (isHooked) {
 
         //      Hooked!!
@@ -278,6 +299,12 @@ void Player::Tick() {
     }
 
 
+    if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT)
+        isFacingRight = true;
+    else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT)
+        isFacingRight = false;
+
+
     groundBeneath = Level::GetGroundBeneath(PLAYER);
 
 
@@ -289,14 +316,18 @@ void Player::Tick() {
 
             xVelocity -= X_DEACCELERATION_RATE_ACTIVE;
             if (xVelocity < 0) xVelocity = 0;
+            if (xVelocity > X_MAX_SPEED_WALKING) isSkidding = true; // becomes true after a threshold,
+                                                                    // and only becomes false again when it stops skidding
             goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
         else if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && xVelocity < 0) {
 
             xVelocity += X_DEACCELERATION_RATE_ACTIVE;
             if (xVelocity > 0) xVelocity = 0;
+            if (xVelocity < -1 * X_MAX_SPEED_WALKING) isSkidding = true;
             goto END_HORIZONTAL_VELOCITY_CALCULATION;
         }
+        isSkidding = false;
 
         if (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_STOP) {
             newXVel -= X_DEACCELERATION_RATE_PASSIVE;
@@ -517,22 +548,7 @@ next_entity:
     }
 
 
-    // "Animation"
-    Sprite currentSprite;
-
-    if (mode == PLAYER_MODE_GLIDE) {
-        if (isGliding)
-            currentSprite =     SPRITES->PlayerGlideFalling;
-        else
-            currentSprite =     SPRITES->PlayerGlideOn;
-    }
-
-    // else if (groundBeneath && abs(xVelocity) > 0.5)
-    //     currentSprite= SPRITES->PlayerWalking1;
-
-    else currentSprite =        SPRITES->PlayerDefault;
-
-    sprite.sprite = currentSprite.sprite;
+    sprite = animationTick();
 }
 
 void Player::Continue() {
@@ -662,4 +678,75 @@ float Player::jumpBufferBackwardsSize() {
         return JUMP_BUFFER_BACKWARDS_SIZE_GLIDING;
     else
         return JUMP_BUFFER_BACKWARDS_SIZE;
+}
+
+
+void Player::createAnimations() {
+
+    animationInPlace.AddFrame(&SPRITES->PlayerDefault, 1);
+
+    animationWalking.AddFrame(&SPRITES->PlayerWalking1, ANIMATION_DURATION_WALKING);
+    animationWalking.AddFrame(&SPRITES->PlayerDefault, ANIMATION_DURATION_WALKING);
+    animationWalking.AddFrame(&SPRITES->PlayerWalking2, ANIMATION_DURATION_WALKING);
+    animationWalking.AddFrame(&SPRITES->PlayerDefault, ANIMATION_DURATION_WALKING);
+
+    animationRunning.AddFrame(&SPRITES->PlayerRunning1, ANIMATION_DURATION_RUNNING);
+    animationRunning.AddFrame(&SPRITES->PlayerRunning2, ANIMATION_DURATION_RUNNING);
+
+    animationSkidding.AddFrame(&SPRITES->PlayerSkidding, 1);
+
+    animaitonJumpingUp.AddFrame(&SPRITES->PlayerJumpingUp, 1);
+
+    animationJumpingDown.AddFrame(&SPRITES->PlayerJumpingDown, 1);
+
+    animationGlideInPlace.AddFrame(&SPRITES->PlayerGlideDefault1, ANIMATION_DURATION_GLIDE_IN_PLACE);
+    animationGlideInPlace.AddFrame(&SPRITES->PlayerGlideDefault2, ANIMATION_DURATION_GLIDE_IN_PLACE);
+
+    animationGlideGliding.AddFrame(&SPRITES->PlayerGlideGliding1, ANIMATION_DURATION_GLIDE_GLIDING);
+    animationGlideGliding.AddFrame(&SPRITES->PlayerGlideGliding2, ANIMATION_DURATION_GLIDE_GLIDING);
+
+    animationSwinging.AddFrame(&SPRITES->PlayerSwinging, 1);
+
+    animationSwingingForwards.AddFrame(&SPRITES->PlayerSwingingForwards, 1);
+
+    animationSwingingBackwards.AddFrame(&SPRITES->PlayerSwingingBackwards, 1);
+}
+
+Animation::Animation *Player::getCurrentAnimation() {
+
+    Animation::Animation *animation;
+
+    bool isModeGlide = mode == PLAYER_MODE_GLIDE;
+
+
+    if (PLAYER->hookLaunched && PLAYER->hookLaunched->attachedTo)
+        if (Input::STATE.playerMoveDirection != Input::PLAYER_DIRECTION_STOP)
+            if ((Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT) == PLAYER->isFacingRight)
+                animation =             &animationSwingingForwards;
+            else
+                animation =             &animationSwingingBackwards;
+        else
+            animation =                 &animationSwinging;
+
+    else if (!groundBeneath && PLAYER->isAscending)
+        animation =                     &animaitonJumpingUp;
+    else if (!groundBeneath && !PLAYER->isAscending)
+        animation =                     (isModeGlide && isGliding) ? &animationGlideGliding : &animationJumpingDown;
+
+    else if (((Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && xVelocity > 0) ||
+                (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && xVelocity < 0)) &&
+                isSkidding)
+        animation =                     &animationSkidding;
+
+    else if (groundBeneath && abs(xVelocity) > ANIMATION_WALKING_XVELOCITY_MIN
+                && abs(xVelocity) < ANIMATION_RUNNING_XVELOCITY_MIN)
+        animation =                     &animationWalking;
+
+    else if (groundBeneath && abs(xVelocity) >= ANIMATION_RUNNING_XVELOCITY_MIN)
+        animation =                     &animationRunning;
+
+    else animation =                    (isModeGlide) ? &animationGlideInPlace : &animationInPlace;
+
+
+    return animation;
 }

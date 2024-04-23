@@ -245,7 +245,7 @@ void PersistenceOverworldSave() {
         }
         
         data[i].tileType =          entity->tileType;
-        data[i].rotation =          (int32_t) entity->sprite.rotation;
+        data[i].rotation =          (int32_t) entity->rotation;
         memcpy(&data[i].posX,       &entity->gridPos.x,         sizeof(uint32_t));
         memcpy(&data[i].posY,       &entity->gridPos.y,         sizeof(uint32_t));
 

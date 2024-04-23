@@ -80,25 +80,25 @@ void drawSceneRectangle(Rectangle rect, Color color) {
     DrawRectangleRec(screenRect, color);
 }
 
-void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) {
+void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
 
     Dimensions dimensions = SpriteScaledDimensions(sprite);
 
 
     // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
     // Maybe this should be fixed in a way that works for any angle. 
-    if (sprite.rotation == 90)          pos = { pos.x + dimensions.width, pos.y };
-    else if (sprite.rotation == 180)    pos = { pos.x + dimensions.width,
+    if (rotation == 90)          pos = { pos.x + dimensions.width, pos.y };
+    else if (rotation == 180)    pos = { pos.x + dimensions.width,
                                                             pos.y + dimensions.height };
-    else if (sprite.rotation == 270)    pos = { pos.x, pos.y + dimensions.height };
+    else if (rotation == 270)    pos = { pos.x, pos.y + dimensions.height };
 
 
 
     if (!flipHorizontally) {
-        DrawTextureEx(sprite.sprite,
+        DrawTextureEx(sprite->sprite,
                     pos,
-                    sprite.rotation,
-                    sprite.scale,
+                    rotation,
+                    sprite->scale,
                     tint);    
         
         return;
@@ -107,8 +107,8 @@ void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) 
     Rectangle source = {
         0.0,
         0.0,
-        (float) -sprite.sprite.width,
-        (float) sprite.sprite.height
+        (float) -sprite->sprite.width,
+        (float) sprite->sprite.height
     };
 
     Rectangle destination = {
@@ -118,16 +118,16 @@ void drawTexture(Sprite sprite, Vector2 pos, Color tint, bool flipHorizontally) 
         dimensions.height
     };
 
-    DrawTexturePro(sprite.sprite,
+    DrawTexturePro(sprite->sprite,
                     source,
                     destination,
                     { 0, 0 },
-                    sprite.rotation,
+                    rotation,
                     tint);    
 }
 
 // Draws sprite in the background, with effects applied.
-void drawSpriteInBackground(Sprite sprite, Vector2 pos, int layer) {
+void drawSpriteInBackground(Sprite *sprite, Vector2 pos, int layer) {
 
     float scale = 1;
     Color tint = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -158,7 +158,7 @@ void drawSpriteInBackground(Sprite sprite, Vector2 pos, int layer) {
     pos.x = pos.x - (CAMERA->pos.x * parallaxSpeed);
     pos.y = pos.y - (CAMERA->pos.y * parallaxSpeed);
 
-    DrawTextureEx(sprite.sprite, pos, 0, (scale * sprite.scale), tint);
+    DrawTextureEx(sprite->sprite, pos, 0, (scale * sprite->scale), tint);
 }
 
 void drawBackground() {
@@ -180,8 +180,8 @@ void drawBackground() {
         DrawRectangle(0, levelBottomOnScreen.y, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
 
         if (!GAME_STATE->showBackground) return; 
-        drawSpriteInBackground(SPRITES->Nightclub,   { 1250, 250 },  -1);
-        drawSpriteInBackground(SPRITES->BGHouse,     { 600, 300 },  -2);
+        drawSpriteInBackground(&SPRITES->Nightclub,   { 1250, 250 },  -1);
+        drawSpriteInBackground(&SPRITES->BGHouse,     { 600, 300 },  -2);
     }
 }
 
@@ -191,7 +191,7 @@ void drawOverworldEntity(OverworldEntity *entity) {
                                         entity->gridPos.x,
                                         entity->gridPos.y });
 
-    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, false);
+    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, entity->rotation, false);
 }
 
 // Draws the ghost of an editor's selected entity being moved
@@ -206,7 +206,7 @@ void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
     Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
-    drawTexture(entity->sprite, pos, color, false);
+    drawTexture(entity->sprite, pos, color, entity->rotation, false);
 }
 
 // Draws the ghost of an editor's selected entity being moved
@@ -221,7 +221,7 @@ void drawLevelEntityMoveGhost(Level::Entity *entity) {
     Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
-    drawTexture(entity->sprite, pos, color, !entity->isFacingRight);
+    drawTexture(entity->sprite, pos, color, 0, !entity->isFacingRight);
 }
 
 void drawEntities() {
@@ -336,7 +336,7 @@ void drawOverworldHud() {
         // Draw level name
 
         Vector2 pos = PosInSceneToScreen({ tile->gridPos.x - 20,
-                            tile->gridPos.y + (tile->sprite.sprite.height * tile->sprite.scale) });
+                            tile->gridPos.y + (tile->sprite->sprite.height * tile->sprite->scale) });
 
         char levelName[LEVEL_NAME_BUFFER_SIZE];
 
@@ -515,7 +515,7 @@ void drawEditorCursor() {
     Vector2 m = GetMousePosition();
     if (!IsInPlayArea(m)) return;
 
-    DrawTexture(b->sprite.sprite, m.x, m.y, getColorTransparency(WHITE, 96));
+    DrawTexture(b->sprite->sprite, m.x, m.y, getColorTransparency(WHITE, 96));
 }
 
 void drawEditor() {
@@ -636,7 +636,7 @@ void DrawLevelEntity(Level::Entity *entity) {
                                         entity->hitbox.x,
                                         entity->hitbox.y });
 
-    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, !entity->isFacingRight);
+    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, 0, !entity->isFacingRight);
 }
 
 void DrawLevelEntityOrigin(Level::Entity *entity) {
@@ -646,7 +646,7 @@ void DrawLevelEntityOrigin(Level::Entity *entity) {
                                         entity->origin.y });
 
     drawTexture(entity->sprite, { pos.x, pos.y },
-                 { WHITE.r, WHITE.g, WHITE.b, 30 }, false);
+                 { WHITE.r, WHITE.g, WHITE.b, 30 }, 0, false);
 }
 
 void PrintSysMessage(const std::string &msg) {

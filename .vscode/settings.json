@@ -71,6 +71,7 @@
         "xlocnum": "cpp",
         "xstddef": "cpp",
         "xtr1common": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "random": "cpp"
     }
 }

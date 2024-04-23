@@ -249,7 +249,7 @@ Entity *CheckpointAdd(Vector2 pos) {
 
     Entity *newCheckpoint = new Entity();
 
-    Sprite sprite = SPRITES->LevelCheckpoint;
+    Sprite *sprite = &SPRITES->LevelCheckpoint;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
     newCheckpoint->tags = IS_CHECKPOINT;
@@ -271,7 +271,7 @@ void ExitAdd(Vector2 pos) {
 
     Entity *newExit = new Entity();
 
-    Sprite sprite = SPRITES->LevelEndOrb;
+    Sprite *sprite = &SPRITES->LevelEndOrb;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
     newExit->tags = IS_EXIT;
@@ -288,7 +288,7 @@ void ExitAdd(Vector2 pos) {
 
 void ExitCheckAndAdd(Vector2 pos) {
     
-    Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->LevelEndOrb, pos);
+    Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->LevelEndOrb, pos);
 
     if (CheckCollisionWithAnything(hitbox)) {
         TraceLog(LOG_DEBUG, "Couldn't add level exit, collision with entity.");
@@ -306,7 +306,7 @@ void TextboxAdd(Vector2 pos, int textId) {
 
     Entity *newTextbox = new Entity();
 
-    Sprite sprite = SPRITES->TextboxButton;
+    Sprite *sprite = &SPRITES->TextboxButton;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
     newTextbox->tags = IS_TEXTBOX;
@@ -325,7 +325,7 @@ void TextboxAdd(Vector2 pos, int textId) {
 
 void TextboxCheckAndAdd(Vector2 pos) {
 
-    Rectangle hitbox = SpriteHitboxFromMiddle(SPRITES->TextboxButton, pos);
+    Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->TextboxButton, pos);
 
     if (CheckCollisionWithAnything(hitbox)) {
         TraceLog(LOG_DEBUG, "Couldn't add textbox button, collision with entity.");

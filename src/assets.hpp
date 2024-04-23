@@ -10,7 +10,6 @@
 typedef struct Sprite {
     Texture2D sprite;
     float scale;
-    int rotation;
 } Sprite;
 
 struct SpriteBank {
@@ -22,8 +21,20 @@ struct SpriteBank {
 
     // In Level
     Sprite PlayerDefault;
-    Sprite PlayerGlideOn;
-    Sprite PlayerGlideFalling;
+    Sprite PlayerWalking1;
+    Sprite PlayerWalking2;
+    Sprite PlayerRunning1;
+    Sprite PlayerRunning2;
+    Sprite PlayerSkidding;
+    Sprite PlayerJumpingUp;
+    Sprite PlayerJumpingDown;
+    Sprite PlayerGlideDefault1;
+    Sprite PlayerGlideDefault2;
+    Sprite PlayerGlideGliding1;
+    Sprite PlayerGlideGliding2;
+    Sprite PlayerSwinging;
+    Sprite PlayerSwingingForwards;
+    Sprite PlayerSwingingBackwards;
     Sprite Enemy;
     Sprite Block;
     Sprite Acid;
@@ -62,20 +73,19 @@ extern Shader ShaderLevelTransition;
 
 void AssetsInitialize();
 
+void AssetsHotReload();
+
 // Get a Sprite's dimensions, scaled
-Dimensions SpriteScaledDimensions(Sprite sprite);
+Dimensions SpriteScaledDimensions(Sprite *sprite);
 
 // Get a sprite's middle point given its position
-Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite sprite);
-
-// Rotates sprite in a number of degrees
-void SpriteRotate(Sprite *sprite, int degrees);
+Vector2 SpritePosMiddlePoint(Vector2 pos, Sprite *sprite);
 
 // Returns a hitbox in the shape of sprite.
-Rectangle SpriteHitboxFromEdge(Sprite sprite, Vector2 origin);
+Rectangle SpriteHitboxFromEdge(Sprite *sprite, Vector2 origin);
 
 // Returns a hitbox in the shape of sprite, centered around middlePoint.
-Rectangle SpriteHitboxFromMiddle(Sprite sprite, Vector2 middlePoint);
+Rectangle SpriteHitboxFromMiddle(Sprite *sprite, Vector2 middlePoint);
 
 /*
     Configures the uniforms ShaderLevelTransition will use in each execution.
