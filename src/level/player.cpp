@@ -84,7 +84,7 @@ Animation::Animation Player::animationRunning;
 Animation::Animation Player::animationSkidding;
 Animation::Animation Player::animaitonJumpingUp;
 Animation::Animation Player::animationJumpingDown;
-Animation::Animation Player::animationGlideWalking;
+Animation::Animation Player::animationGlideInPlace;
 Animation::Animation Player::animationGlideFalling;
 Animation::Animation Player::animationSwinging;
 Animation::Animation Player::animationSwingingForwards;
@@ -697,7 +697,8 @@ void Player::createAnimations() {
 
     animationJumpingDown.AddFrame(&SPRITES->PlayerJumpingDown, 1);
 
-    animationGlideWalking.AddFrame(&SPRITES->PlayerGlideOn, 1);
+    animationGlideInPlace.AddFrame(&SPRITES->PlayerGlideDefault1, 12);
+    animationGlideInPlace.AddFrame(&SPRITES->PlayerGlideDefault2, 12);
 
     animationGlideFalling.AddFrame(&SPRITES->PlayerGlideFalling, 1);
 
@@ -741,7 +742,7 @@ Animation::Animation *Player::getCurrentAnimation() {
     else if (groundBeneath && abs(xVelocity) >= ANIMATION_RUNNING_XVELOCITY_MIN)
         animation =                     &animationRunning;
 
-    else animation =                    (isModeGlide) ? &animationGlideWalking : &animationInPlace;
+    else animation =                    (isModeGlide) ? &animationGlideInPlace : &animationInPlace;
 
 
     return animation;

@@ -28,7 +28,8 @@ struct SpriteBank {
     Sprite PlayerSkidding;
     Sprite PlayerJumpingUp;
     Sprite PlayerJumpingDown;
-    Sprite PlayerGlideOn;
+    Sprite PlayerGlideDefault1;
+    Sprite PlayerGlideDefault2;
     Sprite PlayerGlideFalling;
     Sprite PlayerSwinging;
     Sprite PlayerSwingingForwards;
