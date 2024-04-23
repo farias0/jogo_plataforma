@@ -67,6 +67,15 @@
 #define JUMP_BUFFER_FORWARDS_SIZE           0.15f
 
 
+// For how many frames each animation still in this animation will be shown
+#define ANIMATION_DURATION_WALKING          8
+#define ANIMATION_DURATION_RUNNING          12
+
+// Player's animation state machine parameters
+#define ANIMATION_WALKING_XVELOCITY_MIN     0.5
+#define ANIMATION_RUNNING_XVELOCITY_MIN     6.5
+
+
 Player *PLAYER = 0;
 
 Animation::Animation Player::animationInPlace;
@@ -674,13 +683,13 @@ void Player::createAnimations() {
 
     animationInPlace.AddFrame(&SPRITES->PlayerDefault, 1);
 
-    animationWalking.AddFrame(&SPRITES->PlayerWalking1, 8); // TODO create a define for this value
-    animationWalking.AddFrame(&SPRITES->PlayerDefault, 8);
-    animationWalking.AddFrame(&SPRITES->PlayerWalking2, 8);
-    animationWalking.AddFrame(&SPRITES->PlayerDefault, 8);
+    animationWalking.AddFrame(&SPRITES->PlayerWalking1, ANIMATION_DURATION_WALKING);
+    animationWalking.AddFrame(&SPRITES->PlayerDefault, ANIMATION_DURATION_WALKING);
+    animationWalking.AddFrame(&SPRITES->PlayerWalking2, ANIMATION_DURATION_WALKING);
+    animationWalking.AddFrame(&SPRITES->PlayerDefault, ANIMATION_DURATION_WALKING);
 
-    animationRunning.AddFrame(&SPRITES->PlayerRunning1, 12);
-    animationRunning.AddFrame(&SPRITES->PlayerRunning2, 12);
+    animationRunning.AddFrame(&SPRITES->PlayerRunning1, ANIMATION_DURATION_RUNNING);
+    animationRunning.AddFrame(&SPRITES->PlayerRunning2, ANIMATION_DURATION_RUNNING);
 
     animationSkidding.AddFrame(&SPRITES->PlayerSkidding, 1);
 
@@ -730,10 +739,11 @@ Animation::Animation *Player::getCurrentAnimation() {
                 isSkidding)
         animation =             &animationSkidding;
 
-    else if (groundBeneath && abs(xVelocity) > 0.5 && abs(xVelocity) < 6.5f) // TODO create a default for this value
+    else if (groundBeneath && abs(xVelocity) > ANIMATION_WALKING_XVELOCITY_MIN
+                && abs(xVelocity) < ANIMATION_RUNNING_XVELOCITY_MIN)
         animation =             &animationWalking;
 
-    else if (groundBeneath && abs(xVelocity) >= 6.5f) // TODO create a default for this value
+    else if (groundBeneath && abs(xVelocity) >= ANIMATION_RUNNING_XVELOCITY_MIN)
         animation =             &animationRunning;
 
     else animation =            &animationInPlace;
