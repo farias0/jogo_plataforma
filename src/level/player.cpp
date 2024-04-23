@@ -70,6 +70,8 @@
 // For how many frames each animation still in this animation will be shown
 #define ANIMATION_DURATION_WALKING          8
 #define ANIMATION_DURATION_RUNNING          12
+#define ANIMATION_DURATION_GLIDE_IN_PLACE   12
+#define ANIMATION_DURATION_GLIDE_GLIDING    6
 
 // Player's animation state machine parameters
 #define ANIMATION_WALKING_XVELOCITY_MIN     0.5
@@ -85,7 +87,7 @@ Animation::Animation Player::animationSkidding;
 Animation::Animation Player::animaitonJumpingUp;
 Animation::Animation Player::animationJumpingDown;
 Animation::Animation Player::animationGlideInPlace;
-Animation::Animation Player::animationGlideFalling;
+Animation::Animation Player::animationGlideGliding;
 Animation::Animation Player::animationSwinging;
 Animation::Animation Player::animationSwingingForwards;
 Animation::Animation Player::animationSwingingBackwards;
@@ -697,10 +699,11 @@ void Player::createAnimations() {
 
     animationJumpingDown.AddFrame(&SPRITES->PlayerJumpingDown, 1);
 
-    animationGlideInPlace.AddFrame(&SPRITES->PlayerGlideDefault1, 12);
-    animationGlideInPlace.AddFrame(&SPRITES->PlayerGlideDefault2, 12);
+    animationGlideInPlace.AddFrame(&SPRITES->PlayerGlideDefault1, ANIMATION_DURATION_GLIDE_IN_PLACE);
+    animationGlideInPlace.AddFrame(&SPRITES->PlayerGlideDefault2, ANIMATION_DURATION_GLIDE_IN_PLACE);
 
-    animationGlideFalling.AddFrame(&SPRITES->PlayerGlideFalling, 1);
+    animationGlideGliding.AddFrame(&SPRITES->PlayerGlideGliding1, ANIMATION_DURATION_GLIDE_GLIDING);
+    animationGlideGliding.AddFrame(&SPRITES->PlayerGlideGliding2, ANIMATION_DURATION_GLIDE_GLIDING);
 
     animationSwinging.AddFrame(&SPRITES->PlayerSwinging, 1);
 
@@ -728,7 +731,7 @@ Animation::Animation *Player::getCurrentAnimation() {
     else if (!groundBeneath && PLAYER->isAscending)
         animation =                     &animaitonJumpingUp;
     else if (!groundBeneath && !PLAYER->isAscending)
-        animation =                     (isModeGlide && isGliding) ? &animationGlideFalling : &animationJumpingDown;
+        animation =                     (isModeGlide && isGliding) ? &animationGlideGliding : &animationJumpingDown;
 
     else if (((Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_LEFT && xVelocity > 0) ||
                 (Input::STATE.playerMoveDirection == Input::PLAYER_DIRECTION_RIGHT && xVelocity < 0)) &&

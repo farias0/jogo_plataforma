@@ -84,7 +84,7 @@ private:
     static Animation::Animation animaitonJumpingUp;
     static Animation::Animation animationJumpingDown;
     static Animation::Animation animationGlideInPlace;
-    static Animation::Animation animationGlideFalling;
+    static Animation::Animation animationGlideGliding;
     static Animation::Animation animationSwinging;
     static Animation::Animation animationSwingingForwards;
     static Animation::Animation animationSwingingBackwards;
