@@ -539,10 +539,6 @@ void Entity::Tick() {
 
     // TODO create Enemy class
     if (tags & IS_ENEMY) EnemyTick(this);
-
-    if (tags & IS_CHECKPOINT_PICKUP) {
-        int a = 2;
-    }
     
 }
 
