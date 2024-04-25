@@ -27,17 +27,18 @@ namespace Level {
 
 
 typedef enum {
-    IS_PLAYER       = 1,
-    IS_ENEMY        = 2,
-    IS_SCENARIO     = 4, // the meaning of this component isnt clear
-    IS_EXIT         = 8,
-    IS_GROUND       = 16,
-    IS_DANGER       = 32,
-    IS_GLIDE        = 64,
-    IS_CHECKPOINT   = 128,
-    IS_TEXTBOX      = 256,
-    IS_HOOK         = 512,
-    IS_HOOKABLE     = 1024,
+    IS_PLAYER               = 1,
+    IS_ENEMY                = 2,
+    IS_SCENARIO             = 4, // the meaning of this component isnt clear
+    IS_EXIT                 = 8,
+    IS_GROUND               = 16,
+    IS_DANGER               = 32,
+    IS_GLIDE                = 64,
+    IS_CHECKPOINT           = 128,
+    IS_TEXTBOX              = 256,
+    IS_HOOK                 = 512,
+    IS_HOOKABLE             = 1024,
+    IS_CHECKPOINT_PICKUP    = 2048,
 } EntityTag;
 
 
@@ -106,8 +107,8 @@ void Load(char *levelName);
 // Starts "go to Overworld" routine
 void GoToOverworld();
 
-// Adds a level checkpoint in the given position
-Entity *CheckpointAdd(Vector2 pos);
+// Adds a level checkpoint flag in the given position
+Entity *CheckpointFlagAdd(Vector2 pos);
 
 // Initializes and adds an exit to the level
 void ExitAdd(Vector2 pos);

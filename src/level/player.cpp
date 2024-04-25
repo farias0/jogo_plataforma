@@ -604,7 +604,7 @@ void Player::SetCheckpoint() {
 
     Vector2 pos = RectangleGetPos(hitbox);
     pos.y += hitbox.height / 2;
-    Level::STATE->checkpoint = Level::CheckpointAdd(pos);
+    Level::STATE->checkpoint = Level::CheckpointFlagAdd(pos);
 
     Level::STATE->checkpointsLeft--;
 

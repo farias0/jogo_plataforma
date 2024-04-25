@@ -245,11 +245,11 @@ void GoToOverworld() {
     STATE->concludedAgo = GetTime();
 }
 
-Entity *CheckpointAdd(Vector2 pos) {
+Entity *CheckpointFlagAdd(Vector2 pos) {
 
     Entity *newCheckpoint = new Entity();
 
-    Sprite *sprite = &SPRITES->LevelCheckpoint;
+    Sprite *sprite = &SPRITES->LevelCheckpointFlag;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
     newCheckpoint->tags = IS_CHECKPOINT;
@@ -261,7 +261,7 @@ Entity *CheckpointAdd(Vector2 pos) {
 
     LinkedList::AddNode(&STATE->listHead, newCheckpoint);
 
-    TraceLog(LOG_TRACE, "Added checkpoint to level (x=%.1f, y=%.1f)",
+    TraceLog(LOG_TRACE, "Added checkpoint flag to level (x=%.1f, y=%.1f)",
                 newCheckpoint->hitbox.x, newCheckpoint->hitbox.y);
 
     return newCheckpoint;
@@ -539,6 +539,10 @@ void Entity::Tick() {
 
     // TODO create Enemy class
     if (tags & IS_ENEMY) EnemyTick(this);
+
+    if (tags & IS_CHECKPOINT_PICKUP) {
+        int a = 2;
+    }
     
 }
 
