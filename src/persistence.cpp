@@ -9,6 +9,7 @@
 #include "level/enemy.hpp"
 #include "level/block.hpp"
 #include "level/powerups.hpp"
+#include "level/checkpoint.hpp"
 #include "files.hpp"
 #include "render.hpp"
 #include "overworld.hpp"
@@ -33,6 +34,7 @@ typedef enum LevelEntityType {
     LEVEL_ENTITY_EXIT,
     LEVEL_ENTITY_GLIDE,
     LEVEL_ENTITY_TEXTBOX,
+    LEVEL_ENITTY_CHECKPOINT_PICKUP,
 } LevelEntityType;
 
 typedef struct PersistenceLevelEntity {
@@ -83,6 +85,8 @@ void PersistenceLevelSave(char *levelName) {
             data[i].entityType = LEVEL_ENTITY_EXIT;
         else if (entity->tags & Level::IS_GLIDE)
             data[i].entityType = LEVEL_ENTITY_GLIDE;
+        else if (entity->tags & Level::IS_CHECKPOINT_PICKUP)
+            data[i].entityType = LEVEL_ENITTY_CHECKPOINT_PICKUP;
         else if (entity->tags & Level::IS_TEXTBOX) {
             data[i].entityType = LEVEL_ENTITY_TEXTBOX;
             memcpy(&data[i].textId, &entity->textId, sizeof(uint32_t));
@@ -159,6 +163,8 @@ bool PersistenceLevelLoad(char *levelName) {
             Level::ExitAdd(origin); break;
         case LEVEL_ENTITY_GLIDE:
             GlideAdd(origin); break;
+        case LEVEL_ENITTY_CHECKPOINT_PICKUP:
+            CheckpointPickup::Add(origin); break;
         case LEVEL_ENTITY_TEXTBOX:
             Level::TextboxAdd(origin, textId); break;
         default:
