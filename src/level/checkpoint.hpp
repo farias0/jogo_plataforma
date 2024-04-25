@@ -11,6 +11,9 @@ class CheckpointPickup : public Level::Entity, private Animation::IAnimated {
 
 public:
 
+    bool wasPickedUp;
+
+
     // Adds a level checkpoint pickup in the given position
     static Level::Entity *Add(Vector2 pos);
 
@@ -19,6 +22,8 @@ public:
     static void CheckAndAdd(Vector2 pos);
 
     void Tick();
+
+    void Draw();
 
 private:
 

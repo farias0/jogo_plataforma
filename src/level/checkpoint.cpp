@@ -1,6 +1,7 @@
 #include "checkpoint.hpp"
 #include "level.hpp"
 #include "../animation.hpp"
+#include "../editor.hpp"
 
 #define ANIMATION_DURATION_STILL    180
 #define ANIMATION_DURATION_SHAKING  5
@@ -23,6 +24,8 @@ Level::Entity *CheckpointPickup::Add(Vector2 pos) {
     newPickup->sprite = sprite;
     newPickup->isFacingRight = true;
     newPickup->layer = -1;
+
+    newPickup->wasPickedUp = false;
 
     newPickup->initializeAnimationSystem();
 
@@ -49,6 +52,16 @@ void CheckpointPickup::CheckAndAdd(Vector2 pos) {
 void CheckpointPickup::Tick() {
 
     sprite = animationTick();
+}
+
+void CheckpointPickup::Draw() {
+
+    if (!wasPickedUp) {
+        Render::DrawLevelEntity(this);   
+    }
+    else if (EDITOR_STATE->isEnabled) {
+        Render::DrawLevelEntityOrigin(this);
+    }
 }
 
 void CheckpointPickup::createAnimations() {
