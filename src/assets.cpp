@@ -77,7 +77,10 @@ static void loadAssets() {
     sp->PlayerSwingingBackwards = doubleSizeSprite("../assets/player_swinging_backwards.png");
     sp->Enemy = doubleSizeSprite("../assets/enemy_default_1.png");
     sp->LevelEndOrb = doubleSizeSprite("../assets/level_end_orb_1.png");
-    sp->LevelCheckpoint = doubleSizeSprite("../assets/player_child_1.png");
+    sp->LevelCheckpointFlag = doubleSizeSprite("../assets/player_child_1.png");
+    sp->LevelCheckpointPickup1 = doubleSizeSprite("../assets/egg_1.png");
+    sp->LevelCheckpointPickup2 = doubleSizeSprite("../assets/egg_2.png");
+    sp->LevelCheckpointPickup3 = doubleSizeSprite("../assets/egg_3.png");
     sp->Block = normalSizeSprite("../assets/floor_tile_1.png");
     sp->Acid = normalSizeSprite("../assets/acid_tile_1.png");
     sp->GlideItem = normalSizeSprite("../assets/glide_item.png");

@@ -174,7 +174,7 @@ void drawBackground() {
             return;
         }
 
-        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 15, 15, 20, 255 });
+        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 25, 25, 35, 255 });
 
         Vector2 levelBottomOnScreen = PosInSceneToScreen({ 0, FLOOR_DEATH_HEIGHT });
         DrawRectangle(0, levelBottomOnScreen.y, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
@@ -312,8 +312,8 @@ void drawLevelHud() {
         DrawText((*s).c_str(), 120, 100, 30, RAYWHITE);
     }
 
-    DrawTextureEx(SPRITES->LevelCheckpoint.sprite,
-                    { SCREEN_WIDTH-149, SCREEN_HEIGHT-65 }, 0, SPRITES->LevelCheckpoint.scale/1.7, WHITE);
+    DrawTextureEx(SPRITES->LevelCheckpointFlag.sprite,
+                    { SCREEN_WIDTH-149, SCREEN_HEIGHT-65 }, 0, SPRITES->LevelCheckpointFlag.scale/1.7, WHITE);
     DrawText(std::string("x " + std::to_string(Level::STATE->checkpointsLeft)).c_str(),
                 SCREEN_WIDTH-100, SCREEN_HEIGHT-56, 30, RAYWHITE);
 

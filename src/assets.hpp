@@ -39,7 +39,10 @@ struct SpriteBank {
     Sprite Block;
     Sprite Acid;
     Sprite LevelEndOrb;
-    Sprite LevelCheckpoint;
+    Sprite LevelCheckpointFlag;
+    Sprite LevelCheckpointPickup1;
+    Sprite LevelCheckpointPickup2;
+    Sprite LevelCheckpointPickup3;
     Sprite GlideItem;
     Sprite TextboxButton;
 

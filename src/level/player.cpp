@@ -7,6 +7,7 @@
 #include "level.hpp"
 #include "enemy.hpp"
 #include "grappling_hook.hpp"
+#include "checkpoint.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../sounds.hpp"
@@ -516,6 +517,15 @@ COLISION_CHECKING:
                 }
             }
 
+            else if (entity->tags & Level::IS_CHECKPOINT_PICKUP &&
+                        !((CheckpointPickup *) entity)->wasPickedUp &&
+                        CheckCollisionRecs(entity->hitbox, hitbox)) {
+
+                // Picked up a checkpoint
+                Level::STATE->checkpointsLeft++;
+                ((CheckpointPickup *) entity)->wasPickedUp = true;
+            }
+
 next_entity:
             entity = (Level::Entity *)  entity->next;
         }
@@ -604,7 +614,7 @@ void Player::SetCheckpoint() {
 
     Vector2 pos = RectangleGetPos(hitbox);
     pos.y += hitbox.height / 2;
-    Level::STATE->checkpoint = Level::CheckpointAdd(pos);
+    Level::STATE->checkpoint = Level::CheckpointFlagAdd(pos);
 
     Level::STATE->checkpointsLeft--;
 
