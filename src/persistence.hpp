@@ -41,7 +41,7 @@ public:
 	}
 
 	/*
-		Searches for a value in a data string. To be used instead PersistenceParse.
+		Searches for a value in a data string. To be used inside PersistenceParse.
 		@param line The line to be searched
 		@param field The field to be searched in the line
 		@return The value corresponding to the field
