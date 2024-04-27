@@ -14,6 +14,8 @@ public:
     bool wasPickedUp;
 
 
+    static Level::Entity *Add();
+
     // Adds a level checkpoint pickup in the given position
     static Level::Entity *Add(Vector2 pos);
 

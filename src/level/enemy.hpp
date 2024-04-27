@@ -7,8 +7,11 @@
 #include "level.hpp"
 
 
+// Initializes and adds an enemy to the level
+Level::Entity *EnemyAdd();
+
 // Initializes and adds an enemy to the level in the given origin
-void EnemyAdd(Vector2 origin);
+Level::Entity *EnemyAdd(Vector2 origin);
 
 // Initializes and adds an enemy to the level in the given origin,
 // if there are not other elements there already

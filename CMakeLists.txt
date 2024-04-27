@@ -13,7 +13,8 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(${PROJECT_NAME} src/game.cpp src/level/player.cpp src/linked_list.cpp src/level/enemy.cpp
     src/level/level.cpp src/camera.cpp src/core.cpp src/render.cpp src/input.cpp src/editor.cpp src/assets.cpp
     src/overworld.cpp src/level/block.cpp src/files.cpp src/persistence.cpp src/level/powerups.cpp src/debug.cpp
-    src/text_bank.cpp src/sounds.cpp src/level/grappling_hook.cpp src/animation.cpp src/level/checkpoint.cpp)
+    src/text_bank.cpp src/sounds.cpp src/level/grappling_hook.cpp src/animation.cpp src/level/checkpoint.cpp
+    src/level/textbox.cpp)
 
 set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

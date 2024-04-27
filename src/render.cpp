@@ -6,6 +6,7 @@
 #include "assets.hpp"
 #include "level/level.hpp"
 #include "level/player.hpp"
+#include "level/textbox.hpp"
 #include "overworld.hpp"
 #include "camera.hpp"
 #include "editor.hpp"
@@ -384,7 +385,7 @@ void drawDebugEntityInfo(LinkedList::Node *entity) {
     if (GAME_STATE->mode == MODE_IN_LEVEL) {
         Level::Entity *le = (Level::Entity *) entity;
         if (le->tags & Level::IS_TEXTBOX)
-            str += "\ntextId=" + std::to_string(le->textId);
+            str += "\ntextId=" + std::to_string(((Textbox *) le)->textId);
     }
 
     DrawText(str.c_str(), screenPos.x, screenPos.y, 20, WHITE);

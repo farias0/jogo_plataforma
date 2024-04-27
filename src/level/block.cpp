@@ -4,7 +4,11 @@
 #include "level.hpp"
 
 
-void BlockAdd(Vector2 origin) {
+Level::Entity *BlockAdd() {
+    return BlockAdd({ 0,0 });
+}
+
+Level::Entity *BlockAdd(Vector2 origin) {
 
     Level::Entity *newBlock = new Level::Entity();
 
@@ -19,6 +23,8 @@ void BlockAdd(Vector2 origin) {
 
     TraceLog(LOG_TRACE, "Added block to level (x=%.1f, y=%.1f)",
                 newBlock->hitbox.x, newBlock->hitbox.y);
+
+    return newBlock;
 }
 
 void BlockCheckAndAdd(Vector2 origin) {
@@ -31,7 +37,11 @@ void BlockCheckAndAdd(Vector2 origin) {
     BlockAdd(origin);
 }
 
-void AcidAdd(Vector2 origin) {
+Level::Entity *AcidAdd() {
+    return AcidAdd({ 0,0 });
+}
+
+Level::Entity *AcidAdd(Vector2 origin) {
 
     Level::Entity *newBlock = new Level::Entity();
 
@@ -47,6 +57,8 @@ void AcidAdd(Vector2 origin) {
 
     TraceLog(LOG_TRACE, "Added acid block to level (x=%.1f, y=%.1f)",
                 newBlock->hitbox.x, newBlock->hitbox.y);
+
+    return newBlock;
 }
 
 void AcidCheckAndAdd(Vector2 origin) {

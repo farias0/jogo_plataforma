@@ -9,7 +9,11 @@
 #define ENEMY_FALL_RATE 7.0f
 
 
-void EnemyAdd(Vector2 origin) {
+Level::Entity *EnemyAdd() {
+    return EnemyAdd({ 0,0 });
+}
+
+Level::Entity *EnemyAdd(Vector2 origin) {
 
     Level::Entity *newEnemy = new Level::Entity();
 
@@ -26,6 +30,8 @@ void EnemyAdd(Vector2 origin) {
 
     TraceLog(LOG_TRACE, "Added enemy to level (x=%.1f, y=%.1f)",
                 newEnemy->hitbox.x, newEnemy->hitbox.y);
+
+    return newEnemy;
 }
 
 void EnemyCheckAndAdd(Vector2 origin) {    

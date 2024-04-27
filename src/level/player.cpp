@@ -8,6 +8,7 @@
 #include "enemy.hpp"
 #include "grappling_hook.hpp"
 #include "checkpoint.hpp"
+#include "textbox.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../sounds.hpp"
@@ -94,7 +95,12 @@ Animation::Animation Player::animationSwingingForwards;
 Animation::Animation Player::animationSwingingBackwards;
 
 
-void Player::Initialize(Vector2 origin) {
+Player *Player::Initialize() {
+
+    return Initialize({ 0, 0 });
+}
+
+Player *Player::Initialize(Vector2 origin) {
 
     Player *newPlayer = new Player();
     PLAYER = newPlayer;
@@ -117,6 +123,8 @@ void Player::Initialize(Vector2 origin) {
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
+
+    return newPlayer;
 }
 
 void Player::CheckAndSetOrigin(Vector2 pos) {
@@ -509,11 +517,12 @@ COLISION_CHECKING:
             else if (entity->tags & Level::IS_TEXTBOX &&
                         CheckCollisionRecs(entity->hitbox, hitbox)) {
 
+                auto box = (Textbox *) entity;
                 collidedWithTextboxButton = true;
 
                 if (Render::GetTextboxTextId() == -1) {
-                    Render::DisplayTextbox(entity->textId);
-                    TraceLog(LOG_TRACE, "Textbox started displaying textId=%d.", entity->textId);
+                    Render::DisplayTextbox(box->textId);
+                    TraceLog(LOG_TRACE, "Textbox started displaying textId=%d.", box->textId);
                 }
             }
 
@@ -759,4 +768,10 @@ Animation::Animation *Player::getCurrentAnimation() {
 
 
     return animation;
+}
+
+void Player::PersistenceParse(const std::string &data) {
+
+    Level::Entity::PersistenceParse(data);
+    SetPos(origin);
 }
