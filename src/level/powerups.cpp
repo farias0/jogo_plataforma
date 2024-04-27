@@ -4,7 +4,11 @@
 #include "level.hpp"
 
 
-void GlideAdd(Vector2 origin) {
+Level::Entity *GlideAdd() {
+    return GlideAdd({ 0, 0 });
+}
+
+Level::Entity *GlideAdd(Vector2 origin) {
     
     Level::Entity *glide = new Level::Entity();
 
@@ -17,6 +21,8 @@ void GlideAdd(Vector2 origin) {
 
     TraceLog(LOG_TRACE, "Added glide item to level (x=%.1f, y=%.1f)",
                 glide->hitbox.x, glide->hitbox.y);
+
+    return glide;
 }  
 
 void GlideCheckAndAdd(Vector2 origin) {

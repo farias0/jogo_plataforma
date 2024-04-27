@@ -11,6 +11,10 @@
 Animation::Animation CheckpointPickup::animation;
 
 
+Level::Entity *CheckpointPickup::Add() {
+    return Add({ 0, 0 });
+}
+
 Level::Entity *CheckpointPickup::Add(Vector2 pos) {
 
     CheckpointPickup *newPickup = new CheckpointPickup();

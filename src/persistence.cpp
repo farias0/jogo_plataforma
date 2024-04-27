@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
+#include <sstream>
 
 #include "persistence.hpp"
 #include "linked_list.hpp"
@@ -28,14 +29,14 @@
 
 
 typedef enum LevelEntityType {
-    LEVEL_ENTITY_PLAYER,
-    LEVEL_ENTITY_ENEMY,
-    LEVEL_ENTITY_BLOCK,
-    LEVEL_ENTITY_ACID,
-    LEVEL_ENTITY_EXIT,
-    LEVEL_ENTITY_GLIDE,
-    LEVEL_ENTITY_TEXTBOX,
-    LEVEL_ENITTY_CHECKPOINT_PICKUP,
+    LEVEL_ENTITY_PLAYER             = 0,
+    LEVEL_ENTITY_ENEMY              = 1,
+    LEVEL_ENTITY_BLOCK              = 2,
+    LEVEL_ENTITY_ACID               = 3,
+    LEVEL_ENTITY_EXIT               = 4,
+    LEVEL_ENTITY_GLIDE              = 5,
+    LEVEL_ENTITY_TEXTBOX            = 6,
+    LEVEL_ENITTY_CHECKPOINT_PICKUP  = 7,
 } LevelEntityType;
 
 typedef struct PersistenceLevelEntity {
@@ -63,64 +64,48 @@ static void getFilePath(char *pathBuffer, size_t bufferSize, char *fileName) {
 
 void PersistenceLevelSave(char *levelName) {
 
-    size_t levelItemCount = LinkedList::CountNodes(Level::STATE->listHead);
-    size_t saveItemCount = levelItemCount;
-    size_t entitySize = sizeof(PersistenceLevelEntity);
-    PersistenceLevelEntity *data = (PersistenceLevelEntity *) MemAlloc(entitySize * saveItemCount);
-
-    TraceLog(LOG_DEBUG, "Saving level %s... (struct size=%d, level item count=%d)",
-                        levelName, entitySize, levelItemCount);
+    std::string data = "levelname:" + std::string(levelName) + "\n";
 
     Level::Entity *entity = (Level::Entity *) Level::STATE->listHead;
-    for (size_t i = 0; i < saveItemCount; ) {
+    while (entity) {
+
+        int entityTag;
 
         if (entity->tags & Level::IS_PLAYER)
-            data[i].entityType = LEVEL_ENTITY_PLAYER;
+            entityTag = LEVEL_ENTITY_PLAYER;
         else if (entity->tags & Level::IS_ENEMY)
-            data[i].entityType = LEVEL_ENTITY_ENEMY;
+            entityTag = LEVEL_ENTITY_ENEMY;
         else if (entity->tags & Level::IS_SCENARIO && entity->tags & Level::IS_DANGER)
-            data[i].entityType = LEVEL_ENTITY_ACID;
+            entityTag = LEVEL_ENTITY_ACID;
         else if (entity->tags & Level::IS_SCENARIO && !(entity->tags & Level::IS_DANGER))
-            data[i].entityType = LEVEL_ENTITY_BLOCK;
+            entityTag = LEVEL_ENTITY_BLOCK;
         else if (entity->tags & Level::IS_EXIT)
-            data[i].entityType = LEVEL_ENTITY_EXIT;
+            entityTag = LEVEL_ENTITY_EXIT;
         else if (entity->tags & Level::IS_GLIDE)
-            data[i].entityType = LEVEL_ENTITY_GLIDE;
+            entityTag = LEVEL_ENTITY_GLIDE;
         else if (entity->tags & Level::IS_CHECKPOINT_PICKUP)
-            data[i].entityType = LEVEL_ENITTY_CHECKPOINT_PICKUP;
+            entityTag = LEVEL_ENITTY_CHECKPOINT_PICKUP;
         else if (entity->tags & Level::IS_TEXTBOX) {
-            data[i].entityType = LEVEL_ENTITY_TEXTBOX;
-            memcpy(&data[i].textId, &((Textbox *) entity)->textId, sizeof(uint32_t));
+            entityTag = LEVEL_ENTITY_TEXTBOX;
         }
         else { 
             TraceLog(LOG_WARNING, "Unknow entity type found when serializing level, tags=%d. Skipping it...");
-            saveItemCount--;
             goto skip_entity; 
         }
         
-        memcpy(&data[i].originX,    &entity->origin.x,  sizeof(uint32_t));
-        memcpy(&data[i].originY,    &entity->origin.y,  sizeof(uint32_t));
-
-        i++;
+        data += std::to_string(entityTag) + ":" + entity->PersistanceSerialize() + '\n';
 
 skip_entity:
         entity = (Level::Entity *) entity->next;
     }
 
-    FileData filedata = { data, entitySize, saveItemCount };
-
     char *levelPath = (char *) MemAlloc(LEVEL_PATH_BUFFER_SIZE);
     getFilePath(levelPath, LEVEL_PATH_BUFFER_SIZE, levelName);
 
-    if (FileSave(levelPath, filedata)) {
-        TraceLog(LOG_INFO, "Level saved: %s.", levelName);
-        Render::PrintSysMessage("Fase salva.");
-    } else {
-        TraceLog(LOG_ERROR, "Could not save level %s.", levelName);
-        Render::PrintSysMessage("Erro salvando fase.");
-    }
+    Files::TextSave(levelPath, data);
+    TraceLog(LOG_INFO, "Level saved: %s.", levelName);
+    Render::PrintSysMessage("Fase salva.");
 
-    MemFree(data);
     MemFree(levelPath);
 
     return;
@@ -131,49 +116,55 @@ bool PersistenceLevelLoad(char *levelName) {
     char *levelPath = (char *) MemAlloc(LEVEL_PATH_BUFFER_SIZE);
     getFilePath(levelPath, LEVEL_PATH_BUFFER_SIZE, levelName);
 
-    FileData filedata = FileLoad(levelPath, sizeof(PersistenceLevelEntity));
 
-    if (!filedata.itemCount) {
-        TraceLog(LOG_ERROR, "Could not load level %s.", levelName);
-        Render::PrintSysMessage("Erro carregando fase.");
-        return false;
-    }
+    std::string data = Files::TextLoad(levelPath);
 
-    PersistenceLevelEntity *data = (PersistenceLevelEntity *) filedata.data;
+    std::stringstream stream(data);
+    std::string line;
+    while (std::getline(stream, line)) {
 
-    for (size_t i = 0; i < filedata.itemCount; i++) {
+        try {
 
-        Vector2 origin;
-        memcpy(&origin.x,   &data[i].originX,   sizeof(uint32_t));
-        memcpy(&origin.y,   &data[i].originY,   sizeof(uint32_t));
+            size_t tagDelimiter = line.find(":");
+            std::string entityTag = line.substr(0, tagDelimiter);
+            std::string entityData = line.substr(tagDelimiter, line.size());
 
-        int textId;
-        memcpy(&textId,     &data[i].textId,    sizeof(uint32_t));
-        
-        switch (data[i].entityType) {
-        
-        case LEVEL_ENTITY_PLAYER:
-            Player::Initialize(origin); break;
-        case LEVEL_ENTITY_ENEMY:
-            EnemyAdd(origin); break;
-        case LEVEL_ENTITY_BLOCK:
-            BlockAdd(origin); break;
-        case LEVEL_ENTITY_ACID:
-            AcidAdd(origin); break;
-        case LEVEL_ENTITY_EXIT:
-            Level::ExitAdd(origin); break;
-        case LEVEL_ENTITY_GLIDE:
-            GlideAdd(origin); break;
-        case LEVEL_ENITTY_CHECKPOINT_PICKUP:
-            CheckpointPickup::Add(origin); break;
-        case LEVEL_ENTITY_TEXTBOX:
-            Textbox::Add(origin, textId); break;
-        default:
-            TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, type=%d.", data[i].entityType); 
+            if (entityTag == "levelname") continue; // TODO exhibit level name instead of filename
+
+            Level::Entity *entity;
+            
+            switch (std::stoi(entityTag)) {
+            
+            case LEVEL_ENTITY_PLAYER:
+                entity = Player::Initialize(); break;
+            case LEVEL_ENTITY_ENEMY:
+                entity = EnemyAdd(); break;
+            case LEVEL_ENTITY_BLOCK:
+                entity = BlockAdd(); break;
+            case LEVEL_ENTITY_ACID:
+                entity = AcidAdd(); break;
+            case LEVEL_ENTITY_EXIT:
+                entity = Level::ExitAdd(); break;
+            case LEVEL_ENTITY_GLIDE:
+                entity = GlideAdd(); break;
+            case LEVEL_ENITTY_CHECKPOINT_PICKUP:
+                entity = CheckpointPickup::Add(); break;
+            case LEVEL_ENTITY_TEXTBOX:
+                entity = Textbox::Add(); break;
+            default:
+                TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, entityTag=%s.", entityTag.c_str());
+                continue; 
+            }
+
+            entity->PersistenceParse(entityData);
+
+        }
+
+        catch (const std::exception &ex) {
+            TraceLog(LOG_ERROR, "Could not parse loaded level entity (%s): %s", line.c_str(), ex.what());
         }
     }
 
-    MemFree(data);
     MemFree(levelPath);
 
     TraceLog(LOG_TRACE, "Level loaded: %s.", levelName);
@@ -270,12 +261,12 @@ skip_entity:
         entity = (OverworldEntity *) entity->next;
     }
 
-    FileData filedata = { data, entitySize, saveItemCount };
+    Files::FileData filedata = { data, entitySize, saveItemCount };
 
     char *filePath = (char *) MemAlloc(OW_PATH_BUFFER_SIZE);
     getFilePath(filePath, OW_PATH_BUFFER_SIZE, (char *) OW_FILE_NAME);
 
-    if (FileSave(filePath, filedata)) {
+    if (Files::DataSave(filePath, filedata)) {
         TraceLog(LOG_INFO, "Overworld saved.");
         Render::PrintSysMessage("Mundo salvo.");
     } else {
@@ -294,7 +285,7 @@ bool PersistenceOverworldLoad() {
     char *filePath = (char *) MemAlloc(OW_PATH_BUFFER_SIZE);
     getFilePath(filePath, OW_PATH_BUFFER_SIZE, (char *) OW_FILE_NAME);
 
-    FileData fileData = FileLoad(filePath, sizeof(PersistenceOverworldEntity));
+    Files::FileData fileData = Files::DataLoad(filePath, sizeof(PersistenceOverworldEntity));
 
     if (!fileData.itemCount) {
         TraceLog(LOG_ERROR, "Could not overworld.");

@@ -46,9 +46,11 @@ public:
     // A reference to the launched grappling hook, if there's one  
     GrapplingHook *hookLaunched;
 
+    // Initializes and adds the player to the level
+    static Player *Initialize();
 
     // Initializes and adds the player to the level in the given origin
-    static void Initialize(Vector2 origin);
+    static Player *Initialize(Vector2 origin);
 
     // Sets the player's origin based on pos, if there aren't other things there already.
     void CheckAndSetOrigin(Vector2 pos);
@@ -73,6 +75,8 @@ public:
     void SetCheckpoint();
 
     void LaunchGrapplingHook();
+
+    void PersistenceParse(const std::string &data) override;
 
 
 private:

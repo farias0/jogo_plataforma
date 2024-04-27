@@ -95,7 +95,12 @@ Animation::Animation Player::animationSwingingForwards;
 Animation::Animation Player::animationSwingingBackwards;
 
 
-void Player::Initialize(Vector2 origin) {
+Player *Player::Initialize() {
+
+    return Initialize({ 0, 0 });
+}
+
+Player *Player::Initialize(Vector2 origin) {
 
     Player *newPlayer = new Player();
     PLAYER = newPlayer;
@@ -118,6 +123,8 @@ void Player::Initialize(Vector2 origin) {
 
     TraceLog(LOG_TRACE, "Added player to level (x=%.1f, y=%.1f)",
                 newPlayer->hitbox.x, newPlayer->hitbox.y);
+
+    return newPlayer;
 }
 
 void Player::CheckAndSetOrigin(Vector2 pos) {
@@ -761,4 +768,10 @@ Animation::Animation *Player::getCurrentAnimation() {
 
 
     return animation;
+}
+
+void Player::PersistenceParse(const std::string &data) {
+
+    Level::Entity::PersistenceParse(data);
+    SetPos(origin);
 }

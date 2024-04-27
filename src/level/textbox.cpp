@@ -5,7 +5,11 @@
 #include "../input.hpp"
 
 
-void Textbox::Add(Vector2 pos, int textId) {
+Textbox *Textbox::Add() {
+    return Add({ 0, 0 }, -1);
+}
+
+Textbox *Textbox::Add(Vector2 pos, int textId) {
 
     Textbox *newTextbox = new Textbox();
 
@@ -24,6 +28,8 @@ void Textbox::Add(Vector2 pos, int textId) {
 
     TraceLog(LOG_TRACE, "Added textbox button to level (x=%.1f, y=%.1f)",
                 newTextbox->hitbox.x, newTextbox->hitbox.y);
+
+    return newTextbox;
 }
 
 void Textbox::CheckAndAdd(Vector2 pos) {
@@ -62,3 +68,15 @@ void Textbox::createFromIdInput(Vector2 pos, std::string input) {
     Add(pos, id);
 }
 
+std::string Textbox::PersistanceSerialize() {
+
+    std::string data = Level::Entity::PersistanceSerialize();
+    persistanceAddValue(&data, "textId", std::to_string(textId));
+    return data;
+}
+
+void Textbox::PersistenceParse(const std::string &data) {
+
+    Level::Entity::PersistenceParse(data);
+    textId = std::stoi(persistenceReadValue(data, "textId"));
+}

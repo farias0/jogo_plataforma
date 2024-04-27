@@ -42,7 +42,7 @@ typedef enum {
 } EntityTag;
 
 
-class Entity : public LinkedList::Node, public Render::IDrawable {
+class Entity : public LinkedList::Node, public Render::IDrawable, public IPersistable {
 
 public:
     unsigned long int tags;
@@ -60,6 +60,10 @@ public:
     virtual void Tick();
 
     void Draw();
+
+    virtual std::string PersistanceSerialize();
+    virtual void PersistenceParse(const std::string &data);
+
 };
 
 
@@ -108,7 +112,10 @@ void GoToOverworld();
 Entity *CheckpointFlagAdd(Vector2 pos);
 
 // Initializes and adds an exit to the level
-void ExitAdd(Vector2 pos);
+Entity *ExitAdd();
+
+// Initializes and adds an exit to the level in the given origin
+Entity *ExitAdd(Vector2 pos);
 
 // Initializes and adds an exit to the level in the given origin,
 // if there are no other entities there already

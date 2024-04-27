@@ -11,6 +11,9 @@
 #define MODE_WRITE  (char *) "wb+"
 
 
+namespace Files {
+
+
 static size_t MAX_ITEM_COUNT = 16384;
 
 
@@ -77,15 +80,7 @@ static bool writeToFile(FILE *file, FileData data) {
     return true;
 }
 
-bool FileSave(char *filepath, FileData data) {
-
-    FILE *file = openFile(filepath, MODE_WRITE);
-    bool result = writeToFile(file, data);
-    closeFile(file);
-    return result;
-}
-
-FileData FileLoad(char *filepath, size_t itemSize) {
+FileData DataLoad(char *filepath, size_t itemSize) {
 
     FILE *file = openFile(filepath, MODE_READ);
     rewind(file);
@@ -94,7 +89,15 @@ FileData FileLoad(char *filepath, size_t itemSize) {
     return data;
 }
 
-std::string FileLoadText(std::string filepath) {
+bool DataSave(char *filepath, FileData data) {
+
+    FILE *file = openFile(filepath, MODE_WRITE);
+    bool result = writeToFile(file, data);
+    closeFile(file);
+    return result;
+}
+
+std::string TextLoad(std::string filepath) {
 
     std::stringstream buffer;
     std::ifstream file(filepath);
@@ -102,3 +105,13 @@ std::string FileLoadText(std::string filepath) {
     file.close();
     return buffer.str();
 }
+
+void TextSave(std::string filepath, std::string data) {
+
+    std::ofstream file;
+    file.open(filepath, std::ios_base::trunc); // trunc = overwrites whole file
+    file << data;
+    file.close();
+}
+
+} // namespace

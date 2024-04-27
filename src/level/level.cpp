@@ -250,7 +250,11 @@ Entity *CheckpointFlagAdd(Vector2 pos) {
     return newCheckpoint;
 }
 
-void ExitAdd(Vector2 pos) {
+Entity *ExitAdd() {
+    return ExitAdd({ 0, 0 });
+}
+
+Entity *ExitAdd(Vector2 pos) {
 
     Entity *newExit = new Entity();
 
@@ -267,6 +271,8 @@ void ExitAdd(Vector2 pos) {
 
     TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
                 newExit->hitbox.x, newExit->hitbox.y);
+
+    return newExit;
 }
 
 void ExitCheckAndAdd(Vector2 pos) {
@@ -493,5 +499,21 @@ void Entity::Draw() {
         Render::DrawLevelEntityOrigin(this);
 }
 
+std::string Entity::PersistanceSerialize() {
+
+    std::string data;
+    persistanceAddValue(&data, "originX", std::to_string(origin.x));
+    persistanceAddValue(&data, "originY", std::to_string(origin.y));
+    return data;
+}
+
+void Entity::PersistenceParse(const std::string &data) {
+
+    origin.x = std::stof(persistenceReadValue(data, "originX"));
+    origin.y = std::stof(persistenceReadValue(data, "originY"));
+    
+    hitbox.x = origin.x;
+    hitbox.y = origin.y;
+}
 
 } // namespace

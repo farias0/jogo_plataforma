@@ -63,7 +63,7 @@ invalid_line:
 
 void InitializeAndLoad() {
 
-    std::string text = FileLoadText(TEXT_BANK_FILEPATH);
+    std::string text = Files::TextLoad(TEXT_BANK_FILEPATH);
     parseFileDataIntoBank(&BANK, text);
     TraceLog(LOG_INFO, "Text Bank initialized and loaded.");
 }

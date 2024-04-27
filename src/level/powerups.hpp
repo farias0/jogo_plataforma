@@ -3,8 +3,12 @@
 
 #include <raylib.h>
 
+#include "level.hpp"
 
-void GlideAdd(Vector2 origin);
+
+Level::Entity *GlideAdd();
+
+Level::Entity *GlideAdd(Vector2 origin);
 
 void GlideCheckAndAdd(Vector2 origin);
 
