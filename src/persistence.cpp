@@ -10,6 +10,7 @@
 #include "level/block.hpp"
 #include "level/powerups.hpp"
 #include "level/checkpoint.hpp"
+#include "level/textbox.hpp"
 #include "files.hpp"
 #include "render.hpp"
 #include "overworld.hpp"
@@ -89,7 +90,7 @@ void PersistenceLevelSave(char *levelName) {
             data[i].entityType = LEVEL_ENITTY_CHECKPOINT_PICKUP;
         else if (entity->tags & Level::IS_TEXTBOX) {
             data[i].entityType = LEVEL_ENTITY_TEXTBOX;
-            memcpy(&data[i].textId, &entity->textId, sizeof(uint32_t));
+            memcpy(&data[i].textId, &((Textbox *) entity)->textId, sizeof(uint32_t));
         }
         else { 
             TraceLog(LOG_WARNING, "Unknow entity type found when serializing level, tags=%d. Skipping it...");
@@ -166,7 +167,7 @@ bool PersistenceLevelLoad(char *levelName) {
         case LEVEL_ENITTY_CHECKPOINT_PICKUP:
             CheckpointPickup::Add(origin); break;
         case LEVEL_ENTITY_TEXTBOX:
-            Level::TextboxAdd(origin, textId); break;
+            Textbox::Add(origin, textId); break;
         default:
             TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, type=%d.", data[i].entityType); 
         }

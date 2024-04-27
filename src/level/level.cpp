@@ -1,7 +1,6 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include <string.h>
-#include <functional>
 #include <sstream>
 #include <algorithm>
 
@@ -164,22 +163,6 @@ static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
     return foundGround;   
 }
 
-void createTextboxFromIdInput(Vector2 pos, std::string input) {
-
-    int id;
-    
-    try {
-        id = std::stoi(input);
-    }
-    catch (std::invalid_argument &e) {
-        Render::PrintSysMessage("ID inválido");
-        TraceLog(LOG_DEBUG, "Textbox ID input invalid: %s.", input.c_str());
-        return; // does nothing
-    }
-
-    TextboxAdd(pos, id);
-}
-
 void Initialize() {
 
     initializeState();
@@ -300,47 +283,6 @@ void ExitCheckAndAdd(Vector2 pos) {
         LinkedList::DestroyNode(&STATE->listHead, STATE->exit);
     
     ExitAdd({ hitbox.x, hitbox.y });
-}
-
-void TextboxAdd(Vector2 pos, int textId) {
-
-    Entity *newTextbox = new Entity();
-
-    Sprite *sprite = &SPRITES->TextboxButton;
-    Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
-
-    newTextbox->tags = IS_TEXTBOX;
-    newTextbox->hitbox = hitbox;
-    newTextbox->origin = pos;
-    newTextbox->sprite = sprite;
-    newTextbox->layer = -1;
-    newTextbox->isFacingRight = true;
-    newTextbox->textId = textId;
-
-    LinkedList::AddNode(&STATE->listHead, newTextbox);
-
-    TraceLog(LOG_TRACE, "Added textbox button to level (x=%.1f, y=%.1f)",
-                newTextbox->hitbox.x, newTextbox->hitbox.y);
-}
-
-void TextboxCheckAndAdd(Vector2 pos) {
-
-    Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->TextboxButton, pos);
-
-    if (CheckCollisionWithAnything(hitbox)) {
-        TraceLog(LOG_DEBUG, "Couldn't add textbox button, collision with entity.");
-        return;
-    }
-
-    pos = RectangleGetPos(hitbox);
-    TextInputCallback *callback = new TextInputCallback(
-        [pos] (std::string input) { 
-            createTextboxFromIdInput(pos, input);
-        }
-    );
-
-    Render::PrintSysMessage("Insira o ID do texto");
-    Input::GetTextInput(callback);
 }
 
 Entity *GetGroundBeneath(Entity *entity) {

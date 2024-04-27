@@ -57,9 +57,6 @@ public:
     bool isFacingRight;
     bool isFallingDown;
 
-    // Used by Textbox Buttons
-    int textId;
-
     virtual void Tick();
 
     void Draw();
@@ -116,13 +113,6 @@ void ExitAdd(Vector2 pos);
 // Initializes and adds an exit to the level in the given origin,
 // if there are no other entities there already
 void ExitCheckAndAdd(Vector2 pos);
-
-// Initializes and adds a textbox button to the level
-void TextboxAdd(Vector2 pos, int textId);
-
-// Initializes and adds a a textbox button to the level in the
-// given origin, if there are no other entities there already
-void TextboxCheckAndAdd(Vector2 pos);
 
 // The ground beneath the entity, or 0 if not on the ground.
 // Gives priority to the tile in the direction the player is looking at.

@@ -8,6 +8,7 @@
 #include "enemy.hpp"
 #include "grappling_hook.hpp"
 #include "checkpoint.hpp"
+#include "textbox.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../sounds.hpp"
@@ -509,11 +510,12 @@ COLISION_CHECKING:
             else if (entity->tags & Level::IS_TEXTBOX &&
                         CheckCollisionRecs(entity->hitbox, hitbox)) {
 
+                auto box = (Textbox *) entity;
                 collidedWithTextboxButton = true;
 
                 if (Render::GetTextboxTextId() == -1) {
-                    Render::DisplayTextbox(entity->textId);
-                    TraceLog(LOG_TRACE, "Textbox started displaying textId=%d.", entity->textId);
+                    Render::DisplayTextbox(box->textId);
+                    TraceLog(LOG_TRACE, "Textbox started displaying textId=%d.", box->textId);
                 }
             }
 
