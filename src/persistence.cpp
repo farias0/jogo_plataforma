@@ -12,6 +12,7 @@
 #include "level/powerups.hpp"
 #include "level/checkpoint.hpp"
 #include "level/textbox.hpp"
+#include "level/moving_platform.hpp"
 #include "files.hpp"
 #include "render.hpp"
 #include "overworld.hpp"
@@ -37,6 +38,7 @@ typedef enum LevelEntityType {
     LEVEL_ENTITY_GLIDE              = 5,
     LEVEL_ENTITY_TEXTBOX            = 6,
     LEVEL_ENITTY_CHECKPOINT_PICKUP  = 7,
+    LEVEl_ENTITY_MOVING_PLATFORM    = 8,
 } LevelEntityType;
 
 typedef struct PersistenceLevelEntity {
@@ -75,6 +77,8 @@ void PersistenceLevelSave(char *levelName) {
             entityTag = LEVEL_ENTITY_PLAYER;
         else if (entity->tags & Level::IS_ENEMY)
             entityTag = LEVEL_ENTITY_ENEMY;
+        else if (entity->tags & Level::IS_MOVING_PLATFORM)
+            entityTag = LEVEl_ENTITY_MOVING_PLATFORM;
         else if (entity->tags & Level::IS_SCENARIO && entity->tags & Level::IS_DANGER)
             entityTag = LEVEL_ENTITY_ACID;
         else if (entity->tags & Level::IS_SCENARIO && !(entity->tags & Level::IS_DANGER))
@@ -151,6 +155,8 @@ bool PersistenceLevelLoad(char *levelName) {
                 entity = CheckpointPickup::Add(); break;
             case LEVEL_ENTITY_TEXTBOX:
                 entity = Textbox::Add(); break;
+            case LEVEl_ENTITY_MOVING_PLATFORM:
+                entity = MovingPlatform::Add(); break;
             default:
                 TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, entityTag=%s.", entityTag.c_str());
                 continue; 

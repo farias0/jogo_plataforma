@@ -27,14 +27,14 @@ public:
 private:
 
     Vector2 startPos, endPos, currentPos;
-    Rectangle startHitbox, endHitbox;
-    int size; // in blocks
-    float angle;
+    Rectangle startHitbox, endHitbox; // Hitboxes for the start and end position
+    int size; // In blocks
+    float angle; // In radians
 
 
-    void setStart(Vector2 startPos);
+    void setStartPos(Vector2 startPos);
 
-    void setEnd(Vector2 endPos);
+    void setEndPos(Vector2 endPos);
 
     // Resizes platform (in blocks)
     void setSize(int size);

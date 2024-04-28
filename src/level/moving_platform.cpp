@@ -27,8 +27,8 @@ MovingPlatform *MovingPlatform::Add(Vector2 startPos, Vector2 endPos, int size) 
     newPlatform->isFacingRight = true;
     newPlatform->layer = -1;
 
-    newPlatform->setStart(startPos);
-    newPlatform->setEnd(endPos);
+    newPlatform->setStartPos(startPos);
+    newPlatform->setEndPos(endPos);
     newPlatform->setSize(size);
 
 
@@ -81,33 +81,44 @@ void MovingPlatform::Draw() {
     }
 
     // Draw platform
-    if (!EDITOR_STATE->isEnabled) {
-        for (int i = 0; i < size; i++) {
-            Vector2 pos = PosInSceneToScreen({
-                                            hitbox.x + (sprite->sprite.width * sprite->scale * i),
-                                            hitbox.y });
-            DrawTexture(sprite->sprite, pos.x, pos.y, WHITE);
-        }
+    unsigned char transparency = EDITOR_STATE->isEnabled ? EDITOR_SELECTION_MOVE_TRANSPARENCY : 0xff;
+    for (int i = 0; i < size; i++) {
+        Vector2 pos = PosInSceneToScreen({
+                                        hitbox.x + (sprite->sprite.width * sprite->scale * i),
+                                        hitbox.y });
+        DrawTexture(sprite->sprite, pos.x, pos.y, { WHITE.r, WHITE.g, WHITE.b, transparency });
     }
-
-    // TODO draw ghosts
-
 }
 
 std::string MovingPlatform::PersistanceSerialize() {
 
     std::string data = Level::Entity::PersistanceSerialize();
-    // persistanceAddValue(&data, "textId", std::to_string(textId));
+    persistanceAddValue(&data, "startPosX", std::to_string(startPos.x));
+    persistanceAddValue(&data, "startPosY", std::to_string(startPos.y));
+    persistanceAddValue(&data, "endPosX", std::to_string(endPos.x));
+    persistanceAddValue(&data, "endPosY", std::to_string(endPos.y));
+    persistanceAddValue(&data, "size", std::to_string(size));
     return data;
 }
 
 void MovingPlatform::PersistenceParse(const std::string &data) {
 
+    Vector2 startPos, endPos;
+    int size;
+
     Level::Entity::PersistenceParse(data);
-    // textId = std::stoi(persistenceReadValue(data, "textId"));
+    startPos.x = std::stof(persistenceReadValue(data, "startPosX"));
+    startPos.y = std::stof(persistenceReadValue(data, "startPosY"));
+    endPos.x = std::stof(persistenceReadValue(data, "endPosX"));
+    endPos.y = std::stof(persistenceReadValue(data, "endPosY"));
+    size = std::stoi(persistenceReadValue(data, "size"));
+
+    setStartPos(startPos);
+    setEndPos(endPos);
+    setSize(size);
 }
 
-void MovingPlatform::setStart(Vector2 startPos) {
+void MovingPlatform::setStartPos(Vector2 startPos) {
 
     Dimensions d = SpriteScaledDimensions(sprite);
 
@@ -124,7 +135,7 @@ void MovingPlatform::setStart(Vector2 startPos) {
     movePlatformTo(this->origin); // resets current position
 }
 
-void MovingPlatform::setEnd(Vector2 endPos) {
+void MovingPlatform::setEndPos(Vector2 endPos) {
 
     Dimensions d = SpriteScaledDimensions(sprite);
 
@@ -135,6 +146,7 @@ void MovingPlatform::setEnd(Vector2 endPos) {
         d.width,
         d.height,
     };
+    updateAngle();
 
     movePlatformTo(this->origin); // resets current position
 }
