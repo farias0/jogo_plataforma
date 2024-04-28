@@ -1,11 +1,13 @@
 #include <string>
+#include <math.h>
 
 #include "moving_platform.hpp"
 #include "level.hpp"
 #include "../camera.hpp"
+#include "../editor.hpp"
 
 
-#define PLATFORM_SPEED      20
+#define PLATFORM_SPEED      2
 
 
 MovingPlatform *MovingPlatform::Add() {
@@ -22,12 +24,11 @@ MovingPlatform *MovingPlatform::Add() {
     newPlatform->layer = -1;
 
     // TODO
-    newPlatform->size = 3; 
     newPlatform->origin = { 0, 0 };
     newPlatform->startPos = newPlatform->origin;
-    newPlatform->endPos = { newPlatform->startPos.x + 180, newPlatform->endPos.y + 180 };
+    newPlatform->endPos = { newPlatform->startPos.x - 180, newPlatform->endPos.y + 180 };
     newPlatform->currentPos = newPlatform->startPos;
-    newPlatform->updateHitbox();
+    newPlatform->setSize(3);
 
 
     LinkedList::AddNode(&Level::STATE->listHead, newPlatform);
@@ -46,7 +47,7 @@ void MovingPlatform::CheckAndAdd(Vector2 origin) {
     MovingPlatform *newPlatform = Add();
     newPlatform->origin = origin;
     newPlatform->startPos = newPlatform->origin;
-    newPlatform->endPos = { newPlatform->startPos.x + 180, newPlatform->startPos.y + 180 };
+    newPlatform->endPos = { newPlatform->startPos.x - 180, newPlatform->startPos.y - 180 };
     newPlatform->currentPos = newPlatform->startPos;
     newPlatform->updateHitbox();
 
@@ -57,7 +58,22 @@ void MovingPlatform::Tick() {
     // Move it
     
     // probably will need the track's angle
+    angle = atan2(startPos.y - endPos.y, endPos.x - startPos.x); // TODO calculate when setting pos
 
+    int direction = isFacingRight ? 1 : -1;
+    
+    currentPos.x += PLATFORM_SPEED * cos(angle) * direction;
+    currentPos.y -= PLATFORM_SPEED * sin(angle) * direction;
+
+    if ((currentPos.x > startPos.x && currentPos.x > endPos.x) ||
+        (currentPos.x < startPos.x && currentPos.x < endPos.x) ||
+        (currentPos.y > startPos.y && currentPos.y > endPos.y) ||
+        (currentPos.y < startPos.y && currentPos.y < endPos.y)) {
+
+            isFacingRight = !isFacingRight;
+        }
+
+    updateHitbox();
 }
 
 void MovingPlatform::Draw() {
@@ -66,14 +82,25 @@ void MovingPlatform::Draw() {
     Vector2 sp = PosInSceneToScreen(startPos);
     Vector2 ep = PosInSceneToScreen(endPos);
     DrawLine(sp.x, sp.y, ep.x, ep.y, RAYWHITE);
+    if (EDITOR_STATE->isEnabled) {
+        Vector2 s = PosInSceneToScreen(startPos), e = PosInSceneToScreen(endPos);
+        DrawCircleLines(s.x, s.y, 20, GREEN);
+        DrawCircleLines(e.x, e.y, 20, RED);
+    }
 
     // Draw platform
-    for (int i = 0; i < size; i++) {
-        Vector2 pos = PosInSceneToScreen({
-                                        hitbox.x + (sprite->sprite.width * sprite->scale * i),
-                                        hitbox.y });
-        DrawTexture(sprite->sprite, pos.x, pos.y, WHITE);
+    //Vector2 c = PosInSceneToScreen(currentPos);
+    //DrawCircleLines(c.x, c.y, 20, RAYWHITE);
+    if (!EDITOR_STATE->isEnabled) {
+        for (int i = 0; i < size; i++) {
+            Vector2 pos = PosInSceneToScreen({
+                                            hitbox.x + (sprite->sprite.width * sprite->scale * i),
+                                            hitbox.y });
+            DrawTexture(sprite->sprite, pos.x, pos.y, WHITE);
+        }
     }
+
+    // TODO draw ghosts
 
 }
 
@@ -88,6 +115,28 @@ void MovingPlatform::PersistenceParse(const std::string &data) {
 
     Level::Entity::PersistenceParse(data);
     // textId = std::stoi(persistenceReadValue(data, "textId"));
+}
+
+void MovingPlatform::setStart(Vector2 point) {
+    Dimensions d = SpriteScaledDimensions(sprite);
+    startPos = point;
+    startHitbox = {
+        startPos.x - d.width/2,
+        startPos.y - d.height/2,
+        d.width,
+        d.height,
+    };
+}
+
+void MovingPlatform::setEnd(Vector2 point) {
+    Dimensions d = SpriteScaledDimensions(sprite);
+    endPos = point;
+    endHitbox = {
+        endPos.x - d.width/2,
+        endPos.y - d.height/2,
+        d.width,
+        d.height,
+    };
 }
 
 void MovingPlatform::setSize(int size) {

@@ -85,7 +85,7 @@ void loadInLevelEditor() {
     addEntityButton(EDITOR_ENTITY_GLIDE, &SPRITES->GlideItem, &GlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_TEXTBOX, &SPRITES->TextboxButton, &Textbox::CheckAndAdd, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_CHECKPOINT_PICKUP, &SPRITES->LevelCheckpointPickup1, &CheckpointPickup::CheckAndAdd, EDITOR_INTERACTION_CLICK);
-    addEntityButton(EDITOR_ENTITY_MOVING_PLATFORM, &SPRITES->Block, &MovingPlatform::CheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_MOVING_PLATFORM, &SPRITES->MovingPlatform, &MovingPlatform::CheckAndAdd, EDITOR_INTERACTION_CLICK);
 
     addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &Level::Save);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);
