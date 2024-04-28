@@ -210,21 +210,6 @@ void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
     drawTexture(entity->sprite, pos, color, entity->rotation, false);
 }
 
-// Draws the ghost of an editor's selected entity being moved
-void drawLevelEntityMoveGhost(Level::Entity *entity) {
-
-    Vector2 pos = EditorEntitySelectionCalcMove({
-                                                    entity->hitbox.x,
-                                                    entity->hitbox.y });
-
-    pos = PosInSceneToScreen(pos);
-
-    Color color =  { WHITE.r, WHITE.g, WHITE.b,
-                            EDITOR_SELECTION_MOVE_TRANSPARENCY };
-
-    drawTexture(entity->sprite, pos, color, 0, !entity->isFacingRight);
-}
-
 void drawEntities() {
 
     for (int layer = FIRST_LAYER; layer <= LAST_LAYER; layer++) {
@@ -487,10 +472,10 @@ void drawEditorEntitySelection() {
             Level::Entity *entity = (Level::Entity *) *e;
 
             if (EDITOR_STATE->isMovingSelectedEntities) {
-                drawLevelEntityMoveGhost(entity);
+                entity->DrawMoveGhost();
             } else {
                 if (!entity->isDead) drawSceneRectangle(entity->hitbox, color);
-                drawSceneRectangle(Level::EntityOriginHitbox(entity), color);
+                drawSceneRectangle(entity->GetOriginHitbox(), color);
             }
 
         }
@@ -640,14 +625,28 @@ void DrawLevelEntity(Level::Entity *entity) {
     drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, 0, !entity->isFacingRight);
 }
 
-void DrawLevelEntityOrigin(Level::Entity *entity) {
+void DrawLevelEntityOriginGhost(Level::Entity *entity) {
 
     Vector2 pos = PosInSceneToScreen({
                                         entity->origin.x,
                                         entity->origin.y });
 
     drawTexture(entity->sprite, { pos.x, pos.y },
-                 { WHITE.r, WHITE.g, WHITE.b, 30 }, 0, false);
+                 { WHITE.r, WHITE.g, WHITE.b, ORIGIN_GHOST_TRANSPARENCY }, 0, false);
+}
+
+void Render::DrawLevelEntityMoveGhost(Level::Entity *entity) {
+
+    Vector2 pos = EditorEntitySelectionCalcMove({
+                                                    entity->hitbox.x,
+                                                    entity->hitbox.y });
+
+    pos = PosInSceneToScreen(pos);
+
+    Color color =  { WHITE.r, WHITE.g, WHITE.b,
+                            EDITOR_SELECTION_MOVE_TRANSPARENCY };
+
+    drawTexture(entity->sprite, pos, color, 0, !entity->isFacingRight);
 }
 
 void PrintSysMessage(const std::string &msg) {

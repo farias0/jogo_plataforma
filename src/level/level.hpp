@@ -58,9 +58,17 @@ public:
     bool isFacingRight;
     bool isFallingDown;
 
+    virtual Rectangle GetOriginHitbox() {
+        return {
+            origin.x, origin.y,
+            hitbox.width, hitbox.height
+        };
+    }
+
     virtual void Tick();
 
     void Draw();
+    void DrawMoveGhost();
 
     virtual std::string PersistanceSerialize();
     virtual void PersistenceParse(const std::string &data);
@@ -150,9 +158,6 @@ void Save();
 
 // Loads a new, default level
 void LoadNew();
-
-// Get this entity's origin hitbox, based on the current hitbox.
-Rectangle EntityOriginHitbox(Entity *entity);
 
 // Checks for collision between a rectangle and any 
 // living entity in the level.

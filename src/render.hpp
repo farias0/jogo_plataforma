@@ -8,6 +8,8 @@
 
 #define LEVEL_TRANSITION_ANIMATION_DURATION 0.7 // in seconds
 
+#define ORIGIN_GHOST_TRANSPARENCY 30
+
 
 namespace Level { class Entity; }
 
@@ -18,6 +20,7 @@ class IDrawable {
 
 public:
     virtual void Draw() = 0;
+    virtual void DrawMoveGhost() = 0; // Used when moving the entity around in the editor
 };
 
 
@@ -29,7 +32,9 @@ void ResizeWindow(int width, int height);
 
 void DrawLevelEntity(Level::Entity *entity);
 
-void DrawLevelEntityOrigin(Level::Entity *entity);
+void DrawLevelEntityOriginGhost(Level::Entity *entity);
+
+void DrawLevelEntityMoveGhost(Level::Entity *entity);
 
 // Prints a system message in the screen
 void PrintSysMessage(const std::string &msg);

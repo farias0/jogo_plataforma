@@ -124,8 +124,24 @@ static void updateEntitySelectionList() {
             
             if (entity->tags & Level::IS_PLAYER) goto next_entity;
 
-            bool collisionWithEntity = !entity->isDead && CheckCollisionRecs(selectionHitbox, entity->hitbox);
-            bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, Level::EntityOriginHitbox(entity));
+            bool collisionWithEntity = false;
+            if (entity->tags & Level::IS_MOVING_PLATFORM) {
+
+                auto p = (MovingPlatform *) entity;
+                if (CheckCollisionRecs(selectionHitbox, p->startAnchor.hitbox))
+                    EDITOR_STATE->selectedEntities.push_back(&p->startAnchor);
+                if (CheckCollisionRecs(selectionHitbox, p->endAnchor.hitbox))
+                    EDITOR_STATE->selectedEntities.push_back(&p->endAnchor);
+
+                goto next_entity;
+
+            }
+            else if (!entity->isDead) { // generic entity
+                collisionWithEntity = CheckCollisionRecs(selectionHitbox, entity->hitbox);
+            }
+
+            bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, entity->GetOriginHitbox());
+            
             if (collisionWithEntity || collisionWithGhost) {
                 
                 EDITOR_STATE->selectedEntities.push_back(entity);

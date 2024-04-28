@@ -64,7 +64,7 @@ void CheckpointPickup::Draw() {
         Render::DrawLevelEntity(this);   
     }
     else if (EDITOR_STATE->isEnabled) {
-        Render::DrawLevelEntityOrigin(this);
+        Render::DrawLevelEntityOriginGhost(this);
     }
 }
 

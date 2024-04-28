@@ -339,7 +339,7 @@ void EntityRemoveAt(Vector2 pos) {
 
         if (entity->tags & IS_PLAYER) goto next_entity;
 
-        if (CheckCollisionPointRec(pos, EntityOriginHitbox(entity))) {
+        if (CheckCollisionPointRec(pos, entity->GetOriginHitbox())) {
             break;
         }
 
@@ -474,15 +474,6 @@ void LoadNew() {
     strcpy(STATE->levelName, NEW_LEVEL_NAME);
 }
 
-Rectangle EntityOriginHitbox(Entity *entity) {
-
-    return {
-        entity->origin.x, entity->origin.y,
-        entity->hitbox.width, entity->hitbox.height
-    };
-}
-
-
 void Entity::Tick() {            
 
     // TODO create Enemy class
@@ -496,7 +487,12 @@ void Entity::Draw() {
         Render::DrawLevelEntity(this);
 
     if (EDITOR_STATE->isEnabled)
-        Render::DrawLevelEntityOrigin(this);
+        Render::DrawLevelEntityOriginGhost(this);
+}
+
+void Entity::DrawMoveGhost() {
+
+    Render::DrawLevelEntityMoveGhost(this);
 }
 
 std::string Entity::PersistanceSerialize() {
