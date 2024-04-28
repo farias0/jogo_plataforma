@@ -65,6 +65,14 @@ public:
         };
     }
 
+    virtual void SetHitboxPos(Vector2 pos) {
+        RectangleSetPos(&hitbox, pos);
+    }
+
+    virtual void SetOrigin(Vector2 origin) {
+        this->origin = origin;
+    }
+
     virtual void Tick();
 
     void Draw();

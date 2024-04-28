@@ -27,15 +27,20 @@ public:
         tags = Level::IS_MOVING_PLATFORM;
     }
 
-    void SetPos(Vector2 pos) {
-        Dimensions d = { 40, 40 };
-        this->pos = pos;
-        this->hitbox =  {
-            this->pos.x - d.width/2,
-            this->pos.y - d.height/2,
-            d.width,
-            d.height,
-        };
+    Rectangle GetOriginHitbox() override {
+        // Despite not really having the concept of origin, it still offers an origin hitbox
+        // because parts of the code use them to interact with dead entities (i.e. isDead = true).
+        return hitbox;
+    }
+
+    void SetPos(Vector2 pos);
+
+    void SetHitboxPos(Vector2 pos) override {
+        SetPos({ pos.x + hitbox.width/2, pos.y + hitbox.height/2 });
+    }
+
+    void SetOrigin(Vector2 origin) override {
+        // Does nothing. DANGEROUS!
     }
 
     void Draw() override {
@@ -44,7 +49,7 @@ public:
     }
 
     void DrawMoveGhost() override {
-        Vector2 p = PosInSceneToScreen(pos);
+        Vector2 p = PosInSceneToScreen(EditorEntitySelectionCalcMove(pos));
         DrawCircleLines(p.x, p.y, 20, { color.r, color.g, color.b, EDITOR_SELECTION_MOVE_TRANSPARENCY });
     }
 };
@@ -72,6 +77,9 @@ public:
         };
     }
 
+    // Recalculates parameters after one of its Anchors have moved
+    void UpdateAfterAnchorMove();
+
     void Tick() override;
 
     void Draw() override;
@@ -83,14 +91,10 @@ public:
 
 private:
 
-    Vector2 currentPos;
+    Vector2 currentPos; // Middle point of the platform
     int size; // In blocks
     float angle; // In radians
 
-
-    void setStartPos(Vector2 startPos);
-
-    void setEndPos(Vector2 endPos);
 
     // Resizes platform (in blocks)
     void setSize(int size);

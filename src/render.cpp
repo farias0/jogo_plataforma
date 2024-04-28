@@ -475,7 +475,8 @@ void drawEditorEntitySelection() {
                 entity->DrawMoveGhost();
             } else {
                 if (!entity->isDead) drawSceneRectangle(entity->hitbox, color);
-                drawSceneRectangle(entity->GetOriginHitbox(), color);
+                drawSceneRectangle(entity->GetOriginHitbox(), color); // ATTENTION: "dead" entities only have their origin selection drawn.
+                                                                        // This only works if dead entities never move!
             }
 
         }
@@ -635,7 +636,7 @@ void DrawLevelEntityOriginGhost(Level::Entity *entity) {
                  { WHITE.r, WHITE.g, WHITE.b, ORIGIN_GHOST_TRANSPARENCY }, 0, false);
 }
 
-void Render::DrawLevelEntityMoveGhost(Level::Entity *entity) {
+void DrawLevelEntityMoveGhost(Level::Entity *entity) {
 
     Vector2 pos = EditorEntitySelectionCalcMove({
                                                     entity->hitbox.x,

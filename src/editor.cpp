@@ -203,9 +203,8 @@ void selectEntitiesApplyMove() {
 
         case MODE_IN_LEVEL: {
             Level::Entity *entity = (Level::Entity *) *node;
-            newPos = EditorEntitySelectionCalcMove(RectangleGetPos(entity->hitbox));
-            RectangleSetPos(&entity->hitbox, newPos);
-            entity->origin = EditorEntitySelectionCalcMove(entity->origin);
+            entity->SetHitboxPos(EditorEntitySelectionCalcMove(RectangleGetPos(entity->hitbox)));
+            entity->SetOrigin(EditorEntitySelectionCalcMove(entity->origin));
             break;
         }
 

@@ -11,6 +11,21 @@
 #define PLATFORM_SPEED      2
 
 
+void MovingPlatformAnchor::SetPos(Vector2 pos) {
+
+    Dimensions d = { 40, 40 };
+
+    this->pos = pos;
+    this->hitbox =  {
+        this->pos.x - d.width/2,
+        this->pos.y - d.height/2,
+        d.width,
+        d.height,
+    };
+
+    parent->UpdateAfterAnchorMove();
+}
+
 MovingPlatform *MovingPlatform::Add() {
     return Add({ 0, 0 }, { 20, 20 }, 3);
 }
@@ -28,8 +43,8 @@ MovingPlatform *MovingPlatform::Add(Vector2 startPos, Vector2 endPos, int size) 
     newPlatform->isFacingRight = true;
     newPlatform->layer = -1;
 
-    newPlatform->setStartPos(startPos);
-    newPlatform->setEndPos(endPos);
+    newPlatform->startAnchor.SetPos(startPos);
+    newPlatform->endAnchor.SetPos(endPos);
     newPlatform->setSize(size);
 
 
@@ -47,6 +62,13 @@ void MovingPlatform::CheckAndAdd(Vector2 origin) {
     // TODO check for collisions
 
     Add(origin, { origin.x + 180, origin.y - 180 }, 3);
+}
+
+void MovingPlatform::UpdateAfterAnchorMove() {
+
+    this->origin = this->startAnchor.pos;
+    updateAngle();
+    movePlatformTo(origin); // resets current position
 }
 
 void MovingPlatform::Tick() {
@@ -129,24 +151,9 @@ void MovingPlatform::PersistenceParse(const std::string &data) {
     endPos.y = std::stof(persistenceReadValue(data, "endPosY"));
     size = std::stoi(persistenceReadValue(data, "size"));
 
-    setStartPos(startPos);
-    setEndPos(endPos);
-    setSize(size);
-}
-
-void MovingPlatform::setStartPos(Vector2 startPos) {
-
     startAnchor.SetPos(startPos);
-    this->origin = this->startAnchor.pos;
-    updateAngle();
-    movePlatformTo(this->origin); // resets current position
-}
-
-void MovingPlatform::setEndPos(Vector2 endPos) {
-
     endAnchor.SetPos(endPos);
-    updateAngle();
-    movePlatformTo(this->origin); // resets current position
+    setSize(size);
 }
 
 void MovingPlatform::setSize(int size) {
