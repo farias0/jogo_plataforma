@@ -17,7 +17,7 @@ MovingPlatform *MovingPlatform::Add() {
                             Level::IS_GROUND +
                             Level::IS_HOOKABLE +
                             Level::IS_MOVING_PLATFORM;
-    newPlatform->sprite = &SPRITES->Block;
+    newPlatform->sprite = &SPRITES->MovingPlatform;
     newPlatform->isFacingRight = true;
     newPlatform->layer = -1;
 
