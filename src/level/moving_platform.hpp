@@ -12,6 +12,8 @@ public:
 
     static MovingPlatform *Add();
 
+    static MovingPlatform *Add(Vector2 startPos, Vector2 endPos, int size);
+
     static void CheckAndAdd(Vector2 origin);
 
     void Tick() override;
@@ -30,13 +32,19 @@ private:
     float angle;
 
 
-    void setStart(Vector2 point);
+    void setStart(Vector2 startPos);
 
-    void setEnd(Vector2 point);
+    void setEnd(Vector2 endPos);
 
     // Resizes platform (in blocks)
     void setSize(int size);
 
+    // Moves platform to a new position
+    void movePlatformTo(Vector2 newPos);
+
     // Updates platform hitbox based on size and currentPoint 
     void updateHitbox();
+
+    // Updates angle according to start and end positions
+    void updateAngle();
 };

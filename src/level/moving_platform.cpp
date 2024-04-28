@@ -11,6 +11,10 @@
 
 
 MovingPlatform *MovingPlatform::Add() {
+    return Add({ 0, 0 }, { 20, 20 }, 3);
+}
+
+MovingPlatform *MovingPlatform::Add(Vector2 startPos, Vector2 endPos, int size) {
 
 
     MovingPlatform *newPlatform = new MovingPlatform();
@@ -23,12 +27,9 @@ MovingPlatform *MovingPlatform::Add() {
     newPlatform->isFacingRight = true;
     newPlatform->layer = -1;
 
-    // TODO
-    newPlatform->origin = { 0, 0 };
-    newPlatform->startPos = newPlatform->origin;
-    newPlatform->endPos = { newPlatform->startPos.x - 180, newPlatform->endPos.y + 180 };
-    newPlatform->currentPos = newPlatform->startPos;
-    newPlatform->setSize(3);
+    newPlatform->setStart(startPos);
+    newPlatform->setEnd(endPos);
+    newPlatform->setSize(size);
 
 
     LinkedList::AddNode(&Level::STATE->listHead, newPlatform);
@@ -44,26 +45,17 @@ void MovingPlatform::CheckAndAdd(Vector2 origin) {
 
     // TODO check for collisions
 
-    MovingPlatform *newPlatform = Add();
-    newPlatform->origin = origin;
-    newPlatform->startPos = newPlatform->origin;
-    newPlatform->endPos = { newPlatform->startPos.x - 180, newPlatform->startPos.y - 180 };
-    newPlatform->currentPos = newPlatform->startPos;
-    newPlatform->updateHitbox();
-
+    Add(origin, { origin.x + 180, origin.y - 180 }, 3);
 }
 
 void MovingPlatform::Tick() {
 
-    // Move it
-    
-    // probably will need the track's angle
-    angle = atan2(startPos.y - endPos.y, endPos.x - startPos.x); // TODO calculate when setting pos
-
     int direction = isFacingRight ? 1 : -1;
     
-    currentPos.x += PLATFORM_SPEED * cos(angle) * direction;
-    currentPos.y -= PLATFORM_SPEED * sin(angle) * direction;
+    movePlatformTo({
+        (float)(currentPos.x + PLATFORM_SPEED * cos(angle) * direction),
+        (float)(currentPos.y - PLATFORM_SPEED * sin(angle) * direction)
+    });
 
     if ((currentPos.x > startPos.x && currentPos.x > endPos.x) ||
         (currentPos.x < startPos.x && currentPos.x < endPos.x) ||
@@ -71,17 +63,17 @@ void MovingPlatform::Tick() {
         (currentPos.y < startPos.y && currentPos.y < endPos.y)) {
 
             isFacingRight = !isFacingRight;
-        }
-
-    updateHitbox();
+    }
 }
 
 void MovingPlatform::Draw() {
 
-    // Draw tracks
+    // Draw track
     Vector2 sp = PosInSceneToScreen(startPos);
     Vector2 ep = PosInSceneToScreen(endPos);
     DrawLine(sp.x, sp.y, ep.x, ep.y, RAYWHITE);
+
+    // Draw start and end circles
     if (EDITOR_STATE->isEnabled) {
         Vector2 s = PosInSceneToScreen(startPos), e = PosInSceneToScreen(endPos);
         DrawCircleLines(s.x, s.y, 20, GREEN);
@@ -89,8 +81,6 @@ void MovingPlatform::Draw() {
     }
 
     // Draw platform
-    //Vector2 c = PosInSceneToScreen(currentPos);
-    //DrawCircleLines(c.x, c.y, 20, RAYWHITE);
     if (!EDITOR_STATE->isEnabled) {
         for (int i = 0; i < size; i++) {
             Vector2 pos = PosInSceneToScreen({
@@ -117,26 +107,36 @@ void MovingPlatform::PersistenceParse(const std::string &data) {
     // textId = std::stoi(persistenceReadValue(data, "textId"));
 }
 
-void MovingPlatform::setStart(Vector2 point) {
+void MovingPlatform::setStart(Vector2 startPos) {
+
     Dimensions d = SpriteScaledDimensions(sprite);
-    startPos = point;
+
+    this->startPos = startPos;
+    this->origin = this->startPos;
     startHitbox = {
         startPos.x - d.width/2,
         startPos.y - d.height/2,
         d.width,
         d.height,
     };
+    updateAngle();
+
+    movePlatformTo(this->origin); // resets current position
 }
 
-void MovingPlatform::setEnd(Vector2 point) {
+void MovingPlatform::setEnd(Vector2 endPos) {
+
     Dimensions d = SpriteScaledDimensions(sprite);
-    endPos = point;
+
+    this->endPos = endPos;
     endHitbox = {
         endPos.x - d.width/2,
         endPos.y - d.height/2,
         d.width,
         d.height,
     };
+
+    movePlatformTo(this->origin); // resets current position
 }
 
 void MovingPlatform::setSize(int size) {
@@ -146,16 +146,20 @@ void MovingPlatform::setSize(int size) {
         size = 1;
     }
 
-    // TODO check for collisions before
-
     this->size = size;
+
+    updateHitbox();
+}
+
+void MovingPlatform::movePlatformTo(Vector2 newPos) {
+    this->currentPos = newPos;
     updateHitbox();
 }
 
 void MovingPlatform::updateHitbox() {
 
     Dimensions dimensions = SpriteScaledDimensions(sprite);
-    dimensions.width *= size;
+    dimensions.width *= size; // only resizes platform horizontally
 
     hitbox = {
         currentPos.x - dimensions.width/2,
@@ -163,4 +167,8 @@ void MovingPlatform::updateHitbox() {
         dimensions.width,
         dimensions.height
     };
+}
+
+void MovingPlatform::updateAngle() {
+    angle = atan2(startPos.y - endPos.y, endPos.x - startPos.x);
 }
