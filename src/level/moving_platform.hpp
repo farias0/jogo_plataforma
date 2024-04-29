@@ -63,7 +63,7 @@ public:
     MovingPlatformAnchor startAnchor, endAnchor;
 
 
-    MovingPlatform() : Level::Entity(), endAnchor(this, RED), startAnchor(this, GREEN) {};
+    MovingPlatform() : Level::Entity(), startAnchor(this, GREEN), endAnchor(this, RED) {};
 
     static MovingPlatform *Add();
 
