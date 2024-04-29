@@ -195,8 +195,6 @@ void selectEntitiesApplyMove() {
     }
 
     // Apply move
-    Vector2 newPos;
-
     for (auto node = EDITOR_STATE->selectedEntities.begin(); node < EDITOR_STATE->selectedEntities.end(); node++) {
         
         switch (GAME_STATE->mode) {

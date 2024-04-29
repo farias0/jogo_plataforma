@@ -4,7 +4,6 @@
 #include "moving_platform.hpp"
 #include "level.hpp"
 #include "../camera.hpp"
-#include "../editor.hpp"
 #include "../render.hpp"
 
 
@@ -117,15 +116,6 @@ void MovingPlatform::Draw() {
     // Draw anchors
     startAnchor.Draw();
     endAnchor.Draw();
-}
-
-void MovingPlatform::DrawMoveGhost() {
-    for (int i = 0; i < size; i++) {
-        Vector2 pos = PosInSceneToScreen({
-                                        hitbox.x + (sprite->sprite.width * sprite->scale * i),
-                                        hitbox.y });
-        DrawTexture(sprite->sprite, pos.x, pos.y, { WHITE.r, WHITE.g, WHITE.b, EDITOR_SELECTION_MOVE_TRANSPARENCY });
-    }
 }
 
 std::string MovingPlatform::PersistanceSerialize() {

@@ -41,6 +41,7 @@ public:
 
     void SetOrigin(Vector2 origin) override {
         // Does nothing. DANGEROUS!
+        (void) origin;
     }
 
     void Draw() override {
@@ -62,7 +63,7 @@ public:
     MovingPlatformAnchor startAnchor, endAnchor;
 
 
-    MovingPlatform() : startAnchor(this, GREEN), endAnchor(this, RED), Level::Entity() {};
+    MovingPlatform() : Level::Entity(), endAnchor(this, RED), startAnchor(this, GREEN) {};
 
     static MovingPlatform *Add();
 
@@ -83,7 +84,6 @@ public:
     void Tick() override;
 
     void Draw() override;
-    void DrawMoveGhost() override;
 
     std::string PersistanceSerialize() override;
     void PersistenceParse(const std::string &data) override;
