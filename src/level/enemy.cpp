@@ -19,7 +19,7 @@ Level::Entity *EnemyAdd(Vector2 origin) {
 
     newEnemy->tags = Level::IS_ENEMY +
                             Level::IS_GROUND +
-                            Level::IS_DANGER;
+                            Level::IS_COLLIDE_DANGER;
     newEnemy->origin = origin;
     newEnemy->sprite = &SPRITES->Enemy;
     newEnemy->hitbox = SpriteHitboxFromEdge(newEnemy->sprite, newEnemy->origin);
@@ -102,7 +102,7 @@ void EnemyTick(Level::Entity *enemy) {
 
         if (entity == enemy) goto next_node;
 
-        if (entity->tags & Level::IS_SCENARIO &&
+        if (entity->tags & Level::IS_COLLIDE_WALL &&
             CheckCollisionRecs(entity->hitbox, enemy->hitbox)) {
 
                 enemy->isFacingRight = !enemy->isFacingRight;

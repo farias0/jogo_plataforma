@@ -75,13 +75,13 @@ void PersistenceLevelSave(char *levelName) {
             entityTag = LEVEL_ENTITY_PLAYER;
         else if (entity->tags & Level::IS_ENEMY)
             entityTag = LEVEL_ENTITY_ENEMY;
-        else if (entity->tags & Level::IS_SCENARIO && entity->tags & Level::IS_DANGER)
+        else if (entity->tags & Level::IS_COLLIDE_WALL && entity->tags & Level::IS_COLLIDE_DANGER)
             entityTag = LEVEL_ENTITY_ACID;
-        else if (entity->tags & Level::IS_SCENARIO && !(entity->tags & Level::IS_DANGER))
+        else if (entity->tags & Level::IS_COLLIDE_WALL && !(entity->tags & Level::IS_COLLIDE_DANGER))
             entityTag = LEVEL_ENTITY_BLOCK;
         else if (entity->tags & Level::IS_EXIT)
             entityTag = LEVEL_ENTITY_EXIT;
-        else if (entity->tags & Level::IS_GLIDE)
+        else if (entity->tags & Level::IS_GLIDE_PICKUP)
             entityTag = LEVEL_ENTITY_GLIDE;
         else if (entity->tags & Level::IS_CHECKPOINT_PICKUP)
             entityTag = LEVEL_ENITTY_CHECKPOINT_PICKUP;

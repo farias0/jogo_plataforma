@@ -29,14 +29,14 @@ namespace Level {
 typedef enum {
     IS_PLAYER               = 1,
     IS_ENEMY                = 2,
-    IS_SCENARIO             = 4, // the meaning of this component isnt clear
+    IS_COLLIDE_WALL         = 4,
     IS_EXIT                 = 8,
     IS_GROUND               = 16,
-    IS_DANGER               = 32,
-    IS_GLIDE                = 64,
-    IS_CHECKPOINT           = 128,
+    IS_COLLIDE_DANGER       = 32,
+    IS_GLIDE_PICKUP         = 64,
+    //IS_CHECKPOINT           = 128,
     IS_TEXTBOX              = 256,
-    IS_HOOK                 = 512,
+    //IS_HOOK                 = 512,
     IS_HOOKABLE             = 1024,
     IS_CHECKPOINT_PICKUP    = 2048,
 } EntityTag;

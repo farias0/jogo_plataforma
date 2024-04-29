@@ -235,7 +235,7 @@ Entity *CheckpointFlagAdd(Vector2 pos) {
     Sprite *sprite = &SPRITES->LevelCheckpointFlag;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newCheckpoint->tags = IS_CHECKPOINT;
+    newCheckpoint->tags = 0;
     newCheckpoint->hitbox = hitbox;
     newCheckpoint->origin = pos;
     newCheckpoint->sprite = sprite;
