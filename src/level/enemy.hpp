@@ -7,21 +7,29 @@
 #include "level.hpp"
 
 
-// Initializes and adds an enemy to the level
-Level::Entity *EnemyAdd();
+class Enemy : public Level::Entity {
 
-// Initializes and adds an enemy to the level in the given origin
-Level::Entity *EnemyAdd(Vector2 origin);
+public:
 
-// Initializes and adds an enemy to the level in the given origin,
-// if there are not other elements there already
-void EnemyCheckAndAdd(Vector2 origin);
+    // Initializes and adds an enemy to the level
+    static Enemy *Add();
 
-// Runs the update routine of a given enemy
-void EnemyTick(Level::Entity *enemy);
+    // Initializes and adds an enemy to the level in the given origin
+    static Enemy *Add(Vector2 origin);
 
-// Kills a given enemy
-void EnemyKill(Level::Entity *enemy);
+    // Initializes and adds an enemy to the level in the given origin,
+    // if there are not other elements there already
+    static void CheckAndAdd(Vector2 origin);
+
+    // Kills a given enemy
+    void Kill();
+
+    // Runs the update routine of a given enemy
+    void Tick();
+
+    void Draw();
+
+};
 
 
 #endif // _ENEMY_H_INCLUDED_
