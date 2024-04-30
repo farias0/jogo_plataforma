@@ -485,15 +485,12 @@ Rectangle EntityOriginHitbox(Entity *entity) {
 
 void Entity::Tick() {            
 
-    // TODO create Enemy class
-    if (tags & IS_ENEMY) EnemyTick(this);
-    
+    // Default entity has no tick routine
 }
 
 void Entity::Draw() {            
 
-    if (!(tags & IS_ENEMY) || !isDead) // TODO Enemy class
-        Render::DrawLevelEntity(this);
+    Render::DrawLevelEntity(this);
 
     if (EDITOR_STATE->isEnabled)
         Render::DrawLevelEntityOrigin(this);

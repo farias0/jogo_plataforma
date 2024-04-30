@@ -138,7 +138,7 @@ bool PersistenceLevelLoad(char *levelName) {
             case LEVEL_ENTITY_PLAYER:
                 entity = Player::Initialize(); break;
             case LEVEL_ENTITY_ENEMY:
-                entity = EnemyAdd(); break;
+                entity = Enemy::Add(); break;
             case LEVEL_ENTITY_BLOCK:
                 entity = BlockAdd(); break;
             case LEVEL_ENTITY_ACID:

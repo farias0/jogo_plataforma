@@ -399,7 +399,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
             groundBeneath->tags & Level::IS_ENEMY) {
 
             lastGroundBeneath = GetTime();
-            EnemyKill(groundBeneath);
+            ((Enemy *)groundBeneath)->Kill();
             groundBeneath = 0;
         }
     }
@@ -431,7 +431,7 @@ COLISION_CHECKING:
                 // Player hit enemy
                 if (CheckCollisionRecs(entity->hitbox, lowerbody)) {
                     lastGroundBeneath = GetTime();
-                    EnemyKill(entity);
+                    ((Enemy *)entity)->Kill();
                     goto next_entity;
                 }
             }
