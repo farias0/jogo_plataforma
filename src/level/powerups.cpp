@@ -17,6 +17,8 @@ Level::Entity *GlideAdd(Vector2 origin) {
     glide->sprite = &SPRITES->GlideItem;
     glide->hitbox = SpriteHitboxFromEdge(glide->sprite, glide->origin);
 
+    glide->persistanceEntityID = GLIDE_PICKUP_PERSISTENCE_ID;
+
     LinkedList::AddNode(&Level::STATE->listHead, glide);
 
     TraceLog(LOG_TRACE, "Added glide item to level (x=%.1f, y=%.1f)",
