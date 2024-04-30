@@ -8,6 +8,7 @@
 #include "player.hpp"
 #include "enemy.hpp"
 #include "grappling_hook.hpp"
+#include "moving_platform.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../editor.hpp"
@@ -288,6 +289,11 @@ void EntityDestroy(Entity *entity) {
 
     if (entity->tags & IS_PLAYER) {
         TraceLog(LOG_DEBUG, "Tried to destroy Player entity");
+        return;
+    }
+
+    if (entity->tags & IS_ANCHOR) {
+        TraceLog(LOG_DEBUG, "Tried to destroy an anchor entity");
         return;
     }
 

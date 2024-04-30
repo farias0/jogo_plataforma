@@ -154,6 +154,7 @@ static void updateEntitySelectionList() {
             bool collisionWithEntity = false;
             if (entity->tags & Level::IS_MOVING_PLATFORM) {
 
+                // Only the moving platform's anchors are checked for collision and go into the entity selection
                 auto p = (MovingPlatform *) entity;
                 if (CheckCollisionRecs(selectionHitbox, p->startAnchor.hitbox))
                     EDITOR_STATE->selectedEntities.push_back(&p->startAnchor);

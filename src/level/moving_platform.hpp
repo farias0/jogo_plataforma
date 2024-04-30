@@ -14,6 +14,7 @@ class MovingPlatform;
 /*
     Defines the two ends of a moving platform's tracks
 */
+// TODO consider making the interface IAnchor, if other entities use a similar concept
 class MovingPlatformAnchor : public Level::Entity {
 
 public:
@@ -25,7 +26,7 @@ public:
     MovingPlatformAnchor(MovingPlatform *parent, Color color) {
         this->parent = parent;
         this->color = color;
-        tags = Level::IS_MOVING_PLATFORM;
+        tags = Level::IS_ANCHOR;
     }
 
     Rectangle GetOriginHitbox() override {

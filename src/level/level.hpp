@@ -42,6 +42,7 @@ typedef enum {
     IS_HOOKABLE             = 1024,
     IS_CHECKPOINT_PICKUP    = 2048,
     IS_MOVING_PLATFORM      = 4096,
+    IS_ANCHOR               = 8192,
 } EntityTag;
 
 
