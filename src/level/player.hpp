@@ -109,6 +109,11 @@ private:
     void createAnimations();
     
     Animation::Animation *getCurrentAnimation();
+
+    std::string PersistanceEntityID() {
+        const static std::string persistanceEntityID = "player";
+        return persistanceEntityID;
+    }
 };
 
 

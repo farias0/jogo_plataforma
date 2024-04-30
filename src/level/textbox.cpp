@@ -24,6 +24,8 @@ Textbox *Textbox::Add(Vector2 pos, int textId) {
     newTextbox->isFacingRight = true;
     newTextbox->textId = textId;
 
+    newTextbox->persistanceEntityID = "textbox_button";
+
     LinkedList::AddNode(&Level::STATE->listHead, newTextbox);
 
     TraceLog(LOG_TRACE, "Added textbox button to level (x=%.1f, y=%.1f)",

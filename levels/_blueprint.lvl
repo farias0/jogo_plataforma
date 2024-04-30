@@ -1,7 +1,7 @@
 levelname:new_level.lvl
-0:originX=344.000000;originY=200.000000;
-2:originX=288.000000;originY=544.000000;
-2:originX=320.000000;originY=544.000000;
-2:originX=352.000000;originY=544.000000;
-2:originX=384.000000;originY=544.000000;
-2:originX=416.000000;originY=544.000000;
+player:originX=344.000000;originY=200.000000;
+block:originX=288.000000;originY=544.000000;
+block:originX=320.000000;originY=544.000000;
+block:originX=352.000000;originY=544.000000;
+block:originX=384.000000;originY=544.000000;
+block:originX=416.000000;originY=544.000000;

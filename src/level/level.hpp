@@ -57,12 +57,20 @@ public:
     bool isFacingRight;
     bool isFallingDown;
 
+    // To support entity types that simply instantiate Entity (no subclass)
+    std::string persistanceEntityID = "!!!_unknown_level_entity";
+    
+
     virtual void Tick();
 
     void Draw();
 
     virtual std::string PersistanceSerialize();
     virtual void PersistenceParse(const std::string &data);
+
+	std::string PersistanceEntityID() {
+        return persistanceEntityID;
+    }
 
     // If the entity's hitbox should be ignored when it's dead.
     bool IsADeadEnemy() {

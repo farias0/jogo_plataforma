@@ -29,6 +29,10 @@ public:
 
     void Draw();
 
+    std::string PersistanceEntityID() {
+        static const std::string persistanceEntityID = "enemy";
+        return persistanceEntityID;
+    }
 };
 
 

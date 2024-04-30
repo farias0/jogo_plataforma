@@ -267,6 +267,8 @@ Entity *ExitAdd(Vector2 pos) {
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
+    newExit->persistanceEntityID = "lvl_exit";
+
     STATE->exit = (Entity *) LinkedList::AddNode(&STATE->listHead, newExit);
 
     TraceLog(LOG_TRACE, "Added exit to level (x=%.1f, y=%.1f)",
