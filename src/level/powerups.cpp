@@ -12,7 +12,7 @@ Level::Entity *GlideAdd(Vector2 origin) {
     
     Level::Entity *glide = new Level::Entity();
 
-    glide->tags = Level::IS_GLIDE;
+    glide->tags = Level::IS_GLIDE_PICKUP;
     glide->origin = origin;
     glide->sprite = &SPRITES->GlideItem;
     glide->hitbox = SpriteHitboxFromEdge(glide->sprite, glide->origin);

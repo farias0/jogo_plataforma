@@ -122,7 +122,7 @@ static void updateEntitySelectionList() {
             
             if (entity->tags & Level::IS_PLAYER) goto next_entity;
 
-            bool collisionWithEntity = !entity->isDead && CheckCollisionRecs(selectionHitbox, entity->hitbox);
+            bool collisionWithEntity = !entity->IsADeadEnemy() && CheckCollisionRecs(selectionHitbox, entity->hitbox);
             bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, Level::EntityOriginHitbox(entity));
             if (collisionWithEntity || collisionWithGhost) {
                 

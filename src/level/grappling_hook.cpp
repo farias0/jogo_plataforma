@@ -32,7 +32,7 @@ GrapplingHook *GrapplingHook::Initialize() {
 
     GrapplingHook *hook = new GrapplingHook();
 
-    hook->tags = Level::IS_HOOK;
+    hook->tags = 0;
     hook->isFacingRight = PLAYER->isFacingRight;
 
     hook->FollowPlayer();
