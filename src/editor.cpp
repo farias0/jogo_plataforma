@@ -30,12 +30,39 @@ static void buttonsSelectDefault() {
     EDITOR_STATE->toggledEntityButton = EDITOR_STATE->defaultEntityButton;
 }
 
+static void editorUseEraserInLevel(Vector2 pos) {
+
+    Level::Entity *foundEntity = Level::EntityGetRemoveableAt(pos);
+    if (!foundEntity) return;
+
+    auto foundEntityInSelection = std::find(EDITOR_STATE->selectedEntities.begin(),
+                                                EDITOR_STATE->selectedEntities.end(),
+                                                foundEntity);
+    bool isPartOfSelection = foundEntityInSelection != EDITOR_STATE->selectedEntities.end();
+
+    if (isPartOfSelection) {
+
+        // Delete all selected entities
+        for (auto selectedEntity = EDITOR_STATE->selectedEntities.begin();
+                selectedEntity < EDITOR_STATE->selectedEntities.end();
+                selectedEntity++) {
+
+            Level::EntityDestroy((Level::Entity *)*selectedEntity);
+        }
+
+    }
+    else {
+        Level::EntityDestroy(foundEntity);
+    }
+
+}
+
 static void editorUseEraser(Vector2 cursorPos) {
 
     switch (GAME_STATE->mode) {
         
     case MODE_IN_LEVEL:
-        Level::EntityRemoveAt(cursorPos);
+        editorUseEraserInLevel(cursorPos);
         break;
     
     case MODE_OVERWORLD:

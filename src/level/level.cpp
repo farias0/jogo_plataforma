@@ -284,8 +284,12 @@ Entity *GetGroundBeneathHitbox(Rectangle hitbox) {
     return getGroundBeneath(hitbox, 0);
 }
 
-// TODO put this in the Entity's destructor
 void EntityDestroy(Entity *entity) {
+
+    if (entity->tags & IS_PLAYER) {
+        TraceLog(LOG_DEBUG, "Tried to destroy Player entity");
+        return;
+    }
 
     if (entity == STATE->exit) STATE->exit = 0;
 
@@ -310,55 +314,34 @@ Entity *EntityGetAt(Vector2 pos) {
         e != 0;
         e = (Entity *) e->next) {
 
-            if (CheckCollisionPointRec(pos, e->hitbox)) result = e;
+            if (CheckCollisionPointRec(pos, e->hitbox)) {
+                result = e; break;
+            }
     }
 
     return result;
 }
 
-void EntityRemoveAt(Vector2 pos) {
+Entity *EntityGetRemoveableAt(Vector2 pos) {
 
-    // TODO This function is too big and should be broken up
-    // in at least two others ASAP
+    Entity *result = 0;
 
-    Entity *entity = (Entity *) STATE->listHead;
+    for (Entity *entity = (Entity *) STATE->listHead;
+        entity != 0;
+        entity = (Entity *) entity->next) {
 
-    while (entity != 0) {
+            if (entity->tags & IS_PLAYER) continue;
 
-        if (entity->tags & IS_PLAYER) goto next_entity;
+            if (CheckCollisionPointRec(pos, EntityOriginHitbox(entity))) {
+                result = entity; break;
+            }
 
-        if (CheckCollisionPointRec(pos, EntityOriginHitbox(entity))) {
-            break;
-        }
-
-        if (!entity->IsADeadEnemy() && CheckCollisionPointRec(pos, entity->hitbox)) {
-            break;
-        }
-
-next_entity:
-        entity = (Entity *) entity->next;
-    };
-
-    if (!entity) return;
-
-    bool isPartOfSelection = std::find(EDITOR_STATE->selectedEntities.begin(), EDITOR_STATE->selectedEntities.end(), entity) != EDITOR_STATE->selectedEntities.end();
-    if (isPartOfSelection) {
-
-        for (auto e = EDITOR_STATE->selectedEntities.begin(); e < EDITOR_STATE->selectedEntities.end(); e++) {
-
-            Entity *selectedEntity = (Entity *) *e;
-
-            if (selectedEntity->tags & IS_PLAYER) continue;
-
-            EntityDestroy(selectedEntity);
-        }
-
-        EditorSelectionCancel();
-
-    } else {
-
-        EntityDestroy(entity);
+            if (!entity->IsADeadEnemy() && CheckCollisionPointRec(pos, entity->hitbox)) {
+                result = entity; break;
+            }
     }
+
+    return result;
 }
 
 void PauseToggle() {
