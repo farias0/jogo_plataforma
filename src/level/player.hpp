@@ -46,6 +46,7 @@ public:
     // A reference to the launched grappling hook, if there's one  
     GrapplingHook *hookLaunched;
 
+
     // Initializes and adds the player to the level
     static Player *Initialize();
 
@@ -111,7 +112,7 @@ private:
     Animation::Animation *getCurrentAnimation();
 
     std::string PersistanceEntityID() {
-        const static std::string persistanceEntityID = "player";
+        static const std::string persistanceEntityID = "player";
         return persistanceEntityID;
     }
 };
