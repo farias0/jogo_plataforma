@@ -22,6 +22,8 @@
 // Below this y entities die
 #define FLOOR_DEATH_HEIGHT      1400
 
+#define EXIT_PERSISTENCE_ID     "lvl_exit"
+
 
 namespace Level {
 
@@ -29,14 +31,14 @@ namespace Level {
 typedef enum {
     IS_PLAYER               = 1,
     IS_ENEMY                = 2,
-    IS_SCENARIO             = 4, // the meaning of this component isnt clear
+    IS_COLLIDE_WALL         = 4,
     IS_EXIT                 = 8,
     IS_GROUND               = 16,
-    IS_DANGER               = 32,
-    IS_GLIDE                = 64,
-    IS_CHECKPOINT           = 128,
+    IS_COLLIDE_DANGER       = 32,
+    IS_GLIDE_PICKUP         = 64,
+    //IS_CHECKPOINT           = 128,
     IS_TEXTBOX              = 256,
-    IS_HOOK                 = 512,
+    //IS_HOOK                 = 512,
     IS_HOOKABLE             = 1024,
     IS_CHECKPOINT_PICKUP    = 2048,
     IS_MOVING_PLATFORM      = 4096,
@@ -58,6 +60,10 @@ public:
     bool isFacingRight;
     bool isFallingDown;
 
+    // It's a variable so it supports entity types that simply instantiates Entity (i.e. not a subclass)
+    std::string persistanceEntityID = "!!!_unknown_level_entity";
+    
+
     virtual Rectangle GetOriginHitbox() {
         return {
             origin.x, origin.y,
@@ -71,7 +77,7 @@ public:
 
     virtual void SetOrigin(Vector2 origin) {
         this->origin = origin;
-    }
+    }    
 
     virtual void Tick();
 
@@ -81,6 +87,14 @@ public:
     virtual std::string PersistanceSerialize();
     virtual void PersistenceParse(const std::string &data);
 
+    std::string PersistanceEntityID() {
+        return persistanceEntityID;
+    }
+
+    // If the entity's hitbox should be ignored when it's dead.
+    bool IsADeadEnemy() {
+        return (tags & IS_ENEMY) && isDead;
+    }
 };
 
 

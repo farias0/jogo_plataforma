@@ -131,7 +131,7 @@ static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
         if (possibleGround != entity &&
             possibleGround->tags & IS_GROUND &&
 
-            !(possibleGround->isDead) &&
+            !possibleGround->IsADeadEnemy() &&
 
             // If x is within the possible ground
             possibleGround->hitbox.x < (hitbox.x + hitbox.width) &&
@@ -235,7 +235,7 @@ Entity *CheckpointFlagAdd(Vector2 pos) {
     Sprite *sprite = &SPRITES->LevelCheckpointFlag;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newCheckpoint->tags = IS_CHECKPOINT;
+    newCheckpoint->tags = 0;
     newCheckpoint->hitbox = hitbox;
     newCheckpoint->origin = pos;
     newCheckpoint->sprite = sprite;
@@ -266,6 +266,8 @@ Entity *ExitAdd(Vector2 pos) {
     newExit->origin = pos;
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
+
+    newExit->persistanceEntityID = EXIT_PERSISTENCE_ID;
 
     STATE->exit = (Entity *) LinkedList::AddNode(&STATE->listHead, newExit);
 
@@ -343,7 +345,7 @@ void EntityRemoveAt(Vector2 pos) {
             break;
         }
 
-        if (!(entity->isDead) && CheckCollisionPointRec(pos, entity->hitbox)) {
+        if (!entity->IsADeadEnemy() && CheckCollisionPointRec(pos, entity->hitbox)) {
             break;
         }
 
@@ -416,7 +418,7 @@ bool CheckCollisionWithAnyEntity(Rectangle hitbox) {
 
     while (entity != 0) {
 
-        if (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox)) {
+        if (!entity->IsADeadEnemy() && CheckCollisionRecs(hitbox, entity->hitbox)) {
             return true;
         }
 
@@ -443,7 +445,7 @@ bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::No
                                     };
 
         if (CheckCollisionRecs(hitbox, entitysOrigin) ||
-            (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox))) {
+            (!entity->IsADeadEnemy() && CheckCollisionRecs(hitbox, entity->hitbox))) {
 
             for (auto e = entitiesToIgnore.begin(); e < entitiesToIgnore.end(); e++) {
                 if (*e == entity) goto next_entity;
@@ -476,15 +478,12 @@ void LoadNew() {
 
 void Entity::Tick() {            
 
-    // TODO create Enemy class
-    if (tags & IS_ENEMY) EnemyTick(this);
-    
+    // Default entity has no tick routine
 }
 
 void Entity::Draw() {            
 
-    if (!(tags & IS_ENEMY) || !isDead)
-        Render::DrawLevelEntity(this);
+    Render::DrawLevelEntity(this);
 
     if (EDITOR_STATE->isEnabled)
         Render::DrawLevelEntityOriginGhost(this);

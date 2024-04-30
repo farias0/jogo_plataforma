@@ -3,23 +3,24 @@
 #include "enemy.hpp"
 #include "level.hpp"
 #include "../debug.hpp"
+#include "../editor.hpp"
 
 
 #define ENEMY_SPEED_DEFAULT 4.0f
 #define ENEMY_FALL_RATE 7.0f
 
 
-Level::Entity *EnemyAdd() {
-    return EnemyAdd({ 0,0 });
+Enemy *Enemy::Add() {
+    return Add({ 0,0 });
 }
 
-Level::Entity *EnemyAdd(Vector2 origin) {
+Enemy *Enemy::Add(Vector2 origin) {
 
-    Level::Entity *newEnemy = new Level::Entity();
+    Enemy *newEnemy = new Enemy();
 
     newEnemy->tags = Level::IS_ENEMY +
                             Level::IS_GROUND +
-                            Level::IS_DANGER;
+                            Level::IS_COLLIDE_DANGER;
     newEnemy->origin = origin;
     newEnemy->sprite = &SPRITES->Enemy;
     newEnemy->hitbox = SpriteHitboxFromEdge(newEnemy->sprite, newEnemy->origin);
@@ -34,7 +35,7 @@ Level::Entity *EnemyAdd(Vector2 origin) {
     return newEnemy;
 }
 
-void EnemyCheckAndAdd(Vector2 origin) {    
+void Enemy::CheckAndAdd(Vector2 origin) {    
 
     Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->Enemy, origin);
 
@@ -43,39 +44,39 @@ void EnemyCheckAndAdd(Vector2 origin) {
         return;
     }
 
-    EnemyAdd({ hitbox.x, hitbox.y });
+    Add({ hitbox.x, hitbox.y });
 }
 
-void EnemyTick(Level::Entity *enemy) {
+void Enemy::Tick() {
 
     if (Level::STATE->concludedAgo >= 0) return;
 
-    if (enemy->isDead) return;
+    if (isDead) return;
 
 
-    Level::Entity *groundBeneath = Level::GetGroundBeneath(enemy);
+    Level::Entity *groundBeneath = Level::GetGroundBeneath(this);
 
-    if (!groundBeneath) enemy->isFallingDown = true;
+    if (!groundBeneath) isFallingDown = true;
 
-    if (enemy->isFallingDown) {
+    if (isFallingDown) {
         
         if (groundBeneath &&
-            enemy->hitbox.y + enemy->hitbox.height + ENEMY_FALL_RATE >= groundBeneath->hitbox.y) {
+            hitbox.y + hitbox.height + ENEMY_FALL_RATE >= groundBeneath->hitbox.y) {
 
             // Land
-            enemy->hitbox.y = groundBeneath->hitbox.y - enemy->hitbox.height;
-            enemy->isFallingDown = false;
+            hitbox.y = groundBeneath->hitbox.y - hitbox.height;
+            isFallingDown = false;
         }
 
         else {
 
             // Fall
-            enemy->hitbox.y += ENEMY_FALL_RATE;
+            hitbox.y += ENEMY_FALL_RATE;
         }
 
-        if  (enemy->hitbox.y + enemy->hitbox.height > FLOOR_DEATH_HEIGHT) {
+        if  (hitbox.y + hitbox.height > FLOOR_DEATH_HEIGHT) {
 
-            EnemyKill(enemy);
+            Kill();
             return;
         }
 
@@ -83,29 +84,29 @@ void EnemyTick(Level::Entity *enemy) {
     }
 
     if (!groundBeneath || 
-            (enemy->isFacingRight &&
-                ((enemy->hitbox.x + enemy->hitbox.width) > (groundBeneath->hitbox.x + groundBeneath->hitbox.width))) ||
-            (!enemy->isFacingRight && (enemy->hitbox.x < groundBeneath->hitbox.x))
+            (isFacingRight &&
+                ((hitbox.x + hitbox.width) > (groundBeneath->hitbox.x + groundBeneath->hitbox.width))) ||
+            (!isFacingRight && (hitbox.x < groundBeneath->hitbox.x))
     ) {
         
         // Turn around
-        enemy->isFacingRight = !(enemy->isFacingRight);
+        isFacingRight = !(isFacingRight);
     }
 
-    if (enemy->isFacingRight) enemy->hitbox.x += ENEMY_SPEED_DEFAULT;
-    else enemy->hitbox.x -= ENEMY_SPEED_DEFAULT;
+    if (isFacingRight) hitbox.x += ENEMY_SPEED_DEFAULT;
+    else hitbox.x -= ENEMY_SPEED_DEFAULT;
 
     LinkedList::Node *node = Level::STATE->listHead;
     while (node) {
 
         Level::Entity *entity = (Level::Entity *) node;
 
-        if (entity == enemy) goto next_node;
+        if (entity == this) goto next_node;
 
-        if (entity->tags & Level::IS_SCENARIO &&
-            CheckCollisionRecs(entity->hitbox, enemy->hitbox)) {
+        if (entity->tags & Level::IS_COLLIDE_WALL &&
+            CheckCollisionRecs(entity->hitbox, hitbox)) {
 
-                enemy->isFacingRight = !enemy->isFacingRight;
+                isFacingRight = !isFacingRight;
 
                 return;
         }
@@ -115,11 +116,20 @@ next_node:
     }
 }
 
-void EnemyKill(Level::Entity *enemy) {
+void Enemy::Kill() {
 
-    enemy->isDead = true;
+    isDead = true;
 
-    DebugEntityStop(enemy);
+    DebugEntityStop(this);
 
     TraceLog(LOG_TRACE, "Enemy died.");
+}
+
+void Enemy::Draw() {
+
+    if (!isDead)
+        Render::DrawLevelEntity(this);
+
+    if (EDITOR_STATE->isEnabled)
+        Render::DrawLevelEntityOriginGhost(this);
 }

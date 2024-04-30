@@ -7,6 +7,7 @@
 #include "../editor.hpp"
 #include "../camera.hpp"
 
+#define MOVING_PLATFORM_PERSISTENCE_ID          "moving_platform"
 
 class MovingPlatform;
 
@@ -87,7 +88,9 @@ public:
 
     std::string PersistanceSerialize() override;
     void PersistenceParse(const std::string &data) override;
-
+    std::string PersistanceEntityID() {
+        return MOVING_PLATFORM_PERSISTENCE_ID;
+    }
 
 private:
 

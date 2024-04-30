@@ -6,22 +6,35 @@
 
 #include "level.hpp"
 
+#define ENEMY_PERSISTENCE_ID    "enemy"
 
-// Initializes and adds an enemy to the level
-Level::Entity *EnemyAdd();
 
-// Initializes and adds an enemy to the level in the given origin
-Level::Entity *EnemyAdd(Vector2 origin);
+class Enemy : public Level::Entity {
 
-// Initializes and adds an enemy to the level in the given origin,
-// if there are not other elements there already
-void EnemyCheckAndAdd(Vector2 origin);
+public:
 
-// Runs the update routine of a given enemy
-void EnemyTick(Level::Entity *enemy);
+    // Initializes and adds an enemy to the level
+    static Enemy *Add();
 
-// Kills a given enemy
-void EnemyKill(Level::Entity *enemy);
+    // Initializes and adds an enemy to the level in the given origin
+    static Enemy *Add(Vector2 origin);
+
+    // Initializes and adds an enemy to the level in the given origin,
+    // if there are not other elements there already
+    static void CheckAndAdd(Vector2 origin);
+
+    // Kills a given enemy
+    void Kill();
+
+    // Runs the update routine of a given enemy
+    void Tick();
+
+    void Draw();
+
+    std::string PersistanceEntityID() {
+        return ENEMY_PERSISTENCE_ID;
+    }
+};
 
 
 #endif // _ENEMY_H_INCLUDED_

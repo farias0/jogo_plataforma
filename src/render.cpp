@@ -474,9 +474,8 @@ void drawEditorEntitySelection() {
             if (EDITOR_STATE->isMovingSelectedEntities) {
                 entity->DrawMoveGhost();
             } else {
-                if (!entity->isDead) drawSceneRectangle(entity->hitbox, color);
-                drawSceneRectangle(entity->GetOriginHitbox(), color); // ATTENTION: "dead" entities only have their origin selection drawn.
-                                                                        // This only works if dead entities never move!
+                if (!entity->IsADeadEnemy()) drawSceneRectangle(entity->hitbox, color);
+                drawSceneRectangle(entity->GetOriginHitbox(), color);
             }
 
         }

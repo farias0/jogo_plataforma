@@ -399,7 +399,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
             groundBeneath->tags & Level::IS_ENEMY) {
 
             lastGroundBeneath = GetTime();
-            EnemyKill(groundBeneath);
+            ((Enemy *)groundBeneath)->Kill();
             groundBeneath = 0;
         }
     }
@@ -431,18 +431,18 @@ COLISION_CHECKING:
                 // Player hit enemy
                 if (CheckCollisionRecs(entity->hitbox, lowerbody)) {
                     lastGroundBeneath = GetTime();
-                    EnemyKill(entity);
+                    ((Enemy *)entity)->Kill();
                     goto next_entity;
                 }
             }
 
-            else if (entity->tags & Level::IS_SCENARIO) {
+            else if (entity->tags & Level::IS_COLLIDE_WALL) {
 
                 // Check for collision with level geometry
 
                 Rectangle collisionRec = GetCollisionRec(entity->hitbox, hitbox);
 
-                if (entity->tags & Level::IS_DANGER &&
+                if (entity->tags & Level::IS_COLLIDE_DANGER &&
                     (collisionRec.width > 0 || collisionRec.height > 0 || groundBeneath == entity)) {
                     
                     // Player hit dangerous level element
@@ -507,7 +507,7 @@ COLISION_CHECKING:
                 Level::GoToOverworld();
             }
 
-            else if (entity->tags & Level::IS_GLIDE &&
+            else if (entity->tags & Level::IS_GLIDE_PICKUP &&
                         CheckCollisionRecs(entity->hitbox, hitbox) &&
                         mode != PLAYER_MODE_GLIDE) {
                 SetMode(PLAYER_MODE_GLIDE);

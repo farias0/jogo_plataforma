@@ -12,12 +12,14 @@ Level::Entity *BlockAdd(Vector2 origin) {
 
     Level::Entity *newBlock = new Level::Entity();
 
-    newBlock->tags = Level::IS_SCENARIO +
+    newBlock->tags = Level::IS_COLLIDE_WALL +
                             Level::IS_GROUND +
                             Level::IS_HOOKABLE;
     newBlock->origin = origin;
     newBlock->sprite = &SPRITES->Block;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
+
+    newBlock->persistanceEntityID = BLOCK_PERSISTENCE_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, newBlock);
 
@@ -45,13 +47,15 @@ Level::Entity *AcidAdd(Vector2 origin) {
 
     Level::Entity *newBlock = new Level::Entity();
 
-    newBlock->tags = Level::IS_SCENARIO +
+    newBlock->tags = Level::IS_COLLIDE_WALL +
                             Level::IS_GROUND +
-                            Level::IS_DANGER +
+                            Level::IS_COLLIDE_DANGER +
                             Level::IS_HOOKABLE;
     newBlock->origin = origin;
     newBlock->sprite = &SPRITES->Acid;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
+
+    newBlock->persistanceEntityID = ACID_BLOCK_PERSISTENCE_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, newBlock);
 

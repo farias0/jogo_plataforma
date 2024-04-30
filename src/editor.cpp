@@ -77,7 +77,7 @@ EditorControlButton *addControlButton(EditorControlType type, char *label, void 
 void loadInLevelEditor() {
 
     addEntityButton(EDITOR_ENTITY_ERASER, &SPRITES->Eraser, &editorUseEraser, EDITOR_INTERACTION_HOLD);
-    addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->Enemy, &EnemyCheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->Enemy, &Enemy::CheckAndAdd, EDITOR_INTERACTION_CLICK);
     EDITOR_STATE->defaultEntityButton =
         addEntityButton(EDITOR_ENTITY_BLOCK, &SPRITES->Block, &BlockCheckAndAdd, EDITOR_INTERACTION_HOLD);
     addEntityButton(EDITOR_ENTITY_ACID, &SPRITES->Acid, &AcidCheckAndAdd, EDITOR_INTERACTION_HOLD);   
@@ -136,13 +136,13 @@ static void updateEntitySelectionList() {
                 goto next_entity;
 
             }
-            else if (!entity->isDead) { // generic entity
+            else if (!entity->IsADeadEnemy()) { // generic entity
                 collisionWithEntity = CheckCollisionRecs(selectionHitbox, entity->hitbox);
             }
 
-            bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, entity->GetOriginHitbox());
+            bool collisionWithOrigin = CheckCollisionRecs(selectionHitbox, entity->GetOriginHitbox());
             
-            if (collisionWithEntity || collisionWithGhost) {
+            if (collisionWithEntity || collisionWithOrigin) {
                 
                 EDITOR_STATE->selectedEntities.push_back(entity);
             }

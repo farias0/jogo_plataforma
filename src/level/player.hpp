@@ -8,6 +8,8 @@
 #include "grappling_hook.hpp"
 #include "../animation.hpp"
 
+#define PLAYER_PERSISTENCE_ID   "player"
+
 
 typedef enum PlayerMode {
     PLAYER_MODE_DEFAULT,
@@ -45,6 +47,7 @@ public:
 
     // A reference to the launched grappling hook, if there's one  
     GrapplingHook *hookLaunched;
+
 
     // Initializes and adds the player to the level
     static Player *Initialize();
@@ -109,6 +112,10 @@ private:
     void createAnimations();
     
     Animation::Animation *getCurrentAnimation();
+
+    std::string PersistanceEntityID() {
+        return PLAYER_PERSISTENCE_ID;
+    }
 };
 
 
