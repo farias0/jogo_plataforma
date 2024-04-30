@@ -131,7 +131,7 @@ static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
         if (possibleGround != entity &&
             possibleGround->tags & IS_GROUND &&
 
-            !(possibleGround->isDead) &&
+            !possibleGround->IsADeadEnemy() &&
 
             // If x is within the possible ground
             possibleGround->hitbox.x < (hitbox.x + hitbox.width) &&
@@ -343,7 +343,7 @@ void EntityRemoveAt(Vector2 pos) {
             break;
         }
 
-        if (!(entity->isDead) && CheckCollisionPointRec(pos, entity->hitbox)) {
+        if (!entity->IsADeadEnemy() && CheckCollisionPointRec(pos, entity->hitbox)) {
             break;
         }
 
@@ -416,7 +416,7 @@ bool CheckCollisionWithAnyEntity(Rectangle hitbox) {
 
     while (entity != 0) {
 
-        if (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox)) {
+        if (!entity->IsADeadEnemy() && CheckCollisionRecs(hitbox, entity->hitbox)) {
             return true;
         }
 
@@ -443,7 +443,7 @@ bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::No
                                     };
 
         if (CheckCollisionRecs(hitbox, entitysOrigin) ||
-            (!(entity->isDead) && CheckCollisionRecs(hitbox, entity->hitbox))) {
+            (!entity->IsADeadEnemy() && CheckCollisionRecs(hitbox, entity->hitbox))) {
 
             for (auto e = entitiesToIgnore.begin(); e < entitiesToIgnore.end(); e++) {
                 if (*e == entity) goto next_entity;
@@ -492,7 +492,7 @@ void Entity::Tick() {
 
 void Entity::Draw() {            
 
-    if (!(tags & IS_ENEMY) || !isDead)
+    if (!(tags & IS_ENEMY) || !isDead) // TODO Enemy class
         Render::DrawLevelEntity(this);
 
     if (EDITOR_STATE->isEnabled)

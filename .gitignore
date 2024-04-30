@@ -4,5 +4,6 @@ build/
 .idea/
 cmake-build-debug/
 cmake-build-debug-visual-studio/
+todo.txt
 
 levels/new_level.lvl

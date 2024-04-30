@@ -64,6 +64,10 @@ public:
     virtual std::string PersistanceSerialize();
     virtual void PersistenceParse(const std::string &data);
 
+    // If the entity's hitbox should be ignored when it's dead.
+    bool IsADeadEnemy() {
+        return (tags & IS_ENEMY) && isDead;
+    }
 };
 
 
