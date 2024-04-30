@@ -73,25 +73,6 @@ void leave() {
     TraceLog(LOG_TRACE, "Level left.");
 }
 
-// Searches for an entity in a given position
-// and returns its node, or 0 if not found.
-static LinkedList::Node *getEntityNodeAtPos(Vector2 pos) {
-
-    Entity *entity = (Entity *) STATE->listHead;
-
-    while (entity != 0) {
-
-        if (CheckCollisionPointRec(pos, entity->hitbox)) {
-
-            return entity;
-        }
-
-        entity = (Entity *) entity->next;
-    };
-
-    return 0;
-}
-
 void tickAllEntities() {
 
     Entity *entity = (Entity *) STATE->listHead;
@@ -303,8 +284,12 @@ Entity *GetGroundBeneathHitbox(Rectangle hitbox) {
     return getGroundBeneath(hitbox, 0);
 }
 
-// TODO put this in the Entity's destructor
 void EntityDestroy(Entity *entity) {
+
+    if (entity->tags & IS_PLAYER) {
+        TraceLog(LOG_DEBUG, "Tried to destroy Player entity");
+        return;
+    }
 
     if (entity == STATE->exit) STATE->exit = 0;
 
@@ -323,56 +308,40 @@ void EntityDestroy(Entity *entity) {
 
 Entity *EntityGetAt(Vector2 pos) {
 
-    LinkedList::Node *node = getEntityNodeAtPos(pos);
+    Entity *result = 0;
 
-    if (!node) return 0;
+    for (Entity *e = (Entity *) STATE->listHead;
+        e != 0;
+        e = (Entity *) e->next) {
 
-    return (Entity *) node;
+            if (CheckCollisionPointRec(pos, e->hitbox)) {
+                result = e; break;
+            }
+    }
+
+    return result;
 }
 
-void EntityRemoveAt(Vector2 pos) {
+Entity *EntityGetRemoveableAt(Vector2 pos) {
 
-    // TODO This function is too big and should be broken up
-    // in at least two others ASAP
+    Entity *result = 0;
 
-    Entity *entity = (Entity *) STATE->listHead;
+    for (Entity *entity = (Entity *) STATE->listHead;
+        entity != 0;
+        entity = (Entity *) entity->next) {
 
-    while (entity != 0) {
+            if (entity->tags & IS_PLAYER) continue;
 
-        if (entity->tags & IS_PLAYER) goto next_entity;
+            if (CheckCollisionPointRec(pos, entity->GetOriginHitbox())) {
+                result = entity; break;
+            }
 
-        if (CheckCollisionPointRec(pos, entity->GetOriginHitbox())) {
-            break;
-        }
-
-        if (!entity->IsADeadEnemy() && CheckCollisionPointRec(pos, entity->hitbox)) {
-            break;
-        }
-
-next_entity:
-        entity = (Entity *) entity->next;
-    };
-
-    if (!entity) return;
-
-    bool isPartOfSelection = std::find(EDITOR_STATE->selectedEntities.begin(), EDITOR_STATE->selectedEntities.end(), entity) != EDITOR_STATE->selectedEntities.end();
-    if (isPartOfSelection) {
-
-        for (auto e = EDITOR_STATE->selectedEntities.begin(); e < EDITOR_STATE->selectedEntities.end(); e++) {
-
-            Entity *selectedEntity = (Entity *) *e;
-
-            if (selectedEntity->tags & IS_PLAYER) continue;
-
-            EntityDestroy(selectedEntity);
-        }
-
-        EditorSelectionCancel();
-
-    } else {
-
-        EntityDestroy(entity);
+            if (!entity->IsADeadEnemy() && CheckCollisionPointRec(pos, entity->hitbox)) {
+                result = entity; break;
+            }
     }
+
+    return result;
 }
 
 void PauseToggle() {

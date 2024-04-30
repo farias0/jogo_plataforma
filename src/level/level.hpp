@@ -159,15 +159,15 @@ Entity *GetGroundBeneath(Entity *entity);
 // The ground beneath a hitbox, or 0 if not on the ground.
 Entity *GetGroundBeneathHitbox(Rectangle hitbox);
 
-// Destroys a Entity
+// Destroys an Entity
 void EntityDestroy(Entity *entity);
 
-// Searches for level entity in position
+// Searches for any level entity in the given position
 Entity *EntityGetAt(Vector2 pos);
 
-// Removes level entity in position from the
-// list and destroys it, if found and if allowed.
-void EntityRemoveAt(Vector2 pos);
+// Searches for a removeable entity in the given position,
+// or for its ghost.
+Entity *EntityGetRemoveableAt(Vector2 pos);
 
 // Toggles between paused and unpaused game
 void PauseToggle();
