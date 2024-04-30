@@ -66,37 +66,11 @@ void PersistenceLevelSave(char *levelName) {
 
     std::string data = "levelname:" + std::string(levelName) + "\n";
 
-    Level::Entity *entity = (Level::Entity *) Level::STATE->listHead;
-    while (entity) {
+    for (Level::Entity *entity = (Level::Entity *) Level::STATE->listHead;
+        entity;
+        entity = (Level::Entity *) entity->next) {
 
-        int entityTag;
-
-        if (entity->tags & Level::IS_PLAYER)
-            entityTag = LEVEL_ENTITY_PLAYER;
-        else if (entity->tags & Level::IS_ENEMY)
-            entityTag = LEVEL_ENTITY_ENEMY;
-        else if (entity->tags & Level::IS_COLLIDE_WALL && entity->tags & Level::IS_COLLIDE_DANGER)
-            entityTag = LEVEL_ENTITY_ACID;
-        else if (entity->tags & Level::IS_COLLIDE_WALL && !(entity->tags & Level::IS_COLLIDE_DANGER))
-            entityTag = LEVEL_ENTITY_BLOCK;
-        else if (entity->tags & Level::IS_EXIT)
-            entityTag = LEVEL_ENTITY_EXIT;
-        else if (entity->tags & Level::IS_GLIDE_PICKUP)
-            entityTag = LEVEL_ENTITY_GLIDE;
-        else if (entity->tags & Level::IS_CHECKPOINT_PICKUP)
-            entityTag = LEVEL_ENITTY_CHECKPOINT_PICKUP;
-        else if (entity->tags & Level::IS_TEXTBOX) {
-            entityTag = LEVEL_ENTITY_TEXTBOX;
-        }
-        else { 
-            TraceLog(LOG_WARNING, "Unknow entity type found when serializing level, tags=%d. Skipping it...");
-            goto skip_entity; 
-        }
-        
-        data += std::to_string(entityTag) + ":" + entity->PersistanceSerialize() + '\n';
-
-skip_entity:
-        entity = (Level::Entity *) entity->next;
+            data += entity->PersistanceEntityID() + ":" + entity->PersistanceSerialize() + '\n';
     }
 
     char *levelPath = (char *) MemAlloc(LEVEL_PATH_BUFFER_SIZE);

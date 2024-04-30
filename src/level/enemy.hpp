@@ -11,6 +11,9 @@ class Enemy : public Level::Entity {
 
 public:
 
+    const std::string persistanceEntityID = "enemy";
+
+
     // Initializes and adds an enemy to the level
     static Enemy *Add();
 
@@ -29,6 +32,9 @@ public:
 
     void Draw();
 
+    std::string PersistanceEntityID() {
+        return persistanceEntityID;
+    }
 };
 
 

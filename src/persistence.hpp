@@ -29,6 +29,8 @@ public:
 	// but C++ doesn't support virtual static member functions.
 	virtual void PersistenceParse(const std::string &data) = 0;
 
+	// The ID unique to an entity type that can be persisted. Should be set as 'const' by the entity subclass.
+	virtual std::string PersistanceEntityID() = 0;
 
 	/*
 		Adds a value to a data string. To be used inside PersistenceSerialize.
