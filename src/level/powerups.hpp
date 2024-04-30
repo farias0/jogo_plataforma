@@ -5,6 +5,8 @@
 
 #include "level.hpp"
 
+#define GLIDE_PICKUP_PERSISTENCE_ID         "glide_pickup"
+
 
 Level::Entity *GlideAdd();
 

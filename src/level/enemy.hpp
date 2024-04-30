@@ -6,6 +6,8 @@
 
 #include "level.hpp"
 
+#define ENEMY_PERSISTENCE_ID    "enemy"
+
 
 class Enemy : public Level::Entity {
 
@@ -30,8 +32,7 @@ public:
     void Draw();
 
     std::string PersistanceEntityID() {
-        static const std::string persistanceEntityID = "enemy";
-        return persistanceEntityID;
+        return ENEMY_PERSISTENCE_ID;
     }
 };
 

@@ -28,17 +28,6 @@
 #define OW_PATH_BUFFER_SIZE             20 + PERSISTENCE_DIR_BUFFER_SIZE
 
 
-typedef enum LevelEntityType {
-    LEVEL_ENTITY_PLAYER             = 0,
-    LEVEL_ENTITY_ENEMY              = 1,
-    LEVEL_ENTITY_BLOCK              = 2,
-    LEVEL_ENTITY_ACID               = 3,
-    LEVEL_ENTITY_EXIT               = 4,
-    LEVEL_ENTITY_GLIDE              = 5,
-    LEVEL_ENTITY_TEXTBOX            = 6,
-    LEVEL_ENITTY_CHECKPOINT_PICKUP  = 7,
-} LevelEntityType;
-
 typedef struct PersistenceLevelEntity {
     uint16_t    entityType;
     uint32_t    originX;
@@ -107,25 +96,25 @@ bool PersistenceLevelLoad(char *levelName) {
 
             Level::Entity *entity;
             
-            switch (std::stoi(entityTag)) {
-            
-            case LEVEL_ENTITY_PLAYER:
-                entity = Player::Initialize(); break;
-            case LEVEL_ENTITY_ENEMY:
-                entity = Enemy::Add(); break;
-            case LEVEL_ENTITY_BLOCK:
-                entity = BlockAdd(); break;
-            case LEVEL_ENTITY_ACID:
-                entity = AcidAdd(); break;
-            case LEVEL_ENTITY_EXIT:
-                entity = Level::ExitAdd(); break;
-            case LEVEL_ENTITY_GLIDE:
-                entity = GlideAdd(); break;
-            case LEVEL_ENITTY_CHECKPOINT_PICKUP:
-                entity = CheckpointPickup::Add(); break;
-            case LEVEL_ENTITY_TEXTBOX:
-                entity = Textbox::Add(); break;
-            default:
+                                                        // There's gotta be a better way to associate (at compilation
+                                                        // or initialization time) a string tag to a function pointer
+            if (entityTag == PLAYER_PERSISTENCE_ID)
+                entity = Player::Initialize();
+            else if (entityTag == ENEMY_PERSISTENCE_ID)
+                entity = Enemy::Add();
+            else if (entityTag == BLOCK_PERSISTENCE_ID)
+                entity = BlockAdd();
+            else if (entityTag == ACID_BLOCK_PERSISTENCE_ID)
+                entity = AcidAdd();
+            else if (entityTag == EXIT_PERSISTENCE_ID)
+                entity = Level::ExitAdd();
+            else if (entityTag == GLIDE_PICKUP_PERSISTENCE_ID)
+                entity = GlideAdd();
+            else if (entityTag == CHECKPOINT_PICKUP_PERSISTENCE_ID)
+                entity = CheckpointPickup::Add();
+            else if (entityTag == TEXTBOX_BUTTON_PERSISTENCE_ID)
+                entity = Textbox::Add();
+            else {
                 TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, entityTag=%s.", entityTag.c_str());
                 continue; 
             }

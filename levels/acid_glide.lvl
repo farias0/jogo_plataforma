@@ -218,7 +218,7 @@ acid_block:originX=2816.000000;originY=128.000000;
 acid_block:originX=2784.000000;originY=128.000000;
 acid_block:originX=2752.000000;originY=128.000000;
 acid_block:originX=2720.000000;originY=128.000000;
-glide:originX=352.000000;originY=512.000000;
+glide_pickup:originX=352.000000;originY=512.000000;
 block:originX=480.000000;originY=512.000000;
 block:originX=512.000000;originY=512.000000;
 block:originX=544.000000;originY=512.000000;

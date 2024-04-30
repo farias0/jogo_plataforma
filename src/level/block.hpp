@@ -6,6 +6,9 @@
 
 #include "level.hpp"
 
+#define BLOCK_PERSISTENCE_ID        "block"
+#define ACID_BLOCK_PERSISTENCE_ID   "acid_block"
+
 
 // Adds a block to the level
 Level::Entity *BlockAdd();

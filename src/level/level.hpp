@@ -22,6 +22,8 @@
 // Below this y entities die
 #define FLOOR_DEATH_HEIGHT      1400
 
+#define EXIT_PERSISTENCE_ID     "lvl_exit"
+
 
 namespace Level {
 
@@ -57,7 +59,7 @@ public:
     bool isFacingRight;
     bool isFallingDown;
 
-    // To support entity types that simply instantiate Entity (no subclass)
+    // It's a variable so it supports entity types that simply instantiates Entity (i.e. not a subclass)
     std::string persistanceEntityID = "!!!_unknown_level_entity";
     
 
@@ -68,7 +70,7 @@ public:
     virtual std::string PersistanceSerialize();
     virtual void PersistenceParse(const std::string &data);
 
-	std::string PersistanceEntityID() {
+    std::string PersistanceEntityID() {
         return persistanceEntityID;
     }
 

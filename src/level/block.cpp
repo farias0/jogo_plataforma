@@ -19,7 +19,7 @@ Level::Entity *BlockAdd(Vector2 origin) {
     newBlock->sprite = &SPRITES->Block;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
 
-    newBlock->persistanceEntityID = "block";
+    newBlock->persistanceEntityID = BLOCK_PERSISTENCE_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, newBlock);
 
@@ -55,7 +55,7 @@ Level::Entity *AcidAdd(Vector2 origin) {
     newBlock->sprite = &SPRITES->Acid;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
 
-    newBlock->persistanceEntityID = "acid_block";
+    newBlock->persistanceEntityID = ACID_BLOCK_PERSISTENCE_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, newBlock);
 

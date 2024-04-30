@@ -31,8 +31,6 @@ Level::Entity *CheckpointPickup::Add(Vector2 pos) {
 
     newPickup->wasPickedUp = false;
 
-    newPickup->persistanceEntityID = "checkpoint_pickup";
-
     newPickup->initializeAnimationSystem();
 
     LinkedList::AddNode(&Level::STATE->listHead, newPickup);

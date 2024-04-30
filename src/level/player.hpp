@@ -8,6 +8,8 @@
 #include "grappling_hook.hpp"
 #include "../animation.hpp"
 
+#define PLAYER_PERSISTENCE_ID   "player"
+
 
 typedef enum PlayerMode {
     PLAYER_MODE_DEFAULT,
@@ -112,8 +114,7 @@ private:
     Animation::Animation *getCurrentAnimation();
 
     std::string PersistanceEntityID() {
-        static const std::string persistanceEntityID = "player";
-        return persistanceEntityID;
+        return PLAYER_PERSISTENCE_ID;
     }
 };
 
