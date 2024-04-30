@@ -145,7 +145,7 @@ Entity *GetGroundBeneathHitbox(Rectangle hitbox);
 // Destroys a Entity
 void EntityDestroy(Entity *entity);
 
-// Searches for level entity in position
+// Searches for any level entity in the given position
 Entity *EntityGetAt(Vector2 pos);
 
 // Removes level entity in position from the

@@ -73,25 +73,6 @@ void leave() {
     TraceLog(LOG_TRACE, "Level left.");
 }
 
-// Searches for an entity in a given position
-// and returns its node, or 0 if not found.
-static LinkedList::Node *getEntityNodeAtPos(Vector2 pos) {
-
-    Entity *entity = (Entity *) STATE->listHead;
-
-    while (entity != 0) {
-
-        if (CheckCollisionPointRec(pos, entity->hitbox)) {
-
-            return entity;
-        }
-
-        entity = (Entity *) entity->next;
-    };
-
-    return 0;
-}
-
 void tickAllEntities() {
 
     Entity *entity = (Entity *) STATE->listHead;
@@ -323,11 +304,16 @@ void EntityDestroy(Entity *entity) {
 
 Entity *EntityGetAt(Vector2 pos) {
 
-    LinkedList::Node *node = getEntityNodeAtPos(pos);
+    Entity *result = 0;
 
-    if (!node) return 0;
+    for (Entity *e = (Entity *) STATE->listHead;
+        e != 0;
+        e = (Entity *) e->next) {
 
-    return (Entity *) node;
+            if (CheckCollisionPointRec(pos, e->hitbox)) result = e;
+    }
+
+    return result;
 }
 
 void EntityRemoveAt(Vector2 pos) {
