@@ -141,17 +141,18 @@ static void updateEntitySelectionList() {
 
     EDITOR_STATE->selectedEntities.clear();
 
-    Rectangle selectionHitbox = EditorSelectionGetRect();
+    const Rectangle selectionHitbox = EditorSelectionGetRect();
 
-    LinkedList::Node *node = GetEntityListHead();
-    while (node != 0) {
+    for (LinkedList::Node *node = GetEntityListHead();
+        node != 0;
+        node = node->next) {
 
         if (GAME_STATE->mode == MODE_IN_LEVEL) {
+
             Level::Entity *entity = (Level::Entity *) node;
             
-            if (entity->tags & Level::IS_PLAYER) goto next_entity;
+            if (entity->tags & Level::IS_PLAYER) continue;
 
-            bool collisionWithEntity = false;
             if (entity->tags & Level::IS_MOVING_PLATFORM) {
 
                 // Only the moving platform's anchors are checked for collision and go into the entity selection
@@ -161,34 +162,34 @@ static void updateEntitySelectionList() {
                 if (CheckCollisionRecs(selectionHitbox, p->endAnchor.hitbox))
                     EDITOR_STATE->selectedEntities.push_back(&p->endAnchor);
 
-                goto next_entity;
-
-            }
-            else if (!entity->IsADeadEnemy()) { // generic entity
-                collisionWithEntity = CheckCollisionRecs(selectionHitbox, entity->hitbox);
+                continue;
             }
 
-            bool collisionWithOrigin = CheckCollisionRecs(selectionHitbox, entity->GetOriginHitbox());
-            
-            if (collisionWithEntity || collisionWithOrigin) {
-                
+            // generic entity
+            else if (!entity->IsADeadEnemy() && CheckCollisionRecs(selectionHitbox, entity->hitbox)) {
                 EDITOR_STATE->selectedEntities.push_back(entity);
+                continue;
+            }            
+
+            // generic entity's origin ghost
+            else if (CheckCollisionRecs(selectionHitbox, entity->GetOriginHitbox())) {
+                EDITOR_STATE->selectedEntities.push_back(entity);
+                continue;
             }
+
         }
+
         else if (GAME_STATE->mode == MODE_OVERWORLD) {
             
             OverworldEntity *entity = (OverworldEntity *) node;
             
-            if (entity->tags & OW_IS_CURSOR) goto next_entity;
+            if (entity->tags & OW_IS_CURSOR) continue;
 
             if (CheckCollisionRecs(selectionHitbox, OverworldEntitySquare(entity))) {
-                
                 EDITOR_STATE->selectedEntities.push_back(entity);
+                continue;
             }
         }
-
-next_entity:
-        node = node->next;
     }
 }
 
