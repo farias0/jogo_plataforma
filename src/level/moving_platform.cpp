@@ -7,12 +7,31 @@
 #include "../render.hpp"
 
 
-#define PLATFORM_SPEED      2
+#define PLATFORM_SPEED          2
 
+#define DEFAULT_SIZE            3
+
+#define ANCHOR_HITBOX_SIDE      40
+
+
+
+MovingPlatformAnchor::MovingPlatformAnchor(MovingPlatform *parent, Color color) {
+    this->parent = parent;
+    this->color = color;
+    tags = Level::IS_ANCHOR;
+}
+
+Rectangle MovingPlatformAnchor::GetOriginHitbox() {
+
+    // Despite not really having the concept of origin, it still offers an origin hitbox
+    // because parts of the code use them to interact with dead entities (i.e. isDead = true).
+
+    return hitbox;
+}
 
 void MovingPlatformAnchor::SetPos(Vector2 pos) {
 
-    Dimensions d = { 40, 40 };
+    Dimensions d = { ANCHOR_HITBOX_SIDE, ANCHOR_HITBOX_SIDE };
 
     this->pos = pos;
     this->hitbox =  {
@@ -25,8 +44,36 @@ void MovingPlatformAnchor::SetPos(Vector2 pos) {
     parent->UpdateAfterAnchorMove();
 }
 
+void MovingPlatformAnchor::SetHitboxPos(Vector2 pos) {
+    SetPos({ pos.x + hitbox.width/2, pos.y + hitbox.height/2 });
+}
+
+void MovingPlatformAnchor::SetOrigin(Vector2 origin) {
+    
+    // Does nothing. DANGEROUS!
+    (void) origin;
+}
+
+void MovingPlatformAnchor::Draw() {
+
+    if (EDITOR_STATE->isEnabled) {
+        Vector2 p = PosInSceneToScreen(pos);
+        DrawCircleLines(p.x, p.y, ANCHOR_HITBOX_SIDE / 2, color);
+    }
+}
+
+void MovingPlatformAnchor::DrawMoveGhost() {
+
+    Vector2 p = PosInSceneToScreen(EditorEntitySelectionCalcMove(pos));
+
+    DrawCircleLines(p.x, p.y, ANCHOR_HITBOX_SIDE / 2,
+                    { color.r, color.g, color.b, EDITOR_SELECTION_MOVE_TRANSPARENCY });
+}
+
+///////
+
 MovingPlatform *MovingPlatform::Add() {
-    return Add({ 0, 0 }, { 20, 20 }, 3);
+    return Add({ 0, 0 }, { 20, 20 }, DEFAULT_SIZE);
 }
 
 MovingPlatform *MovingPlatform::Add(Vector2 startPos, Vector2 endPos, int size) {
@@ -60,7 +107,15 @@ void MovingPlatform::CheckAndAdd(Vector2 origin) {
 
     // TODO check for collisions
 
-    Add(origin, { origin.x + 180, origin.y - 180 }, 3);
+    Add(origin, { origin.x + 140, origin.y - 90 }, DEFAULT_SIZE);
+}
+
+Rectangle MovingPlatform::GetOriginHitbox() {
+    
+    return {
+        origin.x - (hitbox.width/2), origin.y - (hitbox.height/2),
+        hitbox.width, hitbox.height
+    };
 }
 
 void MovingPlatform::UpdateAfterAnchorMove() {

@@ -1,13 +1,14 @@
 #pragma once
 
-
 #include <raylib.h>
 
 #include "level.hpp"
 #include "../editor.hpp"
 #include "../camera.hpp"
 
+
 #define MOVING_PLATFORM_PERSISTENCE_ID          "moving_platform"
+
 
 class MovingPlatform;
 
@@ -23,38 +24,20 @@ public:
     Vector2 pos;
     Color color;
 
-    MovingPlatformAnchor(MovingPlatform *parent, Color color) {
-        this->parent = parent;
-        this->color = color;
-        tags = Level::IS_ANCHOR;
-    }
 
-    Rectangle GetOriginHitbox() override {
-        // Despite not really having the concept of origin, it still offers an origin hitbox
-        // because parts of the code use them to interact with dead entities (i.e. isDead = true).
-        return hitbox;
-    }
+    MovingPlatformAnchor(MovingPlatform *parent, Color color);
+
+    Rectangle GetOriginHitbox() override;
 
     void SetPos(Vector2 pos);
 
-    void SetHitboxPos(Vector2 pos) override {
-        SetPos({ pos.x + hitbox.width/2, pos.y + hitbox.height/2 });
-    }
+    void SetHitboxPos(Vector2 pos) override;
 
-    void SetOrigin(Vector2 origin) override {
-        // Does nothing. DANGEROUS!
-        (void) origin;
-    }
+    void SetOrigin(Vector2 origin) override;
 
-    void Draw() override {
-        Vector2 p = PosInSceneToScreen(pos);
-        if (EDITOR_STATE->isEnabled) DrawCircleLines(p.x, p.y, 20, color);
-    }
+    void Draw() override;
 
-    void DrawMoveGhost() override {
-        Vector2 p = PosInSceneToScreen(EditorEntitySelectionCalcMove(pos));
-        DrawCircleLines(p.x, p.y, 20, { color.r, color.g, color.b, EDITOR_SELECTION_MOVE_TRANSPARENCY });
-    }
+    void DrawMoveGhost() override;
 };
 
 
@@ -76,12 +59,7 @@ public:
 
     static void CheckAndAdd(Vector2 origin);
 
-    Rectangle GetOriginHitbox() override {
-        return {
-            origin.x - (hitbox.width/2), origin.y - (hitbox.height/2),
-            hitbox.width, hitbox.height
-        };
-    }
+    Rectangle GetOriginHitbox() override;
 
     // Recalculates parameters after one of its Anchors have moved
     void UpdateAfterAnchorMove();
