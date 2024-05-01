@@ -9,6 +9,7 @@
 #include "grappling_hook.hpp"
 #include "checkpoint.hpp"
 #include "textbox.hpp"
+#include "moving_platform.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../sounds.hpp"
@@ -165,12 +166,12 @@ void Player::CheckAndSetPos(Vector2 pos) {
 
 void Player::SetHitbox(Rectangle newHitbox) {
 
-    SetPos({ newHitbox.x, newHitbox.y });
+    SetHitboxPos({ newHitbox.x, newHitbox.y });
     this->hitbox = newHitbox;
 
 }
 
-void Player::SetPos(Vector2 pos) {
+void Player::SetHitboxPos(Vector2 pos) {
 
     hitbox.x = pos.x;
     hitbox.y = pos.y;
@@ -293,7 +294,7 @@ void Player::Tick() {
 
         float y = hook->start.y - (hitbox.height/4);
 
-        SetPos({ x, y });
+        SetHitboxPos({ x, y });
 
 
         xVelocity = (hook->angularVelocity * HOOK_ANGULAR_TO_LINEAR_VEL_CONVERSION_RATE) * sin(hook->currentAngle) * -1;
@@ -404,7 +405,7 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
         }
     }
 
-    SetPos({ hitbox.x + xVelocity,
+    SetHitboxPos({ hitbox.x + xVelocity,
                         hitbox.y - yVelocity });
 
 
@@ -561,6 +562,14 @@ next_entity:
 
     if (isHooked) hookLaunched->FollowPlayer();
 
+    if (groundBeneath && groundBeneath->tags & Level::IS_MOVING_PLATFORM) {
+        Vector2 trajectory = ((MovingPlatform *)groundBeneath)->lastFrameTrajectory;
+        SetHitboxPos({
+            hitbox.x += trajectory.x,
+            hitbox.y += trajectory.y
+        }); 
+    }
+
     if (Render::GetTextboxTextId() != -1 && !collidedWithTextboxButton) {
         Render::DisplayTextboxStop();
         TraceLog(LOG_TRACE, "Textbox stopped displaying.");
@@ -588,9 +597,9 @@ void Player::Continue() {
     if (Level::STATE->checkpoint) {
         Vector2 pos = RectangleGetPos(Level::STATE->checkpoint->hitbox);
         pos.y -= Level::STATE->checkpoint->hitbox.height;
-        SetPos(pos);
+        SetHitboxPos(pos);
     } else {
-        SetPos(origin);
+        SetHitboxPos(origin);
     }
     isAscending = false;
     isGliding = false;
@@ -773,5 +782,5 @@ Animation::Animation *Player::getCurrentAnimation() {
 void Player::PersistenceParse(const std::string &data) {
 
     Level::Entity::PersistenceParse(data);
-    SetPos(origin);
+    SetHitboxPos(origin);
 }

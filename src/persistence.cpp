@@ -12,6 +12,7 @@
 #include "level/powerups.hpp"
 #include "level/checkpoint.hpp"
 #include "level/textbox.hpp"
+#include "level/moving_platform.hpp"
 #include "files.hpp"
 #include "render.hpp"
 #include "overworld.hpp"
@@ -114,6 +115,8 @@ bool PersistenceLevelLoad(char *levelName) {
                 entity = CheckpointPickup::Add();
             else if (entityTag == TEXTBOX_BUTTON_PERSISTENCE_ID)
                 entity = Textbox::Add();
+            else if (entityTag == MOVING_PLATFORM_PERSISTENCE_ID)
+                entity = MovingPlatform::Add();
             else {
                 TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, entityTag=%s.", entityTag.c_str());
                 continue; 

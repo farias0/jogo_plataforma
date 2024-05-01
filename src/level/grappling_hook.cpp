@@ -12,6 +12,7 @@
 
 #include "level.hpp"
 #include "player.hpp"
+#include "moving_platform.hpp"
 #include "../linked_list.hpp"
 #include "../camera.hpp"
 
@@ -57,9 +58,20 @@ void GrapplingHook::Tick() {
     
 
     if (attachedTo) {
-        // Do nothing, let the Player routine handle it
+
+        if (attachedTo->tags & Level::IS_MOVING_PLATFORM) {
+            Vector2 trajectory = ((MovingPlatform *)attachedTo)->lastFrameTrajectory;
+            SetHitboxPos({
+                end.x += trajectory.x,
+                end.y += trajectory.y
+            }); 
+        }
+        
         return;
     }
+
+
+    /*   From here, it only runs if the hook is not attached   */
 
 
     if (currentLength >= MAX_LENGTH) { // didn't attach

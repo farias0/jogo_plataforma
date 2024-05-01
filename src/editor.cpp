@@ -8,6 +8,7 @@
 #include "level/block.hpp"
 #include "level/checkpoint.hpp"
 #include "level/textbox.hpp"
+#include "level/moving_platform.hpp"
 #include "overworld.hpp"
 #include "linked_list.hpp"
 #include "camera.hpp"
@@ -111,6 +112,7 @@ void loadInLevelEditor() {
     addEntityButton(EDITOR_ENTITY_GLIDE, &SPRITES->GlideItem, &GlideCheckAndAdd, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_TEXTBOX, &SPRITES->TextboxButton, &Textbox::CheckAndAdd, EDITOR_INTERACTION_CLICK);
     addEntityButton(EDITOR_ENTITY_CHECKPOINT_PICKUP, &SPRITES->LevelCheckpointPickup1, &CheckpointPickup::CheckAndAdd, EDITOR_INTERACTION_CLICK);
+    addEntityButton(EDITOR_ENTITY_MOVING_PLATFORM, &SPRITES->MovingPlatform, &MovingPlatform::CheckAndAdd, EDITOR_INTERACTION_CLICK);
 
     addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &Level::Save);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);
@@ -139,37 +141,55 @@ static void updateEntitySelectionList() {
 
     EDITOR_STATE->selectedEntities.clear();
 
-    Rectangle selectionHitbox = EditorSelectionGetRect();
+    const Rectangle selectionHitbox = EditorSelectionGetRect();
 
-    LinkedList::Node *node = GetEntityListHead();
-    while (node != 0) {
+    for (LinkedList::Node *node = GetEntityListHead();
+        node != 0;
+        node = node->next) {
 
         if (GAME_STATE->mode == MODE_IN_LEVEL) {
+
             Level::Entity *entity = (Level::Entity *) node;
             
-            if (entity->tags & Level::IS_PLAYER) goto next_entity;
+            if (entity->tags & Level::IS_PLAYER) continue;
 
-            bool collisionWithEntity = !entity->IsADeadEnemy() && CheckCollisionRecs(selectionHitbox, entity->hitbox);
-            bool collisionWithGhost = CheckCollisionRecs(selectionHitbox, Level::EntityOriginHitbox(entity));
-            if (collisionWithEntity || collisionWithGhost) {
-                
-                EDITOR_STATE->selectedEntities.push_back(entity);
+            if (entity->tags & Level::IS_MOVING_PLATFORM) {
+
+                // Only the moving platform's anchors are checked for collision and go into the entity selection
+                auto p = (MovingPlatform *) entity;
+                if (CheckCollisionRecs(selectionHitbox, p->startAnchor.hitbox))
+                    EDITOR_STATE->selectedEntities.push_back(&p->startAnchor);
+                if (CheckCollisionRecs(selectionHitbox, p->endAnchor.hitbox))
+                    EDITOR_STATE->selectedEntities.push_back(&p->endAnchor);
+
+                continue;
             }
+
+            // generic entity
+            else if (!entity->IsADeadEnemy() && CheckCollisionRecs(selectionHitbox, entity->hitbox)) {
+                EDITOR_STATE->selectedEntities.push_back(entity);
+                continue;
+            }            
+
+            // generic entity's origin ghost
+            else if (CheckCollisionRecs(selectionHitbox, entity->GetOriginHitbox())) {
+                EDITOR_STATE->selectedEntities.push_back(entity);
+                continue;
+            }
+
         }
+
         else if (GAME_STATE->mode == MODE_OVERWORLD) {
             
             OverworldEntity *entity = (OverworldEntity *) node;
             
-            if (entity->tags & OW_IS_CURSOR) goto next_entity;
+            if (entity->tags & OW_IS_CURSOR) continue;
 
             if (CheckCollisionRecs(selectionHitbox, OverworldEntitySquare(entity))) {
-                
                 EDITOR_STATE->selectedEntities.push_back(entity);
+                continue;
             }
         }
-
-next_entity:
-        node = node->next;
     }
 }
 
@@ -204,17 +224,14 @@ void selectEntitiesApplyMove() {
     }
 
     // Apply move
-    Vector2 newPos;
-
     for (auto node = EDITOR_STATE->selectedEntities.begin(); node < EDITOR_STATE->selectedEntities.end(); node++) {
         
         switch (GAME_STATE->mode) {
 
         case MODE_IN_LEVEL: {
             Level::Entity *entity = (Level::Entity *) *node;
-            newPos = EditorEntitySelectionCalcMove(RectangleGetPos(entity->hitbox));
-            RectangleSetPos(&entity->hitbox, newPos);
-            entity->origin = EditorEntitySelectionCalcMove(entity->origin);
+            entity->SetHitboxPos(EditorEntitySelectionCalcMove(RectangleGetPos(entity->hitbox)));
+            entity->SetOrigin(EditorEntitySelectionCalcMove(entity->origin));
             break;
         }
 

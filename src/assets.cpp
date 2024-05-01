@@ -81,6 +81,7 @@ static void loadAssets() {
     sp->LevelCheckpointPickup1 = doubleSizeSprite("../assets/egg_1.png");
     sp->LevelCheckpointPickup2 = doubleSizeSprite("../assets/egg_2.png");
     sp->LevelCheckpointPickup3 = doubleSizeSprite("../assets/egg_3.png");
+    sp->MovingPlatform = normalSizeSprite("../assets/moving_platform.png");
     sp->Block = normalSizeSprite("../assets/floor_tile_1.png");
     sp->Acid = normalSizeSprite("../assets/acid_tile_1.png");
     sp->GlideItem = normalSizeSprite("../assets/glide_item.png");

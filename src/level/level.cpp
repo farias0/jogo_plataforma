@@ -8,6 +8,7 @@
 #include "player.hpp"
 #include "enemy.hpp"
 #include "grappling_hook.hpp"
+#include "moving_platform.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../editor.hpp"
@@ -291,6 +292,11 @@ void EntityDestroy(Entity *entity) {
         return;
     }
 
+    if (entity->tags & IS_ANCHOR) {
+        TraceLog(LOG_DEBUG, "Tried to destroy an anchor entity");
+        return;
+    }
+
     if (entity == STATE->exit) STATE->exit = 0;
 
     if (entity == STATE->checkpoint) STATE->checkpoint = 0;
@@ -332,7 +338,7 @@ Entity *EntityGetRemoveableAt(Vector2 pos) {
 
             if (entity->tags & IS_PLAYER) continue;
 
-            if (CheckCollisionPointRec(pos, EntityOriginHitbox(entity))) {
+            if (CheckCollisionPointRec(pos, entity->GetOriginHitbox())) {
                 result = entity; break;
             }
 
@@ -445,15 +451,6 @@ void LoadNew() {
     strcpy(STATE->levelName, NEW_LEVEL_NAME);
 }
 
-Rectangle EntityOriginHitbox(Entity *entity) {
-
-    return {
-        entity->origin.x, entity->origin.y,
-        entity->hitbox.width, entity->hitbox.height
-    };
-}
-
-
 void Entity::Tick() {            
 
     // Default entity has no tick routine
@@ -464,7 +461,12 @@ void Entity::Draw() {
     Render::DrawLevelEntity(this);
 
     if (EDITOR_STATE->isEnabled)
-        Render::DrawLevelEntityOrigin(this);
+        Render::DrawLevelEntityOriginGhost(this);
+}
+
+void Entity::DrawMoveGhost() {
+
+    Render::DrawLevelEntityMoveGhost(this);
 }
 
 std::string Entity::PersistanceSerialize() {

@@ -2,6 +2,7 @@
 
 #include "enemy.hpp"
 #include "level.hpp"
+#include "moving_platform.hpp"
 #include "../debug.hpp"
 #include "../editor.hpp"
 
@@ -96,6 +97,16 @@ void Enemy::Tick() {
     if (isFacingRight) hitbox.x += ENEMY_SPEED_DEFAULT;
     else hitbox.x -= ENEMY_SPEED_DEFAULT;
 
+    // Moving platform
+    if (groundBeneath && groundBeneath->tags & Level::IS_MOVING_PLATFORM) {
+        Vector2 trajectory = ((MovingPlatform *)groundBeneath)->lastFrameTrajectory;
+        SetHitboxPos({
+            hitbox.x += trajectory.x,
+            hitbox.y += trajectory.y
+        }); 
+    }
+
+
     LinkedList::Node *node = Level::STATE->listHead;
     while (node) {
 
@@ -131,5 +142,5 @@ void Enemy::Draw() {
         Render::DrawLevelEntity(this);
 
     if (EDITOR_STATE->isEnabled)
-        Render::DrawLevelEntityOrigin(this);
+        Render::DrawLevelEntityOriginGhost(this);
 }

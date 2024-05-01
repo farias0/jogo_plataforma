@@ -41,6 +41,8 @@ typedef enum {
     //IS_HOOK                 = 512,
     IS_HOOKABLE             = 1024,
     IS_CHECKPOINT_PICKUP    = 2048,
+    IS_MOVING_PLATFORM      = 4096,
+    IS_ANCHOR               = 8192,
 } EntityTag;
 
 
@@ -63,9 +65,25 @@ public:
     std::string persistanceEntityID = "!!!_unknown_level_entity";
     
 
+    virtual Rectangle GetOriginHitbox() {
+        return {
+            origin.x, origin.y,
+            hitbox.width, hitbox.height
+        };
+    }
+
+    virtual void SetHitboxPos(Vector2 pos) {
+        RectangleSetPos(&hitbox, pos);
+    }
+
+    virtual void SetOrigin(Vector2 origin) {
+        this->origin = origin;
+    }    
+
     virtual void Tick();
 
     void Draw();
+    void DrawMoveGhost();
 
     virtual std::string PersistanceSerialize();
     virtual void PersistenceParse(const std::string &data);
@@ -163,9 +181,6 @@ void Save();
 
 // Loads a new, default level
 void LoadNew();
-
-// Get this entity's origin hitbox, based on the current hitbox.
-Rectangle EntityOriginHitbox(Entity *entity);
 
 // Checks for collision between a rectangle and any 
 // living entity in the level.
