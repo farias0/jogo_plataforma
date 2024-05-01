@@ -48,6 +48,8 @@ public:
     // A reference to the launched grappling hook, if there's one  
     GrapplingHook *hookLaunched;
 
+    // A reference to the moving platform the player is on, if there's one
+    Level::Entity *movingPlatformBeneath;
 
     // Initializes and adds the player to the level
     static Player *Initialize();
@@ -64,7 +66,7 @@ public:
     void SetHitbox(Rectangle hitbox);
 
     // Moves the player to pos, updating the collision hitboxes in the proccess
-    void SetPos(Vector2 pos);
+    void SetHitboxPos(Vector2 pos) override;
 
     void SetMode(PlayerMode mode);
 

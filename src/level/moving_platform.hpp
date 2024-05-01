@@ -64,6 +64,9 @@ public:
 
     MovingPlatformAnchor startAnchor, endAnchor;
 
+    // So other entities can move together with this platform
+    Vector2 lastFrameTrajectory;
+
 
     MovingPlatform() : Level::Entity(), startAnchor(this, GREEN), endAnchor(this, RED) {};
 

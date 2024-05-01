@@ -72,6 +72,8 @@ void MovingPlatform::UpdateAfterAnchorMove() {
 
 void MovingPlatform::Tick() {
 
+    Vector2 oldPos = currentPos;
+
     int direction = isFacingRight ? 1 : -1;
     
     movePlatformTo({
@@ -86,6 +88,12 @@ void MovingPlatform::Tick() {
 
             isFacingRight = !isFacingRight;
     }
+
+
+    lastFrameTrajectory = {
+        currentPos.x - oldPos.x,
+        currentPos.y - oldPos.y
+    };
 }
 
 void MovingPlatform::Draw() {
