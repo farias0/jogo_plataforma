@@ -86,6 +86,7 @@ static void loadAssets() {
     sp->Acid = normalSizeSprite("../assets/acid_tile_1.png");
     sp->GlideItem = normalSizeSprite("../assets/glide_item.png");
     sp->TextboxButton = normalSizeSprite("../assets/textbox_button.png");
+    sp->TextboxDevButton = normalSizeSprite("../assets/textbox_dev_button.png");
 
     // Overworld
     sp->OverworldCursor = doubleSizeSprite("../assets/cursor_default_1.png");

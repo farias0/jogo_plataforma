@@ -184,15 +184,15 @@ void LoadNew();
 
 // Checks for collision between a rectangle and any 
 // living entity in the level.
-bool CheckCollisionWithAnyEntity(Rectangle hitbox);
+Entity *CheckCollisionWithAnyEntity(Rectangle hitbox);
 
 // Checks for collision between a rectangle and any 
 // living entity in the level, including their origins.
-bool CheckCollisionWithAnything(Rectangle hitbox);
+Entity *CheckCollisionWithAnything(Rectangle hitbox);
 
 // Checks for collision between a rectangle and any living entity in the level,
 // including their origins, as long as it's NOT present in a given entity vector.
-bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore);
+Entity *CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore);
 
 
 } // namespace

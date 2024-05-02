@@ -46,6 +46,7 @@ struct SpriteBank {
     Sprite MovingPlatform;
     Sprite GlideItem;
     Sprite TextboxButton;
+    Sprite TextboxDevButton;
 
     // Overworld
     Sprite OverworldCursor;

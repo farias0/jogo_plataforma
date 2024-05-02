@@ -387,28 +387,28 @@ void Tick() {
     CameraTick();
 }
 
-bool CheckCollisionWithAnyEntity(Rectangle hitbox) {
+Level::Entity *CheckCollisionWithAnyEntity(Rectangle hitbox) {
 
     Entity *entity = (Entity *) STATE->listHead;
 
     while (entity != 0) {
 
         if (!entity->IsADeadEnemy() && CheckCollisionRecs(hitbox, entity->hitbox)) {
-            return true;
+            break; // found it
         }
 
         entity = (Entity *) entity->next;
     }
 
-    return false;
+    return entity;
 }
 
-bool CheckCollisionWithAnything(Rectangle hitbox) {
+Level::Entity *CheckCollisionWithAnything(Rectangle hitbox) {
 
     return CheckCollisionWithAnythingElse(hitbox, std::vector<LinkedList::Node *>());
 }
 
-bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore) {
+Level::Entity *CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::Node *> entitiesToIgnore) {
 
     Entity *entity = (Entity *) STATE->listHead;
 
@@ -426,14 +426,14 @@ bool CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<LinkedList::No
                 if (*e == entity) goto next_entity;
             }
 
-            return true;
+            break; // found it
         }
 
 next_entity:
         entity = (Entity *) entity->next;
     }
 
-    return false;
+    return entity;
 }
 
 void Save() {

@@ -13,6 +13,7 @@ class Textbox : public Level::Entity {
 public:
 
     int textId;
+    bool isDevTextbox;
 
 
     static Textbox *Add();
@@ -23,6 +24,9 @@ public:
     // Initializes and adds a a textbox button to the level in the
     // given origin, if there are no other entities there already
     static void CheckAndAdd(Vector2 pos);
+
+    // Toggles between normal and dev textboxes
+    void ToggleTextboxType();
 
     void PersistenceParse(const std::string &data) override;
     std::string PersistanceSerialize() override;

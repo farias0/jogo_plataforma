@@ -23,6 +23,7 @@ Textbox *Textbox::Add(Vector2 pos, int textId) {
     newTextbox->layer = -1;
     newTextbox->isFacingRight = true;
     newTextbox->textId = textId;
+    newTextbox->isDevTextbox = false;
 
     LinkedList::AddNode(&Level::STATE->listHead, newTextbox);
 
@@ -36,8 +37,14 @@ void Textbox::CheckAndAdd(Vector2 pos) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->TextboxButton, pos);
 
-    if (Level::CheckCollisionWithAnything(hitbox)) {
-        TraceLog(LOG_DEBUG, "Couldn't add textbox button, collision with entity.");
+    Level::Entity *entityCollidedWith = Level::CheckCollisionWithAnything(hitbox); 
+    if (entityCollidedWith) {
+        if (entityCollidedWith->tags & Level::IS_TEXTBOX) {
+            auto box = (Textbox *) entityCollidedWith;
+            box->ToggleTextboxType();
+            if (box->isDevTextbox) Render::PrintSysMessage("Caixa de texto do desenvolvedor ativa");
+        }
+        else TraceLog(LOG_DEBUG, "Couldn't add textbox button, collision with entity.");
         return;
     }
 
@@ -50,6 +57,15 @@ void Textbox::CheckAndAdd(Vector2 pos) {
 
     Render::PrintSysMessage("Insira o ID do texto");
     Input::GetTextInput(callback);
+}
+
+void Textbox::ToggleTextboxType() {
+    isDevTextbox = !isDevTextbox;
+    if (isDevTextbox) {
+        sprite = &SPRITES->TextboxDevButton;
+    } else {
+        sprite = &SPRITES->TextboxButton;
+    }
 }
 
 void Textbox::createFromIdInput(Vector2 pos, std::string input) {
