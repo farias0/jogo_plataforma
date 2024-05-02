@@ -327,11 +327,14 @@ void drawDebugEntityInfo(LinkedList::Node *entity) {
     switch (GAME_STATE->mode) {
     case MODE_IN_LEVEL:
         hitbox = ((Level::Entity *) entity)->hitbox;
+        str = ((Level::Entity *) entity)->GetEntityDebugString();
         break;
 
     case MODE_OVERWORLD:
         RectangleSetPos(&hitbox, ((OverworldEntity *) entity)->gridPos);
         RectangleSetDimensions(&hitbox, OW_GRID);
+        str = std::string("x=" + std::to_string((int) hitbox.x) +
+                            "\ny=" + std::to_string((int) hitbox.y)); // TODO create Overworld Entity
         break;
 
     default:
@@ -344,15 +347,6 @@ void drawDebugEntityInfo(LinkedList::Node *entity) {
             hitbox.width, hitbox.height, { GREEN.r, GREEN.g, GREEN.b, 128 });
     DrawRectangleLines(screenPos.x, screenPos.y,
             hitbox.width, hitbox.height, GREEN);
-
-    str = std::string("x=" + std::to_string((int) hitbox.x) +
-                        "\ny=" + std::to_string((int) hitbox.y));
-
-    if (GAME_STATE->mode == MODE_IN_LEVEL) {
-        Level::Entity *le = (Level::Entity *) entity;
-        if (le->tags & Level::IS_TEXTBOX) // TODO move debug text to the entity
-            str += "\ntextId=" + std::to_string(((Textbox *) le)->textId);
-    }
 
     DrawText(str.c_str(), screenPos.x, screenPos.y, 20, WHITE);
 }

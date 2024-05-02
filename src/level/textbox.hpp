@@ -38,6 +38,8 @@ public:
     // Toggles the exhibition of this textbox
     void Toggle();
 
+    std::string GetEntityDebugString() override;
+
     void Draw() override;
 
     void PersistenceParse(const std::string &data) override;

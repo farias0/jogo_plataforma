@@ -82,6 +82,8 @@ public:
 
     virtual void Tick();
 
+    virtual std::string GetEntityDebugString();
+
     void Draw();
     void DrawMoveGhost();
 

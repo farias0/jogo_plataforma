@@ -454,6 +454,11 @@ void Entity::Tick() {
     // Default entity has no tick routine
 }
 
+std::string Entity::GetEntityDebugString() {
+    return std::string("x=" + std::to_string((int) hitbox.x) +
+                        "\ny=" + std::to_string((int) hitbox.y));
+}
+
 void Entity::Draw() {            
 
     Render::DrawLevelEntity(this);

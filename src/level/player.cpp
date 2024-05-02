@@ -247,8 +247,6 @@ void Player::Jump() {
 
 void Player::Tick() {
 
-    bool collidedWithTextboxButton = false; // controls the exhibition of textboxes
-
 
     if (Level::STATE->concludedAgo >= 0) return;
 

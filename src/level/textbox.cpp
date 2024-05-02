@@ -90,6 +90,11 @@ void Textbox::Toggle() {
     else textboxDisplaying = this;
 }
 
+std::string Textbox::GetEntityDebugString() {
+    return Level::Entity::GetEntityDebugString() +
+            "\ntextId=" + std::to_string(textId);
+}
+
 void Textbox::Draw() {
         
     // Draw the interactable button 
