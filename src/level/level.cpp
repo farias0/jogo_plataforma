@@ -65,8 +65,6 @@ void initializeState() {
 
 void leave() {
     
-    Render::DisplayTextboxStop();
-    
     resetState();
 
     OverworldLoad();

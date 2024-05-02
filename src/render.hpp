@@ -47,12 +47,6 @@ void PrintSysMessage(const std::string &msg);
 */
 void LevelTransitionEffectStart(Vector2 sceneFocusPont, bool isClose);
 
-void DisplayTextbox(int textId);
-
-void DisplayTextboxStop();
-
-int GetTextboxTextId();
-
 
 } // namespace
 

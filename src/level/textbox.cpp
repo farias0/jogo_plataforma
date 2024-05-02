@@ -5,6 +5,12 @@
 #include "../input.hpp"
 
 
+Textbox *Textbox::textboxDisplaying = 0;
+
+Textbox::~Textbox() {
+    if (textboxDisplaying == this) textboxDisplaying = 0;
+}
+
 Textbox *Textbox::Add() {
     return Add({ 0, 0 }, -1);
 }
@@ -24,6 +30,7 @@ Textbox *Textbox::Add(Vector2 pos, int textId) {
     newTextbox->isFacingRight = true;
     newTextbox->textId = textId;
     newTextbox->isDevTextbox = false;
+    newTextbox->textContent = "[sem texto]";
 
     LinkedList::AddNode(&Level::STATE->listHead, newTextbox);
 
@@ -62,6 +69,27 @@ void Textbox::CheckAndAdd(Vector2 pos) {
 void Textbox::ToggleTextboxType() {
     isDevTextbox = !isDevTextbox;
     updateSprite();
+}
+
+void Textbox::Toggle() {
+    if (textboxDisplaying == this) textboxDisplaying = 0;
+    else textboxDisplaying = this;
+}
+
+void Textbox::Draw() {
+        
+    // Draw the interactable button 
+
+    Level::Entity::Draw();
+
+
+    // Draw the textbox content
+
+    if (textboxDisplaying != this) return;
+
+    std::string *s = &TextBank::BANK[textId]; // TODO create setTextId() that updates textContent as well
+    if (!s->length()) s = &textContent;
+    DrawText((*s).c_str(), 120, 100, 30, RAYWHITE);
 }
 
 void Textbox::createFromIdInput(Vector2 pos, std::string input) {
