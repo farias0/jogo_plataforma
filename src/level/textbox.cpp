@@ -5,6 +5,9 @@
 #include "../input.hpp"
 
 
+#define TEXT_NOT_FOUND_CONTENT      "ERRO: Texto não encontrado!"
+
+
 Textbox *Textbox::textboxDisplaying = 0;
 
 Textbox::~Textbox() {
@@ -28,9 +31,8 @@ Textbox *Textbox::Add(Vector2 pos, int textId) {
     newTextbox->sprite = sprite;
     newTextbox->layer = -1;
     newTextbox->isFacingRight = true;
-    newTextbox->textId = textId;
     newTextbox->isDevTextbox = false;
-    newTextbox->textContent = "[sem texto]";
+    newTextbox->SetTextId(textId);
 
     LinkedList::AddNode(&Level::STATE->listHead, newTextbox);
 
@@ -66,6 +68,18 @@ void Textbox::CheckAndAdd(Vector2 pos) {
     Input::GetTextInput(callback);
 }
 
+void Textbox::SetTextId(int textId) {
+
+    this->textId = textId;
+
+    std::string queryText = TextBank::BANK[textId];
+    if (queryText.length()) {
+        textContent = queryText;
+    } else {
+        textContent = std::string(TEXT_NOT_FOUND_CONTENT);
+    }
+}
+
 void Textbox::ToggleTextboxType() {
     isDevTextbox = !isDevTextbox;
     updateSprite();
@@ -79,17 +93,11 @@ void Textbox::Toggle() {
 void Textbox::Draw() {
         
     // Draw the interactable button 
-
     Level::Entity::Draw();
 
-
     // Draw the textbox content
-
-    if (textboxDisplaying != this) return;
-
-    std::string *s = &TextBank::BANK[textId]; // TODO create setTextId() that updates textContent as well
-    if (!s->length()) s = &textContent;
-    DrawText((*s).c_str(), 120, 100, 30, isDevTextbox ? GREEN : RAYWHITE);
+    if (textboxDisplaying == this)
+        DrawText((textContent).c_str(), 120, 100, 30, isDevTextbox ? GREEN : RAYWHITE);
 }
 
 void Textbox::createFromIdInput(Vector2 pos, std::string input) {
@@ -127,7 +135,8 @@ std::string Textbox::PersistanceSerialize() {
 void Textbox::PersistenceParse(const std::string &data) {
 
     Level::Entity::PersistenceParse(data);
-    textId = std::stoi(persistenceReadValue(data, "textId"));
+    int id = std::stoi(persistenceReadValue(data, "textId"));
+    SetTextId(id);
     isDevTextbox = (bool) std::stoi(persistenceReadValue(data, "isDevTextbox"));
 
     updateSprite();

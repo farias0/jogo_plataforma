@@ -30,6 +30,8 @@ public:
     // given origin, if there are no other entities there already
     static void CheckAndAdd(Vector2 pos);
 
+    void SetTextId(int textId);
+
     // Toggles between normal and dev textboxes
     void ToggleTextboxType();
 
