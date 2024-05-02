@@ -89,7 +89,7 @@ void Textbox::Draw() {
 
     std::string *s = &TextBank::BANK[textId]; // TODO create setTextId() that updates textContent as well
     if (!s->length()) s = &textContent;
-    DrawText((*s).c_str(), 120, 100, 30, RAYWHITE);
+    DrawText((*s).c_str(), 120, 100, 30, isDevTextbox ? GREEN : RAYWHITE);
 }
 
 void Textbox::createFromIdInput(Vector2 pos, std::string input) {
