@@ -142,5 +142,6 @@ block:originX=352.000000;originY=544.000000;
 block:originX=384.000000;originY=544.000000;
 block:originX=576.000000;originY=544.000000;
 block:originX=608.000000;originY=544.000000;
-textbox_button:originX=410.000000;originY=461.000000;textId=100;
-textbox_button:originX=4988.500000;originY=-51.000061;textId=120;
+textbox_button:originX=410.000000;originY=461.000000;textId=100;isDevTextbox=0;
+textbox_button:originX=4988.500000;originY=-51.000061;textId=120;isDevTextbox=0;
+textbox_button:originX=708.000000;originY=455.000000;textId=2000;isDevTextbox=1;

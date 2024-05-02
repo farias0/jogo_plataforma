@@ -61,11 +61,7 @@ void Textbox::CheckAndAdd(Vector2 pos) {
 
 void Textbox::ToggleTextboxType() {
     isDevTextbox = !isDevTextbox;
-    if (isDevTextbox) {
-        sprite = &SPRITES->TextboxDevButton;
-    } else {
-        sprite = &SPRITES->TextboxButton;
-    }
+    updateSprite();
 }
 
 void Textbox::createFromIdInput(Vector2 pos, std::string input) {
@@ -84,10 +80,19 @@ void Textbox::createFromIdInput(Vector2 pos, std::string input) {
     Add(pos, id);
 }
 
+void Textbox::updateSprite() {
+    if (isDevTextbox) {
+        sprite = &SPRITES->TextboxDevButton;
+    } else {
+        sprite = &SPRITES->TextboxButton;
+    }
+}
+
 std::string Textbox::PersistanceSerialize() {
 
     std::string data = Level::Entity::PersistanceSerialize();
     persistanceAddValue(&data, "textId", std::to_string(textId));
+    persistanceAddValue(&data, "isDevTextbox", std::to_string((int) isDevTextbox));
     return data;
 }
 
@@ -95,4 +100,7 @@ void Textbox::PersistenceParse(const std::string &data) {
 
     Level::Entity::PersistenceParse(data);
     textId = std::stoi(persistenceReadValue(data, "textId"));
+    isDevTextbox = (bool) std::stoi(persistenceReadValue(data, "isDevTextbox"));
+
+    updateSprite();
 }

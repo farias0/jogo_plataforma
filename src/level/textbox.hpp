@@ -38,4 +38,6 @@ public:
 private:
     static void createFromIdInput(Vector2 pos, std::string input);
 
+    // Sets the correct sprite to a textbox accordingly to its type 
+    void updateSprite();
 };
