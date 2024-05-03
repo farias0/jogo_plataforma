@@ -298,7 +298,8 @@ void EditorEnable() {
 
     EDITOR_STATE->isEnabled = true;
 
-    Render::ResizeWindow(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+    //Render::EditorEnable(); // Disabled because currently the editor doesn't resize the window 
+
     MouseCursorEnable();
 
     buttonsSelectDefault();
@@ -310,7 +311,7 @@ void EditorDisable() {
 
     EDITOR_STATE->isEnabled = false;
 
-    Render::ResizeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
+    //Render::EditorDisable(); // Disabled because currently the editor doesn't resize the window 
 
     MouseCursorDisable();
 

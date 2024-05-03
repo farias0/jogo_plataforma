@@ -11,7 +11,7 @@
 
 
 // The rectangle defining the area of the editor panel in the screen
-#define EDITOR_PANEL_RECT               Rect(SCREEN_WIDTH, 0, 200, SCREEN_HEIGHT)
+#define EDITOR_PANEL_RECT               Rect(SCREEN_WIDTH - 200, 0, 200, SCREEN_HEIGHT)
 
 // The Y of the divider that vertically separates the editor panel in two
 #define EDITOR_CONTROL_PANEL_Y          4*SCREEN_HEIGHT/5

@@ -550,7 +550,8 @@ void drawTextInput() {
 
 void Initialize() {
 
-    shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+    //shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+    shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     levelTransitionShaderControl.timer = -1;
 
@@ -653,6 +654,21 @@ void LevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
     // Fix for how GLSL works
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
+}
+
+// void EditorEnable() {
+
+//     //Render::ResizeWindow(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+// }
+
+// void EditorDisable() {
+
+//     Render::ResizeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
+// }
+
+void FullscreenToggle() {
+
+    ToggleFullscreen();
 }
 
 

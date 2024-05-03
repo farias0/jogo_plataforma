@@ -6,11 +6,11 @@
 #include "linked_list.hpp"
 
 
-// Currently this represents the play space (not including editor)
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
-#define SCREEN_WIDTH_W_EDITOR   SCREEN_WIDTH + EDITOR_PANEL_RECT.width
+// Disabled because currently the editor doesn't resize the window 
+//#define SCREEN_WIDTH_W_EDITOR   SCREEN_WIDTH + EDITOR_PANEL_RECT.width
 
 
 class Dimensions {
