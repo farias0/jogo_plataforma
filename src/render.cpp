@@ -64,7 +64,8 @@ Color getColorTransparency(Color color, int transparency) {
 void drawSceneRectangle(Rectangle rect, Color color) {
 
     Vector2 scenePos = PosInSceneToScreen({ rect.x, rect.y });
-    Rectangle screenRect = { scenePos.x, scenePos.y, rect.width, rect.height };
+    Dimensions sceneDim = DimensionsInSceneToScreen({ rect.width, rect.height });
+    Rectangle screenRect = { scenePos.x, scenePos.y, sceneDim.width, sceneDim.height };
     DrawRectangleRec(screenRect, color);
 }
 

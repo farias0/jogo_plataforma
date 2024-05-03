@@ -175,10 +175,15 @@ void CameraZoomOut() {
     if (CAMERA->zoom <= ZOOM_MIN) CAMERA->zoom = ZOOM_MIN;
 }
 
+/*
+    Zooming works by keeping the 0,0 pinned and then streching around
+    -- which means it streches towards the botttom right of the screen.
+*/
+
 Vector2 PosInScreenToScene(Vector2 pos) {
     return {
-        (pos.x + CAMERA->pos.x) * CAMERA->zoom,
-        (pos.y + CAMERA->pos.y) * CAMERA->zoom
+        pos.x / CAMERA->zoom + CAMERA->pos.x,
+        pos.y / CAMERA->zoom + CAMERA->pos.y
     };
 }
 
