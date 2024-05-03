@@ -83,8 +83,8 @@ void GameUpdate();
 
 void GameExit();
 
-// True if the given position is inside the game screen (doesn't include the editor)
-bool IsInPlayArea(Vector2 pos);
+// The area of the screen that's interactable
+bool IsInMouseArea(Vector2 pos);
 
 // Returns the entity list's head for the current selected game mode
 LinkedList::Node *GetEntityListHead();

@@ -157,6 +157,9 @@ void handleDevInput() {
     if      (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))     CameraPanningStop();
     if      (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))        CameraPanningReset();
 
+    // Zoom
+    if      (GetMouseWheelMove() > 0) CameraZoomIn();
+    else if (GetMouseWheelMove() < 0) CameraZoomOut();
 
     // Entitiy selection
     if (EDITOR_STATE->isEnabled && IsKeyDown(KEY_LEFT_CONTROL) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
@@ -165,7 +168,7 @@ void handleDevInput() {
     }
     else if (EDITOR_STATE->isEnabled && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && !EDITOR_STATE->selectedEntities.empty()) {
 
-        if (!IsInPlayArea(mousePosInScreen)) goto skip_selected_entities_actions;
+        if (!IsInMouseArea(mousePosInScreen)) goto skip_selected_entities_actions;
 
         // Actions available when entities are selected
 
@@ -180,7 +183,7 @@ void handleDevInput() {
 skip_selected_entities_actions:
 
 
-    if      (!IsInPlayArea(mousePosInScreen)) return;
+    if      (!IsInMouseArea(mousePosInScreen)) return;
 
 
     if (GAME_STATE->showDebugHUD || EDITOR_STATE->isEnabled) {
@@ -229,10 +232,6 @@ skip_to_button_handler:
             return;
         }
     }
-
-    // Zoom
-    if      (GetMouseWheelMove() > 0) CameraZoomIn();
-    else if (GetMouseWheelMove() < 0) CameraZoomOut();
 
 }
 

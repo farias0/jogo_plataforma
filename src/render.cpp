@@ -488,7 +488,7 @@ void drawEditorCursor() {
     if (!b) return;
 
     Vector2 m = GetMousePosition();
-    if (!IsInPlayArea(m)) return;
+    if (!IsInMouseArea(m)) return;
 
     DrawTexture(b->sprite->sprite, m.x, m.y, getColorTransparency(WHITE, 96));
 }
