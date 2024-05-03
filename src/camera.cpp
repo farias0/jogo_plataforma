@@ -152,10 +152,14 @@ void CameraPanningStop() {
 }
 
 void CameraPanningReset() {
-    
-    CAMERA->pos = panningCameraOrigin;
+
     CAMERA->zoom = 1;
+
+    if (!isPanned) return; 
+
+    CAMERA->pos = panningCameraOrigin;
     isPanned = false;
+
     TraceLog(LOG_TRACE, "Camera panning reset.");
 }
 
