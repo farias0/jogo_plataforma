@@ -153,8 +153,6 @@ void CameraPanningStop() {
 
 void CameraPanningReset() {
     
-    if (!isPanned) return;
-    
     CAMERA->pos = panningCameraOrigin;
     CAMERA->zoom = 1;
     isPanned = false;
