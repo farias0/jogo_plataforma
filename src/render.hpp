@@ -28,8 +28,6 @@ void Initialize();
 
 void Render();
 
-void ResizeWindow(int width, int height);
-
 void DrawLevelEntity(Level::Entity *entity);
 
 void DrawLevelEntityOriginGhost(Level::Entity *entity);

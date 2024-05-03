@@ -53,6 +53,11 @@ LinkedList::Node *SYS_MESSAGES_HEAD = 0;
 RenderTexture2D shaderRenderTexture;
 LevelTransitionShaderControl levelTransitionShaderControl;
 
+
+static void reloadShaders() {
+    shaderRenderTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+}
+
 // Returns the given color, with the given transparency level. 
 Color getColorTransparency(Color color, int transparency) {
 
@@ -553,8 +558,7 @@ void drawTextInput() {
 
 void Initialize() {
 
-    //shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
-    shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+    reloadShaders();
 
     levelTransitionShaderControl.timer = -1;
 
@@ -590,11 +594,6 @@ void Render() {
         if (EDITOR_STATE->isEnabled) drawEditor();
 
     EndDrawing();
-}
-
-void ResizeWindow(int width, int height) {
-
-    SetWindowSize(width, height);
 }
 
 void DrawLevelEntity(Level::Entity *entity) {
@@ -662,6 +661,8 @@ void LevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 void FullscreenToggle() {
 
     ToggleBorderlessWindowed();
+
+    reloadShaders();
 }
 
 
