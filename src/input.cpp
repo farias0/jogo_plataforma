@@ -143,6 +143,7 @@ void handleDevInput() {
     if      (IsKeyPressed(KEY_F3))          GAME_STATE->showDebugGrid = !GAME_STATE->showDebugGrid;
     if      (IsKeyPressed(KEY_F5))          AssetsHotReload();
     if      (IsKeyPressed(KEY_F6))          Sounds::Toggle();
+    if      (IsKeyPressed(KEY_F11))         ToggleFullscreen();
 
 
     /* Mouse functionalities */
