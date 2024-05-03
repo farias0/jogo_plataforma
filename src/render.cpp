@@ -271,6 +271,10 @@ next_node:
 
 void drawDebugGrid() {
 
+    // TODO support debug grid zoom
+    if (CAMERA->zoom != 1) return;
+    
+
     Dimensions grid;
     if (GAME_STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
     else if (GAME_STATE->mode == MODE_IN_LEVEL) grid = LEVEL_GRID;
