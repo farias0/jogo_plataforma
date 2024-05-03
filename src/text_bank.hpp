@@ -14,6 +14,7 @@ typedef std::unordered_map<int, std::string> TextBankMap;
 
 extern TextBankMap BANK;
 
-void InitializeAndLoad();
+// Loads all textbank data from disk
+void LoadFromDisk();
 
 }

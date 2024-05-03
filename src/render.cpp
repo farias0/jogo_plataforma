@@ -11,7 +11,6 @@
 #include "camera.hpp"
 #include "editor.hpp"
 #include "debug.hpp"
-#include "text_bank.hpp"
 #include "input.hpp"
 
 #pragma GCC diagnostic push 
@@ -49,22 +48,10 @@ typedef struct LevelTransitionShaderControl {
 
 LinkedList::Node *SYS_MESSAGES_HEAD = 0;
 
-/*
-    TODO create RenderState,
-    that other modules can use to communicate with Render.
-
-    E.g.: To display a textbox, set the textboxText field.
-*/
 
 // Texture covering the whole screen, used to render shaders
 RenderTexture2D shaderRenderTexture;
 LevelTransitionShaderControl levelTransitionShaderControl;
-
-// Text that's being displayed in a textbox
-int textboxTextId;
-// Text that's displayed in a textbox if the id has no match
-std::string textboxTextMissing("[sem texto]");
-
 
 // Returns the given color, with the given transparency level. 
 Color getColorTransparency(Color color, int transparency) {
@@ -292,12 +279,6 @@ void drawLevelHud() {
 
     if (EDITOR_STATE->isEnabled) return;
 
-    if (textboxTextId != -1) {
-        std::string *s = &TextBank::BANK[textboxTextId];
-        if (!s->length()) s = &textboxTextMissing;
-        DrawText((*s).c_str(), 120, 100, 30, RAYWHITE);
-    }
-
     DrawTextureEx(SPRITES->LevelCheckpointFlag.sprite,
                     { SCREEN_WIDTH-149, SCREEN_HEIGHT-65 }, 0, SPRITES->LevelCheckpointFlag.scale/1.7, WHITE);
     DrawText(std::string("x " + std::to_string(Level::STATE->checkpointsLeft)).c_str(),
@@ -346,11 +327,14 @@ void drawDebugEntityInfo(LinkedList::Node *entity) {
     switch (GAME_STATE->mode) {
     case MODE_IN_LEVEL:
         hitbox = ((Level::Entity *) entity)->hitbox;
+        str = ((Level::Entity *) entity)->GetEntityDebugString();
         break;
 
     case MODE_OVERWORLD:
         RectangleSetPos(&hitbox, ((OverworldEntity *) entity)->gridPos);
         RectangleSetDimensions(&hitbox, OW_GRID);
+        str = std::string("x=" + std::to_string((int) hitbox.x) +
+                            "\ny=" + std::to_string((int) hitbox.y)); // TODO create Overworld Entity
         break;
 
     default:
@@ -363,15 +347,6 @@ void drawDebugEntityInfo(LinkedList::Node *entity) {
             hitbox.width, hitbox.height, { GREEN.r, GREEN.g, GREEN.b, 128 });
     DrawRectangleLines(screenPos.x, screenPos.y,
             hitbox.width, hitbox.height, GREEN);
-
-    str = std::string("x=" + std::to_string((int) hitbox.x) +
-                        "\ny=" + std::to_string((int) hitbox.y));
-
-    if (GAME_STATE->mode == MODE_IN_LEVEL) {
-        Level::Entity *le = (Level::Entity *) entity;
-        if (le->tags & Level::IS_TEXTBOX)
-            str += "\ntextId=" + std::to_string(((Textbox *) le)->textId);
-    }
 
     DrawText(str.c_str(), screenPos.x, screenPos.y, 20, WHITE);
 }
@@ -575,8 +550,6 @@ void Initialize() {
 
     levelTransitionShaderControl.timer = -1;
 
-    textboxTextId = -1;
-
     // Line spacing of DrawText() 's containing line break
     SetTextLineSpacing(35);
 
@@ -676,18 +649,6 @@ void LevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
     // Fix for how GLSL works
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
-}
-
-void DisplayTextbox(int textId) {
-    textboxTextId = textId;
-}
-
-void DisplayTextboxStop() {
-    textboxTextId = -1;
-}
-
-int GetTextboxTextId() {
-    return textboxTextId;
 }
 
 

@@ -247,8 +247,6 @@ void Player::Jump() {
 
 void Player::Tick() {
 
-    bool collidedWithTextboxButton = false; // controls the exhibition of textboxes
-
 
     if (Level::STATE->concludedAgo >= 0) return;
 
@@ -411,6 +409,10 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
 
 COLISION_CHECKING:
     // Collision checking
+    
+    Textbox *textboxCollidedThisFrame = 0;
+    static Textbox *textboxCollidedLastFrame = 0;
+    
     {
         if (hitbox.y + hitbox.height > FLOOR_DEATH_HEIGHT) {
             die();
@@ -518,13 +520,7 @@ COLISION_CHECKING:
             else if (entity->tags & Level::IS_TEXTBOX &&
                         CheckCollisionRecs(entity->hitbox, hitbox)) {
 
-                auto box = (Textbox *) entity;
-                collidedWithTextboxButton = true;
-
-                if (Render::GetTextboxTextId() == -1) {
-                    Render::DisplayTextbox(box->textId);
-                    TraceLog(LOG_TRACE, "Textbox started displaying textId=%d.", box->textId);
-                }
+                textboxCollidedThisFrame = (Textbox *) entity;
             }
 
             else if (entity->tags & Level::IS_CHECKPOINT_PICKUP &&
@@ -570,10 +566,11 @@ next_entity:
         }); 
     }
 
-    if (Render::GetTextboxTextId() != -1 && !collidedWithTextboxButton) {
-        Render::DisplayTextboxStop();
-        TraceLog(LOG_TRACE, "Textbox stopped displaying.");
+    if (textboxCollidedThisFrame != textboxCollidedLastFrame) {
+        if (textboxCollidedThisFrame) textboxCollidedThisFrame->Toggle(); // toggles this one on
+        else textboxCollidedLastFrame->Toggle(); // toggles this one off
     }
+    textboxCollidedLastFrame = textboxCollidedThisFrame;
 
 
     sprite = animationTick();

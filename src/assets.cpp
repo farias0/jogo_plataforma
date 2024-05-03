@@ -3,6 +3,8 @@
 
 #include "assets.hpp"
 #include "render.hpp"
+#include "text_bank.hpp"
+#include "level/textbox.hpp"
 
 
 struct SoundBank *SOUNDS = 0;
@@ -86,6 +88,7 @@ static void loadAssets() {
     sp->Acid = normalSizeSprite("../assets/acid_tile_1.png");
     sp->GlideItem = normalSizeSprite("../assets/glide_item.png");
     sp->TextboxButton = normalSizeSprite("../assets/textbox_button.png");
+    sp->TextboxDevButton = normalSizeSprite("../assets/textbox_dev_button.png");
 
     // Overworld
     sp->OverworldCursor = doubleSizeSprite("../assets/cursor_default_1.png");
@@ -139,6 +142,11 @@ void AssetsHotReload() {
 
     unloadAssets();
     loadAssets();
+
+    TextBank::LoadFromDisk();
+
+    Textbox::ReloadAllLevelTexboxes(); // probably shouldn't be here
+
     Render::PrintSysMessage("Assets recarregados");
 }
 

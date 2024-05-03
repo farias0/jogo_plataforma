@@ -89,8 +89,8 @@ void SystemsInitialize() {
     OverworldInitialize();
     Level::Initialize();
     Render::Initialize();
-    TextBank::InitializeAndLoad();
     Sounds::Initialize();
+    TextBank::LoadFromDisk();
 }
 
 void GameUpdate() {
