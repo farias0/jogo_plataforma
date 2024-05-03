@@ -54,7 +54,7 @@ RenderTexture2D shaderRenderTexture;
 LevelTransitionShaderControl levelTransitionShaderControl;
 
 
-static void reloadShaders() {
+void reloadShaders() {
     shaderRenderTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 }
 
@@ -72,6 +72,11 @@ void drawSceneRectangle(Rectangle rect, Color color) {
     Dimensions sceneDim = DimensionsInSceneToScreen({ rect.width, rect.height });
     Rectangle screenRect = { scenePos.x, scenePos.y, sceneDim.width, sceneDim.height };
     DrawRectangleRec(screenRect, color);
+}
+
+// Shows a framing around the play area
+void drawFullScreenFraming() {
+    DrawRectangleLines(-1, -1, SCREEN_WIDTH+2, SCREEN_HEIGHT+2, WHITE);
 }
 
 void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
@@ -273,12 +278,12 @@ void drawDebugGrid() {
 
     Vector2 offset = DistanceFromGrid(CAMERA->pos, grid);
 
-    for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += grid.width) {
-        DrawLine(lineX, 0, lineX, SCREEN_HEIGHT, BLUE);
+    for (float lineX = offset.x; lineX <= GetScreenWidth(); lineX += grid.width) {
+        DrawLine(lineX, 0, lineX, GetScreenHeight(), BLUE);
     }
 
-    for (float lineY = offset.y; lineY <= SCREEN_HEIGHT; lineY += grid.height) {
-        DrawLine(0, lineY, SCREEN_WIDTH, lineY, BLUE);
+    for (float lineY = offset.y; lineY <= GetScreenHeight(); lineY += grid.height) {
+        DrawLine(0, lineY, GetScreenWidth(), lineY, BLUE);
     }
 }
 
@@ -592,6 +597,7 @@ void Render() {
         drawSysMessages();
 
         if (EDITOR_STATE->isEnabled) drawEditor();
+        else drawFullScreenFraming();
 
     EndDrawing();
 }

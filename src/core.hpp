@@ -6,6 +6,7 @@
 #include "linked_list.hpp"
 
 
+// Represents the play area and the initial resolution
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
