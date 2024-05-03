@@ -64,13 +64,15 @@ Color getColorTransparency(Color color, int transparency) {
 void drawSceneRectangle(Rectangle rect, Color color) {
 
     Vector2 scenePos = PosInSceneToScreen({ rect.x, rect.y });
-    Rectangle screenRect = { scenePos.x, scenePos.y, rect.width, rect.height };
+    Dimensions sceneDim = DimensionsInSceneToScreen({ rect.width, rect.height });
+    Rectangle screenRect = { scenePos.x, scenePos.y, sceneDim.width, sceneDim.height };
     DrawRectangleRec(screenRect, color);
 }
 
 void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
 
-    Dimensions dimensions = SpriteScaledDimensions(sprite);
+    Dimensions dimensions = DimensionsInSceneToScreen(
+                                SpriteScaledDimensions(sprite));
 
 
     // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
@@ -86,7 +88,7 @@ void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool fli
         DrawTextureEx(sprite->sprite,
                     pos,
                     rotation,
-                    sprite->scale,
+                    ScaleInSceneToScreen(sprite->scale),
                     tint);    
         
         return;
@@ -322,6 +324,7 @@ void drawDebugEntityInfo(LinkedList::Node *entity) {
 
     Rectangle hitbox;
     Vector2 screenPos;
+    Dimensions screenDim;
     std::string str;
 
     switch (GAME_STATE->mode) {
@@ -342,11 +345,12 @@ void drawDebugEntityInfo(LinkedList::Node *entity) {
     }
 
     screenPos = PosInSceneToScreen(RectangleGetPos(hitbox));
+    screenDim = DimensionsInSceneToScreen({ hitbox.width, hitbox.height });
 
     DrawRectangle(screenPos.x, screenPos.y,
-            hitbox.width, hitbox.height, { GREEN.r, GREEN.g, GREEN.b, 128 });
+            screenDim.width, screenDim.height, { GREEN.r, GREEN.g, GREEN.b, 128 });
     DrawRectangleLines(screenPos.x, screenPos.y,
-            hitbox.width, hitbox.height, GREEN);
+            screenDim.width, screenDim.height, GREEN);
 
     DrawText(str.c_str(), screenPos.x, screenPos.y, 20, WHITE);
 }

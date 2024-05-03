@@ -4,9 +4,12 @@
 
 #include <raylib.h>
 
+#include "core.hpp"
+
 
 typedef struct MyCamera {
     Vector2 pos;
+    float zoom; // The larger, the more zoomed out
 } MyCamera;
 
 
@@ -35,10 +38,21 @@ void CameraPanningReset();
 // If the camera is offset from being panned
 bool CameraIsPanned();
 
+void CameraZoomIn();
+
+void CameraZoomOut();
+
 // Converts position from the screen coordinates to in game coordinates
 Vector2 PosInScreenToScene(Vector2 pos);
 
 // Converts position from in game coordinates to the screen coordinates
 Vector2 PosInSceneToScreen(Vector2 pos);
+
+// Converts a scale from in game to the screen according to the zoom level
+float ScaleInSceneToScreen(float value);
+
+// Converts a dimension from in game to the screen according to the zoom level
+Dimensions DimensionsInSceneToScreen(Dimensions dim);
+
 
 #endif // _CAMERA_H_INCLUDED_

@@ -12,6 +12,10 @@
 #define CAMERA_FOLLOW_UP        (1*SCREEN_HEIGHT)/4
 #define CAMERA_FOLLOW_DOWN      (3*SCREEN_HEIGHT)/4
 
+#define ZOOM_STEP               0.10
+#define ZOOM_MIN                0.20
+#define ZOOM_MAX                2
+
 
 MyCamera *CAMERA = 0;
 
@@ -69,6 +73,7 @@ void CameraInitialize() {
     CAMERA = (MyCamera *) MemAlloc(sizeof(MyCamera));
 
     CAMERA->pos = { 0, 0 };
+    CAMERA->zoom = 1;
 
     TraceLog(LOG_INFO, "Camera initialized.");
 }
@@ -131,8 +136,8 @@ void CameraPanningMove(Vector2 mousePos) {
         return;
     }
 
-    CAMERA->pos.x -= mousePos.x - panningCursorLastFrame.x;
-    CAMERA->pos.y -= mousePos.y - panningCursorLastFrame.y;
+    CAMERA->pos.x -= (mousePos.x - panningCursorLastFrame.x) / CAMERA->zoom;
+    CAMERA->pos.y -= (mousePos.y - panningCursorLastFrame.y) / CAMERA->zoom;
 
     panningCursorLastFrame = mousePos;
     isPanned = true;
@@ -151,6 +156,7 @@ void CameraPanningReset() {
     if (!isPanned) return;
     
     CAMERA->pos = panningCameraOrigin;
+    CAMERA->zoom = 1;
     isPanned = false;
     TraceLog(LOG_TRACE, "Camera panning reset.");
 }
@@ -159,16 +165,42 @@ bool CameraIsPanned() {
     return isPanned;
 }
 
+void CameraZoomIn() {
+    CAMERA->zoom += ZOOM_STEP;
+    if (CAMERA->zoom >= ZOOM_MAX) CAMERA->zoom = ZOOM_MAX;
+}
+
+void CameraZoomOut() {
+    CAMERA->zoom -= ZOOM_STEP;
+    if (CAMERA->zoom <= ZOOM_MIN) CAMERA->zoom = ZOOM_MIN;
+}
+
+/*
+    Zooming works by keeping the 0,0 pinned and then streching around
+    -- which means it streches towards the botttom right of the screen.
+*/
+
 Vector2 PosInScreenToScene(Vector2 pos) {
     return {
-        pos.x + CAMERA->pos.x,
-        pos.y + CAMERA->pos.y
+        pos.x / CAMERA->zoom + CAMERA->pos.x,
+        pos.y / CAMERA->zoom + CAMERA->pos.y
     };
 }
 
 Vector2 PosInSceneToScreen(Vector2 pos) {
     return {
-        pos.x - CAMERA->pos.x,
-        pos.y - CAMERA->pos.y
+        (pos.x - CAMERA->pos.x) * CAMERA->zoom,
+        (pos.y - CAMERA->pos.y) * CAMERA->zoom
+    };
+}
+
+float ScaleInSceneToScreen(float value) {
+    return value * CAMERA->zoom;
+}
+
+Dimensions DimensionsInSceneToScreen(Dimensions dim) {
+    return {
+        dim.width * CAMERA->zoom,
+        dim.height * CAMERA->zoom
     };
 }
