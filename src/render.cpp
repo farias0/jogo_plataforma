@@ -159,7 +159,7 @@ void drawSpriteInBackground(Sprite *sprite, Vector2 pos, int layer) {
 void drawBackground() {
 
     if (GAME_STATE->mode == MODE_OVERWORLD) {
-        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 39, 39, 54, 255 }); 
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), { 39, 39, 54, 255 }); 
     }
 
 
@@ -169,10 +169,10 @@ void drawBackground() {
             return;
         }
 
-        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 25, 25, 35, 255 });
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), { 25, 25, 35, 255 });
 
         Vector2 levelBottomOnScreen = PosInSceneToScreen({ 0, FLOOR_DEATH_HEIGHT });
-        DrawRectangle(0, levelBottomOnScreen.y, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
+        DrawRectangle(0, levelBottomOnScreen.y, GetScreenWidth(), GetScreenHeight(), BLACK);
 
         if (!GAME_STATE->showBackground) return; 
         drawSpriteInBackground(&SPRITES->Nightclub,   { 1250, 250 },  -1);
