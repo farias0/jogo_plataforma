@@ -232,6 +232,7 @@ skip_to_button_handler:
     // Zoom
     if      (GetMouseWheelMove() > 0) CameraZoomIn();
     else if (GetMouseWheelMove() < 0) CameraZoomOut();
+
 }
 
 void handleDroppedFile() {

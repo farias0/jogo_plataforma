@@ -148,6 +148,7 @@ void CameraPanningStop() {
     if (!isPanning) TraceLog(LOG_ERROR, "Camera is asked to stop panning, but panning flag is false.");
 
     isPanning = false;
+    CAMERA->zoom = 1;
     TraceLog(LOG_TRACE, "Camera stopped panning.");
 }
 
@@ -156,6 +157,7 @@ void CameraPanningReset() {
     if (!isPanned) return;
     
     CAMERA->pos = panningCameraOrigin;
+    CAMERA->zoom = 1;
     isPanned = false;
     TraceLog(LOG_TRACE, "Camera panning reset.");
 }
