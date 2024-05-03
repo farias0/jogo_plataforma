@@ -72,6 +72,11 @@ void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool fli
 
     Dimensions dimensions = SpriteScaledDimensions(sprite);
 
+    // Scale dimensions for camera
+    float scale = ScaleInSceneToScreen(1);
+    dimensions.width *= scale;
+    dimensions.height *= scale;
+
 
     // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
     // Maybe this should be fixed in a way that works for any angle. 
@@ -86,7 +91,7 @@ void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool fli
         DrawTextureEx(sprite->sprite,
                     pos,
                     rotation,
-                    sprite->scale,
+                    sprite->scale * scale,
                     tint);    
         
         return;

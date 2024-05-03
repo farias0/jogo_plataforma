@@ -69,6 +69,7 @@ void CameraInitialize() {
     CAMERA = (MyCamera *) MemAlloc(sizeof(MyCamera));
 
     CAMERA->pos = { 0, 0 };
+    CAMERA->zoom = 2;
 
     TraceLog(LOG_INFO, "Camera initialized.");
 }
@@ -161,14 +162,18 @@ bool CameraIsPanned() {
 
 Vector2 PosInScreenToScene(Vector2 pos) {
     return {
-        pos.x + CAMERA->pos.x,
-        pos.y + CAMERA->pos.y
+        (pos.x + CAMERA->pos.x) * CAMERA->zoom,
+        (pos.y + CAMERA->pos.y) * CAMERA->zoom
     };
 }
 
 Vector2 PosInSceneToScreen(Vector2 pos) {
     return {
-        pos.x - CAMERA->pos.x,
-        pos.y - CAMERA->pos.y
+        (pos.x - CAMERA->pos.x) / CAMERA->zoom,
+        (pos.y - CAMERA->pos.y) / CAMERA->zoom
     };
+}
+
+float ScaleInSceneToScreen(float value) {
+    return value / CAMERA->zoom;
 }

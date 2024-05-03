@@ -7,6 +7,7 @@
 
 typedef struct MyCamera {
     Vector2 pos;
+    float zoom; // The larger, the more zoomed out
 } MyCamera;
 
 
@@ -40,5 +41,8 @@ Vector2 PosInScreenToScene(Vector2 pos);
 
 // Converts position from in game coordinates to the screen coordinates
 Vector2 PosInSceneToScreen(Vector2 pos);
+
+float ScaleInSceneToScreen(float value);
+
 
 #endif // _CAMERA_H_INCLUDED_
