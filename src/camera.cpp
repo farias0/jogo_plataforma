@@ -136,8 +136,8 @@ void CameraPanningMove(Vector2 mousePos) {
         return;
     }
 
-    CAMERA->pos.x -= mousePos.x - panningCursorLastFrame.x;
-    CAMERA->pos.y -= mousePos.y - panningCursorLastFrame.y;
+    CAMERA->pos.x -= (mousePos.x - panningCursorLastFrame.x) * CAMERA->zoom;
+    CAMERA->pos.y -= (mousePos.y - panningCursorLastFrame.y) * CAMERA->zoom;
 
     panningCursorLastFrame = mousePos;
     isPanned = true;
