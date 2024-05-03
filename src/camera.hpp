@@ -4,6 +4,8 @@
 
 #include <raylib.h>
 
+#include "core.hpp"
+
 
 typedef struct MyCamera {
     Vector2 pos;
@@ -46,7 +48,11 @@ Vector2 PosInScreenToScene(Vector2 pos);
 // Converts position from in game coordinates to the screen coordinates
 Vector2 PosInSceneToScreen(Vector2 pos);
 
+// Converts a scale from in game to the screen according to the zoom level
 float ScaleInSceneToScreen(float value);
+
+// Converts a dimension from in game to the screen according to the zoom level
+Dimensions DimensionsInSceneToScreen(Dimensions dim);
 
 
 #endif // _CAMERA_H_INCLUDED_

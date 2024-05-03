@@ -191,3 +191,10 @@ Vector2 PosInSceneToScreen(Vector2 pos) {
 float ScaleInSceneToScreen(float value) {
     return value / CAMERA->zoom;
 }
+
+Dimensions DimensionsInSceneToScreen(Dimensions dim) {
+    return {
+        dim.width / CAMERA->zoom,
+        dim.height / CAMERA->zoom
+    };
+}
