@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 #include "textbox.hpp"
+#include "level.hpp"
 #include "../input.hpp"
 
 
@@ -88,6 +89,19 @@ void Textbox::ToggleTextboxType() {
 void Textbox::Toggle() {
     if (textboxDisplaying == this) textboxDisplaying = 0;
     else textboxDisplaying = this;
+}
+
+void Textbox::ReloadAllLevelTexboxes() {
+    
+    for (Level::Entity *e = (Level::Entity *) Level::STATE->listHead;
+        e != 0;
+        e = (Level::Entity *) e->next) {
+
+            if (e->tags & Level::IS_TEXTBOX) {
+                auto box = (Textbox *) e;
+                box->SetTextId(box->textId);
+            }
+    }
 }
 
 std::string Textbox::GetEntityDebugString() {

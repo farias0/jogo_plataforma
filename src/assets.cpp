@@ -3,6 +3,8 @@
 
 #include "assets.hpp"
 #include "render.hpp"
+#include "text_bank.hpp"
+#include "level/textbox.hpp"
 
 
 struct SoundBank *SOUNDS = 0;
@@ -140,6 +142,11 @@ void AssetsHotReload() {
 
     unloadAssets();
     loadAssets();
+
+    TextBank::LoadFromDisk();
+
+    Textbox::ReloadAllLevelTexboxes(); // probably shouldn't be here
+
     Render::PrintSysMessage("Assets recarregados");
 }
 

@@ -38,6 +38,9 @@ public:
     // Toggles the exhibition of this textbox
     void Toggle();
 
+    // Reloads the text in all the texboxes part of the loaded level from disk
+    static void ReloadAllLevelTexboxes();
+
     std::string GetEntityDebugString() override;
 
     void Draw() override;

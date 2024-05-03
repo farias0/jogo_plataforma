@@ -61,7 +61,7 @@ invalid_line:
     TraceLog(LOG_DEBUG, "Text Bank loaded %d items.", bank->size());
 }
 
-void InitializeAndLoad() {
+void LoadFromDisk() {
 
     std::string text = Files::TextLoad(TEXT_BANK_FILEPATH);
     parseFileDataIntoBank(&BANK, text);
