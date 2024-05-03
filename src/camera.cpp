@@ -12,9 +12,9 @@
 #define CAMERA_FOLLOW_UP        (1*SCREEN_HEIGHT)/4
 #define CAMERA_FOLLOW_DOWN      (3*SCREEN_HEIGHT)/4
 
-#define ZOOM_STEP               0.25
-#define ZOOM_MIN                0.75
-#define ZOOM_MAX                4
+#define ZOOM_STEP               0.10
+#define ZOOM_MIN                0.20
+#define ZOOM_MAX                2
 
 
 MyCamera *CAMERA = 0;
@@ -136,8 +136,8 @@ void CameraPanningMove(Vector2 mousePos) {
         return;
     }
 
-    CAMERA->pos.x -= (mousePos.x - panningCursorLastFrame.x) * CAMERA->zoom;
-    CAMERA->pos.y -= (mousePos.y - panningCursorLastFrame.y) * CAMERA->zoom;
+    CAMERA->pos.x -= (mousePos.x - panningCursorLastFrame.x) / CAMERA->zoom;
+    CAMERA->pos.y -= (mousePos.y - panningCursorLastFrame.y) / CAMERA->zoom;
 
     panningCursorLastFrame = mousePos;
     isPanned = true;
@@ -167,13 +167,13 @@ bool CameraIsPanned() {
 }
 
 void CameraZoomIn() {
-    CAMERA->zoom -= ZOOM_STEP;
-    if (CAMERA->zoom <= ZOOM_MIN) CAMERA->zoom = ZOOM_MIN;
+    CAMERA->zoom += ZOOM_STEP;
+    if (CAMERA->zoom >= ZOOM_MAX) CAMERA->zoom = ZOOM_MAX;
 }
 
 void CameraZoomOut() {
-    CAMERA->zoom += ZOOM_STEP;
-    if (CAMERA->zoom >= ZOOM_MAX) CAMERA->zoom = ZOOM_MAX;
+    CAMERA->zoom -= ZOOM_STEP;
+    if (CAMERA->zoom <= ZOOM_MIN) CAMERA->zoom = ZOOM_MIN;
 }
 
 Vector2 PosInScreenToScene(Vector2 pos) {
@@ -185,18 +185,18 @@ Vector2 PosInScreenToScene(Vector2 pos) {
 
 Vector2 PosInSceneToScreen(Vector2 pos) {
     return {
-        (pos.x - CAMERA->pos.x) / CAMERA->zoom,
-        (pos.y - CAMERA->pos.y) / CAMERA->zoom
+        (pos.x - CAMERA->pos.x) * CAMERA->zoom,
+        (pos.y - CAMERA->pos.y) * CAMERA->zoom
     };
 }
 
 float ScaleInSceneToScreen(float value) {
-    return value / CAMERA->zoom;
+    return value * CAMERA->zoom;
 }
 
 Dimensions DimensionsInSceneToScreen(Dimensions dim) {
     return {
-        dim.width / CAMERA->zoom,
-        dim.height / CAMERA->zoom
+        dim.width * CAMERA->zoom,
+        dim.height * CAMERA->zoom
     };
 }
