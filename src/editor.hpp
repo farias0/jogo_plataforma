@@ -10,12 +10,6 @@
 #include "core.hpp"
 
 
-// The rectangle defining the area of the editor panel in the screen
-#define EDITOR_PANEL_RECT               Rect(SCREEN_WIDTH - 200, 0, 200, SCREEN_HEIGHT)
-
-// The Y of the divider that vertically separates the editor panel in two
-#define EDITOR_CONTROL_PANEL_Y          4*SCREEN_HEIGHT/5
-
 // The background color of the editor
 #define EDITOR_BG_COLOR                 { 0x08, 0x08, 0x11, 0xff }
 
@@ -25,9 +19,6 @@
 // The space between two entity buttons
 #define ENTITY_BUTTON_SPACING           12
 
-// The space between an entity button and a wall
-#define ENTITY_BUTTON_WALL_SPACING      (EDITOR_PANEL_RECT.width - (ENTITY_BUTTON_SIZE * 2) - ENTITY_BUTTON_SPACING) / 2
-
 // The height of the control button
 #define CONTROL_BUTTON_HEIGHT           40
 
@@ -36,9 +27,6 @@
 
 // The space between two control buttons
 #define CONTROL_BUTTON_SPACING          ENTITY_BUTTON_SPACING
-
-// The space between a control button and a wall
-#define CONTROL_BUTTON_WALL_SPACING     (EDITOR_PANEL_RECT.width - (CONTROL_BUTTON_WIDTH * 2) - CONTROL_BUTTON_SPACING) / 2
 
 // The color of the entity selection's square
 #define EDITOR_SELECTION_RECT_COLOR     { BLUE.r, BLUE.g, BLUE.b, 64 }
@@ -152,6 +140,12 @@ void EditorDisable();
 // Enables and disables editor
 void EditorEnabledToggle();
 
+// Get the Rectangle that represents the editor bar in the screen
+Rectangle EditorBarGetRect();
+
+// Gets the Y of the Editor Bar's divisor in the screen
+float EditorBarGetDivisorY();
+ 
 void EditorTick();
 
 void EditorEntityButtonSelect(EditorEntityButton *item);

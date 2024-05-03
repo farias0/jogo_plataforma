@@ -15,6 +15,12 @@
 #include "render.hpp"
 
 
+#define EDITOR_BAR_WIDTH        200
+
+// The proportion between the Entity button and the Control button spaces
+#define EDITOR_BAR_DIVISION     ((float) 4 / (float) 5)
+
+
 EditorState *EDITOR_STATE = 0;
 
 
@@ -298,8 +304,6 @@ void EditorEnable() {
 
     EDITOR_STATE->isEnabled = true;
 
-    //Render::EditorEnable(); // Disabled because currently the editor doesn't resize the window 
-
     MouseCursorEnable();
 
     buttonsSelectDefault();
@@ -310,8 +314,6 @@ void EditorEnable() {
 void EditorDisable() {
 
     EDITOR_STATE->isEnabled = false;
-
-    //Render::EditorDisable(); // Disabled because currently the editor doesn't resize the window 
 
     MouseCursorDisable();
 
@@ -326,6 +328,17 @@ void EditorEnabledToggle() {
 
     if (EDITOR_STATE->isEnabled) EditorDisable();
     else EditorEnable();
+}
+
+Rectangle EditorBarGetRect() {
+    return { (float) GetScreenWidth() - EDITOR_BAR_WIDTH,
+                0,
+                EDITOR_BAR_WIDTH,
+                (float) GetScreenHeight() };   
+}
+
+float EditorBarGetDivisorY() {
+    return EDITOR_BAR_DIVISION * GetScreenHeight();
 }
 
 void EditorTick() {
@@ -409,15 +422,15 @@ bool EditorSelectedEntitiesMove(Vector2 cursorPos) {
 
 Rectangle EditorEntityButtonRect(int buttonNumber) {
 
-    const Vector2 panelOrigin   = RectangleGetPos(EDITOR_PANEL_RECT);
+    const Rectangle drawSpace   = EditorBarGetRect();
     const int buttonSize        = ENTITY_BUTTON_SIZE;
     const int buttonSpacing     = ENTITY_BUTTON_SPACING;
-    const int wallSpacing       = ENTITY_BUTTON_WALL_SPACING;
+    const int wallSpacing       = (drawSpace.width - (ENTITY_BUTTON_SIZE * 2) - ENTITY_BUTTON_SPACING) / 2;
 
-    float itemX = panelOrigin.x + wallSpacing;
+    float itemX = drawSpace.x + wallSpacing;
     if (buttonNumber % 2) itemX += buttonSize + buttonSpacing;
 
-    float itemY = panelOrigin.y + wallSpacing;
+    float itemY = drawSpace.y + wallSpacing;
     itemY += (buttonSize + buttonSpacing) * (buttonNumber / 2);
 
     return { itemX, itemY, buttonSize, buttonSize };
@@ -425,18 +438,18 @@ Rectangle EditorEntityButtonRect(int buttonNumber) {
 
 Rectangle EditorControlButtonRect(int buttonNumber) {
 
-    Vector2 panelOrigin         = RectangleGetPos(EDITOR_PANEL_RECT);
-    panelOrigin.y += EDITOR_CONTROL_PANEL_Y;
+    Rectangle drawSpace         = EditorBarGetRect();
+    drawSpace.y                 += EditorBarGetDivisorY();
 
     const int buttonWidth       = CONTROL_BUTTON_WIDTH;
     const int buttonHeight      = CONTROL_BUTTON_HEIGHT;
     const int buttonSpacing     = CONTROL_BUTTON_SPACING;
-    const int wallSpacing       = CONTROL_BUTTON_WALL_SPACING;
+    const int wallSpacing       = (drawSpace.width - (CONTROL_BUTTON_WIDTH * 2) - CONTROL_BUTTON_SPACING) / 2;
 
-    float itemX = panelOrigin.x + wallSpacing;
+    float itemX = drawSpace.x + wallSpacing;
     if (buttonNumber % 2) itemX += buttonWidth + buttonSpacing;
 
-    float itemY = panelOrigin.y + wallSpacing;
+    float itemY = drawSpace.y + wallSpacing;
     itemY += (buttonHeight + buttonSpacing) * (buttonNumber / 2);
 
     return { itemX, itemY, buttonWidth, buttonHeight };

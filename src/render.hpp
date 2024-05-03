@@ -47,12 +47,6 @@ void PrintSysMessage(const std::string &msg);
 */
 void LevelTransitionEffectStart(Vector2 sceneFocusPont, bool isClose);
 
-// // Adjusts screen to show editor
-// void EditorEnable();
-
-// // Adjusts screen to hide editor
-// void EditorDisable();
-
 // Toggles between full screen and windowed
 void FullscreenToggle();
 

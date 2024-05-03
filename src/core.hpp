@@ -9,9 +9,6 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 
-// Disabled because currently the editor doesn't resize the window 
-//#define SCREEN_WIDTH_W_EDITOR   SCREEN_WIDTH + EDITOR_PANEL_RECT.width
-
 
 class Dimensions {
 public:

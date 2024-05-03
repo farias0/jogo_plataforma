@@ -485,27 +485,30 @@ void drawEditorCursor() {
 
 void drawEditor() {
 
+    Rectangle rect = EditorBarGetRect();
+    float divisorY = EditorBarGetDivisorY();
+
+
     drawEditorEntitySelection();
 
-
-    DrawLine(SCREEN_WIDTH,
-                0,
-                SCREEN_WIDTH,
-                SCREEN_HEIGHT,
+    DrawLine(rect.x,
+                rect.y,
+                rect.x,
+                rect.y + rect.height,
                 RAYWHITE);
 
-    DrawRectangle(EDITOR_PANEL_RECT.x,
-                    EDITOR_PANEL_RECT.y,
-                    EDITOR_PANEL_RECT.width,
-                    EDITOR_PANEL_RECT.height,
+    DrawRectangle(rect.x,
+                    rect.y,
+                    rect.width,
+                    rect.height,
                     EDITOR_BG_COLOR);
 
     drawEditorEntityButtons();
 
-    DrawLine(SCREEN_WIDTH,
-                EDITOR_CONTROL_PANEL_Y,
-                SCREEN_WIDTH + EDITOR_PANEL_RECT.width,
-                EDITOR_CONTROL_PANEL_Y,
+    DrawLine(rect.x,
+                divisorY,
+                rect.x + rect.width,
+                divisorY,
                 RAYWHITE);
 
     drawEditorControlButtons();
@@ -656,19 +659,9 @@ void LevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
 }
 
-// void EditorEnable() {
-
-//     //Render::ResizeWindow(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
-// }
-
-// void EditorDisable() {
-
-//     Render::ResizeWindow(SCREEN_WIDTH, SCREEN_HEIGHT);
-// }
-
 void FullscreenToggle() {
 
-    ToggleFullscreen();
+    ToggleBorderlessWindowed();
 }
 
 
