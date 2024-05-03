@@ -12,6 +12,10 @@
 #define CAMERA_FOLLOW_UP        (1*SCREEN_HEIGHT)/4
 #define CAMERA_FOLLOW_DOWN      (3*SCREEN_HEIGHT)/4
 
+#define ZOOM_STEP               0.25
+#define ZOOM_MIN                0.75
+#define ZOOM_MAX                4
+
 
 MyCamera *CAMERA = 0;
 
@@ -69,7 +73,7 @@ void CameraInitialize() {
     CAMERA = (MyCamera *) MemAlloc(sizeof(MyCamera));
 
     CAMERA->pos = { 0, 0 };
-    CAMERA->zoom = 2;
+    CAMERA->zoom = 1;
 
     TraceLog(LOG_INFO, "Camera initialized.");
 }
@@ -158,6 +162,16 @@ void CameraPanningReset() {
 
 bool CameraIsPanned() {
     return isPanned;
+}
+
+void CameraZoomIn() {
+    CAMERA->zoom -= ZOOM_STEP;
+    if (CAMERA->zoom <= ZOOM_MIN) CAMERA->zoom = ZOOM_MIN;
+}
+
+void CameraZoomOut() {
+    CAMERA->zoom += ZOOM_STEP;
+    if (CAMERA->zoom >= ZOOM_MAX) CAMERA->zoom = ZOOM_MAX;
 }
 
 Vector2 PosInScreenToScene(Vector2 pos) {

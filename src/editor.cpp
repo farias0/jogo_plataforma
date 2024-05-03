@@ -318,6 +318,8 @@ void EditorDisable() {
 
     EditorSelectionCancel();
 
+    CAMERA->zoom = 1;
+
     TraceLog(LOG_TRACE, "Editor disabled.");
 }
 

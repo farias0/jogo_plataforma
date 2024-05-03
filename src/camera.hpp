@@ -36,6 +36,10 @@ void CameraPanningReset();
 // If the camera is offset from being panned
 bool CameraIsPanned();
 
+void CameraZoomIn();
+
+void CameraZoomOut();
+
 // Converts position from the screen coordinates to in game coordinates
 Vector2 PosInScreenToScene(Vector2 pos);
 
