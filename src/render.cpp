@@ -257,11 +257,13 @@ void drawLevelHud() {
 
     if (EDITOR_STATE->isEnabled) return;
 
+    float sceneEndX = CAMERA->sceneXOffset + (SCREEN_WIDTH * CAMERA->fullscreenStretch);
+
     DrawTextureEx(SPRITES->LevelCheckpointFlag.sprite,
-                    { (float)GetScreenWidth()-149, (float)GetScreenHeight()-65 },
+                    { sceneEndX - 149, (float)GetScreenHeight()-65 },
                         0, SPRITES->LevelCheckpointFlag.scale/1.7, WHITE);
     DrawText(std::string("x " + std::to_string(Level::STATE->checkpointsLeft)).c_str(),
-                GetScreenWidth()-100, GetScreenHeight()-56, 30, RAYWHITE);
+                sceneEndX - 100, GetScreenHeight() - 56, 30, RAYWHITE);
 
     if (Level::STATE->isPaused && PLAYER && !PLAYER->isDead)
         DrawText("PAUSADO", GetScreenWidth()/2-70, 360, 30, RAYWHITE);
@@ -343,6 +345,8 @@ void drawDebugHud() {
         sprintf(buffer, "%d entidades", LinkedList::CountNodes(listHead));
         DrawText(buffer, 10, 20, 20, WHITE);
     }
+
+    DrawText((std::to_string(GetFPS()) + " FPS").c_str(), GetScreenWidth() - 100, 20, 20, WHITE);
 
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         Vector2 mousePos = GetMousePosition();
