@@ -76,9 +76,15 @@ void drawSceneRectangle(Rectangle rect, Color color) {
     DrawRectangleRec(screenRect, color);
 }
 
-// Shows a framing around the play area
-void drawFullScreenFraming() {
-    DrawRectangleLines(-1 + CAMERA->fullscreenXOffset, -1, (SCREEN_WIDTH+2) * CAMERA->fullscreenStretch, (SCREEN_HEIGHT+2) * CAMERA->fullscreenStretch, WHITE);
+// So the scene maintains the screen ratio in an ultrawide screen
+void drawFullScreenBlackbars() {
+
+    Rectangle leftBar = { 0, 0, CAMERA->fullscreenXOffset, GetScreenHeight() };
+    DrawRectangleRec(leftBar, BLACK);
+
+    float sceneEndX = CAMERA->fullscreenXOffset + (SCREEN_WIDTH * CAMERA->fullscreenStretch);
+    Rectangle rightBar = { sceneEndX, 0, CAMERA->fullscreenXOffset, GetScreenHeight() };
+    DrawRectangleRec(rightBar, BLACK);
 }
 
 void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
@@ -590,6 +596,9 @@ void Render() {
 
         drawEntities();
 
+        if (!EDITOR_STATE->isEnabled &&
+            !GAME_STATE->showDebugHUD && isFullscreen)      drawFullScreenBlackbars();
+
         if      (GAME_STATE->mode == MODE_IN_LEVEL)         drawLevelHud();
         else if (GAME_STATE->mode == MODE_OVERWORLD)        drawOverworldHud();
 
@@ -604,7 +613,6 @@ void Render() {
         drawSysMessages();
 
         if (EDITOR_STATE->isEnabled) drawEditor();
-        else drawFullScreenFraming();
 
     EndDrawing();
 }
