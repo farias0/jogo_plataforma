@@ -79,11 +79,11 @@ void drawSceneRectangle(Rectangle rect, Color color) {
 // So the scene maintains the screen ratio in an ultrawide screen
 void drawFullScreenBlackbars() {
 
-    Rectangle leftBar = { 0, 0, CAMERA->fullscreenXOffset, GetScreenHeight() };
+    Rectangle leftBar = { 0, 0, (float) CAMERA->fullscreenXOffset, (float) GetScreenHeight() };
     DrawRectangleRec(leftBar, BLACK);
 
     float sceneEndX = CAMERA->fullscreenXOffset + (SCREEN_WIDTH * CAMERA->fullscreenStretch);
-    Rectangle rightBar = { sceneEndX, 0, CAMERA->fullscreenXOffset, GetScreenHeight() };
+    Rectangle rightBar = { sceneEndX, 0, (float) CAMERA->fullscreenXOffset, (float) GetScreenHeight() };
     DrawRectangleRec(rightBar, BLACK);
 }
 
