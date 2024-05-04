@@ -724,7 +724,12 @@ void FullscreenToggle() {
 
     isFullscreen = !isFullscreen;
 
-    ToggleBorderlessWindowed();
+    #ifdef _WIN32
+        ToggleBorderlessWindowed();
+    #endif
+    #ifdef __linux__
+        TraceLog(LOG_INFO, "It's linux!");
+    #endif
 
     reloadShaders(); // TODO why does removing this from here breaks the FS camera on Linux?
 }
