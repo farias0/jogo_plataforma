@@ -78,7 +78,7 @@ void drawSceneRectangle(Rectangle rect, Color color) {
 
 // Shows a framing around the play area
 void drawFullScreenFraming() {
-    DrawRectangleLines(-1, -1, SCREEN_WIDTH+2, SCREEN_HEIGHT+2, WHITE);
+    DrawRectangleLines(-1 + CAMERA->fullscreenXOffset, -1, (SCREEN_WIDTH+2) * CAMERA->fullscreenStretch, (SCREEN_HEIGHT+2) * CAMERA->fullscreenStretch, WHITE);
 }
 
 void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
@@ -259,7 +259,7 @@ void drawSysMessages() {
         }        
 
         x = 15;
-        y = SCREEN_HEIGHT - 15 - (30 * currentMsg);
+        y = GetScreenHeight() - 15 - (30 * currentMsg);
 
         DrawText(msg->msg, x, y, 30, RAYWHITE);
         
@@ -298,18 +298,19 @@ void drawLevelHud() {
     if (EDITOR_STATE->isEnabled) return;
 
     DrawTextureEx(SPRITES->LevelCheckpointFlag.sprite,
-                    { SCREEN_WIDTH-149, SCREEN_HEIGHT-65 }, 0, SPRITES->LevelCheckpointFlag.scale/1.7, WHITE);
+                    { (float)GetScreenWidth()-149, (float)GetScreenHeight()-65 },
+                        0, SPRITES->LevelCheckpointFlag.scale/1.7, WHITE);
     DrawText(std::string("x " + std::to_string(Level::STATE->checkpointsLeft)).c_str(),
-                SCREEN_WIDTH-100, SCREEN_HEIGHT-56, 30, RAYWHITE);
+                GetScreenWidth()-100, GetScreenHeight()-56, 30, RAYWHITE);
 
     if (Level::STATE->isPaused && PLAYER && !PLAYER->isDead)
-        DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
+        DrawText("PAUSADO", GetScreenWidth()/2-70, 360, 30, RAYWHITE);
         
     if (PLAYER && PLAYER->isDead)
-        DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
+        DrawText("VOCÊ MORREU", GetScreenWidth()/2-200, 330, 60, RAYWHITE);
     
     if (Level::STATE->levelName[0] == '\0')
-        DrawText("Arraste uma fase para cá", 400, 350, 40, RAYWHITE);
+        DrawText("Arraste uma fase para cá", GetScreenWidth()/2-300, 350, 40, RAYWHITE);
 }
 
 void drawOverworldHud() {
@@ -374,7 +375,7 @@ void drawDebugEntityInfo(LinkedList::Node *entity) {
 void drawDebugHud() {
 
     if (CameraIsPanned()) DrawText("Câmera deslocada",
-                                    SCREEN_WIDTH - 300, SCREEN_HEIGHT - 45, 30, RAYWHITE);
+                                    GetScreenWidth() - 300, GetScreenHeight() - 45, 30, RAYWHITE);
 
     LinkedList::Node *listHead = GetEntityListHead();
     if (listHead) {
@@ -561,7 +562,7 @@ void drawLevelTransitionShader() {
 
 void drawTextInput() {
 
-    DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 0x00, 0x00, 0x00, 0xaa });
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), { 0x00, 0x00, 0x00, 0xaa });
 
     // TODO wrap text
     DrawText(std::string("> " + Input::STATE.textInputed).c_str(), 120, 100, 60, RAYWHITE);
