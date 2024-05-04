@@ -113,11 +113,12 @@ void drawSpriteInBackground(Sprite *sprite, Vector2 pos, int layer) {
         return;
     }
 
+    scale = ScaleInSceneToScreen(scale);
+
     pos.x = pos.x * scale;
     pos.y = pos.y * scale;
 
-    pos.x = pos.x - (CAMERA->pos.x * parallaxSpeed);
-    pos.y = pos.y - (CAMERA->pos.y * parallaxSpeed);
+    pos = PosInSceneToScreenParallax(pos, parallaxSpeed);
 
     DrawTextureEx(sprite->sprite, pos, 0, (scale * sprite->scale), tint);
 }
@@ -141,8 +142,8 @@ void drawBackground() {
         DrawRectangle(0, levelBottomOnScreen.y, GetScreenWidth(), GetScreenHeight(), BLACK);
 
         if (!GAME_STATE->showBackground) return; 
-        drawSpriteInBackground(&SPRITES->Nightclub,   { 1250, 250 },  -1);
-        drawSpriteInBackground(&SPRITES->BGHouse,     { 600, 300 },  -2);
+        drawSpriteInBackground(&SPRITES->Nightclub,   { 1250, 250 },    -1);
+        drawSpriteInBackground(&SPRITES->BGHouse,     { 600, 300 },     -2);
     }
 }
 

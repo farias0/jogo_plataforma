@@ -203,6 +203,13 @@ Vector2 PosInSceneToScreen(Vector2 pos) {
     };
 }
 
+Vector2 PosInSceneToScreenParallax(Vector2 pos, float parallaxSpeed) {
+    return {
+        (pos.x - (CAMERA->pos.x * parallaxSpeed)) * renderStretch() + CAMERA->sceneXOffset,
+        (pos.y - (CAMERA->pos.y * parallaxSpeed)) * renderStretch()
+    };
+}
+
 float ScaleInSceneToScreen(float value) {
     return value * renderStretch();
 }

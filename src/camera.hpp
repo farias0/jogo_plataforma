@@ -67,6 +67,10 @@ Vector2 PosInScreenToScene(Vector2 pos);
 // Converts position from in game coordinates to the screen coordinates
 Vector2 PosInSceneToScreen(Vector2 pos);
 
+// Converts position from in game coordinates to the screen coordinates,
+// applying parallax speed
+Vector2 PosInSceneToScreenParallax(Vector2 pos, float parallaxSpeed);
+
 // Converts a scale from in game to the screen according to the zoom level
 float ScaleInSceneToScreen(float value);
 
