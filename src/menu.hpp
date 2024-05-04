@@ -8,15 +8,6 @@
 #include "render.hpp"
 
 
-#define MENU_ORIGIN             GetScreenWidth()/2-70, 360
-
-#define HEADER_FONT_SIZE        30
-#define LABEL_FONT_SIZE         20
-
-#define SPACING_HEADER_BODY     100
-#define SPACING_LABELS          50
-
-
 class MenuItem {
 
 public:
@@ -59,7 +50,7 @@ class Menu {
 
 public:
 
-    ~Menu();
+    virtual ~Menu();
 
     void AddItem(MenuItem* item);
 

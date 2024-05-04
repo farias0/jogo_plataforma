@@ -5,6 +5,15 @@
 #include "level/player.hpp"
 
 
+#define MENU_ORIGIN             (float)GetScreenWidth()/2-70, 360
+
+#define HEADER_FONT_SIZE        30
+#define LABEL_FONT_SIZE         20
+
+#define SPACING_HEADER_BODY     100
+#define SPACING_LABELS          50
+
+
 void MenuItem::Select() {
     callback();
 }
@@ -48,7 +57,7 @@ void Menu::Up() {
 
 void Menu::Down() {
     itemHighlighted++;
-    if (itemHighlighted == items.size()) itemHighlighted = 0;
+    if (itemHighlighted == (int) items.size()) itemHighlighted = 0;
 }
 
 void Menu::Draw() {
