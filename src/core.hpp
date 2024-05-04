@@ -11,6 +11,8 @@
 #define SCREEN_HEIGHT 1080
 
 
+class Menu;
+
 class Dimensions {
 public:
     float width;
@@ -64,6 +66,9 @@ typedef struct GameState {
     bool showBackground;
 
     int gamepadIdx = 0;
+
+    // The opened menu, if it exists;
+    Menu *menu;
 
 } GameState;
 

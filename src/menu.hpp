@@ -1,0 +1,127 @@
+#pragma once
+
+#include <string>
+#include <vector>
+
+#include <raylib.h>
+
+#include "render.hpp"
+
+
+#define MENU_ORIGIN             GetScreenWidth()/2-70, 360
+
+#define HEADER_FONT_SIZE        30
+#define LABEL_FONT_SIZE         20
+
+#define SPACING_HEADER_BODY     100
+#define SPACING_LABELS          50
+
+
+// TODO create menu.cpp
+
+
+class MenuItem {
+
+public:
+
+    std::string label;
+
+    MenuItem(std::string label, void (*callback)()) :
+                label(label), callback(callback) {}
+
+    void Select() {
+        callback();
+    }
+
+    virtual void Draw(Vector2 pos) {
+        DrawText(label.c_str(), pos.x, pos.y, LABEL_FONT_SIZE, WHITE);
+    }
+
+private:
+
+    void (*callback)();
+
+};
+
+class MenuItemToggle : public MenuItem {
+
+public:
+    MenuItemToggle(std::string label, void (*callback)(), bool &selectionMonior) :
+                        MenuItem(label, callback), isToggledMonitor(selectionMonior) {}
+
+    void Draw(Vector2 pos) override {
+
+        TraceLog(LOG_INFO, "%d %d", isToggledMonitor, Render::IsFullscreen);
+
+        std::string str = "[";
+        if (isToggledMonitor) str += "x";
+        else str += " ";
+        str += "] " + label;
+
+        DrawText(str.c_str(), pos.x, pos.y, LABEL_FONT_SIZE, WHITE);
+    }
+
+private:
+
+    // Keeps track of a bool to show as toggled. Careful with its lifecycle!
+    bool &isToggledMonitor;
+
+};
+
+class Menu {
+
+public:
+
+    std::vector<MenuItem*> items;
+    int currentSelection;
+
+
+    ~Menu() {
+        for (auto item : items) {
+            delete item;
+        }
+    }
+
+    void AddItem(MenuItem* item) {
+        items.push_back(item);
+    }
+
+    void Select() {
+        items.at(currentSelection)->Select();
+    }
+
+    void Up() {
+        currentSelection++;
+        if (currentSelection == items.size()) currentSelection = 0;
+    }
+
+    void Down() {
+        currentSelection--;
+        if (currentSelection == -1) currentSelection = items.size() - 1;
+    }
+
+    void Draw() {
+
+        Vector2 pos = { MENU_ORIGIN };
+
+        // TODO darken screen
+
+        // TODO fix pause state (let pause in ow, don't let pause if there's no level loaded)
+        // and set this to always show
+        if (Level::STATE->isPaused && PLAYER && !PLAYER->isDead)
+            DrawText("PAUSADO", pos.x, pos.y, HEADER_FONT_SIZE, RAYWHITE);
+
+        pos.y += SPACING_HEADER_BODY;
+
+        for (auto item : items) {
+
+            item->Draw(pos);
+
+            if (&items.at(currentSelection) == &item) {
+                // TODO draw selection arrow
+            }
+
+            pos.y += SPACING_LABELS;
+        }
+    }
+};

@@ -26,6 +26,9 @@ public:
 };
 
 
+extern bool IsFullscreen;
+
+
 void Initialize();
 
 void Render();
