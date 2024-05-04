@@ -28,7 +28,7 @@ typedef struct MyCamera {
     float fullscreenStretch;
 
     // How much to vertically offset the rendering frame to centralize it, in case of wider resolutions
-    int fullscreenXOffset;
+    int sceneXOffset;
 } MyCamera;
 
 

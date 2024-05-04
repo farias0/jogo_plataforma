@@ -3,6 +3,8 @@
 
 #include "string"
 
+#include "assets.hpp"
+
 
 #define SYS_MSG_BUFFER_SIZE 1000
 
@@ -27,6 +29,8 @@ public:
 void Initialize();
 
 void Render();
+
+void DrawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally);
 
 void DrawLevelEntity(Level::Entity *entity);
 

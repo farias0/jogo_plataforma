@@ -80,7 +80,7 @@ void CameraInitialize() {
     CAMERA->pos = { 0, 0 };
     CAMERA->zoom = 1;
     CAMERA->fullscreenStretch = 1;
-    CAMERA->fullscreenXOffset = 0;
+    CAMERA->sceneXOffset = 0;
 
     TraceLog(LOG_INFO, "Camera initialized.");
 }
@@ -191,14 +191,14 @@ void CameraZoomOut() {
 
 Vector2 PosInScreenToScene(Vector2 pos) {
     return {
-        (pos.x - CAMERA->fullscreenXOffset) / renderStretch() + CAMERA->pos.x,
+        (pos.x - CAMERA->sceneXOffset) / renderStretch() + CAMERA->pos.x,
         pos.y / renderStretch() + CAMERA->pos.y
     };
 }
 
 Vector2 PosInSceneToScreen(Vector2 pos) {
     return {
-        (pos.x - CAMERA->pos.x) * renderStretch() + CAMERA->fullscreenXOffset,
+        (pos.x - CAMERA->pos.x) * renderStretch() + CAMERA->sceneXOffset,
         (pos.y - CAMERA->pos.y) * renderStretch()
     };
 }

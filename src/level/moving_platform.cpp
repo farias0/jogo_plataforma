@@ -58,15 +58,17 @@ void MovingPlatformAnchor::Draw() {
 
     if (EDITOR_STATE->isEnabled) {
         Vector2 p = PosInSceneToScreen(pos);
-        DrawCircleLines(p.x, p.y, ANCHOR_HITBOX_SIDE / 2, color);
+        float r = ScaleInSceneToScreen(ANCHOR_HITBOX_SIDE / 2);
+        DrawCircleLines(p.x, p.y, r, color);
     }
 }
 
 void MovingPlatformAnchor::DrawMoveGhost() {
 
     Vector2 p = PosInSceneToScreen(EditorEntitySelectionCalcMove(pos));
+    float r = ScaleInSceneToScreen(ANCHOR_HITBOX_SIDE / 2);
 
-    DrawCircleLines(p.x, p.y, ANCHOR_HITBOX_SIDE / 2,
+    DrawCircleLines(p.x, p.y, r,
                     { color.r, color.g, color.b, EDITOR_SELECTION_MOVE_TRANSPARENCY });
 }
 
@@ -163,7 +165,7 @@ void MovingPlatform::Draw() {
         Vector2 pos = PosInSceneToScreen({
                                         hitbox.x + (sprite->sprite.width * sprite->scale * i),
                                         hitbox.y });
-        DrawTexture(sprite->sprite, pos.x, pos.y, WHITE);
+        Render::DrawTexture(sprite, pos, WHITE, 0, false);
     }
 
     // Draw platform origin ghost
@@ -172,7 +174,8 @@ void MovingPlatform::Draw() {
             Vector2 pos = PosInSceneToScreen({
                                             GetOriginHitbox().x + (sprite->sprite.width * sprite->scale * i),
                                             GetOriginHitbox().y });
-            DrawTexture(sprite->sprite, pos.x, pos.y, { WHITE.r, WHITE.g, WHITE.b, ORIGIN_GHOST_TRANSPARENCY });
+            Color color = { WHITE.r, WHITE.g, WHITE.b, ORIGIN_GHOST_TRANSPARENCY };
+            Render::DrawTexture(sprite, pos, color, 0, false);
         }
     }
 

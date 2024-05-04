@@ -79,59 +79,12 @@ void drawSceneRectangle(Rectangle rect, Color color) {
 // So the scene maintains the screen ratio in an ultrawide screen
 void drawFullScreenBlackbars() {
 
-    Rectangle leftBar = { 0, 0, (float) CAMERA->fullscreenXOffset, (float) GetScreenHeight() };
+    Rectangle leftBar = { 0, 0, (float) CAMERA->sceneXOffset, (float) GetScreenHeight() };
     DrawRectangleRec(leftBar, BLACK);
 
-    float sceneEndX = CAMERA->fullscreenXOffset + (SCREEN_WIDTH * CAMERA->fullscreenStretch);
-    Rectangle rightBar = { sceneEndX, 0, (float) CAMERA->fullscreenXOffset, (float) GetScreenHeight() };
+    float sceneEndX = CAMERA->sceneXOffset + (SCREEN_WIDTH * CAMERA->fullscreenStretch);
+    Rectangle rightBar = { sceneEndX, 0, (float) CAMERA->sceneXOffset, (float) GetScreenHeight() };
     DrawRectangleRec(rightBar, BLACK);
-}
-
-void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
-
-    Dimensions dimensions = DimensionsInSceneToScreen(
-                                SpriteScaledDimensions(sprite));
-
-
-    // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
-    // Maybe this should be fixed in a way that works for any angle. 
-    if (rotation == 90)          pos = { pos.x + dimensions.width, pos.y };
-    else if (rotation == 180)    pos = { pos.x + dimensions.width,
-                                                            pos.y + dimensions.height };
-    else if (rotation == 270)    pos = { pos.x, pos.y + dimensions.height };
-
-
-
-    if (!flipHorizontally) {
-        DrawTextureEx(sprite->sprite,
-                    pos,
-                    rotation,
-                    ScaleInSceneToScreen(sprite->scale),
-                    tint);    
-        
-        return;
-    }
-
-    Rectangle source = {
-        0.0,
-        0.0,
-        (float) -sprite->sprite.width,
-        (float) sprite->sprite.height
-    };
-
-    Rectangle destination = {
-        pos.x,
-        pos.y,
-        dimensions.width,
-        dimensions.height
-    };
-
-    DrawTexturePro(sprite->sprite,
-                    source,
-                    destination,
-                    { 0, 0 },
-                    rotation,
-                    tint);    
 }
 
 // Draws sprite in the background, with effects applied.
@@ -199,7 +152,7 @@ void drawOverworldEntity(OverworldEntity *entity) {
                                         entity->gridPos.x,
                                         entity->gridPos.y });
 
-    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, entity->rotation, false);
+    DrawTexture(entity->sprite, { pos.x, pos.y }, WHITE, entity->rotation, false);
 }
 
 // Draws the ghost of an editor's selected entity being moved
@@ -214,7 +167,7 @@ void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
     Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
-    drawTexture(entity->sprite, pos, color, entity->rotation, false);
+    DrawTexture(entity->sprite, pos, color, entity->rotation, false);
 }
 
 void drawEntities() {
@@ -617,13 +570,60 @@ void Render() {
     EndDrawing();
 }
 
+void DrawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
+
+    Dimensions dimensions = DimensionsInSceneToScreen(
+                                SpriteScaledDimensions(sprite));
+
+
+    // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
+    // Maybe this should be fixed in a way that works for any angle. 
+    if (rotation == 90)          pos = { pos.x + dimensions.width, pos.y };
+    else if (rotation == 180)    pos = { pos.x + dimensions.width,
+                                                            pos.y + dimensions.height };
+    else if (rotation == 270)    pos = { pos.x, pos.y + dimensions.height };
+
+
+
+    if (!flipHorizontally) {
+        DrawTextureEx(sprite->sprite,
+                    pos,
+                    rotation,
+                    ScaleInSceneToScreen(sprite->scale),
+                    tint);    
+        
+        return;
+    }
+
+    Rectangle source = {
+        0.0,
+        0.0,
+        (float) -sprite->sprite.width,
+        (float) sprite->sprite.height
+    };
+
+    Rectangle destination = {
+        pos.x,
+        pos.y,
+        dimensions.width,
+        dimensions.height
+    };
+
+    DrawTexturePro(sprite->sprite,
+                    source,
+                    destination,
+                    { 0, 0 },
+                    rotation,
+                    tint);    
+}
+
 void DrawLevelEntity(Level::Entity *entity) {
 
     Vector2 pos = PosInSceneToScreen({
                                         entity->hitbox.x,
                                         entity->hitbox.y });
 
-    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, 0, !entity->isFacingRight);
+    DrawTexture(entity->sprite, { pos.x, pos.y }, WHITE, 0, !entity->isFacingRight);
 }
 
 void DrawLevelEntityOriginGhost(Level::Entity *entity) {
@@ -632,7 +632,7 @@ void DrawLevelEntityOriginGhost(Level::Entity *entity) {
                                         entity->origin.x,
                                         entity->origin.y });
 
-    drawTexture(entity->sprite, { pos.x, pos.y },
+    DrawTexture(entity->sprite, { pos.x, pos.y },
                  { WHITE.r, WHITE.g, WHITE.b, ORIGIN_GHOST_TRANSPARENCY }, 0, false);
 }
 
@@ -647,7 +647,7 @@ void DrawLevelEntityMoveGhost(Level::Entity *entity) {
     Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
-    drawTexture(entity->sprite, pos, color, 0, !entity->isFacingRight);
+    DrawTexture(entity->sprite, pos, color, 0, !entity->isFacingRight);
 }
 
 void PrintSysMessage(const std::string &msg) {
@@ -690,10 +690,10 @@ void FullscreenToggle() {
 
     if (isFullscreen) {
         CAMERA->fullscreenStretch = (float) GetScreenHeight() / (float) SCREEN_HEIGHT;
-        CAMERA->fullscreenXOffset = ((float) GetScreenWidth() - ((float) SCREEN_WIDTH * CAMERA->fullscreenStretch)) / 2;
+        CAMERA->sceneXOffset = ((float) GetScreenWidth() - ((float) SCREEN_WIDTH * CAMERA->fullscreenStretch)) / 2;
     } else {
         CAMERA->fullscreenStretch = 1;
-        CAMERA->fullscreenXOffset = 0;
+        CAMERA->sceneXOffset = 0;
     }
 }
 
