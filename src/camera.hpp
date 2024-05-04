@@ -61,6 +61,8 @@ void CameraZoomIn();
 
 void CameraZoomOut();
 
+void CameraAdjustForFullscreen(bool isFullscreen);
+
 // Converts position from the screen coordinates to in game coordinates
 Vector2 PosInScreenToScene(Vector2 pos);
 
