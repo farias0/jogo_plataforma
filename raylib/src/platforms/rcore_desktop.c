@@ -240,9 +240,9 @@ void ToggleBorderlessWindowed(void)
 
                 // Set screen position and size
                 glfwSetWindowPos(platform.handle, monitorPosX, monitorPosY);
-                printf("!!! %d, %d\n", CORE.Window.screen.width, CORE.Window.screen.height);
+                printf("!!! pre glfwSetWindowSize %d, %d\n", CORE.Window.screen.width, CORE.Window.screen.height);
                 glfwSetWindowSize(platform.handle, monitorWidth, monitorHeight);
-                printf("!!! %d, %d\n", CORE.Window.screen.width, CORE.Window.screen.height);
+                printf("!!! post glfwSetWindowSize %d, %d\n", CORE.Window.screen.width, CORE.Window.screen.height);
 
                 // Refocus window
                 glfwFocusWindow(platform.handle);
@@ -1611,8 +1611,10 @@ static void WindowSizeCallback(GLFWwindow *window, int width, int height)
     else
     {
         TraceLog(LOG_INFO, "!!! RCORE DESKTOP.WINDOW SIZE CALLBACK 2");
+        printf("!!!! pre setting on WindowSizeCallback %d, %d\n", CORE.Window.screen.width, CORE.Window.screen.height);
         CORE.Window.screen.width = width;
         CORE.Window.screen.height = height;
+        printf("!!!! post setting on WindowSizeCallback %d, %d\n", CORE.Window.screen.width, CORE.Window.screen.height);
     }
 #endif
 
