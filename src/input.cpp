@@ -13,6 +13,7 @@
 #include "editor.hpp"
 #include "debug.hpp"
 #include "sounds.hpp"
+#include "menu.hpp"
 
 
 namespace Input {
@@ -57,6 +58,22 @@ void updateLeftStickState() {
 void updateInputStates() {
 
     updateLeftStickState();
+}
+
+void handleMenuInput() {
+
+    Menu *menu = GAME_STATE->menu;
+    if (!menu) return;
+
+    if (IsKeyPressed(KEY_DOWN) || isGamepadPressed(GP_DOWN) || isGamePadAnalogPressed(ANALOG_DOWN))
+        { menu->Down(); return; }
+
+    if (IsKeyPressed(KEY_UP) || isGamepadPressed(GP_UP) || isGamePadAnalogPressed(ANALOG_UP))
+        { menu->Up(); return; }
+
+    if (IsKeyPressed(KEY_X) || isGamepadPressed(GP_A))
+        { menu->Select(); return; }
+
 }
 
 void handleInLevelInput() {
@@ -316,6 +333,8 @@ void Handle() {
         handleDroppedFile();
         return;
     }
+
+    handleMenuInput();
 
     if (GAME_STATE->mode == MODE_IN_LEVEL) {
         handleInLevelInput();

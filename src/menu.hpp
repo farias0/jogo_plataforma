@@ -73,7 +73,7 @@ class Menu {
 public:
 
     std::vector<MenuItem*> items;
-    int currentSelection;
+    int itemHighlighted;
 
 
     ~Menu() {
@@ -87,17 +87,17 @@ public:
     }
 
     void Select() {
-        items.at(currentSelection)->Select();
+        items.at(itemHighlighted)->Select();
     }
 
     void Up() {
-        currentSelection++;
-        if (currentSelection == items.size()) currentSelection = 0;
+        itemHighlighted++;
+        if (itemHighlighted == items.size()) itemHighlighted = 0;
     }
 
     void Down() {
-        currentSelection--;
-        if (currentSelection == -1) currentSelection = items.size() - 1;
+        itemHighlighted--;
+        if (itemHighlighted == -1) itemHighlighted = items.size() - 1;
     }
 
     void Draw() {
@@ -112,16 +112,18 @@ public:
             DrawText("PAUSADO", pos.x, pos.y, HEADER_FONT_SIZE, RAYWHITE);
 
         pos.y += SPACING_HEADER_BODY;
+        int itemCount = 0;
 
         for (auto item : items) {
 
             item->Draw(pos);
 
-            if (&items.at(currentSelection) == &item) {
-                // TODO draw selection arrow
+            if (itemCount == itemHighlighted) {
+                DrawText("=>", pos.x - 45, pos.y, LABEL_FONT_SIZE, WHITE);
             }
 
             pos.y += SPACING_LABELS;
+            itemCount++;
         }
     }
 };
