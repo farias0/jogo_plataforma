@@ -638,6 +638,7 @@ void SetWindowSize(int width, int height)
 {
     SDL_SetWindowSize(platform.window, width, height);
 
+    TraceLog(LOG_INFO, "!!! RCORE DESKTOP SDL.SET WINDOW SIZE");
     CORE.Window.screen.width = width;
     CORE.Window.screen.height = height;
 }
@@ -1037,6 +1038,7 @@ void PollInputEvents(void)
                         const int width = event.window.data1;
                         const int height = event.window.data2;
                         SetupViewport(width, height);
+                        TraceLog(LOG_INFO, "!!! RCORE DESKTOP SDL. POLL INPUT EVENTS");
                         CORE.Window.screen.width = width;
                         CORE.Window.screen.height = height;
                         CORE.Window.currentFbo.width = width;

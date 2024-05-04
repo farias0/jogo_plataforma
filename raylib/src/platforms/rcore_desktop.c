@@ -240,7 +240,9 @@ void ToggleBorderlessWindowed(void)
 
                 // Set screen position and size
                 glfwSetWindowPos(platform.handle, monitorPosX, monitorPosY);
+                printf("!!! %d, %d\n", CORE.Window.screen.width, CORE.Window.screen.height);
                 glfwSetWindowSize(platform.handle, monitorWidth, monitorHeight);
+                printf("!!! %d, %d\n", CORE.Window.screen.width, CORE.Window.screen.height);
 
                 // Refocus window
                 glfwFocusWindow(platform.handle);
@@ -1369,6 +1371,7 @@ int InitPlatform(void)
     CORE.Window.display.height = mode->height;
 
     // Set screen width/height to the display width/height if they are 0
+    TraceLog(LOG_INFO, "!!! RCORE DESKTOP.INIT PLATFORM");
     if (CORE.Window.screen.width == 0) CORE.Window.screen.width = CORE.Window.display.width;
     if (CORE.Window.screen.height == 0) CORE.Window.screen.height = CORE.Window.display.height;
 
@@ -1441,6 +1444,7 @@ int InitPlatform(void)
 
         if (platform.handle)
         {
+            TraceLog(LOG_INFO, "!!! RCORE DESKTOP.INIT PLATFORM 2");
             CORE.Window.render.width = CORE.Window.screen.width;
             CORE.Window.render.height = CORE.Window.screen.height;
         }
@@ -1600,11 +1604,13 @@ static void WindowSizeCallback(GLFWwindow *window, int width, int height)
     {
         Vector2 windowScaleDPI = GetWindowScaleDPI();
 
+        TraceLog(LOG_INFO, "!!! RCORE DESKTOP.WINDOW SIZE CALLBACK 1");
         CORE.Window.screen.width = (unsigned int)(width/windowScaleDPI.x);
         CORE.Window.screen.height = (unsigned int)(height/windowScaleDPI.y);
     }
     else
     {
+        TraceLog(LOG_INFO, "!!! RCORE DESKTOP.WINDOW SIZE CALLBACK 2");
         CORE.Window.screen.width = width;
         CORE.Window.screen.height = height;
     }

@@ -700,6 +700,8 @@ void FullscreenToggle() {
         CAMERA->fullscreenStretch = 1;
         CAMERA->sceneXOffset = 0;
     }
+
+    TraceLog(LOG_INFO, "width %d, height %d, stretch %f, offest %d", GetScreenWidth(), GetScreenHeight(), CAMERA->fullscreenStretch, CAMERA->sceneXOffset);
 }
 
 

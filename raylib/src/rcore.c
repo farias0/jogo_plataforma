@@ -419,6 +419,7 @@ void InitWindow(int width, int height, const char *title)
 #endif
 
     // Initialize window data
+    TraceLog(LOG_INFO, "!!! RCORE.INIT WINDOW");
     CORE.Window.screen.width = width;
     CORE.Window.screen.height = height;
     CORE.Window.eventWaiting = false;
@@ -2857,6 +2858,7 @@ void SetupFramebuffer(int width, int height)
 
         if ((CORE.Window.screen.width == 0) || (CORE.Window.screen.height == 0))
         {
+            TraceLog(LOG_INFO, "!!! RCORE.SETUP FRAME BUFFER");
             CORE.Window.screen.width = CORE.Window.display.width;
             CORE.Window.screen.height = CORE.Window.display.height;
         }
