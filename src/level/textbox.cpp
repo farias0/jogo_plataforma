@@ -4,6 +4,7 @@
 #include "textbox.hpp"
 #include "level.hpp"
 #include "../input.hpp"
+#include "../camera.hpp"
 
 
 #define TEXT_NOT_FOUND_CONTENT      "ERRO: Texto não encontrado!"
@@ -115,8 +116,8 @@ void Textbox::Draw() {
     Level::Entity::Draw();
 
     // Draw the textbox content
-    if (textboxDisplaying == this)
-        DrawText((textContent).c_str(), 120, 100, 30, isDevTextbox ? GREEN : RAYWHITE);
+    if (textboxDisplaying == this && !EDITOR_STATE->isEnabled)
+        DrawText((textContent).c_str(), CAMERA->sceneXOffset + 120, 100, 30, isDevTextbox ? GREEN : RAYWHITE);
 }
 
 void Textbox::createFromIdInput(Vector2 pos, std::string input) {

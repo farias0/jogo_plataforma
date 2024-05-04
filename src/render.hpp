@@ -3,6 +3,8 @@
 
 #include "string"
 
+#include "assets.hpp"
+
 
 #define SYS_MSG_BUFFER_SIZE 1000
 
@@ -28,7 +30,7 @@ void Initialize();
 
 void Render();
 
-void ResizeWindow(int width, int height);
+void DrawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally);
 
 void DrawLevelEntity(Level::Entity *entity);
 
@@ -46,6 +48,9 @@ void PrintSysMessage(const std::string &msg);
     isClose: If the effect will close on the sceneFocusPont, or, if false, if it will open from it.
 */
 void LevelTransitionEffectStart(Vector2 sceneFocusPont, bool isClose);
+
+// Toggles between full screen and windowed
+void FullscreenToggle();
 
 
 } // namespace

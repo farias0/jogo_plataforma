@@ -6,11 +6,9 @@
 #include "linked_list.hpp"
 
 
-// Currently this represents the play space (not including editor)
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
-
-#define SCREEN_WIDTH_W_EDITOR   SCREEN_WIDTH + EDITOR_PANEL_RECT.width
+// Represents the play area and the initial resolution
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
 
 
 class Dimensions {
@@ -85,8 +83,8 @@ void GameUpdate();
 
 void GameExit();
 
-// True if the given position is inside the game screen (doesn't include the editor)
-bool IsInPlayArea(Vector2 pos);
+// The area of the screen that's interactable
+bool IsInMouseArea(Vector2 pos);
 
 // Returns the entity list's head for the current selected game mode
 LinkedList::Node *GetEntityListHead();

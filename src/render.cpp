@@ -48,10 +48,46 @@ typedef struct LevelTransitionShaderControl {
 
 LinkedList::Node *SYS_MESSAGES_HEAD = 0;
 
+bool isFullscreen = false;
+
 
 // Texture covering the whole screen, used to render shaders
 RenderTexture2D shaderRenderTexture;
 LevelTransitionShaderControl levelTransitionShaderControl;
+
+
+void reloadShaders() {
+    shaderRenderTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+}
+
+
+/*
+    When Borderless Fullscreen is toggled, the raylib's varaibles that track the
+    screen resolution are updated in rcore_desktop's WindowSizeCallback().
+    For some reason, on Linux, this function is called only one frame after toggling
+    it, so we have to wait one frame to update what needs to be updated.
+*/
+static void handleFullscreenChange() {
+
+    static bool wasFullScreenLastFrame = false;
+    static int framesSinceFullscreenChange = -1;
+
+    if (framesSinceFullscreenChange != -1) {
+        framesSinceFullscreenChange++;
+    }
+
+    if (wasFullScreenLastFrame != isFullscreen) {
+        framesSinceFullscreenChange = 0; // start counting
+    }
+
+    if (framesSinceFullscreenChange == 1) {
+        CameraAdjustForFullscreen(isFullscreen);
+        reloadShaders();
+        framesSinceFullscreenChange = -1;
+    }
+
+    wasFullScreenLastFrame = isFullscreen;
+}
 
 // Returns the given color, with the given transparency level. 
 Color getColorTransparency(Color color, int transparency) {
@@ -69,51 +105,15 @@ void drawSceneRectangle(Rectangle rect, Color color) {
     DrawRectangleRec(screenRect, color);
 }
 
-void drawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
+// So the scene maintains the screen ratio in an ultrawide screen
+void drawFullScreenBlackbars() {
 
-    Dimensions dimensions = DimensionsInSceneToScreen(
-                                SpriteScaledDimensions(sprite));
+    Rectangle leftBar = { 0, 0, (float) CAMERA->sceneXOffset, (float) GetScreenHeight() };
+    DrawRectangleRec(leftBar, BLACK);
 
-
-    // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
-    // Maybe this should be fixed in a way that works for any angle. 
-    if (rotation == 90)          pos = { pos.x + dimensions.width, pos.y };
-    else if (rotation == 180)    pos = { pos.x + dimensions.width,
-                                                            pos.y + dimensions.height };
-    else if (rotation == 270)    pos = { pos.x, pos.y + dimensions.height };
-
-
-
-    if (!flipHorizontally) {
-        DrawTextureEx(sprite->sprite,
-                    pos,
-                    rotation,
-                    ScaleInSceneToScreen(sprite->scale),
-                    tint);    
-        
-        return;
-    }
-
-    Rectangle source = {
-        0.0,
-        0.0,
-        (float) -sprite->sprite.width,
-        (float) sprite->sprite.height
-    };
-
-    Rectangle destination = {
-        pos.x,
-        pos.y,
-        dimensions.width,
-        dimensions.height
-    };
-
-    DrawTexturePro(sprite->sprite,
-                    source,
-                    destination,
-                    { 0, 0 },
-                    rotation,
-                    tint);    
+    float sceneEndX = CAMERA->sceneXOffset + (SCREEN_WIDTH * CAMERA->fullscreenStretch);
+    Rectangle rightBar = { sceneEndX, 0, (float) CAMERA->sceneXOffset, (float) GetScreenHeight() };
+    DrawRectangleRec(rightBar, BLACK);
 }
 
 // Draws sprite in the background, with effects applied.
@@ -142,11 +142,12 @@ void drawSpriteInBackground(Sprite *sprite, Vector2 pos, int layer) {
         return;
     }
 
+    scale = ScaleInSceneToScreen(scale);
+
     pos.x = pos.x * scale;
     pos.y = pos.y * scale;
 
-    pos.x = pos.x - (CAMERA->pos.x * parallaxSpeed);
-    pos.y = pos.y - (CAMERA->pos.y * parallaxSpeed);
+    pos = PosInSceneToScreenParallax(pos, parallaxSpeed);
 
     DrawTextureEx(sprite->sprite, pos, 0, (scale * sprite->scale), tint);
 }
@@ -154,7 +155,7 @@ void drawSpriteInBackground(Sprite *sprite, Vector2 pos, int layer) {
 void drawBackground() {
 
     if (GAME_STATE->mode == MODE_OVERWORLD) {
-        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 39, 39, 54, 255 }); 
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), { 39, 39, 54, 255 }); 
     }
 
 
@@ -164,14 +165,14 @@ void drawBackground() {
             return;
         }
 
-        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 25, 25, 35, 255 });
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), { 25, 25, 35, 255 });
 
         Vector2 levelBottomOnScreen = PosInSceneToScreen({ 0, FLOOR_DEATH_HEIGHT });
-        DrawRectangle(0, levelBottomOnScreen.y, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
+        DrawRectangle(0, levelBottomOnScreen.y, GetScreenWidth(), GetScreenHeight(), BLACK);
 
         if (!GAME_STATE->showBackground) return; 
-        drawSpriteInBackground(&SPRITES->Nightclub,   { 1250, 250 },  -1);
-        drawSpriteInBackground(&SPRITES->BGHouse,     { 600, 300 },  -2);
+        drawSpriteInBackground(&SPRITES->Nightclub,   { 1250, 250 },    -1);
+        drawSpriteInBackground(&SPRITES->BGHouse,     { 600, 300 },     -2);
     }
 }
 
@@ -181,7 +182,7 @@ void drawOverworldEntity(OverworldEntity *entity) {
                                         entity->gridPos.x,
                                         entity->gridPos.y });
 
-    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, entity->rotation, false);
+    DrawTexture(entity->sprite, { pos.x, pos.y }, WHITE, entity->rotation, false);
 }
 
 // Draws the ghost of an editor's selected entity being moved
@@ -196,7 +197,7 @@ void drawOverworldEntityMoveGhost(OverworldEntity *entity) {
     Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
-    drawTexture(entity->sprite, pos, color, entity->rotation, false);
+    DrawTexture(entity->sprite, pos, color, entity->rotation, false);
 }
 
 void drawEntities() {
@@ -247,7 +248,7 @@ void drawSysMessages() {
         }        
 
         x = 15;
-        y = SCREEN_HEIGHT - 15 - (30 * currentMsg);
+        y = GetScreenHeight() - 15 - (30 * currentMsg);
 
         DrawText(msg->msg, x, y, 30, RAYWHITE);
         
@@ -261,6 +262,10 @@ next_node:
 
 void drawDebugGrid() {
 
+    // TODO support debug grid zoom
+    if (CAMERA->zoom != 1) return;
+    
+
     Dimensions grid;
     if (GAME_STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
     else if (GAME_STATE->mode == MODE_IN_LEVEL) grid = LEVEL_GRID;
@@ -268,12 +273,12 @@ void drawDebugGrid() {
 
     Vector2 offset = DistanceFromGrid(CAMERA->pos, grid);
 
-    for (float lineX = offset.x; lineX <= SCREEN_WIDTH; lineX += grid.width) {
-        DrawLine(lineX, 0, lineX, SCREEN_HEIGHT, BLUE);
+    for (float lineX = offset.x; lineX <= GetScreenWidth(); lineX += grid.width) {
+        DrawLine(lineX, 0, lineX, GetScreenHeight(), BLUE);
     }
 
-    for (float lineY = offset.y; lineY <= SCREEN_HEIGHT; lineY += grid.height) {
-        DrawLine(0, lineY, SCREEN_WIDTH, lineY, BLUE);
+    for (float lineY = offset.y; lineY <= GetScreenHeight(); lineY += grid.height) {
+        DrawLine(0, lineY, GetScreenWidth(), lineY, BLUE);
     }
 }
 
@@ -281,19 +286,22 @@ void drawLevelHud() {
 
     if (EDITOR_STATE->isEnabled) return;
 
+    float sceneEndX = CAMERA->sceneXOffset + (SCREEN_WIDTH * CAMERA->fullscreenStretch);
+
     DrawTextureEx(SPRITES->LevelCheckpointFlag.sprite,
-                    { SCREEN_WIDTH-149, SCREEN_HEIGHT-65 }, 0, SPRITES->LevelCheckpointFlag.scale/1.7, WHITE);
+                    { sceneEndX - 149, (float)GetScreenHeight()-65 },
+                        0, SPRITES->LevelCheckpointFlag.scale/1.7, WHITE);
     DrawText(std::string("x " + std::to_string(Level::STATE->checkpointsLeft)).c_str(),
-                SCREEN_WIDTH-100, SCREEN_HEIGHT-56, 30, RAYWHITE);
+                sceneEndX - 100, GetScreenHeight() - 56, 30, RAYWHITE);
 
     if (Level::STATE->isPaused && PLAYER && !PLAYER->isDead)
-        DrawText("PAUSADO", 600, 360, 30, RAYWHITE);
+        DrawText("PAUSADO", GetScreenWidth()/2-70, 360, 30, RAYWHITE);
         
     if (PLAYER && PLAYER->isDead)
-        DrawText("VOCÊ MORREU", 450, 330, 60, RAYWHITE);
+        DrawText("VOCÊ MORREU", GetScreenWidth()/2-200, 330, 60, RAYWHITE);
     
     if (Level::STATE->levelName[0] == '\0')
-        DrawText("Arraste uma fase para cá", 400, 350, 40, RAYWHITE);
+        DrawText("Arraste uma fase para cá", GetScreenWidth()/2-300, 350, 40, RAYWHITE);
 }
 
 void drawOverworldHud() {
@@ -358,7 +366,7 @@ void drawDebugEntityInfo(LinkedList::Node *entity) {
 void drawDebugHud() {
 
     if (CameraIsPanned()) DrawText("Câmera deslocada",
-                                    SCREEN_WIDTH - 300, SCREEN_HEIGHT - 45, 30, RAYWHITE);
+                                    GetScreenWidth() - 300, GetScreenHeight() - 45, 30, RAYWHITE);
 
     LinkedList::Node *listHead = GetEntityListHead();
     if (listHead) {
@@ -366,6 +374,8 @@ void drawDebugHud() {
         sprintf(buffer, "%d entidades", LinkedList::CountNodes(listHead));
         DrawText(buffer, 10, 20, 20, WHITE);
     }
+
+    DrawText((std::to_string(GetFPS()) + " FPS").c_str(), GetScreenWidth() - 100, 20, 20, WHITE);
 
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         Vector2 mousePos = GetMousePosition();
@@ -478,34 +488,37 @@ void drawEditorCursor() {
     if (!b) return;
 
     Vector2 m = GetMousePosition();
-    if (!IsInPlayArea(m)) return;
+    if (!IsInMouseArea(m)) return;
 
     DrawTexture(b->sprite->sprite, m.x, m.y, getColorTransparency(WHITE, 96));
 }
 
 void drawEditor() {
 
+    Rectangle rect = EditorBarGetRect();
+    float divisorY = EditorBarGetDivisorY();
+
+
     drawEditorEntitySelection();
 
-
-    DrawLine(SCREEN_WIDTH,
-                0,
-                SCREEN_WIDTH,
-                SCREEN_HEIGHT,
+    DrawLine(rect.x,
+                rect.y,
+                rect.x,
+                rect.y + rect.height,
                 RAYWHITE);
 
-    DrawRectangle(EDITOR_PANEL_RECT.x,
-                    EDITOR_PANEL_RECT.y,
-                    EDITOR_PANEL_RECT.width,
-                    EDITOR_PANEL_RECT.height,
+    DrawRectangle(rect.x,
+                    rect.y,
+                    rect.width,
+                    rect.height,
                     EDITOR_BG_COLOR);
 
     drawEditorEntityButtons();
 
-    DrawLine(SCREEN_WIDTH,
-                EDITOR_CONTROL_PANEL_Y,
-                SCREEN_WIDTH + EDITOR_PANEL_RECT.width,
-                EDITOR_CONTROL_PANEL_Y,
+    DrawLine(rect.x,
+                divisorY,
+                rect.x + rect.width,
+                divisorY,
                 RAYWHITE);
 
     drawEditorControlButtons();
@@ -542,7 +555,7 @@ void drawLevelTransitionShader() {
 
 void drawTextInput() {
 
-    DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, { 0x00, 0x00, 0x00, 0xaa });
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), { 0x00, 0x00, 0x00, 0xaa });
 
     // TODO wrap text
     DrawText(std::string("> " + Input::STATE.textInputed).c_str(), 120, 100, 60, RAYWHITE);
@@ -550,7 +563,7 @@ void drawTextInput() {
 
 void Initialize() {
 
-    shaderRenderTexture = LoadRenderTexture(SCREEN_WIDTH_W_EDITOR, SCREEN_HEIGHT);
+    reloadShaders();
 
     levelTransitionShaderControl.timer = -1;
 
@@ -562,6 +575,8 @@ void Initialize() {
 
 void Render() {
 
+    handleFullscreenChange();
+
     BeginDrawing();
 
         ClearBackground(BLACK);
@@ -569,6 +584,9 @@ void Render() {
         drawBackground();
 
         drawEntities();
+
+        if (!EDITOR_STATE->isEnabled &&
+            !GAME_STATE->showDebugHUD && isFullscreen)      drawFullScreenBlackbars();
 
         if      (GAME_STATE->mode == MODE_IN_LEVEL)         drawLevelHud();
         else if (GAME_STATE->mode == MODE_OVERWORLD)        drawOverworldHud();
@@ -588,9 +606,51 @@ void Render() {
     EndDrawing();
 }
 
-void ResizeWindow(int width, int height) {
+void DrawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
 
-    SetWindowSize(width, height);
+    Dimensions dimensions = DimensionsInSceneToScreen(
+                                SpriteScaledDimensions(sprite));
+
+
+    // Raylib's draw function rotates the sprite around the origin, instead of its middle point.
+    // Maybe this should be fixed in a way that works for any angle. 
+    if (rotation == 90)          pos = { pos.x + dimensions.width, pos.y };
+    else if (rotation == 180)    pos = { pos.x + dimensions.width,
+                                                            pos.y + dimensions.height };
+    else if (rotation == 270)    pos = { pos.x, pos.y + dimensions.height };
+
+
+
+    if (!flipHorizontally) {
+        DrawTextureEx(sprite->sprite,
+                    pos,
+                    rotation,
+                    ScaleInSceneToScreen(sprite->scale),
+                    tint);    
+        
+        return;
+    }
+
+    Rectangle source = {
+        0.0,
+        0.0,
+        (float) -sprite->sprite.width,
+        (float) sprite->sprite.height
+    };
+
+    Rectangle destination = {
+        pos.x,
+        pos.y,
+        dimensions.width,
+        dimensions.height
+    };
+
+    DrawTexturePro(sprite->sprite,
+                    source,
+                    destination,
+                    { 0, 0 },
+                    rotation,
+                    tint);    
 }
 
 void DrawLevelEntity(Level::Entity *entity) {
@@ -599,7 +659,7 @@ void DrawLevelEntity(Level::Entity *entity) {
                                         entity->hitbox.x,
                                         entity->hitbox.y });
 
-    drawTexture(entity->sprite, { pos.x, pos.y }, WHITE, 0, !entity->isFacingRight);
+    DrawTexture(entity->sprite, { pos.x, pos.y }, WHITE, 0, !entity->isFacingRight);
 }
 
 void DrawLevelEntityOriginGhost(Level::Entity *entity) {
@@ -608,7 +668,7 @@ void DrawLevelEntityOriginGhost(Level::Entity *entity) {
                                         entity->origin.x,
                                         entity->origin.y });
 
-    drawTexture(entity->sprite, { pos.x, pos.y },
+    DrawTexture(entity->sprite, { pos.x, pos.y },
                  { WHITE.r, WHITE.g, WHITE.b, ORIGIN_GHOST_TRANSPARENCY }, 0, false);
 }
 
@@ -623,7 +683,7 @@ void DrawLevelEntityMoveGhost(Level::Entity *entity) {
     Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
-    drawTexture(entity->sprite, pos, color, 0, !entity->isFacingRight);
+    DrawTexture(entity->sprite, pos, color, 0, !entity->isFacingRight);
 }
 
 void PrintSysMessage(const std::string &msg) {
@@ -653,6 +713,15 @@ void LevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
     // Fix for how GLSL works
     levelTransitionShaderControl.focusPoint.y = GetScreenHeight() - levelTransitionShaderControl.focusPoint.y;
+}
+
+void FullscreenToggle() {
+
+    isFullscreen = !isFullscreen;
+
+    ToggleBorderlessWindowed();
+
+    reloadShaders(); // TODO why does removing this from here breaks the FS camera on Linux?
 }
 
 

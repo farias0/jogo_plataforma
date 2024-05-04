@@ -159,12 +159,20 @@ void DebugHudToggle() {
     }
 }
 
-bool IsInPlayArea(Vector2 pos) {
+bool IsInMouseArea(Vector2 pos) {
+
+    float w = GetScreenWidth();
+    float h = GetScreenHeight();
+
+    if (EDITOR_STATE->isEnabled) {
+        auto bar = EditorBarGetRect();
+        w -= bar.width;
+    }
     
     return pos.x >= 0 &&
-            pos.x <= SCREEN_WIDTH &&
+            pos.x <= w &&
             pos.y >= 0 &&
-            pos.y <= SCREEN_HEIGHT;
+            pos.y <= h;
 }
 
 Vector2 SnapToGrid(Vector2 coords, Dimensions grid) {
