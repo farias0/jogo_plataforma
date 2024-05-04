@@ -60,6 +60,35 @@ void reloadShaders() {
     shaderRenderTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 }
 
+
+/*
+    When Borderless Fullscreen is toggled, the raylib's varaibles that track the
+    screen resolution are updated in rcore_desktop's WindowSizeCallback().
+    For some reason, on Linux, this function is called only one frame after toggling
+    it, so we have to wait one frame to update what needs to be updated.
+*/
+static void handleFullscreenChange() {
+
+    static bool wasFullScreenLastFrame = false;
+    static int framesSinceFullscreenChange = -1;
+
+    if (framesSinceFullscreenChange != -1) {
+        framesSinceFullscreenChange++;
+    }
+
+    if (wasFullScreenLastFrame != isFullscreen) {
+        framesSinceFullscreenChange = 0; // start counting
+    }
+
+    if (framesSinceFullscreenChange == 1) {
+        CameraAdjustForFullscreen(isFullscreen);
+        reloadShaders();
+        framesSinceFullscreenChange = -1;
+    }
+
+    wasFullScreenLastFrame = isFullscreen;
+}
+
 // Returns the given color, with the given transparency level. 
 Color getColorTransparency(Color color, int transparency) {
 
@@ -546,6 +575,8 @@ void Initialize() {
 
 void Render() {
 
+    handleFullscreenChange();
+
     BeginDrawing();
 
         ClearBackground(BLACK);
@@ -690,16 +721,7 @@ void FullscreenToggle() {
 
     ToggleBorderlessWindowed();
 
-    reloadShaders();
-
-
-    if (isFullscreen) {
-        CAMERA->fullscreenStretch = (float) GetScreenHeight() / (float) SCREEN_HEIGHT;
-        CAMERA->sceneXOffset = ((float) GetScreenWidth() - ((float) SCREEN_WIDTH * CAMERA->fullscreenStretch)) / 2;
-    } else {
-        CAMERA->fullscreenStretch = 1;
-        CAMERA->sceneXOffset = 0;
-    }
+    reloadShaders(); // TODO why does removing this from here breaks the FS camera on Linux?
 }
 
 

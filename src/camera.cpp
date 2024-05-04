@@ -184,6 +184,16 @@ void CameraZoomOut() {
     if (CAMERA->zoom <= ZOOM_MIN) CAMERA->zoom = ZOOM_MIN;
 }
 
+void CameraAdjustForFullscreen(bool isFullscreen) {
+    if (isFullscreen) {
+        CAMERA->fullscreenStretch = (float) GetScreenHeight() / (float) SCREEN_HEIGHT;
+        CAMERA->sceneXOffset = ((float) GetScreenWidth() - ((float) SCREEN_WIDTH * CAMERA->fullscreenStretch)) / 2;
+    } else {
+        CAMERA->fullscreenStretch = 1;
+        CAMERA->sceneXOffset = 0;
+    }
+}
+
 /*
     Zooming works by keeping the 0,0 pinned and then streching around
     -- which means it streches towards the botttom right of the screen.
