@@ -91,13 +91,13 @@ public:
     }
 
     void Up() {
-        itemHighlighted++;
-        if (itemHighlighted == items.size()) itemHighlighted = 0;
+        itemHighlighted--;
+        if (itemHighlighted == -1) itemHighlighted = items.size() - 1;
     }
 
     void Down() {
-        itemHighlighted--;
-        if (itemHighlighted == -1) itemHighlighted = items.size() - 1;
+        itemHighlighted++;
+        if (itemHighlighted == items.size()) itemHighlighted = 0;
     }
 
     void Draw() {
