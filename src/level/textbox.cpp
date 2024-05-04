@@ -116,7 +116,7 @@ void Textbox::Draw() {
     Level::Entity::Draw();
 
     // Draw the textbox content
-    if (textboxDisplaying == this)
+    if (textboxDisplaying == this && !EDITOR_STATE->isEnabled)
         DrawText((textContent).c_str(), CAMERA->sceneXOffset + 120, 100, 30, isDevTextbox ? GREEN : RAYWHITE);
 }
 
