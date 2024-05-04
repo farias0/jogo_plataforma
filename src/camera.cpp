@@ -26,6 +26,11 @@ static Vector2 panningCameraOrigin;
 static Vector2 panningCursorLastFrame;
 
 
+// Total stretching that should be applied when converting to scene to screen positions
+static float renderStretch() {
+    return CAMERA->zoom * CAMERA->fullscreenStretch;
+}
+
 static void followOverworldCamera() {
 
     Dimensions tileDimensions = SpriteScaledDimensions(OW_STATE->tileUnderCursor->sprite);
@@ -74,6 +79,8 @@ void CameraInitialize() {
 
     CAMERA->pos = { 0, 0 };
     CAMERA->zoom = 1;
+    CAMERA->fullscreenStretch = 1;
+    CAMERA->fullscreenXOffset = 0;
 
     TraceLog(LOG_INFO, "Camera initialized.");
 }
@@ -136,8 +143,8 @@ void CameraPanningMove(Vector2 mousePos) {
         return;
     }
 
-    CAMERA->pos.x -= (mousePos.x - panningCursorLastFrame.x) / CAMERA->zoom;
-    CAMERA->pos.y -= (mousePos.y - panningCursorLastFrame.y) / CAMERA->zoom;
+    CAMERA->pos.x -= (mousePos.x - panningCursorLastFrame.x) / renderStretch();
+    CAMERA->pos.y -= (mousePos.y - panningCursorLastFrame.y) / renderStretch();
 
     panningCursorLastFrame = mousePos;
     isPanned = true;
@@ -184,25 +191,25 @@ void CameraZoomOut() {
 
 Vector2 PosInScreenToScene(Vector2 pos) {
     return {
-        pos.x / CAMERA->zoom + CAMERA->pos.x,
-        pos.y / CAMERA->zoom + CAMERA->pos.y
+        (pos.x - CAMERA->fullscreenXOffset) / renderStretch() + CAMERA->pos.x,
+        pos.y / renderStretch() + CAMERA->pos.y
     };
 }
 
 Vector2 PosInSceneToScreen(Vector2 pos) {
     return {
-        (pos.x - CAMERA->pos.x) * CAMERA->zoom,
-        (pos.y - CAMERA->pos.y) * CAMERA->zoom
+        (pos.x - CAMERA->pos.x) * renderStretch() + CAMERA->fullscreenXOffset,
+        (pos.y - CAMERA->pos.y) * renderStretch()
     };
 }
 
 float ScaleInSceneToScreen(float value) {
-    return value * CAMERA->zoom;
+    return value * renderStretch();
 }
 
 Dimensions DimensionsInSceneToScreen(Dimensions dim) {
     return {
-        dim.width * CAMERA->zoom,
-        dim.height * CAMERA->zoom
+        dim.width * renderStretch(),
+        dim.height * renderStretch()
     };
 }

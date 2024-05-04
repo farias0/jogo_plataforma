@@ -48,6 +48,8 @@ typedef struct LevelTransitionShaderControl {
 
 LinkedList::Node *SYS_MESSAGES_HEAD = 0;
 
+bool isFullscreen = false;
+
 
 // Texture covering the whole screen, used to render shaders
 RenderTexture2D shaderRenderTexture;
@@ -670,9 +672,20 @@ void LevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
 void FullscreenToggle() {
 
+    isFullscreen = !isFullscreen;
+
     ToggleBorderlessWindowed();
 
     reloadShaders();
+
+
+    if (isFullscreen) {
+        CAMERA->fullscreenStretch = (float) GetScreenHeight() / (float) SCREEN_HEIGHT;
+        CAMERA->fullscreenXOffset = ((float) GetScreenWidth() - ((float) SCREEN_WIDTH * CAMERA->fullscreenStretch)) / 2;
+    } else {
+        CAMERA->fullscreenStretch = 1;
+        CAMERA->fullscreenXOffset = 0;
+    }
 }
 
 
