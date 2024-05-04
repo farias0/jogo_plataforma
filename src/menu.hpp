@@ -17,9 +17,6 @@
 #define SPACING_LABELS          50
 
 
-// TODO create menu.cpp
-
-
 class MenuItem {
 
 public:
@@ -30,13 +27,9 @@ public:
     MenuItem(std::string label, void (*callback)()) :
                 label(label), callback(callback) {}
 
-    void Select() {
-        callback();
-    }
+    void Select();
 
-    virtual void Draw(Vector2 pos) {
-        DrawText(label.c_str(), pos.x, pos.y, LABEL_FONT_SIZE, WHITE);
-    }
+    virtual void Draw(Vector2 pos);
 
 private:
 
@@ -45,21 +38,14 @@ private:
 
 };
 
+
 class MenuItemToggle : public MenuItem {
 
 public:
     MenuItemToggle(std::string label, void (*callback)(), bool (*isToggledMonitor)()) :
                         MenuItem(label, callback), isToggledMonitor(isToggledMonitor) {}
 
-    void Draw(Vector2 pos) override {
-
-        std::string str = "[";
-        if (isToggledMonitor()) str += "x";
-        else str += " ";
-        str += "] " + label;
-
-        DrawText(str.c_str(), pos.x, pos.y, LABEL_FONT_SIZE, WHITE);
-    }
+    void Draw(Vector2 pos) override;
 
 private:
 
@@ -68,63 +54,28 @@ private:
 
 };
 
+
 class Menu {
 
 public:
 
+    ~Menu();
+
+    void AddItem(MenuItem* item);
+
+    void Select();
+
+    void Up();
+
+    void Down();
+
+    void Draw();
+
+private:
+
     std::vector<MenuItem*> items;
+
+    // Index of the menu item that is highlighted
     int itemHighlighted;
 
-
-    ~Menu() {
-        for (auto item : items) {
-            delete item;
-        }
-    }
-
-    void AddItem(MenuItem* item) {
-        items.push_back(item);
-    }
-
-    void Select() {
-        items.at(itemHighlighted)->Select();
-    }
-
-    void Up() {
-        itemHighlighted--;
-        if (itemHighlighted == -1) itemHighlighted = items.size() - 1;
-    }
-
-    void Down() {
-        itemHighlighted++;
-        if (itemHighlighted == items.size()) itemHighlighted = 0;
-    }
-
-    void Draw() {
-
-        Vector2 pos = { MENU_ORIGIN };
-
-        // Darken background
-        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), { 0x00, 0x00, 0x00, 0xaa });
-
-        // TODO fix pause state (let pause in ow, don't let pause if there's no level loaded)
-        // and set this to always show
-        if (Level::STATE->isPaused && PLAYER && !PLAYER->isDead)
-            DrawText("PAUSADO", pos.x, pos.y, HEADER_FONT_SIZE, RAYWHITE);
-
-        pos.y += SPACING_HEADER_BODY;
-        int itemCount = 0;
-
-        for (auto item : items) {
-
-            item->Draw(pos);
-
-            if (itemCount == itemHighlighted) {
-                DrawText("=>", pos.x - 45, pos.y, LABEL_FONT_SIZE, WHITE);
-            }
-
-            pos.y += SPACING_LABELS;
-            itemCount++;
-        }
-    }
 };
