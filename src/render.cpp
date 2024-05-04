@@ -12,6 +12,7 @@
 #include "editor.hpp"
 #include "debug.hpp"
 #include "input.hpp"
+#include "menu.hpp"
 
 #pragma GCC diagnostic push 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -47,6 +48,7 @@ typedef struct LevelTransitionShaderControl {
 
 
 LinkedList::Node *SYS_MESSAGES_HEAD = 0;
+
 
 bool isFullscreen = false;
 
@@ -293,9 +295,6 @@ void drawLevelHud() {
                         0, SPRITES->LevelCheckpointFlag.scale/1.7, WHITE);
     DrawText(std::string("x " + std::to_string(Level::STATE->checkpointsLeft)).c_str(),
                 sceneEndX - 100, GetScreenHeight() - 56, 30, RAYWHITE);
-
-    if (Level::STATE->isPaused && PLAYER && !PLAYER->isDead)
-        DrawText("PAUSADO", GetScreenWidth()/2-70, 360, 30, RAYWHITE);
         
     if (PLAYER && PLAYER->isDead)
         DrawText("VOCÊ MORREU", GetScreenWidth()/2-200, 330, 60, RAYWHITE);
@@ -599,11 +598,17 @@ void Render() {
 
         if      (GAME_STATE->waitingForTextInput)           drawTextInput();
 
+        if      (GAME_STATE->menu)                          GAME_STATE->menu->Draw();
+
         drawSysMessages();
 
         if (EDITOR_STATE->isEnabled) drawEditor();
 
     EndDrawing();
+}
+
+bool IsFullscreen() {
+    return isFullscreen;
 }
 
 void DrawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {

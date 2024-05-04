@@ -30,6 +30,8 @@ void Initialize();
 
 void Render();
 
+bool IsFullscreen();
+
 void DrawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally);
 
 void DrawLevelEntity(Level::Entity *entity);
