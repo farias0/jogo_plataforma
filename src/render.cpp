@@ -50,7 +50,7 @@ typedef struct LevelTransitionShaderControl {
 LinkedList::Node *SYS_MESSAGES_HEAD = 0;
 
 
-bool IsFullscreen = false;
+bool isFullscreen = false;
 
 
 // Texture covering the whole screen, used to render shaders
@@ -78,17 +78,17 @@ static void handleFullscreenChange() {
         framesSinceFullscreenChange++;
     }
 
-    if (wasFullScreenLastFrame != IsFullscreen) {
+    if (wasFullScreenLastFrame != isFullscreen) {
         framesSinceFullscreenChange = 0; // start counting
     }
 
     if (framesSinceFullscreenChange == 1) {
-        CameraAdjustForFullscreen(IsFullscreen);
+        CameraAdjustForFullscreen(isFullscreen);
         reloadShaders();
         framesSinceFullscreenChange = -1;
     }
 
-    wasFullScreenLastFrame = IsFullscreen;
+    wasFullScreenLastFrame = isFullscreen;
 }
 
 // Returns the given color, with the given transparency level. 
@@ -585,7 +585,7 @@ void Render() {
         drawEntities();
 
         if (!EDITOR_STATE->isEnabled &&
-            !GAME_STATE->showDebugHUD && IsFullscreen)      drawFullScreenBlackbars();
+            !GAME_STATE->showDebugHUD && isFullscreen)      drawFullScreenBlackbars();
 
         if      (GAME_STATE->mode == MODE_IN_LEVEL)         drawLevelHud();
         else if (GAME_STATE->mode == MODE_OVERWORLD)        drawOverworldHud();
@@ -605,6 +605,10 @@ void Render() {
         if (EDITOR_STATE->isEnabled) drawEditor();
 
     EndDrawing();
+}
+
+bool IsFullscreen() {
+    return isFullscreen;
 }
 
 void DrawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
@@ -718,7 +722,7 @@ void LevelTransitionEffectStart(Vector2 sceneFocusPoint, bool isClose) {
 
 void FullscreenToggle() {
 
-    IsFullscreen = !IsFullscreen;
+    isFullscreen = !isFullscreen;
 
     ToggleBorderlessWindowed();
 

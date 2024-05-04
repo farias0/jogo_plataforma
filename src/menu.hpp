@@ -24,6 +24,7 @@ class MenuItem {
 
 public:
 
+    // The text that shows as the option
     std::string label;
 
     MenuItem(std::string label, void (*callback)()) :
@@ -39,6 +40,7 @@ public:
 
 private:
 
+    // Function to be executed when item is selected
     void (*callback)();
 
 };
@@ -46,15 +48,13 @@ private:
 class MenuItemToggle : public MenuItem {
 
 public:
-    MenuItemToggle(std::string label, void (*callback)(), bool &selectionMonior) :
-                        MenuItem(label, callback), isToggledMonitor(selectionMonior) {}
+    MenuItemToggle(std::string label, void (*callback)(), bool (*isToggledMonitor)()) :
+                        MenuItem(label, callback), isToggledMonitor(isToggledMonitor) {}
 
     void Draw(Vector2 pos) override {
 
-        TraceLog(LOG_INFO, "%d %d", isToggledMonitor, Render::IsFullscreen);
-
         std::string str = "[";
-        if (isToggledMonitor) str += "x";
+        if (isToggledMonitor()) str += "x";
         else str += " ";
         str += "] " + label;
 
@@ -63,8 +63,8 @@ public:
 
 private:
 
-    // Keeps track of a bool to show as toggled. Careful with its lifecycle!
-    bool &isToggledMonitor;
+    // Bool-returning function to control if option is shown as toggled
+    bool (*isToggledMonitor)();
 
 };
 
