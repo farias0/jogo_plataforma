@@ -12,6 +12,8 @@ class MenuItem {
 
 public:
 
+    virtual ~MenuItem() = default;
+
     // The text that shows as the option
     std::string label;
 
@@ -50,7 +52,7 @@ class Menu {
 
 public:
 
-    virtual ~Menu();
+    ~Menu();
 
     void AddItem(MenuItem* item);
 
