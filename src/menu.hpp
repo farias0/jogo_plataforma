@@ -104,7 +104,8 @@ public:
 
         Vector2 pos = { MENU_ORIGIN };
 
-        // TODO darken screen
+        // Darken background
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), { 0x00, 0x00, 0x00, 0xaa });
 
         // TODO fix pause state (let pause in ow, don't let pause if there's no level loaded)
         // and set this to always show
