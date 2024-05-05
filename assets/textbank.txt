@@ -1,8 +1,8 @@
 100 - Onde eu estou?
           Como posso voltar pra casa?
 
-120 - Aperte 'c' para colocar
-     uma bandeira.
+120 - Aperte (botão Y/tecla 'c') para colocar
+     uma checkpoint.
 
 
 
@@ -14,9 +14,33 @@
 
 
 
-2000 - Essa é uma mensagem do desenvolvedor
+2001 - Como dar um checkpoint extra aqui no começo afeta o fluxo da fase?
 
+2002 - Presumindo que o jogador gastou o primeiro checkpoint ali atrás, aqui ele vai ter só 1 checkpoint
 
+2003 - Errar esse pulo fará o jogador cair na pista de baixo, sendo uma segunda oportunidade para isso.
+-
+          Essa segunda é motivada pela ganância, o que é ainda melhor.
+
+2004 - A altura dessa queda faz esse ser um caminho sem volta.
+-
+     Isso é desejável, dado que o jogador pode querer ficar se matando, abusando do checkpoint?
+
+2005 - Como é o primeiro uso da plataforma móvel, é legal usar uma rede de segurança por baixo
+
+2006 - Não da pra todos os desafios terem recompensas altas
+-
+     Como tentativa de iterar, a recomepensa desse pode ser não ter que lidar com inimigos
+-
+     Será que dois desafios em seguida assim, ambos sobre "caminhos paralelos", é uma boa ideia?
+
+2007 - Dá para remover até dois blocos da esquerda e ainda ser alcançável
+-
+     Mas talvez seja legal não ser tão exigente assim no começo do jogo
+
+2008 - Talvez começar aqui uma outra seção da fase baseada em bloco tóxico
+-
+     Como se fosse o pântano da fase
 
 
 
