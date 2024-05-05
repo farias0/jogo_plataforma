@@ -9,7 +9,7 @@
 
 #define PLATFORM_SPEED          2
 
-#define DEFAULT_SIZE            3
+#define DEFAULT_SIZE            4
 
 #define ANCHOR_HITBOX_SIDE      40
 

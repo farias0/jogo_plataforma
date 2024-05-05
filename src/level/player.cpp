@@ -67,7 +67,7 @@
 
 // How many seconds after having left the ground the jump command
 // still works
-#define JUMP_BUFFER_FORWARDS_SIZE           0.15f
+#define JUMP_BUFFER_FORWARDS_SIZE           0.1f
 
 
 // For how many frames each animation still in this animation will be shown
@@ -116,7 +116,7 @@ Player *Player::Initialize(Vector2 origin) {
     newPlayer->isAscending = false;
     newPlayer->mode = PLAYER_MODE_DEFAULT;
     newPlayer->lastPressedJump = -1;
-    newPlayer->lastGroundBeneath = -1;
+    newPlayer->lastGroundBeneathTime = -1;
 
 
     newPlayer->initializeAnimationSystem();
@@ -361,7 +361,8 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
 
     if (groundBeneath) {
 
-        lastGroundBeneath = GetTime();
+        lastGroundBeneathTime = GetTime();
+        lastGroundBeneath = groundBeneath;
 
         if (!isAscending) {
             // Is on the ground
@@ -387,19 +388,19 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
     now = GetTime();
     if (!isAscending &&
         (now - lastPressedJump < jumpBufferBackwardsSize()) &&
-        (now - lastGroundBeneath < JUMP_BUFFER_FORWARDS_SIZE)) {
+        (now - lastGroundBeneathTime < JUMP_BUFFER_FORWARDS_SIZE)) {
 
         jump();
 
-        // Player hit enemy
-        // -- this check is for the case the player jumps off the enemy,
-        // and only in the case the enemy wasn't already destroyed in the previous frame.
-        if (groundBeneath &&
-            groundBeneath->tags & Level::IS_ENEMY) {
+        // Player jumps off enemy
+        if (lastGroundBeneath &&
+            lastGroundBeneath->tags & Level::IS_ENEMY) {
 
-            lastGroundBeneath = GetTime();
-            ((Enemy *)groundBeneath)->Kill();
-            groundBeneath = 0;
+            jumpDouble();;
+
+            lastGroundBeneathTime = GetTime();
+            ((Enemy *)lastGroundBeneath)->Kill();
+            lastGroundBeneath = 0;
         }
     }
 
@@ -433,7 +434,8 @@ COLISION_CHECKING:
 
                 // Player hit enemy
                 if (CheckCollisionRecs(entity->hitbox, lowerbody)) {
-                    lastGroundBeneath = GetTime();
+                    lastGroundBeneathTime = GetTime();
+                    lastGroundBeneath = entity;
                     ((Enemy *)entity)->Kill();
                     goto next_entity;
                 }
@@ -603,6 +605,9 @@ void Player::Continue() {
     yVelocity = 0;
     yVelocityTarget = 0;
     xVelocity = 0;
+    lastPressedJump = -1;
+    lastGroundBeneathTime = -1;
+    lastGroundBeneath = nullptr;
 
     if (hookLaunched) delete hookLaunched;
 
@@ -653,6 +658,12 @@ void Player::jump() {
     yVelocityTarget = 0.0f;
     wasRunningOnJumpStart = Input::STATE.isHoldingRun;
     Sounds::Play(SOUNDS->Jump);
+}
+
+void Player::jumpDouble() {
+
+    jump();
+    yVelocity += (yVelocity/4);
 }
 
 void Player::die() {

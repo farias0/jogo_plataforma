@@ -41,9 +41,10 @@ public:
 
     PlayerMode mode;
 
-    // timestamps, for jump buffers
+    // for jump buffers
     double lastPressedJump;
-    double lastGroundBeneath;
+    double lastGroundBeneathTime;
+    Level::Entity *lastGroundBeneath;
 
     // A reference to the launched grappling hook, if there's one  
     GrapplingHook *hookLaunched;
@@ -104,6 +105,8 @@ private:
 
 
     void jump();
+
+    void jumpDouble();
 
     void die();
 

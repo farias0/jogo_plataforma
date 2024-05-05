@@ -19,7 +19,7 @@
 #define ANGLE           PI/3 // With the end being y0 and start being y, 0 <= ANGLE < PI/2
 #define MAX_LENGTH      500
 #define THICKNESS       2.0f
-#define LAUNCH_ACCEL    1
+#define LAUNCH_ACCEL    0.65
  
 // Swinging constants
 #define GRAVITY_ACCEL               12
