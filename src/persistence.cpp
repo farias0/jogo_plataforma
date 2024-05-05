@@ -60,6 +60,8 @@ void PersistenceLevelSave(char *levelName) {
         entity;
         entity = (Level::Entity *) entity->next) {
 
+            if (!(entity->tags & Level::IS_PERSISTABLE)) continue;
+
             data += entity->PersistanceEntityID() + ":" + entity->PersistanceSerialize() + '\n';
     }
 

@@ -86,7 +86,8 @@ MovingPlatform *MovingPlatform::Add(Vector2 startPos, Vector2 endPos, int size) 
     newPlatform->tags = Level::IS_COLLIDE_WALL +
                             Level::IS_GROUND +
                             Level::IS_HOOKABLE +
-                            Level::IS_MOVING_PLATFORM;
+                            Level::IS_MOVING_PLATFORM +
+                            Level::IS_PERSISTABLE;
     newPlatform->sprite = &SPRITES->MovingPlatform;
     newPlatform->isFacingRight = true;
     newPlatform->layer = -1;

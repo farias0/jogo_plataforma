@@ -107,7 +107,8 @@ Player *Player::Initialize(Vector2 origin) {
     PLAYER = newPlayer;
     LinkedList::AddNode(&Level::STATE->listHead, newPlayer);
  
-    newPlayer->tags = Level::IS_PLAYER;
+    newPlayer->tags = Level::IS_PLAYER +
+                        Level::IS_PERSISTABLE;
     newPlayer->origin = origin;
     newPlayer->sprite = &SPRITES->PlayerDefault;
     newPlayer->SetHitbox(SpriteHitboxFromEdge(newPlayer->sprite, newPlayer->origin));

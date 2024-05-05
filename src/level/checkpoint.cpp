@@ -22,7 +22,8 @@ Level::Entity *CheckpointPickup::Add(Vector2 pos) {
     Sprite *sprite = &SPRITES->LevelCheckpointPickup1;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newPickup->tags = Level::IS_CHECKPOINT_PICKUP;
+    newPickup->tags = Level::IS_CHECKPOINT_PICKUP +
+                        Level::IS_PERSISTABLE;
     newPickup->hitbox = hitbox;
     newPickup->origin = pos;
     newPickup->sprite = sprite;

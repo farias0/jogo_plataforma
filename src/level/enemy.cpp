@@ -21,7 +21,8 @@ Enemy *Enemy::Add(Vector2 origin) {
 
     newEnemy->tags = Level::IS_ENEMY +
                             Level::IS_GROUND +
-                            Level::IS_COLLIDE_DANGER;
+                            Level::IS_COLLIDE_DANGER +
+                            Level::IS_PERSISTABLE;
     newEnemy->origin = origin;
     newEnemy->sprite = &SPRITES->Enemy;
     newEnemy->hitbox = SpriteHitboxFromEdge(newEnemy->sprite, newEnemy->origin);

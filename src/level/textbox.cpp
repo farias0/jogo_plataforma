@@ -27,7 +27,8 @@ Textbox *Textbox::Add(Vector2 pos, int textId) {
     Sprite *sprite = &SPRITES->TextboxButton;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newTextbox->tags = Level::IS_TEXTBOX;
+    newTextbox->tags = Level::IS_TEXTBOX +
+                        Level::IS_PERSISTABLE;
     newTextbox->hitbox = hitbox;
     newTextbox->origin = pos;
     newTextbox->sprite = sprite;

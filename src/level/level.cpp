@@ -242,7 +242,8 @@ Entity *ExitAdd(Vector2 pos) {
     Sprite *sprite = &SPRITES->LevelEndOrb;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newExit->tags = IS_EXIT;
+    newExit->tags = IS_EXIT +
+                    IS_PERSISTABLE;
     newExit->hitbox = hitbox;
     newExit->origin = pos;
     newExit->sprite = sprite;

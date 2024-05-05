@@ -14,7 +14,8 @@ Level::Entity *BlockAdd(Vector2 origin) {
 
     newBlock->tags = Level::IS_COLLIDE_WALL +
                             Level::IS_GROUND +
-                            Level::IS_HOOKABLE;
+                            Level::IS_HOOKABLE +
+                            Level::IS_PERSISTABLE;
     newBlock->origin = origin;
     newBlock->sprite = &SPRITES->Block;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
@@ -50,7 +51,8 @@ Level::Entity *AcidAdd(Vector2 origin) {
     newBlock->tags = Level::IS_COLLIDE_WALL +
                             Level::IS_GROUND +
                             Level::IS_COLLIDE_DANGER +
-                            Level::IS_HOOKABLE;
+                            Level::IS_HOOKABLE +
+                            Level::IS_PERSISTABLE;
     newBlock->origin = origin;
     newBlock->sprite = &SPRITES->Acid;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
