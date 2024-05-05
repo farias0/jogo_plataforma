@@ -18,9 +18,22 @@
 
 2002 - Presumindo que o jogador gastou o primeiro checkpoint ali atrás, aqui ele vai ter só 1 checkpoint
 
-2003 - Errar esse pulo fará o jogador cair na pista de baixo, sendo uma segunda oportunidade para isso.
+2009 - Aqui o jogo:
 -
-          Essa segunda é motivada pela ganância, o que é ainda melhor.
+     1- ensina sobre pular no inimigo para ir mais longe
+-
+          2- ensina sobre diferentes caminhos na fase
+-
+               3- fornece um desafio, tentado pelo checkpoint
+-
+                    4- dá uma escolha de diferentes caminhos p/ o jogador
+-
+               5- reforça a ideia do checkpoint como porto seguro pra tentar ideas arriscadas
+
+2003 - Caso o jogador tenha passado pelo desafio anterior, ele vai estar de olho na recompensa, sem
+     ter visto essa passagem estreita, ficando assim frustrado pelo desafio inesperado
+-
+     Porém, caso ele erre e caia na pista de baixo, vai reforçar a ideia de múltiplos caminhos nas fases
 
 2004 - A altura dessa queda faz esse ser um caminho sem volta.
 -
@@ -41,6 +54,17 @@
 2008 - Talvez começar aqui uma outra seção da fase baseada em bloco tóxico
 -
      Como se fosse o pântano da fase
+
+
+2015 - O jogador pegou o elevador da esquerda e decidiu tentar pular atrás desse checkpoint.
+-
+     Mas agora vai ser 'punido' com uma seção com dificuldade acima do normal
+-
+          Quem sabe ela pode exigir, através de dificuldade e extensão da seção, o uso desse checkpoint.
+               Qual o efeito dessa escolha? Será desencorajador ou diverto?
+-
+     Seria aqui uma oportunidade boa de colocar uma saída secreta?
+
 
 
 
