@@ -91,6 +91,11 @@ static void handleFullscreenChange() {
     wasFullScreenLastFrame = isFullscreen;
 }
 
+void drawTextboxContent(Textbox *box) {
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), { 0x00, 0x00, 0x00, 0x18 });
+    DrawText((box->textContent).c_str(), CAMERA->sceneXOffset + 120, 100, 30, box->isDevTextbox ? GREEN : RAYWHITE);
+} 
+
 // Returns the given color, with the given transparency level. 
 Color getColorTransparency(Color color, int transparency) {
 
@@ -591,6 +596,9 @@ void Render() {
         else if (GAME_STATE->mode == MODE_OVERWORLD)        drawOverworldHud();
 
         if      (GAME_STATE->showDebugGrid)                 drawDebugGrid();
+
+        if      (Textbox::TextboxDisplaying &&
+            !EDITOR_STATE->isEnabled)                       drawTextboxContent(Textbox::TextboxDisplaying);
 
         if      (levelTransitionShaderControl.timer != -1)  drawLevelTransitionShader();
 

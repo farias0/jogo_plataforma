@@ -10,10 +10,10 @@
 #define TEXT_NOT_FOUND_CONTENT      "ERRO: Texto não encontrado!"
 
 
-Textbox *Textbox::textboxDisplaying = 0;
+Textbox *Textbox::TextboxDisplaying = 0;
 
 Textbox::~Textbox() {
-    if (textboxDisplaying == this) textboxDisplaying = 0;
+    if (TextboxDisplaying == this) TextboxDisplaying = 0;
 }
 
 Textbox *Textbox::Add() {
@@ -88,8 +88,8 @@ void Textbox::ToggleTextboxType() {
 }
 
 void Textbox::Toggle() {
-    if (textboxDisplaying == this) textboxDisplaying = 0;
-    else textboxDisplaying = this;
+    if (TextboxDisplaying == this) TextboxDisplaying = 0;
+    else TextboxDisplaying = this;
 }
 
 void Textbox::ReloadAllLevelTexboxes() {
@@ -114,10 +114,6 @@ void Textbox::Draw() {
         
     // Draw the interactable button 
     Level::Entity::Draw();
-
-    // Draw the textbox content
-    if (textboxDisplaying == this && !EDITOR_STATE->isEnabled)
-        DrawText((textContent).c_str(), CAMERA->sceneXOffset + 120, 100, 30, isDevTextbox ? GREEN : RAYWHITE);
 }
 
 void Textbox::createFromIdInput(Vector2 pos, std::string input) {

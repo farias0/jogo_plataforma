@@ -18,6 +18,9 @@ public:
     std::string textContent;
     bool isDevTextbox;
 
+    // The textbox being currently displayed
+    static Textbox *TextboxDisplaying;
+
 
     ~Textbox();
 
@@ -53,10 +56,6 @@ public:
     }
 
 private:
-
-    // The textbox being currently displayed
-    static Textbox *textboxDisplaying;
-
 
     static void createFromIdInput(Vector2 pos, std::string input);
 
