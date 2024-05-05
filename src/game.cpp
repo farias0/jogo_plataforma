@@ -32,6 +32,8 @@ int main() {
 
     initWindow();
 
+    SetExitKey(KEY_NULL); 
+
     SetTargetFPS(60);
 
     SystemsInitialize();

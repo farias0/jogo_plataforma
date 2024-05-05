@@ -214,3 +214,7 @@ void RectangleSetDimensions(Rectangle *rect, Dimensions dims) {
     rect->width = dims.width;
     rect->height = dims.height;
 }
+
+void ExitGame() {
+    exit(0);
+}

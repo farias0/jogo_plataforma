@@ -372,6 +372,7 @@ void PauseToggle() {
         GAME_STATE->menu->AddItem(new MenuItem("Continuar", &PauseToggle));
         GAME_STATE->menu->AddItem(new MenuItemToggle("Caixas de texto do desenvolvedor", &ToggleDevTextbox, &IsDevTextboxEnabled));
         GAME_STATE->menu->AddItem(new MenuItemToggle("Tela cheia", &Render::FullscreenToggle, &Render::IsFullscreen));
+        GAME_STATE->menu->AddItem(new MenuItem("Sair do jogo", &GameExit));
 
     }
 }

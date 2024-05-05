@@ -130,5 +130,7 @@ void RectangleSetPos(Rectangle *rect, Vector2 pos);
 // Sets the width and height of a rectangle according to a Dimensions
 void RectangleSetDimensions(Rectangle *rect, Dimensions dims);
 
+void ExitGame();
+
 
 #endif // _CORE_H_INCLUDED_
