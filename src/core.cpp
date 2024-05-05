@@ -59,6 +59,8 @@ void GameStateInitialize() {
     GAME_STATE->showDebugGrid = false;
     GAME_STATE->showDebugHUD = false;
 
+    GAME_STATE->showDevTextbox = false;
+
     TraceLog(LOG_INFO, "Game state initialized.");
 }
 
@@ -157,6 +159,14 @@ void DebugHudToggle() {
     else {
         DebugHudEnable();
     }
+}
+
+void ToggleDevTextbox() {
+    GAME_STATE->showDevTextbox = !GAME_STATE->showDevTextbox;
+}
+
+bool IsDevTextboxEnabled() {
+    return GAME_STATE->showDevTextbox;
 }
 
 bool IsInMouseArea(Vector2 pos) {

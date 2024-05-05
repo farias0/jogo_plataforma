@@ -65,6 +65,8 @@ typedef struct GameState {
     bool showDebugGrid;
     bool showBackground;
 
+    bool showDevTextbox;
+
     int gamepadIdx = 0;
 
     // The opened menu, if it exists;
@@ -108,6 +110,10 @@ void MouseCursorEnable();
 
 // Toggles the debug HUD between 'enabled' and 'disabled'
 void DebugHudToggle();
+
+void ToggleDevTextbox();
+
+bool IsDevTextboxEnabled();
 
 // Snaps a point to its place (top-left) in a grid.
 Vector2 SnapToGrid(Vector2 coords, Dimensions grid);

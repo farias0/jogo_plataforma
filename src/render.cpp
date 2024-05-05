@@ -92,6 +92,9 @@ static void handleFullscreenChange() {
 }
 
 void drawTextboxContent(Textbox *box) {
+
+    if (box->isDevTextbox && !IsDevTextboxEnabled()) return;
+
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), { 0x00, 0x00, 0x00, 0x18 });
     DrawText((box->textContent).c_str(), CAMERA->sceneXOffset + 120, 100, 30, box->isDevTextbox ? GREEN : RAYWHITE);
 } 

@@ -17,6 +17,7 @@
 #include "../input.hpp"
 #include "../render.hpp"
 #include "../menu.hpp"
+#include "../core.hpp"
 
 
 // The difference between the y of the hitbox and the ground to be considered "on the ground"
@@ -369,6 +370,7 @@ void PauseToggle() {
 
         GAME_STATE->menu = new Menu();
         GAME_STATE->menu->AddItem(new MenuItem("Continuar", &PauseToggle));
+        GAME_STATE->menu->AddItem(new MenuItemToggle("Caixas de texto do desenvolvedor", &ToggleDevTextbox, &IsDevTextboxEnabled));
         GAME_STATE->menu->AddItem(new MenuItemToggle("Tela cheia", &Render::FullscreenToggle, &Render::IsFullscreen));
 
     }

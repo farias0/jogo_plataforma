@@ -5,6 +5,8 @@
 #include "level.hpp"
 #include "../input.hpp"
 #include "../camera.hpp"
+#include "../core.hpp"
+#include "../editor.hpp"
 
 
 #define TEXT_NOT_FOUND_CONTENT      "ERRO: Texto não encontrado!"
@@ -113,6 +115,9 @@ std::string Textbox::GetEntityDebugString() {
 
 void Textbox::Draw() {
         
+    if (isDevTextbox && !IsDevTextboxEnabled() && !EDITOR_STATE->isEnabled)
+        return;
+
     // Draw the interactable button 
     Level::Entity::Draw();
 }
