@@ -22,7 +22,9 @@
 -
      1- ensina sobre pular no inimigo para ir mais longe
 -
-          2- ensina sobre diferentes caminhos na fase
+          2- ensina sobre diferentes caminhos na fase -- ao cair na primeira vez, o que é o natural
+               o jogador vai entender que lá em baixo tem um outro caminho; morrendo e voltando no 
+               checkpoint de cima ele vai se sentir tentado a tentar o caminho de cima
 -
                3- fornece um desafio, tentado pelo checkpoint
 -
@@ -51,10 +53,13 @@
 -
      Mas talvez seja legal não ser tão exigente assim no começo do jogo
 
-2008 - Talvez começar aqui uma outra seção da fase baseada em bloco tóxico
--
-     Como se fosse o pântano da fase
+2008 - Esse caminho de baixo representa uma outra área da fase, baseado nos
+     blocos tóxicos. Ele é pra ser mais opressor, como se o jogador estivesse 
+     entrando no êstomago da baleia.
 
+2011 - TODO-
+     Pra esse desafio ficar completo, é legal se segurar o botão de pulo fazer o pulo ir mais alto,
+     de forma que se o jogador segurar o botão de pulo ele bata no teto.
 
 2015 - O jogador pegou o elevador da esquerda e decidiu tentar pular atrás desse checkpoint.
 -
@@ -64,7 +69,16 @@
                Qual o efeito dessa escolha? Será desencorajador ou diverto?
 -
      Seria aqui uma oportunidade boa de colocar uma saída secreta?
+-
+          Esse lugar pode funcionar como um atalho de volta praquela seção atrás
+-
+     O jogador ao caminhar pela seção de baixo ele pode ver o quão desafiante essa seção vai ser,
+          criando uma dinâmica única pra cada escolha feita sobre os caminhos lá atrás.
+-
+          Independente da direção da qual o jogador venha, a recompensa é o mesmo checkpoint.
 
+2030 - Talvez aqui seja um lugar interessante para colocar um outro caminho escondido,
+     em que o jogador precisa usar o gancho na plataforma para alcançar
 
 
 
