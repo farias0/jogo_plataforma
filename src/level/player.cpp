@@ -119,7 +119,6 @@ Player *Player::Initialize(Vector2 origin) {
     newPlayer->lastPressedJump = -1;
     newPlayer->lastGroundBeneathTime = -1;
 
-
     newPlayer->initializeAnimationSystem();
 
 
@@ -410,11 +409,10 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
 
 
 COLISION_CHECKING:
-    // Collision checking
-    
+    // Collision checking    
+
     Textbox *textboxCollidedThisFrame = 0;
-    static Textbox *textboxCollidedLastFrame = 0;
-    
+
     {
         if (hitbox.y + hitbox.height > FLOOR_DEATH_HEIGHT) {
             die();
@@ -609,6 +607,7 @@ void Player::Continue() {
     lastPressedJump = -1;
     lastGroundBeneathTime = -1;
     lastGroundBeneath = nullptr;
+    textboxCollidedLastFrame = nullptr;
 
     if (hookLaunched) delete hookLaunched;
 

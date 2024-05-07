@@ -6,6 +6,7 @@
 
 #include "level.hpp"
 #include "grappling_hook.hpp"
+#include "textbox.hpp"
 #include "../animation.hpp"
 
 #define PLAYER_PERSISTENCE_ID   "player"
@@ -51,6 +52,9 @@ public:
 
     // A reference to the moving platform the player is on, if there's one
     Level::Entity *movingPlatformBeneath;
+
+    // Controls textbox toggling
+    Textbox *textboxCollidedLastFrame;
 
     // Initializes and adds the player to the level
     static Player *Initialize();
