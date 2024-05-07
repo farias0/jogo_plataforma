@@ -181,8 +181,8 @@ void CameraZoomIn() {
     CAMERA->zoom += ZOOM_STEP;
     if (CAMERA->zoom >= ZOOM_MAX) CAMERA->zoom = ZOOM_MAX;
 
-    CAMERA->pos.x -= ((GetScreenWidth() / CAMERA->zoom) - (GetScreenWidth() / zoomBefore)) / 2;
-    CAMERA->pos.y -= ((GetScreenHeight() / CAMERA->zoom) - (GetScreenHeight() / zoomBefore)) / 2;
+    CAMERA->pos.x += ((GetScreenWidth() / zoomBefore) - (GetScreenWidth() / CAMERA->zoom)) / 2;
+    CAMERA->pos.y += ((GetScreenHeight() / zoomBefore) - (GetScreenHeight() / CAMERA->zoom)) / 2;
 
     isPanned = true;
 }
