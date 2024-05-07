@@ -13,7 +13,7 @@
 #define CAMERA_FOLLOW_DOWN      (3*SCREEN_HEIGHT)/4
 
 #define ZOOM_STEP               0.10
-#define ZOOM_MIN                0.20
+#define ZOOM_MIN                0.10
 #define ZOOM_MAX                2
 
 
@@ -175,13 +175,29 @@ bool CameraIsPanned() {
 }
 
 void CameraZoomIn() {
+    
+    float zoomBefore = CAMERA->zoom;
+    
     CAMERA->zoom += ZOOM_STEP;
     if (CAMERA->zoom >= ZOOM_MAX) CAMERA->zoom = ZOOM_MAX;
+
+    CAMERA->pos.x -= ((GetScreenWidth() / CAMERA->zoom) - (GetScreenWidth() / zoomBefore)) / 2;
+    CAMERA->pos.y -= ((GetScreenHeight() / CAMERA->zoom) - (GetScreenHeight() / zoomBefore)) / 2;
+
+    isPanned = true;
 }
 
 void CameraZoomOut() {
+
+    float zoomBefore = CAMERA->zoom;
+
     CAMERA->zoom -= ZOOM_STEP;
     if (CAMERA->zoom <= ZOOM_MIN) CAMERA->zoom = ZOOM_MIN;
+
+    CAMERA->pos.x -= ((GetScreenWidth() / CAMERA->zoom) - (GetScreenWidth() / zoomBefore)) / 2;
+    CAMERA->pos.y -= ((GetScreenHeight() / CAMERA->zoom) - (GetScreenHeight() / zoomBefore)) / 2;
+
+    isPanned = true;
 }
 
 void CameraAdjustForFullscreen(bool isFullscreen) {

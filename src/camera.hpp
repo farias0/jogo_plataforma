@@ -13,7 +13,7 @@ typedef struct MyCamera {
     Vector2 pos;
 
     // The zoom the player applied to the scene
-    float zoom; // The larger, the more zoomed out
+    float zoom;
 
     /*
         It should be reconsidered if data and procedures regarding how to transform the
