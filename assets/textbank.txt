@@ -4,6 +4,18 @@
 120 - Aperte (botão Y/tecla 'c') para colocar
      uma checkpoint.
 
+130 - Esse lugar me causa estranheza...
+132 - Quando eu era criança eu costumava pular toda hora e pra todo canto:
+               Na amarelinha.
+                    O portão da escola.
+                         Do telhado de casa, achando que eu iria voar.
+-
+-
+     Eu nem lembrava mais a última vez que eu tinha pulado.
+     E isso não é nada: Duas noites atrás eu acordei mancando, com o joelho direito doendo
+          toda vez que eu pisava. Eu nem sei o que aconteceu. Eu me machuquei dormindo?
+134 - Mas aqui, quando eu pulo,
+          é a mesma sensação que eu tinha antes. O mesmo frio na barriga.
 
 
 
@@ -43,15 +55,10 @@
 
 2005 - Como é o primeiro uso da plataforma móvel, é legal usar uma rede de segurança por baixo
 
-2006 - Não da pra todos os desafios terem recompensas altas
+2050 - A ideia dessa seção é o jogador lembrar que, se ele cair, vai parar nas plataformas
+     cheias de inimigo lá em baixo.
 -
-     Como tentativa de iterar, a recomepensa desse pode ser não ter que lidar com inimigos
--
-     Será que dois desafios em seguida assim, ambos sobre "caminhos paralelos", é uma boa ideia?
-
-2007 - Dá para remover até dois blocos da esquerda e ainda ser alcançável
--
-     Mas talvez seja legal não ser tão exigente assim no começo do jogo
+     Esse layout parece um pouco inorgâmico, meio video game _demais_
 
 2008 - Esse caminho de baixo representa uma outra área da fase, baseado nos
      blocos tóxicos. Ele é pra ser mais opressor, como se o jogador estivesse 
@@ -79,6 +86,10 @@
 
 2030 - Talvez aqui seja um lugar interessante para colocar um outro caminho escondido,
      em que o jogador precisa usar o gancho na plataforma para alcançar
+
+2100 - TODO: Dessincronizar as plataformas p/ aumentar o desafio.
+-
+     Por algum motivo alterar o originY no .lvl não tá dando certo.
 
 
 
