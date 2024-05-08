@@ -112,6 +112,7 @@ typedef struct EditorState {
     bool                            selectedEntitiesThisFrame;
     Trajectory                      entitySelectionCoords;
     std::vector<LinkedList::Node *> selectedEntities;
+    bool                            isSelectionGridlocked;
 
     // Moving selected entities
     bool        isMovingSelectedEntities;
