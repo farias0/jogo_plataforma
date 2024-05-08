@@ -7,7 +7,7 @@
 #include "editor.hpp"
 
 
-#define CAMERA_FOLLOW_LEFT      SCREEN_WIDTH/4
+#define CAMERA_FOLLOW_LEFT      (2*SCREEN_WIDTH)/5
 #define CAMERA_FOLLOW_RIGHT     (3*SCREEN_WIDTH)/5
 #define CAMERA_FOLLOW_UP        (1*SCREEN_HEIGHT)/3
 #define CAMERA_FOLLOW_DOWN      (3*SCREEN_HEIGHT)/4
