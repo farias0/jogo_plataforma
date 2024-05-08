@@ -44,6 +44,7 @@ typedef enum {
     IS_MOVING_PLATFORM      = 4096,
     IS_ANCHOR               = 8192,
     IS_PERSISTABLE          = 16384,
+    IS_GRIDLOCKED           = 32768
 } EntityTag;
 
 
