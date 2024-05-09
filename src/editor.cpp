@@ -146,6 +146,7 @@ void loadOverworldEditor() {
 static void updateEntitySelectionList() {
 
     EDITOR_STATE->selectedEntities.clear();
+    EDITOR_STATE->isSelectionGridlocked = false;
 
     const Rectangle selectionHitbox = EditorSelectionGetRect();
 
@@ -174,12 +175,14 @@ static void updateEntitySelectionList() {
             // generic entity
             else if (!entity->IsADeadEnemy() && CheckCollisionRecs(selectionHitbox, entity->hitbox)) {
                 EDITOR_STATE->selectedEntities.push_back(entity);
+                if (entity->tags & Level::IS_GRIDLOCKED) EDITOR_STATE->isSelectionGridlocked = true;
                 continue;
             }            
 
             // generic entity's origin ghost
             else if (CheckCollisionRecs(selectionHitbox, entity->GetOriginHitbox())) {
                 EDITOR_STATE->selectedEntities.push_back(entity);
+                if (entity->tags & Level::IS_GRIDLOCKED) EDITOR_STATE->isSelectionGridlocked = true;
                 continue;
             }
 
@@ -193,6 +196,7 @@ static void updateEntitySelectionList() {
 
             if (CheckCollisionRecs(selectionHitbox, OverworldEntitySquare(entity))) {
                 EDITOR_STATE->selectedEntities.push_back(entity);
+                EDITOR_STATE->isSelectionGridlocked = true;
                 continue;
             }
         }
@@ -375,6 +379,7 @@ void EditorSelectEntities(Vector2 cursorPos) {
 
     if (!s->isSelectingEntities) {
         s->entitySelectionCoords.start = cursorPos;
+        s->isSelectionGridlocked = false;
     }
     
     s->entitySelectionCoords.end = cursorPos;
@@ -387,6 +392,7 @@ void EditorSelectionCancel() {
     EDITOR_STATE->isSelectingEntities = false;
     EDITOR_STATE->selectedEntitiesThisFrame = false;
     EDITOR_STATE->isMovingSelectedEntities = false;
+    EDITOR_STATE->isSelectionGridlocked = false;
     EDITOR_STATE->selectedEntities.clear();
 
     TraceLog(LOG_TRACE, "Editor's entity selection canceled.");
@@ -486,13 +492,19 @@ Vector2 EditorEntitySelectionCalcMove(Vector2 hitbox) {
         t.end.y - t.start.y,
     };
 
-    Dimensions grid = LEVEL_GRID;
-    if (GAME_STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
-    
-    Vector2 pos = SnapToGrid({
-                                hitbox.x + delta.x,
-                                hitbox.y + delta.y                            
-                            }, grid);
+    Vector2 pos = {
+                    hitbox.x + delta.x,
+                    hitbox.y + delta.y                            
+                };
+
+
+    if (EDITOR_STATE->isSelectionGridlocked) {
+
+        Dimensions grid = LEVEL_GRID;
+        if (GAME_STATE->mode == MODE_OVERWORLD) grid = OW_GRID;
+
+        pos = SnapToGrid(pos, grid);
+    }
 
     return pos;
 }
