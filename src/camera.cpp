@@ -118,6 +118,8 @@ void CameraFollow() {
 
 void CameraLevelCentralizeOnPlayer() {
 
+    if (GAME_STATE->showDebugHUD) return;
+
     if (!PLAYER) {
         TraceLog(LOG_ERROR, "Camera can't centralize on Player because Player instance couldn't be found.");
         return;
