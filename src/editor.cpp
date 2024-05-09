@@ -410,11 +410,30 @@ bool EditorSelectedEntitiesMove(Vector2 cursorPos) {
 
     if (!s->isMovingSelectedEntities) {
 
-        // Should actually check for collision with each selected entity,
-        // but this is good enough for now
-        if (!CheckCollisionPointRec(cursorPos, EditorSelectionGetRect())) {
-            return false;
+        bool clickedOnASelectedEntity = false;
+
+        for (auto e = s->selectedEntities.begin(); e != s->selectedEntities.end(); e++) {
+            auto entity = (Level::Entity *) *e;
+
+            if (entity->tags & Level::IS_MOVING_PLATFORM) {
+                auto p = (MovingPlatform *) entity;
+
+                if (CheckCollisionPointRec(cursorPos, p->startAnchor.hitbox) ||
+                    CheckCollisionPointRec(cursorPos, p->endAnchor.hitbox)) {
+
+                        clickedOnASelectedEntity = true; break;
+                }
+            }
+            
+            // Generic entity
+            else if ((CheckCollisionPointRec(cursorPos, entity->hitbox) && !entity->IsADeadEnemy()) ||
+                    CheckCollisionPointRec(cursorPos, entity->GetOriginHitbox())) {
+                        
+                        clickedOnASelectedEntity = true; break;
+            }
         }
+
+        if (!clickedOnASelectedEntity) return false;
 
         s->selectedEntitiesMoveCoords.start = cursorPos;
     }
