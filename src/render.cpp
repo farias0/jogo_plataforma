@@ -601,7 +601,7 @@ void Render() {
         if      (GAME_STATE->showDebugGrid)                 drawDebugGrid();
 
         if      (Textbox::TextboxDisplaying &&
-            !EDITOR_STATE->isEnabled)                       drawTextboxContent(Textbox::TextboxDisplaying);
+                !EDITOR_STATE->isEnabled)                   drawTextboxContent(Textbox::TextboxDisplaying);
 
         if      (levelTransitionShaderControl.timer != -1)  drawLevelTransitionShader();
 
@@ -609,7 +609,8 @@ void Render() {
 
         if      (GAME_STATE->waitingForTextInput)           drawTextInput();
 
-        if      (GAME_STATE->menu)                          GAME_STATE->menu->Draw();
+        if      (GAME_STATE->menu &&
+                !EDITOR_STATE->isEnabled)                   GAME_STATE->menu->Draw();
 
         drawSysMessages();
 

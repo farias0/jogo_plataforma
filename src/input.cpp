@@ -334,7 +334,9 @@ void Handle() {
         return;
     }
 
-    handleMenuInput();
+    if (!EDITOR_STATE->isEnabled) {
+        handleMenuInput();
+    }
 
     if (GAME_STATE->mode == MODE_IN_LEVEL) {
         handleInLevelInput();
