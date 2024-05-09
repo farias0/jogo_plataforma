@@ -691,16 +691,17 @@ void DrawLevelEntityOriginGhost(Level::Entity *entity) {
 
 void DrawLevelEntityMoveGhost(Level::Entity *entity) {
 
-    Vector2 pos = EditorEntitySelectionCalcMove({
-                                                    entity->hitbox.x,
-                                                    entity->hitbox.y });
-
-    pos = PosInSceneToScreen(pos);
+    Vector2 pos = PosInSceneToScreen(
+                    EditorEntitySelectionCalcMove({ entity->hitbox.x,
+                                                    entity->hitbox.y }));
+    Vector2 originPos = PosInSceneToScreen(
+                            EditorEntitySelectionCalcMove(entity->origin));
 
     Color color =  { WHITE.r, WHITE.g, WHITE.b,
                             EDITOR_SELECTION_MOVE_TRANSPARENCY };
 
     DrawTexture(entity->sprite, pos, color, 0, !entity->isFacingRight);
+    DrawTexture(entity->sprite, originPos, color, 0, false);
 }
 
 void PrintSysMessage(const std::string &msg) {
