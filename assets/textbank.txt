@@ -87,9 +87,17 @@
 2030 - Talvez aqui seja um lugar interessante para colocar um outro caminho escondido,
      em que o jogador precisa usar o gancho na plataforma para alcançar
 
-2100 - TODO: Dessincronizar as plataformas p/ aumentar o desafio.
+2060 - TODO no desafio da frente o jogador pode facilmente pular da pista de cima
+     para a debaixo só para pegar o checkpoint, pulando o desafio extra do caminho de baixo.
 -
+     Talvez fazer o caminho mais difícil estar acima.
+
+2100 - TODO: Dessincronizar as plataformas p/ aumentar o desafio.
      Por algum motivo alterar o originY no .lvl não tá dando certo.
+-
+     TODO: Nesse ponto o jogador tem um checkpoint que acabou de pegar.
+Ele não teve oportunidade de usar, e vai usar aqui, quando (provavelmente)
+ele acabou de usar um um desafio atrás.
 
 
 
