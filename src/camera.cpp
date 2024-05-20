@@ -10,7 +10,7 @@
 #define CAMERA_FOLLOW_LEFT      (2*SCREEN_WIDTH)/5
 #define CAMERA_FOLLOW_RIGHT     (3*SCREEN_WIDTH)/5
 #define CAMERA_FOLLOW_UP        (1*SCREEN_HEIGHT)/3
-#define CAMERA_FOLLOW_DOWN      (3*SCREEN_HEIGHT)/4
+#define CAMERA_FOLLOW_DOWN      (2*SCREEN_HEIGHT)/3
 
 #define ZOOM_STEP               0.10
 #define ZOOM_MIN                0.10
