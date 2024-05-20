@@ -27,5 +27,7 @@ void Play(Sound sound);
 // Toggles between sound on and off
 void Toggle();
 
+bool IsEnabled();
+
 
 }
