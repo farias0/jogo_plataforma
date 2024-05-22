@@ -36,7 +36,6 @@ struct SpriteBank {
     Sprite PlayerSwingingForwards;
     Sprite PlayerSwingingBackwards;
     Sprite Enemy;
-    Sprite Block; // TODO remove it
     Sprite Block1Side;
     Sprite Block2SidesOpp;
     Sprite Block2SidesAdj;

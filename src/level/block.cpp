@@ -21,7 +21,7 @@ Block *Block::Add(Vector2 origin) {
                             Level::IS_GRIDLOCKED +
                             Level::IS_TILE_BLOCK;
     newBlock->origin = origin;
-    newBlock->sprite = &SPRITES->Block;
+    newBlock->sprite = &SPRITES->Block4Sides;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
 
     newBlock->persistanceEntityID = BLOCK_PERSISTENCE_ID;
@@ -38,7 +38,7 @@ void Block::AddOrInteract(Vector2 origin, int interactionTags) {
 
 
     origin = SnapToGrid(origin, LEVEL_GRID);
-    Rectangle ghostHitbox = SpriteHitboxFromEdge(&SPRITES->Block, origin);
+    Rectangle ghostHitbox = SpriteHitboxFromEdge(&SPRITES->Block4Sides, origin);
     Level::Entity *collidedEntity = Level::CheckCollisionWithAnything(ghostHitbox);
 
 
