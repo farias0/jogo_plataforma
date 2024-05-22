@@ -3,7 +3,7 @@
 #include "block.hpp"
 #include "level.hpp"
 #include "../input.hpp"
-#include "../render.hpp" // TODO remove it
+#include "../camera.hpp"
 
 
 Block *Block::Add() {
@@ -49,9 +49,9 @@ void Block::AddOrInteract(Vector2 origin, int interactionTags) {
             Block *existingBlock = (Block *) collidedEntity;
 
             if (interactionTags & EDITOR_INTERACTION_ALT)
-                existingBlock->SwitchTileType();
+                existingBlock->ToggleTileType();
             else
-                existingBlock->SwitchTileRotation();
+                existingBlock->ToggleTileRotation();
         }
 
     }
@@ -60,12 +60,29 @@ void Block::AddOrInteract(Vector2 origin, int interactionTags) {
     }
 }
 
-void Block::SwitchTileType() {
-    Render::PrintSysMessage("Switched type");
+void Block::ToggleTileType() {
+
+    if (sprite == &SPRITES->Block4Sides) sprite = &SPRITES->Block1Side;
+    else if (sprite == &SPRITES->Block1Side) sprite = &SPRITES->Block2SidesOpp;
+    else if (sprite == &SPRITES->Block2SidesOpp) sprite = &SPRITES->Block2SidesAdj;
+    else if (sprite == &SPRITES->Block2SidesAdj) sprite = &SPRITES->Block3Sides;
+    else if (sprite == &SPRITES->Block3Sides) sprite = &SPRITES->Block4Sides;
+    else TraceLog(LOG_ERROR, "Block tried to toggle type, but sprite is unknown.");
 }
 
-void Block::SwitchTileRotation() {
-    Render::PrintSysMessage("Rotated");
+void Block::ToggleTileRotation() {
+    
+    rotation += 90;
+    if (rotation >= 360) rotation -= 360;
+}
+
+void Block::Draw() {
+
+    Vector2 pos = PosInSceneToScreen({
+                                        hitbox.x,
+                                        hitbox.y });
+
+    Render::DrawTexture(sprite, { pos.x, pos.y }, WHITE, rotation, false);
 }
 
 //

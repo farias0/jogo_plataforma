@@ -24,9 +24,15 @@ public:
     // or interacts with an existing block if present in this position
     static void AddOrInteract(Vector2 origin, int interactionTags);
 
-    void SwitchTileType();
+    void ToggleTileType();
 
-    void SwitchTileRotation();
+    void ToggleTileRotation();
+
+    void Draw() override;
+    
+private:
+
+    int rotation;
 
 };
 
