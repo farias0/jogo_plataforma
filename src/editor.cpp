@@ -413,6 +413,21 @@ bool EditorSelectedEntitiesMove(Vector2 cursorPos) {
         bool clickedOnASelectedEntity = false;
 
         for (auto e = s->selectedEntities.begin(); e != s->selectedEntities.end(); e++) {
+
+            // Overworld
+
+            if (GAME_STATE->mode == MODE_OVERWORLD) {
+
+                if (CheckCollisionPointRec(cursorPos, OverworldEntitySquare((OverworldEntity *) *e))) {
+
+                    clickedOnASelectedEntity = true; break;
+                }
+
+                continue;
+            }
+
+            // In level
+
             auto entity = (Level::Entity *) *e;
 
             if (entity->tags & Level::IS_MOVING_PLATFORM) {
