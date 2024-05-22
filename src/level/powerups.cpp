@@ -2,6 +2,7 @@
 
 #include "powerups.hpp"
 #include "level.hpp"
+#include "../editor.hpp"
 
 
 Level::Entity *GlideAdd() {
@@ -28,7 +29,10 @@ Level::Entity *GlideAdd(Vector2 origin) {
     return glide;
 }  
 
-void GlideCheckAndAdd(Vector2 origin) {
+void GlideCheckAndAdd(Vector2 origin, int interactionTags) {
+
+    if (interactionTags & EDITOR_INTERACTION_HOLD) return;
+
 
     origin = SnapToGrid(origin, LEVEL_GRID);
 

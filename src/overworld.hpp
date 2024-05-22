@@ -84,7 +84,7 @@ void OverworldCursorMove(OverworldCursorDirection direction);
 
 // Adds tile to overworld in according to the item selected in the editor,
 // or interacts with it if it's already present.
-void OverworldTileAddOrInteract(Vector2 pos);
+void OverworldTileAddOrInteract(Vector2 pos, int interactionTags);
 
 // Removes tile from overworld and destroys it, if present and if allowed.
 void OverworldTileRemoveAt(Vector2 pos);

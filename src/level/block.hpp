@@ -21,8 +21,12 @@ public:
     static Block *Add(Vector2 origin);
 
     // Initializes and adds a block to the level in the given origin,
-    // if there are no other blocks there already
-    static void CheckAndAdd(Vector2 origin);
+    // or interacts with an existing block if present in this position
+    static void AddOrInteract(Vector2 origin, int interactionTags);
+
+    void SwitchTileType();
+
+    void SwitchTileRotation();
 
 };
 
@@ -38,7 +42,7 @@ public:
 
     // Initializes and adds an acid block to the level in the given origin,
     // if there are no other blocks there already
-    static void CheckAndAdd(Vector2 origin);
+    static void CheckAndAdd(Vector2 origin, int interactionTags);
 
 };
 

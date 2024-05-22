@@ -62,17 +62,21 @@ typedef enum {
 } EditorEntityType;
 
 typedef enum {
-    EDITOR_INTERACTION_CLICK,
-    EDITOR_INTERACTION_HOLD
-} EditorInteractionType;
+
+    // Interactions that only work for mouse clicks (not holds) should ignore it based on that
+    EDITOR_INTERACTION_CLICK    = 0,
+    EDITOR_INTERACTION_HOLD     = 1,
+
+    EDITOR_INTERACTION_ALT      = 2
+    
+} EditorInteractionTag;
 
 class EditorEntityButton : public LinkedList::Node {
 
 public:
     EditorEntityType type;
     Sprite *sprite;
-    void (*handler)(Vector2); // Receives the click scene pos
-    EditorInteractionType interactionType;
+    void (*handler)(Vector2, int); // Receives the click scene pos and the interaction tags
 
 };
 

@@ -31,7 +31,7 @@ public:
 
     // Initializes and adds a a textbox button to the level in the
     // given origin, if there are no other entities there already
-    static void CheckAndAdd(Vector2 pos);
+    static void CheckAndAdd(Vector2 pos, int interactionTags);
 
     void SetTextId(int textId);
 

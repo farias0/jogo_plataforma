@@ -42,7 +42,10 @@ Level::Entity *CheckpointPickup::Add(Vector2 pos) {
     return newPickup;
 }
 
-void CheckpointPickup::CheckAndAdd(Vector2 pos) {
+void CheckpointPickup::CheckAndAdd(Vector2 pos, int interactionTags) {
+
+    if (interactionTags & EDITOR_INTERACTION_HOLD) return;
+    
 
     Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->LevelCheckpointPickup1, pos);
 
