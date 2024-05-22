@@ -49,7 +49,7 @@ Textbox *Textbox::Add(Vector2 pos, int textId) {
 
 void Textbox::CheckAndAdd(Vector2 pos, int interactionTags) {
 
-    if (interactionTags & EDITOR_INTERACTION_HOLD) return;
+    if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
 
 
     Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->TextboxButton, pos);

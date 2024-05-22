@@ -290,7 +290,7 @@ next_entity:
 
 void OverworldTileAddOrInteract(Vector2 pos, int interactionTags) {
 
-    if (interactionTags & EDITOR_INTERACTION_HOLD) return;
+    if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
     
 
     pos = SnapToGrid(pos, OW_GRID);

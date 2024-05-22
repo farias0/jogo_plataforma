@@ -63,10 +63,10 @@ typedef enum {
 
 typedef enum {
 
-    // Interactions that only work for mouse clicks (not holds) should ignore it based on that
-    EDITOR_INTERACTION_CLICK    = 0,
-    EDITOR_INTERACTION_HOLD     = 1,
+    // If the interation was a click, meaning the button is not being held
+    EDITOR_INTERACTION_CLICK    = 1,
 
+    // If the 'alt' key is pressed, so it uses alternative functions
     EDITOR_INTERACTION_ALT      = 2
     
 } EditorInteractionTag;

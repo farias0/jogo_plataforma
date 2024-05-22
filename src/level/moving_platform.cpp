@@ -108,7 +108,7 @@ MovingPlatform *MovingPlatform::Add(Vector2 startPos, Vector2 endPos, int size) 
 
 void MovingPlatform::CheckAndAdd(Vector2 origin, int interactionTags) {
 
-    if (interactionTags & EDITOR_INTERACTION_HOLD) return;
+    if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
     
 
     // TODO check for collisions

@@ -31,7 +31,7 @@ Level::Entity *GlideAdd(Vector2 origin) {
 
 void GlideCheckAndAdd(Vector2 origin, int interactionTags) {
 
-    if (interactionTags & EDITOR_INTERACTION_HOLD) return;
+    if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
 
 
     origin = SnapToGrid(origin, LEVEL_GRID);

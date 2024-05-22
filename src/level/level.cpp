@@ -263,7 +263,7 @@ Entity *ExitAdd(Vector2 pos) {
 
 void ExitCheckAndAdd(Vector2 pos, int interactionTags) {
 
-    if (interactionTags & EDITOR_INTERACTION_HOLD) return;
+    if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
     
     
     Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->LevelEndOrb, pos);
