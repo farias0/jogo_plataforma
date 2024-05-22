@@ -4,13 +4,13 @@
 #include "level.hpp"
 
 
-Level::Entity *BlockAdd() {
-    return BlockAdd({ 0,0 });
+Block *Block::Add() {
+    return Add({ 0,0 });
 }
 
-Level::Entity *BlockAdd(Vector2 origin) {
+Block *Block::Add(Vector2 origin) {
 
-    Level::Entity *newBlock = new Level::Entity();
+    Block *newBlock = new Block();
 
     newBlock->tags = Level::IS_COLLIDE_WALL +
                             Level::IS_GROUND +
@@ -31,23 +31,25 @@ Level::Entity *BlockAdd(Vector2 origin) {
     return newBlock;
 }
 
-void BlockCheckAndAdd(Vector2 origin) {
+void Block::CheckAndAdd(Vector2 origin) {
 
     origin = SnapToGrid(origin, LEVEL_GRID);
 
     Rectangle hitbox = SpriteHitboxFromEdge(&SPRITES->Block, origin);
     if (Level::CheckCollisionWithAnything(hitbox)) return;
     
-    BlockAdd(origin);
+    Add(origin);
 }
 
-Level::Entity *AcidAdd() {
-    return AcidAdd({ 0,0 });
+//
+
+AcidBlock *AcidBlock::Add() {
+    return Add({ 0,0 });
 }
 
-Level::Entity *AcidAdd(Vector2 origin) {
+AcidBlock *AcidBlock::Add(Vector2 origin) {
 
-    Level::Entity *newBlock = new Level::Entity();
+    AcidBlock *newBlock = new AcidBlock();
 
     newBlock->tags = Level::IS_COLLIDE_WALL +
                             Level::IS_GROUND +
@@ -69,12 +71,12 @@ Level::Entity *AcidAdd(Vector2 origin) {
     return newBlock;
 }
 
-void AcidCheckAndAdd(Vector2 origin) {
+void AcidBlock::CheckAndAdd(Vector2 origin) {
 
     origin = SnapToGrid(origin, LEVEL_GRID);
 
     Rectangle hitbox = SpriteHitboxFromEdge(&SPRITES->Acid, origin);
     if (Level::CheckCollisionWithAnything(hitbox)) return;
     
-    AcidAdd(origin);
+    Add(origin);
 }

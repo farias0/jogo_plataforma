@@ -10,25 +10,36 @@
 #define ACID_BLOCK_PERSISTENCE_ID   "acid_block"
 
 
-// Adds a block to the level
-Level::Entity *BlockAdd();
+class Block : public Level::Entity {
 
-// Adds a block to the level in the given position
-Level::Entity *BlockAdd(Vector2 origin);
+public:
+    
+    // Adds a block to the level
+    static Block *Add();
 
-// Initializes and adds a block to the level in the given origin,
-// if there are no other blocks there already
-void BlockCheckAndAdd(Vector2 origin);
+    // Adds a block to the level in the given position
+    static Block *Add(Vector2 origin);
 
-// Adds an acid block to the level
-Level::Entity *AcidAdd();
+    // Initializes and adds a block to the level in the given origin,
+    // if there are no other blocks there already
+    static void CheckAndAdd(Vector2 origin);
 
-// Adds an acid block to the level in the given position
-Level::Entity *AcidAdd(Vector2 origin);
+};
 
-// Initializes and adds an acid block to the level in the given origin,
-// if there are no other blocks there already
-void AcidCheckAndAdd(Vector2 origin);
+class AcidBlock : public Level::Entity {
 
+public:
+    
+    // Adds an acid block to the level
+    static AcidBlock *Add();
+
+    // Adds an acid block to the level in the given position
+    static AcidBlock *Add(Vector2 origin);
+
+    // Initializes and adds an acid block to the level in the given origin,
+    // if there are no other blocks there already
+    static void CheckAndAdd(Vector2 origin);
+
+};
 
 #endif // _BLOCK_H_INCLUDED_
