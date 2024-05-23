@@ -28,9 +28,12 @@ public:
     // or interacts with an existing block if present in this position
     static void AddOrInteract(Vector2 origin, int interactionTags);
 
-    void SetTileType(const std::string &tileTypeId);
+    void TileTypeSet(const std::string &tileTypeId);
 
     void TileTypeNext();
+
+    // Identifies and set to the correct tile type based on the surrounding blocks
+    void TileAutoAdjust();
 
     void TileRotate();
 

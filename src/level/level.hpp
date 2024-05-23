@@ -187,6 +187,10 @@ void Save();
 // Loads a new, default level
 void LoadNew();
 
+// Checks for collision between a point and any 
+// living entity in the level.
+Entity *CheckCollisionWithAnyEntity(Vector2 point);
+
 // Checks for collision between a rectangle and any 
 // living entity in the level.
 Entity *CheckCollisionWithAnyEntity(Rectangle hitbox);
