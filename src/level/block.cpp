@@ -51,9 +51,6 @@ Block *Block::Add(Vector2 origin) {
 
 void Block::AddOrInteract(Vector2 origin, int interactionTags) {
 
-    (void)interactionTags;
-
-
     origin = SnapToGrid(origin, LEVEL_GRID);
     Rectangle ghostHitbox = SpriteHitboxFromEdge(&SPRITES->Block4Sides, origin);
     Level::Entity *collidedEntity = Level::CheckCollisionWithAnything(ghostHitbox);
@@ -175,7 +172,7 @@ void AcidBlock::CheckAndAdd(Vector2 origin, int interactionTags) {
 
     (void)interactionTags;
     
-    
+
     origin = SnapToGrid(origin, LEVEL_GRID);
 
     Rectangle hitbox = SpriteHitboxFromEdge(&SPRITES->Acid, origin);
