@@ -66,6 +66,9 @@ static void editorUseEraserInLevel(Vector2 pos) {
 
 static void editorUseEraser(Vector2 cursorPos, int interactionTags) {
 
+    (void)interactionTags;
+
+
     switch (GAME_STATE->mode) {
         
     case MODE_IN_LEVEL:
