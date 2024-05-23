@@ -30,9 +30,9 @@ public:
 
     void SetTileType(const std::string &tileTypeId);
 
-    void ToggleTileType();
+    void TileTypeNext();
 
-    void ToggleTileRotation();
+    void TileRotate();
 
     void Draw() override;
 

@@ -64,9 +64,9 @@ void Block::AddOrInteract(Vector2 origin, int interactionTags) {
             Block *existingBlock = (Block *) collidedEntity;
 
             if (interactionTags & EDITOR_INTERACTION_ALT)
-                existingBlock->ToggleTileType();
+                existingBlock->TileTypeNext();
             else
-                existingBlock->ToggleTileRotation();
+                existingBlock->TileRotate();
         }
 
     }
@@ -75,18 +75,28 @@ void Block::AddOrInteract(Vector2 origin, int interactionTags) {
     }
 }
 
-void Block::ToggleTileType() {
+void Block::TileTypeNext() {
 
-    // TODO get key from hashmap
-    if (sprite == &SPRITES->Block4Sides) SetTileType("1Side");
-    else if (sprite == &SPRITES->Block1Side) SetTileType("2SidesOpp");
-    else if (sprite == &SPRITES->Block2SidesOpp) SetTileType("2SidesAdj");
-    else if (sprite == &SPRITES->Block2SidesAdj) SetTileType("3Sides");
-    else if (sprite == &SPRITES->Block3Sides) SetTileType("4Sides");
-    else TraceLog(LOG_ERROR, "Block tried to toggle type, but sprite is unknown.");
+    for (auto it = tileSpriteMap.begin(); it != tileSpriteMap.end(); it++) {
+
+        if (tileTypeId == it->first) {
+
+            if (std::next(it) == tileSpriteMap.end()) { // last item
+                it = tileSpriteMap.begin();
+            } else {
+                it++;
+            }
+
+            SetTileType(it->first);
+            Render::PrintSysMessage(tileTypeId.c_str());
+            return;
+        }
+    }
+
+    TraceLog(LOG_ERROR, "Block tried to toggle type, but couldn't find sprite (tileTypeId=%s).", tileTypeId.c_str());
 }
 
-void Block::ToggleTileRotation() {
+void Block::TileRotate() {
     
     rotation += 90;
     if (rotation >= 360) rotation -= 360;
