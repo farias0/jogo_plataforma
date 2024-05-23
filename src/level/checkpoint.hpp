@@ -23,7 +23,7 @@ public:
 
     // Initializes and adds a checkpoint pickup to the level in the given origin,
     // if there are no other entities there already
-    static void CheckAndAdd(Vector2 pos);
+    static void CheckAndAdd(Vector2 pos, int interactionTags);
 
     void Tick();
 

@@ -9,6 +9,7 @@
 #include "enemy.hpp"
 #include "grappling_hook.hpp"
 #include "moving_platform.hpp"
+#include "block.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../editor.hpp"
@@ -149,6 +150,7 @@ static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
 void Initialize() {
 
     initializeState();
+    Block::InitializeTileMap();
     TraceLog(LOG_INFO, "Level system initialized.");
 }
 
@@ -261,7 +263,10 @@ Entity *ExitAdd(Vector2 pos) {
     return newExit;
 }
 
-void ExitCheckAndAdd(Vector2 pos) {
+void ExitCheckAndAdd(Vector2 pos, int interactionTags) {
+
+    if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
+    
     
     Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->LevelEndOrb, pos);
 

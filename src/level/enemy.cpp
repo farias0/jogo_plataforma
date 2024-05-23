@@ -37,7 +37,10 @@ Enemy *Enemy::Add(Vector2 origin) {
     return newEnemy;
 }
 
-void Enemy::CheckAndAdd(Vector2 origin) {    
+void Enemy::CheckAndAdd(Vector2 origin, int interactionTags) {
+
+    if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
+
 
     Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->Enemy, origin);
 

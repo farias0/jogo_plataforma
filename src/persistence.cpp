@@ -106,9 +106,9 @@ bool PersistenceLevelLoad(char *levelName) {
             else if (entityTag == ENEMY_PERSISTENCE_ID)
                 entity = Enemy::Add();
             else if (entityTag == BLOCK_PERSISTENCE_ID)
-                entity = BlockAdd();
+                entity = Block::Add();
             else if (entityTag == ACID_BLOCK_PERSISTENCE_ID)
-                entity = AcidAdd();
+                entity = AcidBlock::Add();
             else if (entityTag == EXIT_PERSISTENCE_ID)
                 entity = Level::ExitAdd();
             else if (entityTag == GLIDE_PICKUP_PERSISTENCE_ID)

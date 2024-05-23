@@ -237,13 +237,11 @@ skip_to_button_handler:
                 return;
             }
 
-            // so holding doesn't keep activating the item
-            if (EDITOR_STATE->toggledEntityButton->interactionType == EDITOR_INTERACTION_CLICK &&
-                !IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-                    return;
+            int tags = 0;
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) tags += EDITOR_INTERACTION_CLICK;
+            if (IsKeyDown(KEY_LEFT_ALT)) tags += EDITOR_INTERACTION_ALT;
 
-
-            EDITOR_STATE->toggledEntityButton->handler(mousePosInScene);
+            EDITOR_STATE->toggledEntityButton->handler(mousePosInScene, tags);
             return;
         }
     }

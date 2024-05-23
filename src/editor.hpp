@@ -62,17 +62,21 @@ typedef enum {
 } EditorEntityType;
 
 typedef enum {
-    EDITOR_INTERACTION_CLICK,
-    EDITOR_INTERACTION_HOLD
-} EditorInteractionType;
+
+    // If the interation was a click, meaning the button is not being held
+    EDITOR_INTERACTION_CLICK    = 1,
+
+    // If the 'alt' key is pressed, so it uses alternative functions
+    EDITOR_INTERACTION_ALT      = 2
+    
+} EditorInteractionTag;
 
 class EditorEntityButton : public LinkedList::Node {
 
 public:
     EditorEntityType type;
     Sprite *sprite;
-    void (*handler)(Vector2); // Receives the click scene pos
-    EditorInteractionType interactionType;
+    void (*handler)(Vector2, int); // Receives the click scene pos and the interaction tags
 
 };
 

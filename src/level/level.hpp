@@ -44,7 +44,8 @@ typedef enum {
     IS_MOVING_PLATFORM      = 4096,
     IS_ANCHOR               = 8192,
     IS_PERSISTABLE          = 16384,
-    IS_GRIDLOCKED           = 32768
+    IS_GRIDLOCKED           = 32768,
+    IS_TILE_BLOCK           = 32768 * 2,
 } EntityTag;
 
 
@@ -155,7 +156,7 @@ Entity *ExitAdd(Vector2 pos);
 
 // Initializes and adds an exit to the level in the given origin,
 // if there are no other entities there already
-void ExitCheckAndAdd(Vector2 pos);
+void ExitCheckAndAdd(Vector2 pos, int interactionTags);
 
 // The ground beneath the entity, or 0 if not on the ground.
 // Gives priority to the tile in the direction the player is looking at.

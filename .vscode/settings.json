@@ -72,6 +72,10 @@
         "xstddef": "cpp",
         "xtr1common": "cpp",
         "functional": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "map": "cpp",
+        "xtree": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
     }
 }

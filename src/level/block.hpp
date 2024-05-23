@@ -3,32 +3,72 @@
 
 
 #include <raylib.h>
+#include <map>
 
 #include "level.hpp"
+#include "../assets.hpp"
 
 #define BLOCK_PERSISTENCE_ID        "block"
 #define ACID_BLOCK_PERSISTENCE_ID   "acid_block"
 
 
-// Adds a block to the level
-Level::Entity *BlockAdd();
+class Block : public Level::Entity {
 
-// Adds a block to the level in the given position
-Level::Entity *BlockAdd(Vector2 origin);
+public:
 
-// Initializes and adds a block to the level in the given origin,
-// if there are no other blocks there already
-void BlockCheckAndAdd(Vector2 origin);
+    static void InitializeTileMap();
+    
+    // Adds a block to the level
+    static Block *Add();
 
-// Adds an acid block to the level
-Level::Entity *AcidAdd();
+    // Adds a block to the level in the given position
+    static Block *Add(Vector2 origin);
 
-// Adds an acid block to the level in the given position
-Level::Entity *AcidAdd(Vector2 origin);
+    // Initializes and adds a block to the level in the given origin,
+    // or interacts with an existing block if present in this position
+    static void AddOrInteract(Vector2 origin, int interactionTags);
 
-// Initializes and adds an acid block to the level in the given origin,
-// if there are no other blocks there already
-void AcidCheckAndAdd(Vector2 origin);
+    void SetTileType(const std::string &tileTypeId);
 
+    void TileTypeNext();
+
+    void TileRotate();
+
+    void Draw() override;
+
+    std::string PersistanceSerialize() override;
+    
+    void PersistenceParse(const std::string &data) override;
+    
+    std::string PersistanceEntityID() {
+        return BLOCK_PERSISTENCE_ID;
+    }
+    
+private:
+
+    // Defines the different block tile types and which sprite to use for each of them
+    static std::map<std::string, Sprite*> tileSpriteMap;
+
+    int rotation;
+
+    std::string tileTypeId;
+
+};
+
+class AcidBlock : public Level::Entity {
+
+public:
+    
+    // Adds an acid block to the level
+    static AcidBlock *Add();
+
+    // Adds an acid block to the level in the given position
+    static AcidBlock *Add(Vector2 origin);
+
+    // Initializes and adds an acid block to the level in the given origin,
+    // if there are no other blocks there already
+    static void CheckAndAdd(Vector2 origin, int interactionTags);
+
+};
 
 #endif // _BLOCK_H_INCLUDED_
