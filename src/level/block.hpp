@@ -3,8 +3,10 @@
 
 
 #include <raylib.h>
+#include <map>
 
 #include "level.hpp"
+#include "../assets.hpp"
 
 #define BLOCK_PERSISTENCE_ID        "block"
 #define ACID_BLOCK_PERSISTENCE_ID   "acid_block"
@@ -13,6 +15,8 @@
 class Block : public Level::Entity {
 
 public:
+
+    static void InitializeTileMap();
     
     // Adds a block to the level
     static Block *Add();
@@ -24,15 +28,30 @@ public:
     // or interacts with an existing block if present in this position
     static void AddOrInteract(Vector2 origin, int interactionTags);
 
+    void SetTileType(const std::string &tileTypeId);
+
     void ToggleTileType();
 
     void ToggleTileRotation();
 
     void Draw() override;
+
+    std::string PersistanceSerialize() override;
+    
+    void PersistenceParse(const std::string &data) override;
+    
+    std::string PersistanceEntityID() {
+        return BLOCK_PERSISTENCE_ID;
+    }
     
 private:
 
+    // Defines the different block tile types and which sprite to use for each of them
+    static std::map<std::string, Sprite*> tileSpriteMap;
+
     int rotation;
+
+    std::string tileTypeId;
 
 };
 

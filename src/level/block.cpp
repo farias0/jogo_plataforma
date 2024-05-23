@@ -1,10 +1,26 @@
 #include <raylib.h>
+#include <map>
+#include <stdexcept>
 
 #include "block.hpp"
 #include "level.hpp"
 #include "../input.hpp"
 #include "../camera.hpp"
 
+#define DEFAULT_TILE_TYPE "4Sides"
+
+
+std::map<std::string, Sprite*> Block::tileSpriteMap;
+
+void Block::InitializeTileMap() {
+    tileSpriteMap = {
+        { "4Sides", &SPRITES->Block4Sides },
+        { "1Side", &SPRITES->Block1Side },
+        { "2SidesOpp", &SPRITES->Block2SidesOpp },
+        { "2SidesAdj", &SPRITES->Block2SidesAdj },
+        { "3Sides", &SPRITES->Block3Sides },
+    };
+}
 
 Block *Block::Add() {
     return Add({ 0,0 });
@@ -21,10 +37,9 @@ Block *Block::Add(Vector2 origin) {
                             Level::IS_GRIDLOCKED +
                             Level::IS_TILE_BLOCK;
     newBlock->origin = origin;
-    newBlock->sprite = &SPRITES->Block4Sides;
+    newBlock->SetTileType(DEFAULT_TILE_TYPE);
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
 
-    newBlock->persistanceEntityID = BLOCK_PERSISTENCE_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, newBlock);
 
@@ -62,11 +77,12 @@ void Block::AddOrInteract(Vector2 origin, int interactionTags) {
 
 void Block::ToggleTileType() {
 
-    if (sprite == &SPRITES->Block4Sides) sprite = &SPRITES->Block1Side;
-    else if (sprite == &SPRITES->Block1Side) sprite = &SPRITES->Block2SidesOpp;
-    else if (sprite == &SPRITES->Block2SidesOpp) sprite = &SPRITES->Block2SidesAdj;
-    else if (sprite == &SPRITES->Block2SidesAdj) sprite = &SPRITES->Block3Sides;
-    else if (sprite == &SPRITES->Block3Sides) sprite = &SPRITES->Block4Sides;
+    // TODO get key from hashmap
+    if (sprite == &SPRITES->Block4Sides) SetTileType("1Side");
+    else if (sprite == &SPRITES->Block1Side) SetTileType("2SidesOpp");
+    else if (sprite == &SPRITES->Block2SidesOpp) SetTileType("2SidesAdj");
+    else if (sprite == &SPRITES->Block2SidesAdj) SetTileType("3Sides");
+    else if (sprite == &SPRITES->Block3Sides) SetTileType("4Sides");
     else TraceLog(LOG_ERROR, "Block tried to toggle type, but sprite is unknown.");
 }
 
@@ -83,6 +99,34 @@ void Block::Draw() {
                                         hitbox.y });
 
     Render::DrawTexture(sprite, { pos.x, pos.y }, WHITE, rotation, false);
+}
+
+std::string Block::PersistanceSerialize() {
+
+    std::string data = Level::Entity::PersistanceSerialize();
+    persistanceAddValue(&data, "rotation", std::to_string(rotation));
+    persistanceAddValue(&data, "tileType", tileTypeId);
+    return data;
+}
+
+void Block::PersistenceParse(const std::string &data) {
+
+    Level::Entity::PersistenceParse(data);
+    rotation = std::stoi(persistenceReadValue(data, "rotation"));
+    SetTileType(persistenceReadValue(data, "tileType"));
+}
+
+void Block::SetTileType(const std::string &id) {
+
+    tileTypeId = id;
+
+    try {
+        sprite = tileSpriteMap.at(id);
+    }
+    catch (const std::out_of_range &ex) {
+        TraceLog(LOG_ERROR, "Block couldn't set tile type '%s'.", id.c_str());
+        sprite = tileSpriteMap.at(DEFAULT_TILE_TYPE);
+    }
 }
 
 //
