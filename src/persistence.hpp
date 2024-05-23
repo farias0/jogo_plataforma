@@ -52,8 +52,11 @@ public:
 		@return The value corresponding to the field
 	*/
 	virtual std::string persistenceReadValue(const std::string &line, const std::string &field) final {
-		std::string f = field + "=";
-		return line.substr(line.find(f) + f.length(), line.find(";"));
+		std::string label = field + "=";
+		size_t labelStart = line.find(label);
+		size_t valueStart = labelStart + label.length();
+		size_t valueEnd = line.find(";", valueStart); 
+		return line.substr(valueStart, valueEnd - valueStart);
 	}
 };
 
