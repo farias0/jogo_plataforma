@@ -33,7 +33,7 @@ public:
     void TileTypeNext();
 
     // Identifies and set to the correct tile type based on the surrounding blocks
-    void TileTypeAutoAdjust();
+    void TileAutoAdjust();
 
     void TileRotate();
 

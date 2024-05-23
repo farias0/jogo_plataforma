@@ -63,8 +63,7 @@ void Block::AddOrInteract(Vector2 origin, int interactionTags) {
             Block *existingBlock = (Block *) collidedEntity;
 
             if (interactionTags & EDITOR_INTERACTION_ALT)
-                //existingBlock->TileTypeNext();
-                existingBlock->TileTypeAutoAdjust();
+                existingBlock->TileTypeNext();
             else
                 existingBlock->TileRotate();
         }
@@ -96,7 +95,7 @@ void Block::TileTypeNext() {
     TraceLog(LOG_ERROR, "Block tried to toggle type, but couldn't find sprite (tileTypeId=%s).", tileTypeId.c_str());
 }
 
-void Block::TileTypeAutoAdjust() {
+void Block::TileAutoAdjust() {
 
     // If there is an adjacent block in this direction
     bool toLeft = false, toRight = false, toUp = false, toDown = false;

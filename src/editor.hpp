@@ -83,7 +83,8 @@ public:
 
 typedef enum { 
     EDITOR_CONTROL_SAVE,
-    EDITOR_CONTROL_NEW_LEVEL
+    EDITOR_CONTROL_NEW_LEVEL,
+    EDITOR_CONTROL_AUTO_TILE,
 } EditorControlType;
 
 class EditorControlButton : public LinkedList::Node {
