@@ -37,7 +37,7 @@ Block *Block::Add(Vector2 origin) {
                             Level::IS_GRIDLOCKED +
                             Level::IS_TILE_BLOCK;
     newBlock->origin = origin;
-    newBlock->SetTileType(DEFAULT_TILE_TYPE);
+    newBlock->TileTypeSet(DEFAULT_TILE_TYPE);
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
 
 
@@ -63,7 +63,8 @@ void Block::AddOrInteract(Vector2 origin, int interactionTags) {
             Block *existingBlock = (Block *) collidedEntity;
 
             if (interactionTags & EDITOR_INTERACTION_ALT)
-                existingBlock->TileTypeNext();
+                //existingBlock->TileTypeNext();
+                existingBlock->TileTypeAutoAdjust();
             else
                 existingBlock->TileRotate();
         }
@@ -86,13 +87,82 @@ void Block::TileTypeNext() {
                 it++;
             }
 
-            SetTileType(it->first);
+            TileTypeSet(it->first);
             Render::PrintSysMessage(tileTypeId.c_str());
             return;
         }
     }
 
     TraceLog(LOG_ERROR, "Block tried to toggle type, but couldn't find sprite (tileTypeId=%s).", tileTypeId.c_str());
+}
+
+void Block::TileTypeAutoAdjust() {
+
+    // If there is an adjacent block in this direction
+    bool toLeft = false, toRight = false, toUp = false, toDown = false;
+
+    Vector2 probeLeft, probeRight, probeUp, probeDown;
+
+    // Probes are in the middle of each adjacent block
+    probeLeft = { hitbox.x - (hitbox.width / 2), hitbox.y + (hitbox.height / 2) };
+    probeRight = { hitbox.x + hitbox.width + (hitbox.width / 2), hitbox.y + (hitbox.height / 2) };
+    probeUp = { hitbox.x + (hitbox.width / 2), hitbox.y - (hitbox.height / 2) };
+    probeDown = { hitbox.x + (hitbox.width / 2), hitbox.y + hitbox.height + (hitbox.height / 2) };
+
+    
+    auto eLeft = Level::CheckCollisionWithAnyEntity(probeLeft);
+    toLeft = eLeft && eLeft->tags & Level::IS_TILE_BLOCK;
+
+    auto eRight = Level::CheckCollisionWithAnyEntity(probeRight);
+    toRight = eRight && eRight->tags & Level::IS_TILE_BLOCK;
+
+    auto eUp = Level::CheckCollisionWithAnyEntity(probeUp);
+    toUp = eUp && eUp->tags & Level::IS_TILE_BLOCK;
+
+    auto eDown = Level::CheckCollisionWithAnyEntity(probeDown);
+    toDown = eDown && eDown->tags & Level::IS_TILE_BLOCK;
+
+
+    int sum = toLeft + toRight + toUp + toDown;
+
+    switch (sum) {
+    case 0:
+        TileTypeSet("4Sides");
+        rotation = 0;
+        break;
+    case 1:
+        TileTypeSet("3Sides");
+        if (toLeft) rotation = 0;
+        else if (toUp) rotation = 90;
+        else if (toRight) rotation = 180;
+        else rotation = 270;
+        break;
+    case 2:
+        if ((toUp && toDown) || (toLeft && toRight)) {
+            TileTypeSet("2SidesOpp");
+            if (toRight) rotation = 0;
+            else rotation = 90;
+        }
+        else {
+            TileTypeSet("2SidesAdj");
+            if (toDown && toLeft) rotation = 0;
+            else if (toLeft && toUp) rotation = 90;
+            else if (toUp && toRight) rotation = 180;
+            else rotation = 270;
+        }
+        break;
+    case 3:
+        TileTypeSet("1Side");
+        if (toRight && toDown && toLeft) rotation = 0;
+        else if (toDown && toLeft && toUp) rotation = 90;
+        else if (toLeft && toUp && toRight) rotation = 180;
+        else rotation = 270;
+        break;
+    case 4:
+        TileTypeSet("1Side"); // with a bottom line when surrounded by blocks
+        rotation = 180;
+        break;
+    }
 }
 
 void Block::TileRotate() {
@@ -122,10 +192,10 @@ void Block::PersistenceParse(const std::string &data) {
 
     Level::Entity::PersistenceParse(data);
     rotation = std::stoi(persistenceReadValue(data, "rotation"));
-    SetTileType(persistenceReadValue(data, "tileType"));
+    TileTypeSet(persistenceReadValue(data, "tileType"));
 }
 
-void Block::SetTileType(const std::string &id) {
+void Block::TileTypeSet(const std::string &id) {
 
     tileTypeId = id;
 

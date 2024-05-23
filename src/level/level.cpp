@@ -406,6 +406,11 @@ void Tick() {
     CameraTick();
 }
 
+Level::Entity *CheckCollisionWithAnyEntity(Vector2 point) {
+
+    return CheckCollisionWithAnyEntity({ point.x, point.y, 1, 1 });
+}
+
 Level::Entity *CheckCollisionWithAnyEntity(Rectangle hitbox) {
 
     Entity *entity = (Entity *) STATE->listHead;
