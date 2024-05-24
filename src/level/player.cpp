@@ -124,7 +124,7 @@ Player *Player::Initialize(Vector2 origin) {
     newPlayer->lastPressedJump = -1;
     newPlayer->lastGroundBeneathTime = -1;
 
-    newPlayer->jumpGlowCountdown = -1;
+    newPlayer->jumpGlowAnimationCountdown = -1;
 
     newPlayer->initializeAnimationSystem();
 
@@ -581,10 +581,10 @@ next_entity:
     }
     textboxCollidedLastFrame = textboxCollidedThisFrame;
 
-    if (jumpGlowCountdown != -1) {
-        jumpGlowCountdown--;
-        if (jumpGlowCountdown <= 0) {
-            jumpGlowCountdown = -1;
+    if (jumpGlowAnimationCountdown != -1) {
+        jumpGlowAnimationCountdown--;
+        if (jumpGlowAnimationCountdown <= 0) {
+            jumpGlowAnimationCountdown = -1;
         }
     }
 
@@ -597,7 +597,7 @@ void Player::Draw() {
 
     Entity::Draw();
 
-    if (jumpGlowCountdown != -1) {
+    if (jumpGlowAnimationCountdown != -1) {
         drawJumpGlow(jumpGlowStrength);
     };
 }
@@ -647,7 +647,7 @@ void Player::Continue() {
     xVelocity = 0;
     lastPressedJump = -1;
     lastGroundBeneathTime = -1;
-    jumpGlowCountdown = -1;
+    jumpGlowAnimationCountdown = -1;
     lastGroundBeneath = nullptr;
     textboxCollidedLastFrame = nullptr;
 
@@ -699,7 +699,7 @@ void Player::jump() {
     yVelocity = jumpStartVelocity();
     yVelocityTarget = 0.0f;
     wasRunningOnJumpStart = Input::STATE.isHoldingRun;
-    jumpGlowCountdown = ANIMATION_DURATION_JUMP_GLOW;
+    jumpGlowAnimationCountdown = ANIMATION_DURATION_JUMP_GLOW;
     if (GetTime() - lastLandedOnGroundTime < JUMP_GLOW_MAX_TIME_GAP || (!groundBeneath) || (groundBeneath->tags & Level::IS_ENEMY)) {
         if (jumpGlowStrength < 3) jumpGlowStrength++;
     }
@@ -847,19 +847,16 @@ void Player::drawJumpGlow(int strenght) {
 
     switch (strenght) {
     case 0:
+        return;
+    case 1:
         color.r = 0;
         color.g = 0;
         color.b = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
         break;
-    case 1:
+    case 2:
         color.r = 0x11 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
         color.g = 0x11 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
         color.b = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
-        break;
-    case 2:
-        color.r = 0x11 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
-        color.g = 0x55 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
-        color.b = 0x44 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
         break;
     case 3:
         color.r = 0;
@@ -876,23 +873,25 @@ void Player::drawJumpGlow(int strenght) {
     static const int shortLength = 26;
     static const float yOffset = 5;
 
+    float elapsed = (-1 + ((float) jumpGlowAnimationCountdown / (float) ANIMATION_DURATION_JUMP_GLOW)) * - 1; // from 0 to 1
+
     Vector2 middlePoint = { hitbox.x + (hitbox.width/2),
                             hitbox.y + hitbox.height + yOffset };
 
     Vector2 longStart = PosInSceneToScreen({
-        middlePoint.x - (longLength/2), middlePoint.y
+        middlePoint.x - (longLength*elapsed/2), middlePoint.y
     });
 
     Vector2 longEnd = PosInSceneToScreen({
-        middlePoint.x + (longLength/2), middlePoint.y
+        middlePoint.x + (longLength*elapsed/2), middlePoint.y
     });
 
     Vector2 shortStart = PosInSceneToScreen({
-        middlePoint.x - (shortLength/2), middlePoint.y
+        middlePoint.x - (shortLength*elapsed/2), middlePoint.y
     });
 
     Vector2 shortEnd = PosInSceneToScreen({
-        middlePoint.x + (shortLength/2), middlePoint.y
+        middlePoint.x + (shortLength*elapsed/2), middlePoint.y
     });
 
     middlePoint = PosInSceneToScreen(middlePoint);
@@ -900,5 +899,5 @@ void Player::drawJumpGlow(int strenght) {
 
     DrawLine(longStart.x, longStart.y, longEnd.x, longEnd.y, color);
     DrawLineEx(shortStart, shortEnd, 2, color);
-    DrawCircle(middlePoint.x, middlePoint.y, 2, color);
+    DrawCircle(middlePoint.x, middlePoint.y, 3 * elapsed, color);
 }
