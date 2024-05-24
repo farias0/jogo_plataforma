@@ -4,18 +4,44 @@
 120 - Aperte (botão Y/tecla 'c') para colocar
      uma checkpoint.
 
+
 130 - Esse lugar me causa estranheza...
-132 - Quando eu era criança eu costumava pular toda hora e pra todo canto:
-               Na amarelinha.
-                    O portão da escola.
-                         Do telhado de casa, achando que eu iria voar.
 -
 -
-     Eu nem lembrava mais a última vez que eu tinha pulado.
-     E isso não é nada: Duas noites atrás eu acordei mancando, com o joelho direito doendo
-          toda vez que eu pisava. Eu nem sei o que aconteceu. Eu me machuquei dormindo?
-134 - Mas aqui, quando eu pulo,
-          é a mesma sensação que eu tinha antes. O mesmo frio na barriga.
+-
+     Desde que eu cheguei aqui eu tenho tido que me acostumar
+     com uma leve vertigem. Ela é nova, mas também é familiar.
+     E, ao contrário das outras vertigens que vêm da cabeça, essa
+     vem do estômago. Da parte bem de baixo do estômago. Quase das pernas.
+
+132 - Quando você é criança, você vive pulando.
+-
+     Cada móvel da casa é uma plataforma, desde que grande o suficiente para sustentar
+          alguém do seu tamnho, e alta o suficiente para te protejer da lava.
+-
+     E assim, com o seu corpo de jovem primata honrando os movimentos
+          para os quais ele foi feito, você navega da cozinha até a
+          área da frente, saltando entre porto-seguros de estofado e MDF.
+-
+     Se você errar o salto, é só subir de volta e continuar. A lava não é real,
+          e isso nos permite pular de novo, e de novo.
+-
+-
+-
+     Agora, antes de chegar aqui, eu nem lembrava mais a última vez que eu tinha pulado.
+-
+     Inclusive duas noites atrás eu acordei mancando, com o joelho direito doendo
+          toda vez que eu pisava. E eu nem sei o que aconteceu. Eu me machuquei dormindo?
+
+134 -     Aqui,
+     quando eu pulo,
+     é a mesma sensação que eu tinha antes.
+-
+-
+     O mesmo frio na barriga.
+-
+-
+     Eu até tinha esquecido do joelho.
 
 
 
