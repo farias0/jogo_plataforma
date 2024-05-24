@@ -80,6 +80,8 @@
 #define ANIMATION_WALKING_XVELOCITY_MIN     0.5
 #define ANIMATION_RUNNING_XVELOCITY_MIN     6.5
 
+// How long the jump glow countdown lasts
+#define JUMP_GLOW_COUNTDOWN                 80      // in frames
 #define ANIMATION_DURATION_JUMP_GLOW        20      // in frames
 
 
@@ -581,6 +583,7 @@ next_entity:
     if (jumpGlowCountdown != -1) {
         jumpGlowCountdown--;
         if (jumpGlowCountdown <= 0) {
+            Render::PrintSysMessage("Resetting jump glow");
             jumpGlowCountdown = -1;
             jumpGlowStrength = -1;
         }
@@ -594,7 +597,7 @@ void Player::Draw() {
 
     Entity::Draw();
 
-    if (jumpGlowCountdown != -1) {
+    if (jumpGlowCountdown != -1 && jumpGlowCountdown <= JUMP_GLOW_COUNTDOWN - ANIMATION_DURATION_JUMP_GLOW) {
         drawJumpGlow(jumpGlowStrength);
     };
 }
@@ -696,8 +699,8 @@ void Player::jump() {
     yVelocity = jumpStartVelocity();
     yVelocityTarget = 0.0f;
     wasRunningOnJumpStart = Input::STATE.isHoldingRun;
-    jumpGlowCountdown = ANIMATION_DURATION_JUMP_GLOW;
-    jumpGlowStrength = 0;
+    jumpGlowCountdown = JUMP_GLOW_COUNTDOWN;
+    if (jumpGlowStrength < 3) jumpGlowStrength++;
     Sounds::Play(SOUNDS->Jump);
 }
 
