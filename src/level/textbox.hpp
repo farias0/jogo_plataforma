@@ -5,12 +5,13 @@
 
 #include "level.hpp"
 #include "../text_bank.hpp"
+#include "../animation.hpp"
 
 
 #define TEXTBOX_BUTTON_PERSISTENCE_ID       "textbox_button"
 
 
-class Textbox : public Level::Entity {
+class Textbox : public Level::Entity, private Animation::IAnimated {
 
 public:
 
@@ -46,6 +47,8 @@ public:
 
     std::string GetEntityDebugString() override;
 
+    void Tick() override;
+
     void Draw() override;
 
     void PersistenceParse(const std::string &data) override;
@@ -57,8 +60,17 @@ public:
 
 private:
 
+    static Animation::Animation animationOff;
+    static Animation::Animation animationOffDev;
+    static Animation::Animation animationPlaying;
+
+
     static void createFromIdInput(Vector2 pos, std::string input);
 
     // Sets the correct sprite to a textbox accordingly to its type 
     void updateSprite();
+
+    void createAnimations();
+    
+    Animation::Animation *getCurrentAnimation();
 };

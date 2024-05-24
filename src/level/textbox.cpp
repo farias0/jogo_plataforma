@@ -11,6 +11,13 @@
 
 #define TEXT_NOT_FOUND_CONTENT      "ERRO: Texto não encontrado!"
 
+#define ANIMATION_DURATION_PLAYING  12
+
+
+Animation::Animation Textbox::animationOff;
+Animation::Animation Textbox::animationOffDev;
+Animation::Animation Textbox::animationPlaying;
+
 
 Textbox *Textbox::TextboxDisplaying = 0;
 
@@ -38,6 +45,8 @@ Textbox *Textbox::Add(Vector2 pos, int textId) {
     newTextbox->isFacingRight = true;
     newTextbox->isDevTextbox = false;
     newTextbox->SetTextId(textId);
+
+    newTextbox->initializeAnimationSystem();
 
     LinkedList::AddNode(&Level::STATE->listHead, newTextbox);
 
@@ -116,6 +125,11 @@ std::string Textbox::GetEntityDebugString() {
             "\ntextId=" + std::to_string(textId);
 }
 
+void Textbox::Tick() {
+
+    sprite = animationTick();
+}
+
 void Textbox::Draw() {
         
     if (isDevTextbox && !IsDevTextboxEnabled() && !EDITOR_STATE->isEnabled)
@@ -165,4 +179,24 @@ void Textbox::PersistenceParse(const std::string &data) {
     isDevTextbox = (bool) std::stoi(persistenceReadValue(data, "isDevTextbox"));
 
     updateSprite();
+}
+
+void Textbox::createAnimations() {
+
+    animationOff.AddFrame(&SPRITES->TextboxButton, 1);
+
+    animationOffDev.AddFrame(&SPRITES->TextboxDevButton, 1);
+
+    animationPlaying.AddFrame(&SPRITES->TextboxButton, ANIMATION_DURATION_PLAYING);
+    animationPlaying.AddFrame(&SPRITES->TextboxButtonPlaying, ANIMATION_DURATION_PLAYING);
+}
+    
+Animation::Animation *Textbox::getCurrentAnimation() {
+
+    if (TextboxDisplaying == this) 
+                                return &animationPlaying;
+    else {
+        if (isDevTextbox)       return &animationOffDev;
+        else                    return &animationOff;
+    }
 }

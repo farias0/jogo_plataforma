@@ -93,6 +93,7 @@ static void loadAssets() {
     sp->GlideItem = normalSizeSprite("../assets/glide_item.png");
     sp->TextboxButton = normalSizeSprite("../assets/textbox_button.png");
     sp->TextboxDevButton = normalSizeSprite("../assets/textbox_dev_button.png");
+    sp->TextboxButtonPlaying = normalSizeSprite("../assets/textbox_button_playing.png");
 
     // Overworld
     sp->OverworldCursor = doubleSizeSprite("../assets/cursor_default_1.png");

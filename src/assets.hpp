@@ -51,6 +51,7 @@ struct SpriteBank {
     Sprite GlideItem;
     Sprite TextboxButton;
     Sprite TextboxDevButton;
+    Sprite TextboxButtonPlaying;
 
     // Overworld
     Sprite OverworldCursor;
