@@ -56,7 +56,7 @@ public:
     // Controls textbox toggling
     Textbox *textboxCollidedLastFrame;
 
-    float jumpGlowCountdown;
+    int jumpGlowCountdown;
     int jumpGlowStrength;
 
     // Initializes and adds the player to the level

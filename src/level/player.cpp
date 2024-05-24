@@ -82,7 +82,7 @@
 
 // How long the jump glow countdown lasts
 #define JUMP_GLOW_COUNTDOWN                 80      // in frames
-#define ANIMATION_DURATION_JUMP_GLOW        20      // in frames
+#define ANIMATION_DURATION_JUMP_GLOW        12      // in frames
 
 
 Player *PLAYER = 0;
@@ -597,7 +597,8 @@ void Player::Draw() {
 
     Entity::Draw();
 
-    if (jumpGlowCountdown != -1 && jumpGlowCountdown <= JUMP_GLOW_COUNTDOWN - ANIMATION_DURATION_JUMP_GLOW) {
+    if (jumpGlowCountdown != -1 && (jumpGlowCountdown > JUMP_GLOW_COUNTDOWN - ANIMATION_DURATION_JUMP_GLOW)) {
+
         drawJumpGlow(jumpGlowStrength);
     };
 }
@@ -858,9 +859,9 @@ void Player::drawJumpGlow(int strenght) {
         color.b = 0x44 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
         break;
     case 3:
-        color.r = ((float)0xFF * ((float)rand()/(float)RAND_MAX));
-        color.g = ((float)0xFF * ((float)rand()/(float)RAND_MAX));
-        color.b = ((float)0xFF * ((float)rand()/(float)RAND_MAX));
+        color.r = 0;
+        color.g = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.b = 0;
         break;
     default:
         TraceLog(LOG_ERROR, "Could not draw jump glow, strength:%d.", strenght);
