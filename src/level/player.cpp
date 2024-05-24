@@ -80,8 +80,9 @@
 #define ANIMATION_WALKING_XVELOCITY_MIN     0.5
 #define ANIMATION_RUNNING_XVELOCITY_MIN     6.5
 
+// How long after landing on ground can jump again to continue streak
+#define JUMP_GLOW_MAX_TIME_GAP              0.20    // in seconds
 // How long the jump glow countdown lasts
-#define JUMP_GLOW_COUNTDOWN                 80      // in frames
 #define ANIMATION_DURATION_JUMP_GLOW        12      // in frames
 
 
@@ -320,6 +321,7 @@ void Player::Tick() {
 
 
     groundBeneath = Level::GetGroundBeneath(PLAYER);
+    if (groundBeneath && !groundBeneathLastFrame) lastLandedOnGroundTime = GetTime();
 
 
     { // Horizontal velocity calculation
@@ -579,16 +581,14 @@ next_entity:
     }
     textboxCollidedLastFrame = textboxCollidedThisFrame;
 
-
     if (jumpGlowCountdown != -1) {
         jumpGlowCountdown--;
         if (jumpGlowCountdown <= 0) {
-            Render::PrintSysMessage("Resetting jump glow");
             jumpGlowCountdown = -1;
-            jumpGlowStrength = -1;
         }
     }
 
+    groundBeneathLastFrame = groundBeneath;
 
     sprite = animationTick();
 }
@@ -597,8 +597,7 @@ void Player::Draw() {
 
     Entity::Draw();
 
-    if (jumpGlowCountdown != -1 && (jumpGlowCountdown > JUMP_GLOW_COUNTDOWN - ANIMATION_DURATION_JUMP_GLOW)) {
-
+    if (jumpGlowCountdown != -1) {
         drawJumpGlow(jumpGlowStrength);
     };
 }
@@ -700,8 +699,12 @@ void Player::jump() {
     yVelocity = jumpStartVelocity();
     yVelocityTarget = 0.0f;
     wasRunningOnJumpStart = Input::STATE.isHoldingRun;
-    jumpGlowCountdown = JUMP_GLOW_COUNTDOWN;
-    if (jumpGlowStrength < 3) jumpGlowStrength++;
+    jumpGlowCountdown = ANIMATION_DURATION_JUMP_GLOW;
+    if (GetTime() - lastLandedOnGroundTime < JUMP_GLOW_MAX_TIME_GAP || (!groundBeneath) || (groundBeneath->tags & Level::IS_ENEMY)) {
+        if (jumpGlowStrength < 3) jumpGlowStrength++;
+    }
+    else
+        jumpGlowStrength = 0;
     Sounds::Play(SOUNDS->Jump);
 }
 
@@ -871,10 +874,10 @@ void Player::drawJumpGlow(int strenght) {
 
     static const int longLength = 34;
     static const int shortLength = 26;
-
+    static const float yOffset = 5;
 
     Vector2 middlePoint = { hitbox.x + (hitbox.width/2),
-                            hitbox.y + hitbox.height };
+                            hitbox.y + hitbox.height + yOffset };
 
     Vector2 longStart = PosInSceneToScreen({
         middlePoint.x - (longLength/2), middlePoint.y

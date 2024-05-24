@@ -23,6 +23,7 @@ class Player : public Level::Entity, private Animation::IAnimated {
 public:
     // The ground beneath the player, updated every frame, or 0 if there's no ground beneath
     Level::Entity *groundBeneath;
+    Level::Entity *groundBeneathLastFrame;
 
     // TODO maybe add multiple hitboxes support for every entity
     Rectangle upperbody, lowerbody;
@@ -45,6 +46,7 @@ public:
     // for jump buffers
     double lastPressedJump;
     double lastGroundBeneathTime;
+    double lastLandedOnGroundTime;
     Level::Entity *lastGroundBeneath;
 
     // A reference to the launched grappling hook, if there's one  
