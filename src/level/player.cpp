@@ -81,7 +81,7 @@
 #define ANIMATION_RUNNING_XVELOCITY_MIN     6.5
 
 // How long after landing on ground can jump again to continue streak
-#define JUMP_GLOW_MAX_TIME_GAP              0.20    // in seconds
+#define JUMP_GLOW_MAX_TIME_GAP              0.10    // in seconds
 // How long the jump glow countdown lasts
 #define ANIMATION_DURATION_JUMP_GLOW        12      // in frames
 
@@ -854,9 +854,9 @@ void Player::drawJumpGlow(int strenght) {
         color.b = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
         break;
     case 2:
-        color.r = 0x11 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
-        color.g = 0x11 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
-        color.b = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.r = 0;
+        color.g = 0x66 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.b = 0xCC + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
         break;
     case 3:
         color.r = 0;
