@@ -56,6 +56,9 @@ public:
     // Controls textbox toggling
     Textbox *textboxCollidedLastFrame;
 
+    float jumpGlowCountdown;
+    int jumpGlowStrength;
+
     // Initializes and adds the player to the level
     static Player *Initialize();
 

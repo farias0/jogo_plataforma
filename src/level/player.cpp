@@ -80,6 +80,8 @@
 #define ANIMATION_WALKING_XVELOCITY_MIN     0.5
 #define ANIMATION_RUNNING_XVELOCITY_MIN     6.5
 
+#define ANIMATION_DURATION_JUMP_GLOW        20      // in frames
+
 
 Player *PLAYER = 0;
 
@@ -118,6 +120,8 @@ Player *Player::Initialize(Vector2 origin) {
     newPlayer->mode = PLAYER_MODE_DEFAULT;
     newPlayer->lastPressedJump = -1;
     newPlayer->lastGroundBeneathTime = -1;
+
+    newPlayer->jumpGlowCountdown = -1;
 
     newPlayer->initializeAnimationSystem();
 
@@ -574,6 +578,15 @@ next_entity:
     textboxCollidedLastFrame = textboxCollidedThisFrame;
 
 
+    if (jumpGlowCountdown != -1) {
+        jumpGlowCountdown--;
+        if (jumpGlowCountdown <= 0) {
+            jumpGlowCountdown = -1;
+            jumpGlowStrength = -1;
+        }
+    }
+
+
     sprite = animationTick();
 }
 
@@ -581,8 +594,8 @@ void Player::Draw() {
 
     Entity::Draw();
 
-    if (true) {
-        drawJumpGlow(2);
+    if (jumpGlowCountdown != -1) {
+        drawJumpGlow(jumpGlowStrength);
     };
 }
 
@@ -631,6 +644,7 @@ void Player::Continue() {
     xVelocity = 0;
     lastPressedJump = -1;
     lastGroundBeneathTime = -1;
+    jumpGlowCountdown = -1;
     lastGroundBeneath = nullptr;
     textboxCollidedLastFrame = nullptr;
 
@@ -682,6 +696,8 @@ void Player::jump() {
     yVelocity = jumpStartVelocity();
     yVelocityTarget = 0.0f;
     wasRunningOnJumpStart = Input::STATE.isHoldingRun;
+    jumpGlowCountdown = ANIMATION_DURATION_JUMP_GLOW;
+    jumpGlowStrength = 0;
     Sounds::Play(SOUNDS->Jump);
 }
 
