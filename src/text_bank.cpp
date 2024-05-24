@@ -24,6 +24,7 @@ void parseFileDataIntoBank(TextBankMap *bank, std::string fileData) {
     for (std::string line; std::getline(stream, line); ) {
 
         if (line.empty()) {
+            // finish current entry
             currentId = -1; 
             continue;
         }
@@ -32,13 +33,20 @@ void parseFileDataIntoBank(TextBankMap *bank, std::string fileData) {
         std::string text;
 
         if (delimiterIdx == std::string::npos) {
+
             if (currentId == -1) {
+                // outisde of an entry, with text, not starting a new entry
                 goto invalid_line;
-            } else {
+            }
+            else {
+                // append to existing entry
+                if (line == "-") line = "";
                 (*bank)[currentId] += "\n" + line;
                 continue;
             }
         }
+
+        // start a new entry
 
         try {
             currentId = std::stoi(line.substr(0, delimiterIdx));
