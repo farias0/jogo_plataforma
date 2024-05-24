@@ -577,6 +577,15 @@ next_entity:
     sprite = animationTick();
 }
 
+void Player::Draw() {
+
+    Entity::Draw();
+
+    if (true) {
+        drawJumpGlow(2);
+    };
+}
+
 void Player::Continue() {
 
     Level::STATE->isPaused = false;
@@ -807,4 +816,66 @@ void Player::PersistenceParse(const std::string &data) {
 
     Level::Entity::PersistenceParse(data);
     SetHitboxPos(origin);
+}
+
+void Player::drawJumpGlow(int strenght) {
+
+    Color color = RAYWHITE;
+
+    switch (strenght) {
+    case 0:
+        color.r = 0;
+        color.g = 0;
+        color.b = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        break;
+    case 1:
+        color.r = 0x11 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.g = 0x11 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.b = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        break;
+    case 2:
+        color.r = 0x11 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.g = 0x55 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.b = 0x44 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        break;
+    case 3:
+        color.r = ((float)0xFF * ((float)rand()/(float)RAND_MAX));
+        color.g = ((float)0xFF * ((float)rand()/(float)RAND_MAX));
+        color.b = ((float)0xFF * ((float)rand()/(float)RAND_MAX));
+        break;
+    default:
+        TraceLog(LOG_ERROR, "Could not draw jump glow, strength:%d.", strenght);
+        color = PURPLE;
+        return;
+    }
+
+    static const int longLength = 34;
+    static const int shortLength = 26;
+
+
+    Vector2 middlePoint = { hitbox.x + (hitbox.width/2),
+                            hitbox.y + hitbox.height };
+
+    Vector2 longStart = PosInSceneToScreen({
+        middlePoint.x - (longLength/2), middlePoint.y
+    });
+
+    Vector2 longEnd = PosInSceneToScreen({
+        middlePoint.x + (longLength/2), middlePoint.y
+    });
+
+    Vector2 shortStart = PosInSceneToScreen({
+        middlePoint.x - (shortLength/2), middlePoint.y
+    });
+
+    Vector2 shortEnd = PosInSceneToScreen({
+        middlePoint.x + (shortLength/2), middlePoint.y
+    });
+
+    middlePoint = PosInSceneToScreen(middlePoint);
+
+
+    DrawLine(longStart.x, longStart.y, longEnd.x, longEnd.y, color);
+    DrawLineEx(shortStart, shortEnd, 2, color);
+    DrawCircle(middlePoint.x, middlePoint.y, 2, color);
 }

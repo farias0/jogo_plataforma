@@ -79,6 +79,8 @@ public:
 
     void Tick();
 
+    void Draw() override;
+
     // Continues the game after dying.
     void Continue();
 
@@ -119,6 +121,9 @@ private:
     float jumpBufferBackwardsSize();
 
     void createAnimations();
+
+    // Draws glow effect on the player's feet when jumping
+    void drawJumpGlow(int strenght);
     
     Animation::Animation *getCurrentAnimation();
 

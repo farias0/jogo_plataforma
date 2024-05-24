@@ -4,7 +4,6 @@
 #include <cmath>
 #include <algorithm>
 #include <stdlib.h>
-#include <time.h>
 
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #include "raymath.h"
@@ -45,8 +44,6 @@ GrapplingHook *GrapplingHook::Initialize() {
     LinkedList::AddNode(&Level::STATE->listHead, hook);
 
     TraceLog(LOG_TRACE, "Initialized grappling hook");
-
-    srand(time(NULL)); // initialize rand
 
     return hook;
 }
