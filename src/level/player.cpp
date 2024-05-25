@@ -80,6 +80,17 @@
 #define ANIMATION_WALKING_XVELOCITY_MIN     0.5
 #define ANIMATION_RUNNING_XVELOCITY_MIN     6.5
 
+// How long after landing on ground can jump again to continue streak
+#define JUMP_GLOW_MAX_TIME_GAP              0.10    // in seconds
+// How long the jump glow countdown lasts
+#define ANIMATION_DURATION_JUMP_GLOW        12      // in frames
+// The long line of the animation
+#define JUMP_GLOW_LONG_LENGTH               20      // in scene pixels
+// The short line of the animation
+#define JUMP_GLOW_SHORT_LENGTH              12      // in scene pixels
+// How much below the player's hitbox the animation will be drawn
+#define JUMP_GLOW_Y_OFFSET                  5       // in scene pixels
+
 
 Player *PLAYER = 0;
 
@@ -118,6 +129,8 @@ Player *Player::Initialize(Vector2 origin) {
     newPlayer->mode = PLAYER_MODE_DEFAULT;
     newPlayer->lastPressedJump = -1;
     newPlayer->lastGroundBeneathTime = -1;
+
+    newPlayer->jumpGlowAnimationCountdown = -1;
 
     newPlayer->initializeAnimationSystem();
 
@@ -314,6 +327,7 @@ void Player::Tick() {
 
 
     groundBeneath = Level::GetGroundBeneath(PLAYER);
+    if (groundBeneath && !groundBeneathLastFrame) lastLandedOnGroundTime = GetTime();
 
 
     { // Horizontal velocity calculation
@@ -573,8 +587,26 @@ next_entity:
     }
     textboxCollidedLastFrame = textboxCollidedThisFrame;
 
+    if (jumpGlowAnimationCountdown != -1) {
+        jumpGlowAnimationCountdown--;
+        if (jumpGlowAnimationCountdown <= 0) {
+            jumpGlowAnimationCountdown = -1;
+        }
+    }
+
+    groundBeneathLastFrame = groundBeneath;
 
     sprite = animationTick();
+}
+
+void Player::Draw() {
+
+    Entity::Draw();
+
+    if (jumpGlowAnimationCountdown != -1) {
+        float elapsed = (-1 + ((float) jumpGlowAnimationCountdown / (float) ANIMATION_DURATION_JUMP_GLOW)) * - 1;
+        drawJumpGlow(jumpGlowStrength, elapsed);
+    };
 }
 
 void Player::Continue() {
@@ -622,6 +654,7 @@ void Player::Continue() {
     xVelocity = 0;
     lastPressedJump = -1;
     lastGroundBeneathTime = -1;
+    jumpGlowAnimationCountdown = -1;
     lastGroundBeneath = nullptr;
     textboxCollidedLastFrame = nullptr;
 
@@ -673,6 +706,12 @@ void Player::jump() {
     yVelocity = jumpStartVelocity();
     yVelocityTarget = 0.0f;
     wasRunningOnJumpStart = Input::STATE.isHoldingRun;
+    jumpGlowAnimationCountdown = ANIMATION_DURATION_JUMP_GLOW;
+    if (GetTime() - lastLandedOnGroundTime < JUMP_GLOW_MAX_TIME_GAP || (!groundBeneath) || (groundBeneath->tags & Level::IS_ENEMY)) {
+        if (jumpGlowStrength < 3) jumpGlowStrength++;
+    }
+    else
+        jumpGlowStrength = 0;
     Sounds::Play(SOUNDS->Jump);
 }
 
@@ -807,4 +846,64 @@ void Player::PersistenceParse(const std::string &data) {
 
     Level::Entity::PersistenceParse(data);
     SetHitboxPos(origin);
+}
+
+void Player::drawJumpGlow(int strength, float progression) {
+
+    if (progression < 0 || progression > 1) {
+        TraceLog(LOG_ERROR, "Invalid Jump Glow progression :%f.");
+        progression = 0;
+    }
+
+    Color color = RAYWHITE;
+
+    switch (strength) {
+    case 0:
+        return;
+    case 1:
+        color.r = 0;
+        color.g = 0;
+        color.b = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        break;
+    case 2:
+        color.r = 0;
+        color.g = 0x66 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.b = 0xCC + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        break;
+    case 3:
+        color.r = 0;
+        color.g = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.b = 0;
+        break;
+    default:
+        TraceLog(LOG_ERROR, "Could not draw jump glow, strength:%d.", strength);
+        color = PURPLE;
+        return;
+    }
+
+    Vector2 middlePoint = { hitbox.x + (hitbox.width/2),
+                            hitbox.y + hitbox.height + JUMP_GLOW_Y_OFFSET };
+
+    Vector2 longStart = PosInSceneToScreen({
+        middlePoint.x - (JUMP_GLOW_LONG_LENGTH*progression/2), middlePoint.y
+    });
+
+    Vector2 longEnd = PosInSceneToScreen({
+        middlePoint.x + (JUMP_GLOW_LONG_LENGTH*progression/2), middlePoint.y
+    });
+
+    Vector2 shortStart = PosInSceneToScreen({
+        middlePoint.x - (JUMP_GLOW_SHORT_LENGTH*progression/2), middlePoint.y
+    });
+
+    Vector2 shortEnd = PosInSceneToScreen({
+        middlePoint.x + (JUMP_GLOW_SHORT_LENGTH*progression/2), middlePoint.y
+    });
+
+    middlePoint = PosInSceneToScreen(middlePoint);
+
+
+    DrawLine(longStart.x, longStart.y, longEnd.x, longEnd.y, color);
+    DrawLineEx(shortStart, shortEnd, 2, color);
+    DrawCircle(middlePoint.x, middlePoint.y, 3 * progression, color);
 }

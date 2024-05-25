@@ -1,6 +1,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "core.hpp"
 #include "overworld.hpp"
@@ -79,6 +81,8 @@ void GameStateReset() {
 }
 
 void SystemsInitialize() {
+
+    srand(time(NULL));
 
     InitAudioDevice();
     // while (!IsAudioDeviceReady()) {}
