@@ -84,6 +84,12 @@
 #define JUMP_GLOW_MAX_TIME_GAP              0.10    // in seconds
 // How long the jump glow countdown lasts
 #define ANIMATION_DURATION_JUMP_GLOW        12      // in frames
+// The long line of the animation
+#define JUMP_GLOW_LONG_LENGTH               20      // in scene pixels
+// The short line of the animation
+#define JUMP_GLOW_SHORT_LENGTH              12      // in scene pixels
+// How much below the player's hitbox the animation will be drawn
+#define JUMP_GLOW_Y_OFFSET                  5       // in scene pixels
 
 
 Player *PLAYER = 0;
@@ -598,7 +604,8 @@ void Player::Draw() {
     Entity::Draw();
 
     if (jumpGlowAnimationCountdown != -1) {
-        drawJumpGlow(jumpGlowStrength);
+        float elapsed = (-1 + ((float) jumpGlowAnimationCountdown / (float) ANIMATION_DURATION_JUMP_GLOW)) * - 1;
+        drawJumpGlow(jumpGlowStrength, elapsed);
     };
 }
 
@@ -841,11 +848,16 @@ void Player::PersistenceParse(const std::string &data) {
     SetHitboxPos(origin);
 }
 
-void Player::drawJumpGlow(int strenght) {
+void Player::drawJumpGlow(int strength, float progression) {
+
+    if (progression < 0 || progression > 1) {
+        TraceLog(LOG_ERROR, "Invalid Jump Glow progression :%f.");
+        progression = 0;
+    }
 
     Color color = RAYWHITE;
 
-    switch (strenght) {
+    switch (strength) {
     case 0:
         return;
     case 1:
@@ -864,34 +876,28 @@ void Player::drawJumpGlow(int strenght) {
         color.b = 0;
         break;
     default:
-        TraceLog(LOG_ERROR, "Could not draw jump glow, strength:%d.", strenght);
+        TraceLog(LOG_ERROR, "Could not draw jump glow, strength:%d.", strength);
         color = PURPLE;
         return;
     }
 
-    static const int longLength = 34;
-    static const int shortLength = 26;
-    static const float yOffset = 5;
-
-    float elapsed = (-1 + ((float) jumpGlowAnimationCountdown / (float) ANIMATION_DURATION_JUMP_GLOW)) * - 1; // from 0 to 1
-
     Vector2 middlePoint = { hitbox.x + (hitbox.width/2),
-                            hitbox.y + hitbox.height + yOffset };
+                            hitbox.y + hitbox.height + JUMP_GLOW_Y_OFFSET };
 
     Vector2 longStart = PosInSceneToScreen({
-        middlePoint.x - (longLength*elapsed/2), middlePoint.y
+        middlePoint.x - (JUMP_GLOW_LONG_LENGTH*progression/2), middlePoint.y
     });
 
     Vector2 longEnd = PosInSceneToScreen({
-        middlePoint.x + (longLength*elapsed/2), middlePoint.y
+        middlePoint.x + (JUMP_GLOW_LONG_LENGTH*progression/2), middlePoint.y
     });
 
     Vector2 shortStart = PosInSceneToScreen({
-        middlePoint.x - (shortLength*elapsed/2), middlePoint.y
+        middlePoint.x - (JUMP_GLOW_SHORT_LENGTH*progression/2), middlePoint.y
     });
 
     Vector2 shortEnd = PosInSceneToScreen({
-        middlePoint.x + (shortLength*elapsed/2), middlePoint.y
+        middlePoint.x + (JUMP_GLOW_SHORT_LENGTH*progression/2), middlePoint.y
     });
 
     middlePoint = PosInSceneToScreen(middlePoint);
@@ -899,5 +905,5 @@ void Player::drawJumpGlow(int strenght) {
 
     DrawLine(longStart.x, longStart.y, longEnd.x, longEnd.y, color);
     DrawLineEx(shortStart, shortEnd, 2, color);
-    DrawCircle(middlePoint.x, middlePoint.y, 3 * elapsed, color);
+    DrawCircle(middlePoint.x, middlePoint.y, 3 * progression, color);
 }

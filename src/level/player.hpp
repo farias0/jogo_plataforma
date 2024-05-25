@@ -127,8 +127,12 @@ private:
 
     void createAnimations();
 
-    // Draws glow effect on the player's feet when jumping
-    void drawJumpGlow(int strenght);
+    /*
+        Draws glow effect on the player's feet when jumping
+        @param strength The strength of the effect (from 0 to 3)
+        @param progression From far into the animation it is (from 0 to 1)
+    */
+    void drawJumpGlow(int strength, float progression);
     
     Animation::Animation *getCurrentAnimation();
 
