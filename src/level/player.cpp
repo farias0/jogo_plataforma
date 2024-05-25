@@ -706,12 +706,16 @@ void Player::jump() {
     yVelocity = jumpStartVelocity();
     yVelocityTarget = 0.0f;
     wasRunningOnJumpStart = Input::STATE.isHoldingRun;
-    jumpGlowAnimationCountdown = ANIMATION_DURATION_JUMP_GLOW;
-    if (GetTime() - lastLandedOnGroundTime < JUMP_GLOW_MAX_TIME_GAP || (!groundBeneath) || (groundBeneath->tags & Level::IS_ENEMY)) {
-        if (jumpGlowStrength < 3) jumpGlowStrength++;
-    }
-    else
-        jumpGlowStrength = 0;
+
+    if (!hookLaunched || !(hookLaunched->attachedTo)) {
+
+        jumpGlowAnimationCountdown = ANIMATION_DURATION_JUMP_GLOW;
+        if (GetTime() - lastLandedOnGroundTime < JUMP_GLOW_MAX_TIME_GAP || (!groundBeneath) || (groundBeneath->tags & Level::IS_ENEMY)) {
+            if (jumpGlowStrength < 3) jumpGlowStrength++;
+        }
+        else jumpGlowStrength = 0;
+    } 
+
     Sounds::Play(SOUNDS->Jump);
 }
 
