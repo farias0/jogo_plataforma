@@ -712,9 +712,11 @@ void Player::jump() {
         jumpGlowAnimationCountdown = ANIMATION_DURATION_JUMP_GLOW;
         if (GetTime() - lastLandedOnGroundTime < JUMP_GLOW_MAX_TIME_GAP || (!groundBeneath) || (groundBeneath->tags & Level::IS_ENEMY)) {
             if (jumpGlowStrength < 3) jumpGlowStrength++;
+            if (jumpGlowStrength == 2) yVelocity = jumpStartVelocity() * 1.3;
+            else if (jumpGlowStrength == 3) yVelocity = jumpStartVelocity() * 1.6;
         }
         else jumpGlowStrength = 0;
-    } 
+    }
 
     Sounds::Play(SOUNDS->Jump);
 }
@@ -723,6 +725,8 @@ void Player::jumpDouble() {
 
     jump();
     yVelocity += (yVelocity/4);
+
+    if (yVelocity > 20) yVelocity = 20;
 }
 
 void Player::die() {
@@ -871,7 +875,7 @@ void Player::drawJumpGlow(int strength, float progression) {
         break;
     case 2:
         color.r = 0;
-        color.g = 0x66 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.g = 0x66 + ((float)0x44 * ((float)rand()/(float)RAND_MAX));
         color.b = 0xCC + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
         break;
     case 3:
