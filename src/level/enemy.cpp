@@ -10,7 +10,7 @@
 #define ENEMY_SPEED_DEFAULT 4.0f
 #define ENEMY_FALL_RATE 7.0f
 
-#define POP_OUT_ANIMATION_LENGTH    6   // in frames
+#define POP_OUT_ANIMATION_LENGTH    3   // in frames
 
 
 Enemy *Enemy::Add() {
