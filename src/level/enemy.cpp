@@ -10,7 +10,7 @@
 #define ENEMY_SPEED_DEFAULT 4.0f
 #define ENEMY_FALL_RATE 7.0f
 
-#define POP_OUT_ANIMATION_LENGTH    3   // in frames
+#define POP_OUT_ANIMATION_LENGTH    6   // in frames
 
 
 Enemy *Enemy::Add() {
@@ -236,26 +236,24 @@ void EnemyDummySpike::Draw() {
 
 void EnemyDummySpike::setToSpike() {
 
-    /*
-        TODO currently the difference between the sprites is hardcoded
-        because the spike sprite is assymetrical, but if this was fixed
-        the difference could be calculated instead.
-    */
-
     tags &= ~Level::IS_ENEMY;
     tags |= Level::IS_COLLIDE_WALL; // TODO it's very weird that a spike needs this flag to work
-    // hitbox = SpriteHitboxFromEdge(&SPRITES->EnemyDummySpikePoppedOut, {
-    //     hitbox.x + 8*2, hitbox.y + 20*2 // difference between sprites
-    // });
+
+    auto newSprite = &SPRITES->EnemyDummySpikePoppedOut;
+    float xOff = (hitbox.width - (newSprite->sprite.width * newSprite->scale)) / 2;
+    float yOff = (hitbox.height - (newSprite->sprite.height * newSprite->scale)) / 2;
+    hitbox = SpriteHitboxFromEdge(newSprite, { hitbox.x + xOff, hitbox.y + yOff });
 }
 
 void EnemyDummySpike::setToEnemy() {
 
     tags |= Level::IS_ENEMY;
     tags &= ~Level::IS_COLLIDE_WALL;
-    // hitbox = SpriteHitboxFromEdge(&SPRITES->EnemyDummySpike1, {
-    //     hitbox.x - 8*2, hitbox.y - 20*2 // difference between sprites
-    // });
+    
+    auto newSprite = &SPRITES->EnemyDummySpike1;
+    float xOff = ((newSprite->sprite.width * newSprite->scale) - hitbox.width) / 2;
+    float yOff = ((newSprite->sprite.height * newSprite->scale) - hitbox.height) / 2;
+    hitbox = SpriteHitboxFromEdge(newSprite, { hitbox.x - xOff, hitbox.y - yOff });
 }
 
 void EnemyDummySpike::createAnimations() {
