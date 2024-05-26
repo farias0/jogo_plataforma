@@ -63,6 +63,7 @@ private:
 
     static Animation::Animation animationDefault;
     static Animation::Animation animationPoppingOut;
+    static Animation::Animation animationPopppedOut;
 
     unsigned int popOutAnimationCountdown;
 

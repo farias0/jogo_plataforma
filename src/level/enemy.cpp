@@ -155,6 +155,7 @@ void Enemy::Draw() {
 
 Animation::Animation EnemyDummySpike::animationDefault;
 Animation::Animation EnemyDummySpike::animationPoppingOut;
+Animation::Animation EnemyDummySpike::animationPopppedOut;
 
 EnemyDummySpike *EnemyDummySpike::Add() {
     return Add({ 0,0 });
@@ -217,8 +218,7 @@ void EnemyDummySpike::Tick() {
 
 void EnemyDummySpike::Draw() {
 
-    if (!isDead || popOutAnimationCountdown)
-        Render::DrawLevelEntity(this);
+    Render::DrawLevelEntity(this);
 
     if (EDITOR_STATE->isEnabled)
         Render::DrawLevelEntityOriginGhost(this);
@@ -226,17 +226,20 @@ void EnemyDummySpike::Draw() {
 
 void EnemyDummySpike::createAnimations() {
 
-    animationDefault.AddFrame(&SPRITES->EnemyDummySpike1, 1); // TODO sprite with spike
+    animationDefault.AddFrame(&SPRITES->EnemyDummySpike1, 1);
 
     const int popOutFrameLength = POP_OUT_ANIMATION_LENGTH / 3;
     animationPoppingOut.AddFrame(&SPRITES->EnemyPoppingOut1, popOutFrameLength);
     animationPoppingOut.AddFrame(&SPRITES->EnemyPoppingOut2, popOutFrameLength);
     animationPoppingOut.AddFrame(&SPRITES->EnemyPoppingOut3, popOutFrameLength);
+
+    animationPopppedOut.AddFrame(&SPRITES->EnemyDummySpikePoppedOut, 1);
 }
 
 Animation::Animation *EnemyDummySpike::getCurrentAnimation() {
 
     if (popOutAnimationCountdown)   return &animationPoppingOut;
+    else if (isDead)                return &animationPopppedOut;
     else                            return &animationDefault;
 
 }

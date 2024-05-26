@@ -82,6 +82,7 @@ static void loadAssets() {
     sp->EnemyPoppingOut1 = doubleSizeSprite("../assets/enemy_popping_out_1.png");
     sp->EnemyPoppingOut2 = doubleSizeSprite("../assets/enemy_popping_out_2.png");
     sp->EnemyPoppingOut3 = doubleSizeSprite("../assets/enemy_popping_out_3.png");
+    sp->EnemyDummySpikePoppedOut = doubleSizeSprite("../assets/enemy_dummy_spike_popped_out.png");
     sp->LevelEndOrb = doubleSizeSprite("../assets/level_end_orb_1.png");
     sp->LevelCheckpointFlag = doubleSizeSprite("../assets/player_child_1.png");
     sp->LevelCheckpointPickup1 = doubleSizeSprite("../assets/egg_1.png");
