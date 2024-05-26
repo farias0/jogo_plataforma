@@ -169,7 +169,7 @@ EnemyDummySpike *EnemyDummySpike::Add(Vector2 origin) {
                             Level::IS_COLLIDE_DANGER + // TODO define rules about interaction with player
                             Level::IS_PERSISTABLE;
     newEnemy->origin = origin;
-    newEnemy->sprite = &SPRITES->Enemy;
+    newEnemy->sprite = &SPRITES->EnemyDummySpike1;
     newEnemy->hitbox = SpriteHitboxFromEdge(newEnemy->sprite, newEnemy->origin);
     newEnemy->isFacingRight = true;
     newEnemy->isFallingDown = true;
@@ -226,7 +226,7 @@ void EnemyDummySpike::Draw() {
 
 void EnemyDummySpike::createAnimations() {
 
-    animationDefault.AddFrame(&SPRITES->Enemy, 1); // TODO sprite with spike
+    animationDefault.AddFrame(&SPRITES->EnemyDummySpike1, 1); // TODO sprite with spike
 
     const int popOutFrameLength = POP_OUT_ANIMATION_LENGTH / 3;
     animationPoppingOut.AddFrame(&SPRITES->EnemyPoppingOut1, popOutFrameLength);
