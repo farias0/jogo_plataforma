@@ -10,6 +10,8 @@
 #define ENEMY_SPEED_DEFAULT 4.0f
 #define ENEMY_FALL_RATE 7.0f
 
+#define POP_OUT_ANIMATION_LENGTH    6   // in frames
+
 
 Enemy *Enemy::Add() {
     return Add({ 0,0 });
@@ -147,4 +149,94 @@ void Enemy::Draw() {
 
     if (EDITOR_STATE->isEnabled)
         Render::DrawLevelEntityOriginGhost(this);
+}
+
+//
+
+Animation::Animation EnemyDummySpike::animationDefault;
+Animation::Animation EnemyDummySpike::animationPoppingOut;
+
+EnemyDummySpike *EnemyDummySpike::Add() {
+    return Add({ 0,0 });
+}
+
+EnemyDummySpike *EnemyDummySpike::Add(Vector2 origin) {
+
+    EnemyDummySpike *newEnemy = new EnemyDummySpike();
+
+    newEnemy->tags = Level::IS_ENEMY +
+                            Level::IS_GROUND +
+                            Level::IS_COLLIDE_DANGER + // TODO define rules about interaction with player
+                            Level::IS_PERSISTABLE;
+    newEnemy->origin = origin;
+    newEnemy->sprite = &SPRITES->Enemy;
+    newEnemy->hitbox = SpriteHitboxFromEdge(newEnemy->sprite, newEnemy->origin);
+    newEnemy->isFacingRight = true;
+    newEnemy->isFallingDown = true;
+
+    newEnemy->initializeAnimationSystem();
+
+    LinkedList::AddNode(&Level::STATE->listHead, newEnemy);
+
+    TraceLog(LOG_TRACE, "Added enemy dummy to level (x=%.1f, y=%.1f)",
+                newEnemy->hitbox.x, newEnemy->hitbox.y);
+
+    return newEnemy;
+}
+
+void EnemyDummySpike::CheckAndAdd(Vector2 origin, int interactionTags) {
+    
+    if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
+
+
+    Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->Enemy, origin);
+
+    if (Level::CheckCollisionWithAnything(hitbox)) {
+        TraceLog(LOG_DEBUG, "Couldn't add enemy dummy to level, collision with entity.");
+        return;
+    }
+
+    Add({ hitbox.x, hitbox.y }); // TODO would making Add virtual work?
+}
+
+void EnemyDummySpike::Kill() {
+
+    Enemy::Kill();
+    popOutAnimationCountdown = POP_OUT_ANIMATION_LENGTH; // start animation
+}
+
+void EnemyDummySpike::Tick() {
+
+    Enemy::Tick();
+
+    if (popOutAnimationCountdown > 0)
+        popOutAnimationCountdown--;
+
+    sprite = animationTick();
+}
+
+void EnemyDummySpike::Draw() {
+
+    if (!isDead || popOutAnimationCountdown)
+        Render::DrawLevelEntity(this);
+
+    if (EDITOR_STATE->isEnabled)
+        Render::DrawLevelEntityOriginGhost(this);
+}
+
+void EnemyDummySpike::createAnimations() {
+
+    animationDefault.AddFrame(&SPRITES->Enemy, 1); // TODO sprite with spike
+
+    const int popOutFrameLength = POP_OUT_ANIMATION_LENGTH / 3;
+    animationPoppingOut.AddFrame(&SPRITES->EnemyPoppingOut1, popOutFrameLength);
+    animationPoppingOut.AddFrame(&SPRITES->EnemyPoppingOut2, popOutFrameLength);
+    animationPoppingOut.AddFrame(&SPRITES->EnemyPoppingOut3, popOutFrameLength);
+}
+
+Animation::Animation *EnemyDummySpike::getCurrentAnimation() {
+
+    if (popOutAnimationCountdown)   return &animationPoppingOut;
+    else                            return &animationDefault;
+
 }
