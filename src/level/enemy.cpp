@@ -167,7 +167,7 @@ EnemyDummySpike *EnemyDummySpike::Add(Vector2 origin) {
 
     newEnemy->tags = Level::IS_ENEMY +
                             Level::IS_GROUND +
-                            Level::IS_COLLIDE_DANGER + // TODO define rules about interaction with player
+                            Level::IS_COLLIDE_DANGER +
                             Level::IS_PERSISTABLE;
     newEnemy->origin = origin;
     newEnemy->sprite = &SPRITES->EnemyDummySpike1;
@@ -200,6 +200,12 @@ void EnemyDummySpike::CheckAndAdd(Vector2 origin, int interactionTags) {
     Add({ hitbox.x, hitbox.y }); // TODO would making Add virtual work?
 }
 
+void EnemyDummySpike::Reset() {
+
+    Enemy::Reset();
+    setToEnemy();
+}
+
 void EnemyDummySpike::Kill() {
 
     Enemy::Kill();
@@ -210,8 +216,12 @@ void EnemyDummySpike::Tick() {
 
     Enemy::Tick();
 
-    if (popOutAnimationCountdown > 0)
+    if (popOutAnimationCountdown > 0) {
         popOutAnimationCountdown--;
+        if (popOutAnimationCountdown == 0) {
+            setToSpike(); // ATTENTION: This makes the transition to spike animation-driven
+        }
+    }
 
     sprite = animationTick();
 }
@@ -222,6 +232,30 @@ void EnemyDummySpike::Draw() {
 
     if (EDITOR_STATE->isEnabled)
         Render::DrawLevelEntityOriginGhost(this);
+}
+
+void EnemyDummySpike::setToSpike() {
+
+    /*
+        TODO currently the difference between the sprites is hardcoded
+        because the spike sprite is assymetrical, but if this was fixed
+        the difference could be calculated instead.
+    */
+
+    tags &= ~Level::IS_ENEMY;
+    tags |= Level::IS_COLLIDE_WALL; // TODO it's very weird that a spike needs this flag to work
+    hitbox = SpriteHitboxFromEdge(&SPRITES->EnemyDummySpikePoppedOut, {
+        hitbox.x + 8*2, hitbox.y + 20*2 // difference between sprites
+    });
+}
+
+void EnemyDummySpike::setToEnemy() {
+
+    tags |= Level::IS_ENEMY;
+    tags &= ~Level::IS_COLLIDE_WALL;
+    hitbox = SpriteHitboxFromEdge(&SPRITES->EnemyDummySpike1, {
+        hitbox.x - 8*2, hitbox.y - 20*2 // difference between sprites
+    });
 }
 
 void EnemyDummySpike::createAnimations() {

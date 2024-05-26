@@ -68,6 +68,9 @@ public:
     std::string persistanceEntityID = "!!!_unknown_level_entity";
     
 
+    // Resets entity to its default state
+    virtual void Reset();
+
     virtual Rectangle GetOriginHitbox() {
         return {
             origin.x, origin.y,

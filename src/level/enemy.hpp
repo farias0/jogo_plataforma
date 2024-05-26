@@ -49,6 +49,8 @@ public:
 
     static void CheckAndAdd(Vector2 origin, int interactionTags);
 
+    void Reset() override;
+
     void Kill() override;
 
     void Tick() override;
@@ -67,6 +69,9 @@ private:
 
     unsigned int popOutAnimationCountdown;
 
+
+    void setToSpike();
+    void setToEnemy();
 
     void createAnimations();
 

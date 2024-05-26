@@ -635,11 +635,10 @@ void Player::Continue() {
             }
         }
 
-        entity->isDead = false;
-        entity->hitbox.x = entity->origin.x;
-        entity->hitbox.y = entity->origin.y;
+        entity->Reset();
     }
 
+    // TODO put this into player->Reset();
     if (Level::STATE->checkpoint) {
         Vector2 pos = RectangleGetPos(Level::STATE->checkpoint->hitbox);
         pos.y -= Level::STATE->checkpoint->hitbox.height;
