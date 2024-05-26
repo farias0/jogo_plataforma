@@ -244,18 +244,18 @@ void EnemyDummySpike::setToSpike() {
 
     tags &= ~Level::IS_ENEMY;
     tags |= Level::IS_COLLIDE_WALL; // TODO it's very weird that a spike needs this flag to work
-    hitbox = SpriteHitboxFromEdge(&SPRITES->EnemyDummySpikePoppedOut, {
-        hitbox.x + 8*2, hitbox.y + 20*2 // difference between sprites
-    });
+    // hitbox = SpriteHitboxFromEdge(&SPRITES->EnemyDummySpikePoppedOut, {
+    //     hitbox.x + 8*2, hitbox.y + 20*2 // difference between sprites
+    // });
 }
 
 void EnemyDummySpike::setToEnemy() {
 
     tags |= Level::IS_ENEMY;
     tags &= ~Level::IS_COLLIDE_WALL;
-    hitbox = SpriteHitboxFromEdge(&SPRITES->EnemyDummySpike1, {
-        hitbox.x - 8*2, hitbox.y - 20*2 // difference between sprites
-    });
+    // hitbox = SpriteHitboxFromEdge(&SPRITES->EnemyDummySpike1, {
+    //     hitbox.x - 8*2, hitbox.y - 20*2 // difference between sprites
+    // });
 }
 
 void EnemyDummySpike::createAnimations() {
