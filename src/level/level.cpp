@@ -404,6 +404,8 @@ void Tick() {
         tickAllEntities();
 
     CameraTick();
+
+    if (!IsSoundPlaying(SOUNDS->Track1)) Sounds::Play(SOUNDS->Track1);
 }
 
 Level::Entity *CheckCollisionWithAnyEntity(Vector2 point) {

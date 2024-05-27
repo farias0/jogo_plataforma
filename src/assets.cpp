@@ -113,7 +113,10 @@ static void loadAssets() {
     SoundBank *sn = SOUNDS;
 
     sn->Jump = LoadSound("../assets/sounds/jump.ogg");
-    SetSoundVolume(sn->Jump, 0.5f);
+    SetSoundVolume(sn->Jump, 1.0f);
+
+    sn->Track1 = LoadSound("../assets/sounds/track_1.wav");
+    SetSoundVolume(sn->Track1, 0.6f);
 
     TraceLog(LOG_INFO, "Sounds loaded.");
 

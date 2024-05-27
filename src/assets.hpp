@@ -70,6 +70,8 @@ struct SoundBank {
 
     Sound Jump;
 
+    Sound Track1;
+
 };
 
 
