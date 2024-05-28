@@ -119,6 +119,8 @@ bool PersistenceLevelLoad(char *levelName) {
                 entity = Textbox::Add();
             else if (entityTag == MOVING_PLATFORM_PERSISTENCE_ID)
                 entity = MovingPlatform::Add();
+            else if (entityTag == ENEMY_DUMMY_PERSISTENCE_ID)
+                entity = EnemyDummySpike::Add();
             else {
                 TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, entityTag=%s.", entityTag.c_str());
                 continue; 
