@@ -170,7 +170,7 @@ EnemyDummySpike *EnemyDummySpike::Add(Vector2 origin) {
                             Level::IS_COLLIDE_DANGER +
                             Level::IS_PERSISTABLE;
     newEnemy->origin = origin;
-    newEnemy->sprite = &SPRITES->EnemyDummySpike1;
+    newEnemy->sprite = &SPRITES->EnemyDummySpike;
     newEnemy->hitbox = SpriteHitboxFromEdge(newEnemy->sprite, newEnemy->origin);
     newEnemy->isFacingRight = true;
     newEnemy->isFallingDown = true;
@@ -250,7 +250,7 @@ void EnemyDummySpike::setToEnemy() {
     tags |= Level::IS_ENEMY;
     tags &= ~Level::IS_COLLIDE_WALL;
     
-    auto newSprite = &SPRITES->EnemyDummySpike1;
+    auto newSprite = &SPRITES->EnemyDummySpike;
     float xOff = ((newSprite->sprite.width * newSprite->scale) - hitbox.width) / 2;
     float yOff = ((newSprite->sprite.height * newSprite->scale) - hitbox.height) / 2;
     hitbox = SpriteHitboxFromEdge(newSprite, { hitbox.x - xOff, hitbox.y - yOff });
@@ -258,12 +258,12 @@ void EnemyDummySpike::setToEnemy() {
 
 void EnemyDummySpike::createAnimations() {
 
-    animationDefault.AddFrame(&SPRITES->EnemyDummySpike1, 1);
+    animationDefault.AddFrame(&SPRITES->EnemyDummySpike, 1);
 
     const int popOutFrameLength = POP_OUT_ANIMATION_LENGTH / 3;
-    animationPoppingOut.AddFrame(&SPRITES->EnemyPoppingOut1, popOutFrameLength);
-    animationPoppingOut.AddFrame(&SPRITES->EnemyPoppingOut2, popOutFrameLength);
-    animationPoppingOut.AddFrame(&SPRITES->EnemyPoppingOut3, popOutFrameLength);
+    animationPoppingOut.AddFrame(&SPRITES->EnemyDummySpikePoppingOut1, popOutFrameLength);
+    animationPoppingOut.AddFrame(&SPRITES->EnemyDummySpikePoppingOut2, popOutFrameLength);
+    animationPoppingOut.AddFrame(&SPRITES->EnemyDummySpikePoppingOut3, popOutFrameLength);
 
     animationPopppedOut.AddFrame(&SPRITES->EnemyDummySpikePoppedOut, 1);
 }
