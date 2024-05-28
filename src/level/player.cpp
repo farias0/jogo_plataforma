@@ -454,13 +454,13 @@ COLISION_CHECKING:
                 }
             }
 
-            else if (entity->tags & Level::IS_COLLIDE_WALL) {
+            else if (entity->tags & Level::IS_GEOMETRY) {
 
                 // Check for collision with level geometry
 
                 Rectangle collisionRec = GetCollisionRec(entity->hitbox, hitbox);
 
-                if (entity->tags & Level::IS_COLLIDE_DANGER &&
+                if (entity->tags & Level::IS_GEOMETRY_DANGER &&
                     (collisionRec.width > 0 || collisionRec.height > 0 || groundBeneath == entity)) {
                     
                     // Player hit dangerous level element

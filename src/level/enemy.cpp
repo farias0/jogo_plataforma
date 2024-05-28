@@ -23,7 +23,6 @@ Enemy *Enemy::Add(Vector2 origin) {
 
     newEnemy->tags = Level::IS_ENEMY +
                             Level::IS_GROUND +
-                            Level::IS_COLLIDE_DANGER +
                             Level::IS_PERSISTABLE;
     newEnemy->origin = origin;
     newEnemy->sprite = &SPRITES->Enemy;
@@ -120,7 +119,7 @@ void Enemy::Tick() {
 
         if (entity == this) goto next_node;
 
-        if (entity->tags & Level::IS_COLLIDE_WALL &&
+        if (entity->tags & Level::IS_GEOMETRY &&
             CheckCollisionRecs(entity->hitbox, hitbox)) {
 
                 isFacingRight = !isFacingRight;
@@ -167,7 +166,6 @@ EnemyDummySpike *EnemyDummySpike::Add(Vector2 origin) {
 
     newEnemy->tags = Level::IS_ENEMY +
                             Level::IS_GROUND +
-                            Level::IS_COLLIDE_DANGER +
                             Level::IS_PERSISTABLE;
     newEnemy->origin = origin;
     newEnemy->sprite = &SPRITES->EnemyDummySpike;
@@ -237,7 +235,7 @@ void EnemyDummySpike::Draw() {
 void EnemyDummySpike::setToSpike() {
 
     tags &= ~Level::IS_ENEMY;
-    tags |= Level::IS_COLLIDE_WALL; // TODO it's very weird that a spike needs this flag to work
+    tags |= Level::IS_GEOMETRY + Level::IS_GEOMETRY_DANGER;
 
     auto newSprite = &SPRITES->EnemyDummySpikePoppedOut;
     float xOff = (hitbox.width - (newSprite->sprite.width * newSprite->scale)) / 2;
@@ -248,7 +246,7 @@ void EnemyDummySpike::setToSpike() {
 void EnemyDummySpike::setToEnemy() {
 
     tags |= Level::IS_ENEMY;
-    tags &= ~Level::IS_COLLIDE_WALL;
+    tags &= ~Level::IS_GEOMETRY + ~Level::IS_GEOMETRY_DANGER;
     
     auto newSprite = &SPRITES->EnemyDummySpike;
     float xOff = ((newSprite->sprite.width * newSprite->scale) - hitbox.width) / 2;
