@@ -30,7 +30,7 @@ Block *Block::Add(Vector2 origin) {
 
     Block *newBlock = new Block();
 
-    newBlock->tags = Level::IS_COLLIDE_WALL +
+    newBlock->tags = Level::IS_GEOMETRY +
                             Level::IS_GROUND +
                             Level::IS_HOOKABLE +
                             Level::IS_PERSISTABLE +
@@ -217,9 +217,9 @@ AcidBlock *AcidBlock::Add(Vector2 origin) {
 
     AcidBlock *newBlock = new AcidBlock();
 
-    newBlock->tags = Level::IS_COLLIDE_WALL +
+    newBlock->tags = Level::IS_GEOMETRY +
                             Level::IS_GROUND +
-                            Level::IS_COLLIDE_DANGER +
+                            Level::IS_GEOMETRY_DANGER +
                             Level::IS_HOOKABLE +
                             Level::IS_PERSISTABLE +
                             Level::IS_GRIDLOCKED;

@@ -31,10 +31,10 @@ namespace Level {
 typedef enum {
     IS_PLAYER               = 1,
     IS_ENEMY                = 2,
-    IS_COLLIDE_WALL         = 4,
+    IS_GEOMETRY             = 4,
     IS_EXIT                 = 8,
     IS_GROUND               = 16,
-    IS_COLLIDE_DANGER       = 32,
+    IS_GEOMETRY_DANGER      = 32,
     IS_GLIDE_PICKUP         = 64,
     //IS_CHECKPOINT           = 128,
     IS_TEXTBOX              = 256,
@@ -67,6 +67,9 @@ public:
     // It's a variable so it supports entity types that simply instantiates Entity (i.e. not a subclass)
     std::string persistanceEntityID = "!!!_unknown_level_entity";
     
+
+    // Resets entity to its default state
+    virtual void Reset();
 
     virtual Rectangle GetOriginHitbox() {
         return {
