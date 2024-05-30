@@ -84,10 +84,8 @@
 #define JUMP_GLOW_MAX_TIME_GAP              0.10    // in seconds
 // How long the jump glow countdown lasts
 #define ANIMATION_DURATION_JUMP_GLOW        12      // in frames
-// The long line of the animation
-#define JUMP_GLOW_LONG_LENGTH               20      // in scene pixels
-// The short line of the animation
-#define JUMP_GLOW_SHORT_LENGTH              12      // in scene pixels
+// The length of the line of the animation
+#define JUMP_GLOW_LINE_LENGTH               6       // in scene pixels
 // How much below the player's hitbox the animation will be drawn
 #define JUMP_GLOW_Y_OFFSET                  5       // in scene pixels
 
@@ -887,26 +885,14 @@ void Player::drawJumpGlow(int strength, float progression) {
     Vector2 middlePoint = { hitbox.x + (hitbox.width/2),
                             hitbox.y + hitbox.height + JUMP_GLOW_Y_OFFSET };
 
-    Vector2 longStart = PosInSceneToScreen({
-        middlePoint.x - (JUMP_GLOW_LONG_LENGTH*progression/2), middlePoint.y
-    });
+    const float halfLine = JUMP_GLOW_LINE_LENGTH*progression / 2;
+    
+    Vector2 lineOneStart = PosInSceneToScreen({ middlePoint.x - halfLine, middlePoint.y - halfLine });
+    Vector2 lineOneEnd = PosInSceneToScreen({ middlePoint.x + halfLine, middlePoint.y + halfLine });
 
-    Vector2 longEnd = PosInSceneToScreen({
-        middlePoint.x + (JUMP_GLOW_LONG_LENGTH*progression/2), middlePoint.y
-    });
+    Vector2 lineTwoStart = PosInSceneToScreen({ middlePoint.x + halfLine, middlePoint.y - halfLine });
+    Vector2 lineTwoEnd = PosInSceneToScreen({ middlePoint.x - halfLine, middlePoint.y + halfLine });
 
-    Vector2 shortStart = PosInSceneToScreen({
-        middlePoint.x - (JUMP_GLOW_SHORT_LENGTH*progression/2), middlePoint.y
-    });
-
-    Vector2 shortEnd = PosInSceneToScreen({
-        middlePoint.x + (JUMP_GLOW_SHORT_LENGTH*progression/2), middlePoint.y
-    });
-
-    middlePoint = PosInSceneToScreen(middlePoint);
-
-
-    DrawLine(longStart.x, longStart.y, longEnd.x, longEnd.y, color);
-    DrawLineEx(shortStart, shortEnd, 2, color);
-    DrawCircle(middlePoint.x, middlePoint.y, 3 * progression, color);
+    DrawLine(lineOneStart.x, lineOneStart.y, lineOneEnd.x, lineOneEnd.y, color);
+    DrawLine(lineTwoStart.x, lineTwoStart.y, lineTwoEnd.x, lineTwoEnd.y, color);
 }
