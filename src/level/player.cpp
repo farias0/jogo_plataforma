@@ -868,7 +868,7 @@ void Player::drawJumpGlow(int strength, float progression) {
         break;
     case 2:
         color.r = 0;
-        color.g = 0x66 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
+        color.g = 0x66 + ((float)0x44 * ((float)rand()/(float)RAND_MAX));
         color.b = 0xCC + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
         break;
     case 3:
