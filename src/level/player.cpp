@@ -713,7 +713,7 @@ void Player::jump() {
         else jumpGlowStrength = 0;
     } 
 
-    Sounds::Play(SOUNDS->Jump);
+    Sounds::PlayEffect(&SOUNDS->Jump);
 }
 
 void Player::jumpDouble() {

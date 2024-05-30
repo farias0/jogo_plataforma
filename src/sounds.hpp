@@ -9,11 +9,9 @@ namespace Sounds {
 class SoundsState {
 
 public:
-    bool isEnabled;
 
-    SoundsState() {
-        isEnabled = false;
-    }
+    // Music track
+    Sound *trackPlaying;
 };
 
 
@@ -22,12 +20,20 @@ extern SoundsState STATE;
 
 void Initialize();
 
-void Play(Sound sound);
-
 // Toggles between sound on and off
 void Toggle();
 
 bool IsEnabled();
 
+void Tick();
+
+// Plays an effect clip once
+void PlayEffect(Sound *clip);
+
+// Plays a song continuously 
+void PlayMusic(Sound *track);
+
+// Stops the song being played
+void StopMusic();
 
 }

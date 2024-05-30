@@ -109,6 +109,7 @@ void GameUpdate() {
     if (EDITOR_STATE->isEnabled)
         EditorTick();
 
+    Sounds::Tick();
     windowTitleUpdate();
 }
 

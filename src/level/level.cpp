@@ -186,6 +186,8 @@ void Load(char *levelName) {
 
     CameraFollow();
 
+    Sounds::PlayMusic(&SOUNDS->Track1);
+
     Render::LevelTransitionEffectStart(
         SpritePosMiddlePoint(
             {PLAYER->hitbox.x, PLAYER->hitbox.y}, PLAYER->sprite), false);
@@ -404,8 +406,6 @@ void Tick() {
         tickAllEntities();
 
     CameraTick();
-
-    if (!IsSoundPlaying(SOUNDS->Track1)) Sounds::Play(SOUNDS->Track1);
 }
 
 Level::Entity *CheckCollisionWithAnyEntity(Vector2 point) {
