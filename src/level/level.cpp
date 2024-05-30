@@ -477,6 +477,13 @@ void LoadNew() {
     strcpy(STATE->levelName, NEW_LEVEL_NAME);
 }
 
+void Entity::Reset() {
+    
+    isDead = false;
+    hitbox.x = origin.x;
+    hitbox.y = origin.y;
+}
+
 void Entity::Tick() {            
 
     // Default entity has no tick routine
