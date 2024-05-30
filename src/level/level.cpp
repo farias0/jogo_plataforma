@@ -71,6 +71,8 @@ void leave() {
     
     resetState();
 
+    Sounds::StopMusic();
+
     OverworldLoad();
 
     TraceLog(LOG_TRACE, "Level left.");
