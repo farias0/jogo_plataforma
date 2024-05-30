@@ -83,7 +83,7 @@ MovingPlatform *MovingPlatform::Add(Vector2 startPos, Vector2 endPos, int size) 
 
     MovingPlatform *newPlatform = new MovingPlatform();
 
-    newPlatform->tags = Level::IS_COLLIDE_WALL +
+    newPlatform->tags = Level::IS_GEOMETRY +
                             Level::IS_GROUND +
                             Level::IS_HOOKABLE +
                             Level::IS_MOVING_PLATFORM +

@@ -59,7 +59,7 @@ typedef enum {
     EDITOR_ENTITY_PATH_JOIN,
     EDITOR_ENTITY_PATH_IN_L,
     
-} EditorEntityType;
+} EditorEntityType; // TODO are those even used?
 
 typedef enum {
 

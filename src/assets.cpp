@@ -78,6 +78,11 @@ static void loadAssets() {
     sp->PlayerSwingingForwards = doubleSizeSprite("../assets/player_swinging_forwards.png");
     sp->PlayerSwingingBackwards = doubleSizeSprite("../assets/player_swinging_backwards.png");
     sp->Enemy = doubleSizeSprite("../assets/enemy_default_1.png");
+    sp->EnemyDummySpike = doubleSizeSprite("../assets/enemy_dummy_spike_1.png");
+    sp->EnemyDummySpikePoppingOut1 = doubleSizeSprite("../assets/enemy_dummy_spike_popping_out_1.png");
+    sp->EnemyDummySpikePoppingOut2 = doubleSizeSprite("../assets/enemy_dummy_spike_popping_out_2.png");
+    sp->EnemyDummySpikePoppingOut3 = doubleSizeSprite("../assets/enemy_dummy_spike_popping_out_3.png");
+    sp->EnemyDummySpikePoppedOut = doubleSizeSprite("../assets/enemy_dummy_spike_popped_out.png");
     sp->LevelEndOrb = doubleSizeSprite("../assets/level_end_orb_1.png");
     sp->LevelCheckpointFlag = doubleSizeSprite("../assets/player_child_1.png");
     sp->LevelCheckpointPickup1 = doubleSizeSprite("../assets/egg_1.png");

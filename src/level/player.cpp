@@ -452,13 +452,13 @@ COLISION_CHECKING:
                 }
             }
 
-            else if (entity->tags & Level::IS_COLLIDE_WALL) {
+            else if (entity->tags & Level::IS_GEOMETRY) {
 
                 // Check for collision with level geometry
 
                 Rectangle collisionRec = GetCollisionRec(entity->hitbox, hitbox);
 
-                if (entity->tags & Level::IS_COLLIDE_DANGER &&
+                if (entity->tags & Level::IS_GEOMETRY_DANGER &&
                     (collisionRec.width > 0 || collisionRec.height > 0 || groundBeneath == entity)) {
                     
                     // Player hit dangerous level element
@@ -633,11 +633,10 @@ void Player::Continue() {
             }
         }
 
-        entity->isDead = false;
-        entity->hitbox.x = entity->origin.x;
-        entity->hitbox.y = entity->origin.y;
+        entity->Reset();
     }
 
+    // TODO put this into player->Reset();
     if (Level::STATE->checkpoint) {
         Vector2 pos = RectangleGetPos(Level::STATE->checkpoint->hitbox);
         pos.y -= Level::STATE->checkpoint->hitbox.height;

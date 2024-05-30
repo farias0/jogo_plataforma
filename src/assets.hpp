@@ -36,6 +36,11 @@ struct SpriteBank {
     Sprite PlayerSwingingForwards;
     Sprite PlayerSwingingBackwards;
     Sprite Enemy;
+    Sprite EnemyDummySpike;
+    Sprite EnemyDummySpikePoppingOut1;
+    Sprite EnemyDummySpikePoppingOut2;
+    Sprite EnemyDummySpikePoppingOut3;
+    Sprite EnemyDummySpikePoppedOut;
     Sprite Block1Side;
     Sprite Block2SidesOpp;
     Sprite Block2SidesAdj;
