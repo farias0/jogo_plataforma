@@ -71,6 +71,8 @@ void leave() {
     
     resetState();
 
+    Sounds::StopMusic();
+
     OverworldLoad();
 
     TraceLog(LOG_TRACE, "Level left.");
@@ -185,6 +187,8 @@ void Load(char *levelName) {
     CameraLevelCentralizeOnPlayer();
 
     CameraFollow();
+
+    Sounds::PlayMusic(&SOUNDS->Track1);
 
     Render::LevelTransitionEffectStart(
         SpritePosMiddlePoint(
