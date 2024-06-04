@@ -90,6 +90,7 @@ static void loadAssets() {
     sp->LevelCheckpointPickup3 = doubleSizeSprite("../assets/egg_3.png");
     sp->MovingPlatform = normalSizeSprite("../assets/moving_platform.png");
     sp->Block1Side = normalSizeSprite("../assets/floor_tile_1_side.png");
+    sp->Block0Sides = normalSizeSprite("../assets/floor_tile_0_sides.png");
     sp->Block2SidesOpp = normalSizeSprite("../assets/floor_tile_2_sides_opposite.png");
     sp->Block2SidesAdj = normalSizeSprite("../assets/floor_tile_2_sides_adjacent.png");
     sp->Block3Sides = normalSizeSprite("../assets/floor_tile_3_sides.png");

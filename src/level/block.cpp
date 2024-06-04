@@ -14,11 +14,12 @@ std::map<std::string, Sprite*> Block::tileSpriteMap;
 
 void Block::InitializeTileMap() {
     tileSpriteMap = {
-        { "4Sides", &SPRITES->Block4Sides },
+        { "0Sides", &SPRITES->Block0Sides },
         { "1Side", &SPRITES->Block1Side },
         { "2SidesOpp", &SPRITES->Block2SidesOpp },
         { "2SidesAdj", &SPRITES->Block2SidesAdj },
         { "3Sides", &SPRITES->Block3Sides },
+        { "4Sides", &SPRITES->Block4Sides },
     };
 }
 
@@ -158,7 +159,7 @@ void Block::TileAutoAdjust() {
         else rotation = 270;
         break;
     case 4:
-        TileTypeSet("1Side"); // with a bottom line when surrounded by blocks
+        TileTypeSet("0Sides");
         rotation = 180;
         break;
     }
