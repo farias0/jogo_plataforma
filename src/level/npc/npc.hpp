@@ -13,7 +13,7 @@ public:
     bool isFalling;
 
 
-    static void AddFromEditor(Vector2 pos, int interactionTags); // TODO NPCs should be managed by the level module
+    static void CheckAndAdd(Vector2 pos, int interactionTags);
 
     virtual void Tick() override;
 

@@ -1,5 +1,5 @@
 #include "princess.hpp"
-#include "../../editor.hpp"
+#include "../../render.hpp"
 
 
 Princess *Princess::Add() {
@@ -32,9 +32,13 @@ Princess *Princess::Add(Vector2 pos) {
 
 void Princess::CheckAndAdd(Vector2 pos, int interactionTags) {
 
-    if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
+    Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->PrincessDefault1, pos);
 
-    // TODO check
+    if (Level::CheckCollisionWithAnything(hitbox)) {
+        Render::PrintSysMessage("Sem espaço para NPC (Princesa)");
+        TraceLog(LOG_DEBUG, "Couldn't add Princess to level, collision with entity.");
+        return;
+    }
 
-    Add(pos);
+    Add({ hitbox.x, hitbox.y });
 }

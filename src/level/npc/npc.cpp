@@ -1,12 +1,16 @@
 #include "npc.hpp"
 #include "princess.hpp"
 #include "../../render.hpp"
+#include "../../editor.hpp"
 
 
 #define NPC_FALL_RATE           7.0f
 
 
-void INpc::AddFromEditor(Vector2 pos, int interactionTags) {
+void INpc::CheckAndAdd(Vector2 pos, int interactionTags) {
+
+    if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
+    
     Princess::CheckAndAdd(pos, interactionTags);
 }
 

@@ -141,7 +141,7 @@ void loadInLevelEditor() {
     addEntityButton(EDITOR_ENTITY_CHECKPOINT_PICKUP, &SPRITES->LevelCheckpointPickup1, &CheckpointPickup::CheckAndAdd);
     addEntityButton(EDITOR_ENTITY_MOVING_PLATFORM, &SPRITES->MovingPlatform, &MovingPlatform::CheckAndAdd);
     addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->EnemyDummySpike, &EnemyDummySpike::CheckAndAdd);
-    addEntityButton(EDITOR_ENTITY_NPC, &SPRITES->PrincessEditorIcon, &INpc::AddFromEditor);
+    addEntityButton(EDITOR_ENTITY_NPC, &SPRITES->PrincessEditorIcon, &INpc::CheckAndAdd);
 
     addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &Level::Save);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);
