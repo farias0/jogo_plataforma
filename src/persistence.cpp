@@ -13,7 +13,7 @@
 #include "level/checkpoint.hpp"
 #include "level/textbox.hpp"
 #include "level/moving_platform.hpp"
-#include "level/npc/npc.hpp"
+#include "level/npc/princess.hpp"
 #include "files.hpp"
 #include "render.hpp"
 #include "overworld.hpp"
@@ -122,8 +122,8 @@ bool PersistenceLevelLoad(char *levelName) {
                 entity = MovingPlatform::Add();
             else if (entityTag == ENEMY_DUMMY_PERSISTENCE_ID)
                 entity = EnemyDummySpike::Add();
-            else if (entityTag == NPC_PERSISTENCE_ID)
-                entity = Npc::Add();
+            else if (entityTag == PRINCESS_PERSISTENCE_ID)
+                entity = Princess::Add();
             else {
                 TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, entityTag=%s.", entityTag.c_str());
                 continue; 
