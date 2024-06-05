@@ -19,7 +19,7 @@ Npc *Npc::Add(Vector2 pos) {
     Sprite *sprite = &SPRITES->DEFAULT_NPC_SPRITE;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newNpc->tags = 0;
+    newNpc->tags = Level::IS_PERSISTABLE;
     newNpc->hitbox = hitbox;
     newNpc->origin = pos;
     newNpc->sprite = sprite;
