@@ -58,6 +58,8 @@ struct SpriteBank {
     Sprite TextboxButton;
     Sprite TextboxDevButton;
     Sprite TextboxButtonPlaying;
+    Sprite PrincessDefault1;
+    Sprite PrincessEditorIcon;
 
     // Overworld
     Sprite OverworldCursor;
