@@ -4,14 +4,67 @@
 #include "../../editor.hpp"
 
 
+#define NPC_TYPE_DEFAULT        PRINCESS_PERSISTENCE_ID
+
 #define NPC_FALL_RATE           7.0f
 
+
+std::map<std::string, void (*)(Vector2, int)> INpc::npcTypeMap;
+
+
+void INpc::Initialize() {
+    
+    /*
+        TODO 
+            - generalize the PERSISTENCE_IDs to an universal Entity Type ID
+            - have the PeristenceEntityID() equivalent method be static and virtual to maybe all level entities
+    */
+
+    npcTypeMap = {
+        { PRINCESS_PERSISTENCE_ID, &Princess::CheckAndAdd }
+    };
+}
 
 void INpc::CheckAndAdd(Vector2 pos, int interactionTags) {
 
     if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
+
+
+    std::string npcType = NPC_TYPE_DEFAULT; 
     
-    Princess::CheckAndAdd(pos, interactionTags);
+
+    if (auto collidedEntity = Level::CheckCollisionWithAnyEntity(pos)) {
+
+        if (collidedEntity->tags & Level::IS_NPC && interactionTags & EDITOR_INTERACTION_ALT) {
+            
+            npcType = ((INpc *)collidedEntity)->PersistanceEntityID();
+            
+            Level::EntityDestroy(collidedEntity);
+
+            // next npc type
+            for (auto it = npcTypeMap.begin(); it != npcTypeMap.end(); it++) {
+                if (npcType != it->first) continue;
+
+                if (std::next(it) == npcTypeMap.end()) { // last item
+                    it = npcTypeMap.begin();
+                } else {
+                    it++;
+                }
+
+                npcType = it->first;
+            }
+
+            Render::PrintSysMessage("Mudando NPC para " + npcType);
+        }
+        else {
+
+            // Clicked over a non-NPC entity
+            return;
+        }
+
+    }
+    
+    (npcTypeMap.at(npcType))(pos, interactionTags);
 }
 
 void INpc::Tick()

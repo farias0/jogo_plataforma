@@ -10,6 +10,7 @@
 #include "grappling_hook.hpp"
 #include "moving_platform.hpp"
 #include "block.hpp"
+#include "npc/npc.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../editor.hpp"
@@ -153,6 +154,7 @@ void Initialize() {
 
     initializeState();
     Block::InitializeTileMap();
+    INpc::Initialize();
     TraceLog(LOG_INFO, "Level system initialized.");
 }
 

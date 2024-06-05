@@ -1,6 +1,7 @@
 #pragma once
 
 #include <raylib.h>
+#include <map>
 
 #include "../level.hpp"
 #include "../../animation.hpp"
@@ -13,6 +14,8 @@ public:
     bool isFalling;
 
 
+    static void Initialize();
+
     static void CheckAndAdd(Vector2 pos, int interactionTags);
 
     virtual void Tick() override;
@@ -23,4 +26,11 @@ public:
     std::string PersistanceSerialize() override;
 
     virtual std::string PersistanceEntityID() = 0;
+
+
+private:
+
+    // Defines the different NPC types and which add function to use for each of them
+    static std::map<std::string, void (*)(Vector2, int)> npcTypeMap;
+
 };

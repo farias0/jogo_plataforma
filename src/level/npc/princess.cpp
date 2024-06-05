@@ -13,7 +13,8 @@ Princess *Princess::Add(Vector2 pos) {
     Sprite *sprite = &SPRITES->PrincessDefault1;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newPrincess->tags = Level::IS_PERSISTABLE;
+    newPrincess->tags = Level::IS_NPC,
+                        Level::IS_PERSISTABLE;
     newPrincess->hitbox = hitbox;
     newPrincess->origin = pos;
     newPrincess->sprite = sprite;
@@ -24,7 +25,7 @@ Princess *Princess::Add(Vector2 pos) {
 
     LinkedList::AddNode(&Level::STATE->listHead, newPrincess);
 
-    TraceLog(LOG_TRACE, "Added npc to level (x=%.1f, y=%.1f)",
+    TraceLog(LOG_TRACE, "Added princess to level (x=%.1f, y=%.1f)",
                 newPrincess->hitbox.x, newPrincess->hitbox.y);
 
     return newPrincess;

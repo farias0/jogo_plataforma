@@ -46,6 +46,7 @@ typedef enum {
     IS_PERSISTABLE          = 16384,
     IS_GRIDLOCKED           = 32768,
     IS_TILE_BLOCK           = 32768 * 2,
+    IS_NPC                  = 32768 * 4,
 } EntityTag;
 
 
