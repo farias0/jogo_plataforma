@@ -31,6 +31,6 @@ public:
 private:
 
     // Defines the different NPC types and which add function to use for each of them
-    static std::map<std::string, void (*)(Vector2, int)> npcTypeMap;
+    static std::map<std::string, void (*)(Vector2)> npcTypeMap;
 
 };

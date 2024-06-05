@@ -13,8 +13,8 @@ Princess *Princess::Add(Vector2 pos) {
     Sprite *sprite = &SPRITES->PrincessDefault1;
     Rectangle hitbox = SpriteHitboxFromEdge(sprite, pos);
 
-    newPrincess->tags = Level::IS_NPC,
-                        Level::IS_PERSISTABLE;
+    newPrincess->tags = Level::IS_NPC +
+                            Level::IS_PERSISTABLE;
     newPrincess->hitbox = hitbox;
     newPrincess->origin = pos;
     newPrincess->sprite = sprite;
@@ -31,7 +31,7 @@ Princess *Princess::Add(Vector2 pos) {
     return newPrincess;
 }
 
-void Princess::CheckAndAdd(Vector2 pos, int interactionTags) {
+void Princess::CheckAndAdd(Vector2 pos) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->PrincessDefault1, pos);
 

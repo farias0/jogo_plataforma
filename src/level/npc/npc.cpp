@@ -9,7 +9,7 @@
 #define NPC_FALL_RATE           7.0f
 
 
-std::map<std::string, void (*)(Vector2, int)> INpc::npcTypeMap;
+std::map<std::string, void (*)(Vector2)> INpc::npcTypeMap;
 
 
 void INpc::Initialize() {
@@ -64,7 +64,7 @@ void INpc::CheckAndAdd(Vector2 pos, int interactionTags) {
 
     }
     
-    (npcTypeMap.at(npcType))(pos, interactionTags);
+    (npcTypeMap.at(npcType))(pos);
 }
 
 void INpc::Tick()

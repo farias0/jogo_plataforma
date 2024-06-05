@@ -14,7 +14,7 @@ public:
 
     static Princess *Add(Vector2 pos);
 
-    static void CheckAndAdd(Vector2 pos, int interactionTags);
+    static void CheckAndAdd(Vector2 pos);
 
     std::string PersistanceEntityID() {
         return PRINCESS_PERSISTENCE_ID;
