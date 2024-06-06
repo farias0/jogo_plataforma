@@ -22,9 +22,8 @@ public:
 
     virtual void Reset() override;
 
-    void PersistenceParse(const std::string &data) override;
-    std::string PersistanceSerialize() override;
-
+    // TODO should use a more general Entity Type ID instead of relying on PersistanceEntityID
+    // for identifying the NPC type
     virtual std::string PersistanceEntityID() = 0;
 
 

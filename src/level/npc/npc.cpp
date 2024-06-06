@@ -93,16 +93,3 @@ void INpc::Reset() {
     Level::Entity::Reset();
     isFalling = true;
 }
-
-void INpc::PersistenceParse(const std::string &data) {
-
-    Level::Entity::PersistenceParse(data);
-    // int id = std::stoi(persistenceReadValue(data, "textId")); // TODO NPC ID
-}
-
-std::string INpc::PersistanceSerialize() {
-    
-    std::string data = Level::Entity::PersistanceSerialize();
-    // TODO add NPC ID
-    return data;
-}
