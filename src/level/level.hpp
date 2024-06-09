@@ -22,7 +22,9 @@
 // Below this y entities die
 #define FLOOR_DEATH_HEIGHT      1400
 
-#define EXIT_PERSISTENCE_ID     "lvl_exit"
+#define EXIT_ENTITY_ID     "lvl_exit"
+
+#define UNKNOW_LEVEL_ENTITY_ID  "!!!_unknown_level_entity"
 
 
 namespace Level {
@@ -65,8 +67,9 @@ public:
     bool isFacingRight;
     bool isFallingDown;
 
-    // It's a variable so it supports entity types that simply instantiates Entity (i.e. not a subclass)
-    std::string persistanceEntityID = "!!!_unknown_level_entity";
+    // It's an object attribute so it supports entity types that simply instantiates Entity (i.e. not a subclass).
+    // It would save memory, though, if it was part of the class definition -- like a static method returning a compile-time const.
+    std::string entityTypeID = UNKNOW_LEVEL_ENTITY_ID;
     
 
     // Resets entity to its default state
@@ -97,8 +100,12 @@ public:
     virtual std::string PersistanceSerialize();
     virtual void PersistenceParse(const std::string &data);
 
-    std::string EntityTypeID() {
-        return persistanceEntityID;
+    // Yields the entityTypeID system for the PersistenceEntityID tag.
+    const std::string &PersitenceEntityID() override final {
+        if (entityTypeID == UNKNOW_LEVEL_ENTITY_ID) {
+            TraceLog(LOG_ERROR, "Level entity had its PersitenceEntityID() called, but it has no entityTypeID [tags=%lu]", tags);
+        }
+        return entityTypeID;
     }
 
     // If the entity's hitbox should be ignored when it's dead.

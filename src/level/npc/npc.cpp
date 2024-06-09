@@ -4,7 +4,7 @@
 #include "../../editor.hpp"
 
 
-#define NPC_TYPE_DEFAULT        PRINCESS_PERSISTENCE_ID
+#define NPC_TYPE_DEFAULT        PRINCESS_ENTITY_ID
 
 #define NPC_FALL_RATE           7.0f
 
@@ -21,7 +21,7 @@ void INpc::Initialize() {
     */
 
     npcTypeMap = {
-        { PRINCESS_PERSISTENCE_ID, &Princess::CheckAndAdd }
+        { PRINCESS_ENTITY_ID, &Princess::CheckAndAdd }
     };
 }
 
@@ -37,7 +37,7 @@ void INpc::CheckAndAdd(Vector2 pos, int interactionTags) {
 
         if (collidedEntity->tags & Level::IS_NPC && interactionTags & EDITOR_INTERACTION_ALT) {
             
-            npcType = ((INpc *)collidedEntity)->EntityTypeID();
+            npcType = collidedEntity->entityTypeID;
             
             Level::EntityDestroy(collidedEntity);
 

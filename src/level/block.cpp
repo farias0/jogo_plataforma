@@ -40,7 +40,7 @@ Block *Block::Add(Vector2 origin) {
     newBlock->origin = origin;
     newBlock->TileTypeSet(DEFAULT_TILE_TYPE);
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
-
+    newBlock->entityTypeID = BLOCK_ENTITY_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, newBlock);
 
@@ -227,8 +227,7 @@ AcidBlock *AcidBlock::Add(Vector2 origin) {
     newBlock->origin = origin;
     newBlock->sprite = &SPRITES->Acid;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
-
-    newBlock->persistanceEntityID = ACID_BLOCK_PERSISTENCE_ID;
+    newBlock->entityTypeID = ACID_BLOCK_ENTITY_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, newBlock);
 

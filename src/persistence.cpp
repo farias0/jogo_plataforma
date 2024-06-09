@@ -63,7 +63,7 @@ void PersistenceLevelSave(char *levelName) {
 
             if (!(entity->tags & Level::IS_PERSISTABLE)) continue;
 
-            data += entity->EntityTypeID() + ":" + entity->PersistanceSerialize() + '\n';
+            data += entity->PersitenceEntityID() + ":" + entity->PersistanceSerialize() + '\n';
     }
 
     char *levelPath = (char *) MemAlloc(LEVEL_PATH_BUFFER_SIZE);
@@ -102,27 +102,27 @@ bool PersistenceLevelLoad(char *levelName) {
             
                                                         // There's gotta be a better way to associate (at compilation
                                                         // or initialization time) a string tag to a function pointer
-            if (entityTag == PLAYER_PERSISTENCE_ID)
+            if (entityTag == PLAYER_ENTITY_ID)
                 entity = Player::Initialize();
-            else if (entityTag == ENEMY_PERSISTENCE_ID)
+            else if (entityTag == ENEMY_ENTITY_ID)
                 entity = Enemy::Add();
-            else if (entityTag == BLOCK_PERSISTENCE_ID)
+            else if (entityTag == BLOCK_ENTITY_ID)
                 entity = Block::Add();
-            else if (entityTag == ACID_BLOCK_PERSISTENCE_ID)
+            else if (entityTag == ACID_BLOCK_ENTITY_ID)
                 entity = AcidBlock::Add();
-            else if (entityTag == EXIT_PERSISTENCE_ID)
+            else if (entityTag == EXIT_ENTITY_ID)
                 entity = Level::ExitAdd();
-            else if (entityTag == GLIDE_PICKUP_PERSISTENCE_ID)
+            else if (entityTag == GLIDE_PICKUP_ENTITY_ID)
                 entity = GlideAdd();
-            else if (entityTag == CHECKPOINT_PICKUP_PERSISTENCE_ID)
+            else if (entityTag == CHECKPOINT_PICKUP_ENTITY_ID)
                 entity = CheckpointPickup::Add();
-            else if (entityTag == TEXTBOX_BUTTON_PERSISTENCE_ID)
+            else if (entityTag == TEXTBOX_BUTTON_ENTITY_ID)
                 entity = Textbox::Add();
-            else if (entityTag == MOVING_PLATFORM_PERSISTENCE_ID)
+            else if (entityTag == MOVING_PLATFORM_ENTITY_ID)
                 entity = MovingPlatform::Add();
-            else if (entityTag == ENEMY_DUMMY_PERSISTENCE_ID)
+            else if (entityTag == ENEMY_DUMMY_ENTITY_ID)
                 entity = EnemyDummySpike::Add();
-            else if (entityTag == PRINCESS_PERSISTENCE_ID)
+            else if (entityTag == PRINCESS_ENTITY_ID)
                 entity = Princess::Add();
             else {
                 TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, entityTag=%s.", entityTag.c_str());

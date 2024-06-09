@@ -7,8 +7,8 @@
 #include "level.hpp"
 #include "../animation.hpp"
 
-#define ENEMY_PERSISTENCE_ID        "enemy"
-#define ENEMY_DUMMY_PERSISTENCE_ID  "enemy_dummy_spike"
+#define ENEMY_ENTITY_ID        "enemy"
+#define ENEMY_DUMMY_ENTITY_ID  "enemy_dummy_spike"
 
 
 class Enemy : public Level::Entity {
@@ -33,9 +33,6 @@ public:
 
     virtual void Draw();
 
-    std::string EntityTypeID() {
-        return ENEMY_PERSISTENCE_ID;
-    }
 };
 
 
@@ -56,10 +53,6 @@ public:
     void Tick() override;
 
     void Draw() override;
-
-    std::string EntityTypeID() override {
-        return ENEMY_DUMMY_PERSISTENCE_ID;
-    }
 
 private:
 

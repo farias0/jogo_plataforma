@@ -29,6 +29,7 @@ Level::Entity *CheckpointPickup::Add(Vector2 pos) {
     newPickup->sprite = sprite;
     newPickup->isFacingRight = true;
     newPickup->layer = -1;
+    newPickup->entityTypeID = CHECKPOINT_PICKUP_ENTITY_ID;
 
     newPickup->wasPickedUp = false;
 

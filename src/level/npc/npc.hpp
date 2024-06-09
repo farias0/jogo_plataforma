@@ -22,12 +22,6 @@ public:
 
     virtual void Reset() override;
 
-    // TODO should use a more general Entity Type ID instead of relying on PersistanceEntityID
-    // for identifying the NPC type
-    // TODOEntityTypeID
-    virtual std::string EntityTypeID() = 0;
-
-
 private:
 
     // Defines the different NPC types and which add function to use for each of them

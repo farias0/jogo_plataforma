@@ -91,6 +91,7 @@ MovingPlatform *MovingPlatform::Add(Vector2 startPos, Vector2 endPos, int size) 
     newPlatform->sprite = &SPRITES->MovingPlatform;
     newPlatform->isFacingRight = true;
     newPlatform->layer = -1;
+    newPlatform->entityTypeID = MOVING_PLATFORM_ENTITY_ID;
 
     newPlatform->startAnchor.SetPos(startPos);
     newPlatform->endAnchor.SetPos(endPos);

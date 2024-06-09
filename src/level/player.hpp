@@ -9,7 +9,7 @@
 #include "textbox.hpp"
 #include "../animation.hpp"
 
-#define PLAYER_PERSISTENCE_ID   "player"
+#define PLAYER_ENTITY_ID   "player"
 
 
 typedef enum PlayerMode {
@@ -136,9 +136,6 @@ private:
     
     Animation::Animation *getCurrentAnimation();
 
-    std::string EntityTypeID() {
-        return PLAYER_PERSISTENCE_ID;
-    }
 };
 
 
