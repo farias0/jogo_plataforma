@@ -22,7 +22,7 @@
 // Below this y entities die
 #define FLOOR_DEATH_HEIGHT      1400
 
-#define EXIT_ENTITY_ID     "lvl_exit"
+#define EXIT_ENTITY_ID          "lvl_exit"
 
 #define UNKNOW_LEVEL_ENTITY_ID  "!!!_unknown_level_entity"
 
