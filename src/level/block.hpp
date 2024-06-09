@@ -8,8 +8,8 @@
 #include "level.hpp"
 #include "../assets.hpp"
 
-#define BLOCK_PERSISTENCE_ID        "block"
-#define ACID_BLOCK_PERSISTENCE_ID   "acid_block"
+#define BLOCK_ENTITY_ID        "block"
+#define ACID_BLOCK_ENTITY_ID   "acid_block"
 
 
 class Block : public Level::Entity {
@@ -42,10 +42,6 @@ public:
     std::string PersistanceSerialize() override;
     
     void PersistenceParse(const std::string &data) override;
-    
-    std::string PersistanceEntityID() {
-        return BLOCK_PERSISTENCE_ID;
-    }
     
 private:
 

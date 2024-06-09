@@ -8,7 +8,7 @@
 #include "../animation.hpp"
 
 
-#define TEXTBOX_BUTTON_PERSISTENCE_ID       "textbox_button"
+#define TEXTBOX_BUTTON_ENTITY_ID       "textbox_button"
 
 
 class Textbox : public Level::Entity, private Animation::IAnimated {
@@ -53,10 +53,6 @@ public:
 
     void PersistenceParse(const std::string &data) override;
     std::string PersistanceSerialize() override;
-
-    std::string PersistanceEntityID() {
-        return TEXTBOX_BUTTON_PERSISTENCE_ID;
-    }
 
 private:
 

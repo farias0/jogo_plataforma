@@ -19,7 +19,7 @@ Level::Entity *GlideAdd(Vector2 origin) {
     glide->sprite = &SPRITES->GlideItem;
     glide->hitbox = SpriteHitboxFromEdge(glide->sprite, glide->origin);
 
-    glide->persistanceEntityID = GLIDE_PICKUP_PERSISTENCE_ID;
+    glide->entityTypeID = GLIDE_PICKUP_ENTITY_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, glide);
 

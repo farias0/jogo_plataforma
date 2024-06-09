@@ -6,7 +6,7 @@
 #include "level.hpp"
 #include "../animation.hpp"
 
-#define CHECKPOINT_PICKUP_PERSISTENCE_ID        "checkpoint_pickup"
+#define CHECKPOINT_PICKUP_ENTITY_ID        "checkpoint_pickup"
 
 
 class CheckpointPickup : public Level::Entity, private Animation::IAnimated {
@@ -28,10 +28,6 @@ public:
     void Tick();
 
     void Draw();
-
-    std::string PersistanceEntityID() {
-        return CHECKPOINT_PICKUP_PERSISTENCE_ID;
-    }
 
 private:
 

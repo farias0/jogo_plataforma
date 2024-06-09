@@ -20,6 +20,7 @@ Princess *Princess::Add(Vector2 pos) {
     newPrincess->sprite = sprite;
     newPrincess->layer = -1;
     newPrincess->isFacingRight = true;
+    newPrincess->entityTypeID = PRINCESS_ENTITY_ID;
 
     newPrincess->isFalling = true;
 
@@ -37,7 +38,7 @@ void Princess::CheckAndAdd(Vector2 pos) {
 
     if (Level::CheckCollisionWithAnything(hitbox)) {
         Render::PrintSysMessage("Sem espaço para NPC (Princesa)");
-        TraceLog(LOG_DEBUG, "Couldn't add Princess to level, collision with entity.");
+        TraceLog(LOG_TRACE, "Couldn't add Princess to level, collision with entity.");
         return;
     }
 

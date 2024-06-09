@@ -259,7 +259,7 @@ Entity *ExitAdd(Vector2 pos) {
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
-    newExit->persistanceEntityID = EXIT_PERSISTENCE_ID;
+    newExit->entityTypeID = EXIT_ENTITY_ID;
 
     STATE->exit = (Entity *) LinkedList::AddNode(&STATE->listHead, newExit);
 
