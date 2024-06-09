@@ -97,7 +97,7 @@ public:
     virtual std::string PersistanceSerialize();
     virtual void PersistenceParse(const std::string &data);
 
-    std::string PersistanceEntityID() {
+    std::string EntityTypeID() {
         return persistanceEntityID;
     }
 

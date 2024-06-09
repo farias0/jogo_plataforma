@@ -54,7 +54,7 @@ public:
     void PersistenceParse(const std::string &data) override;
     std::string PersistanceSerialize() override;
 
-    std::string PersistanceEntityID() {
+    std::string EntityTypeID() {
         return TEXTBOX_BUTTON_PERSISTENCE_ID;
     }
 

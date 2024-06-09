@@ -37,7 +37,7 @@ void INpc::CheckAndAdd(Vector2 pos, int interactionTags) {
 
         if (collidedEntity->tags & Level::IS_NPC && interactionTags & EDITOR_INTERACTION_ALT) {
             
-            npcType = ((INpc *)collidedEntity)->PersistanceEntityID();
+            npcType = ((INpc *)collidedEntity)->EntityTypeID();
             
             Level::EntityDestroy(collidedEntity);
 

@@ -63,7 +63,7 @@ void PersistenceLevelSave(char *levelName) {
 
             if (!(entity->tags & Level::IS_PERSISTABLE)) continue;
 
-            data += entity->PersistanceEntityID() + ":" + entity->PersistanceSerialize() + '\n';
+            data += entity->EntityTypeID() + ":" + entity->PersistanceSerialize() + '\n';
     }
 
     char *levelPath = (char *) MemAlloc(LEVEL_PATH_BUFFER_SIZE);

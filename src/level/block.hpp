@@ -43,7 +43,7 @@ public:
     
     void PersistenceParse(const std::string &data) override;
     
-    std::string PersistanceEntityID() {
+    std::string EntityTypeID() {
         return BLOCK_PERSISTENCE_ID;
     }
     

@@ -70,7 +70,7 @@ public:
 
     std::string PersistanceSerialize() override;
     void PersistenceParse(const std::string &data) override;
-    std::string PersistanceEntityID() {
+    std::string EntityTypeID() {
         return MOVING_PLATFORM_PERSISTENCE_ID;
     }
 

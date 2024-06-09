@@ -136,7 +136,7 @@ private:
     
     Animation::Animation *getCurrentAnimation();
 
-    std::string PersistanceEntityID() {
+    std::string EntityTypeID() {
         return PLAYER_PERSISTENCE_ID;
     }
 };

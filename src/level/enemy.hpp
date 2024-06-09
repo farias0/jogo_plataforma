@@ -33,7 +33,7 @@ public:
 
     virtual void Draw();
 
-    std::string PersistanceEntityID() {
+    std::string EntityTypeID() {
         return ENEMY_PERSISTENCE_ID;
     }
 };
@@ -57,7 +57,7 @@ public:
 
     void Draw() override;
 
-    std::string PersistanceEntityID() override {
+    std::string EntityTypeID() override {
         return ENEMY_DUMMY_PERSISTENCE_ID;
     }
 

@@ -29,7 +29,7 @@ public:
 
     void Draw();
 
-    std::string PersistanceEntityID() {
+    std::string EntityTypeID() {
         return CHECKPOINT_PICKUP_PERSISTENCE_ID;
     }
 

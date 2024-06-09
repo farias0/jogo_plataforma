@@ -24,7 +24,8 @@ public:
 
     // TODO should use a more general Entity Type ID instead of relying on PersistanceEntityID
     // for identifying the NPC type
-    virtual std::string PersistanceEntityID() = 0;
+    // TODOEntityTypeID
+    virtual std::string EntityTypeID() = 0;
 
 
 private:

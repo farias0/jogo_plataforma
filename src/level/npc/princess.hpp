@@ -16,7 +16,7 @@ public:
 
     static void CheckAndAdd(Vector2 pos);
 
-    std::string PersistanceEntityID() {
+    std::string EntityTypeID() {
         return PRINCESS_PERSISTENCE_ID;
     }
 };
