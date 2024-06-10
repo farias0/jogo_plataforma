@@ -54,12 +54,16 @@ bool isFullscreen = false;
 
 
 // Texture covering the whole screen, used to render shaders
-RenderTexture2D shaderRenderTexture;
+RenderTexture2D levelTransitionShaderTexture;
+RenderTexture2D crtShaderTexture;
 LevelTransitionShaderControl levelTransitionShaderControl;
 
 
 void reloadShaders() {
-    shaderRenderTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    levelTransitionShaderTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    crtShaderTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+
+    ShaderCrtSertUniforms();
 }
 
 
@@ -553,8 +557,8 @@ void drawLevelTransitionShader() {
     );
 
     BeginShaderMode(ShaderLevelTransition);
-        DrawTextureRec(shaderRenderTexture.texture,
-                         { 0, 0, (float)shaderRenderTexture.texture.width, (float)-shaderRenderTexture.texture.height },
+        DrawTextureRec(levelTransitionShaderTexture.texture,
+                         { 0, 0, (float)levelTransitionShaderTexture.texture.width, (float)-levelTransitionShaderTexture.texture.height },
                          { 0, 0 },
                         WHITE );
     EndShaderMode();
@@ -584,7 +588,7 @@ void Render() {
 
     handleFullscreenChange();
 
-    BeginDrawing();
+    BeginTextureMode(crtShaderTexture);
 
         ClearBackground(BLACK);
 
@@ -615,6 +619,18 @@ void Render() {
         drawSysMessages();
 
         if (EDITOR_STATE->isEnabled) drawEditor();
+    
+    EndTextureMode();
+
+    BeginDrawing();
+
+        ClearBackground(BLACK);
+
+        BeginShaderMode(ShaderCRT);
+
+            DrawTextureRec(crtShaderTexture.texture, { 0, 0, (float)crtShaderTexture.texture.width, (float)-crtShaderTexture.texture.height }, { 0, 0 }, WHITE);
+
+        EndShaderMode();
 
     EndDrawing();
 }

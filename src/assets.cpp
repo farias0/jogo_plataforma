@@ -14,6 +14,8 @@ struct SpriteBank *SPRITES = 0;
 // Shaders
 Shader ShaderLevelTransition;
 
+Shader ShaderCRT;
+
 
 static inline Sprite normalSizeSprite(std::string texturePath) {
     return {
@@ -50,6 +52,7 @@ static void unloadAssets() {
 
 
     UnloadShader(ShaderLevelTransition);
+    UnloadShader(ShaderCRT);
     TraceLog(LOG_INFO, "Shaders unloaded.");
 }
 
@@ -139,6 +142,10 @@ static void loadAssets() {
     ShaderLevelTransition = LoadShader(0, "../assets/shaders/level_transition.fs");
     while (!IsShaderReady(ShaderLevelTransition)) {
         TraceLog(LOG_INFO, "Waiting for ShaderLevelTransition...");
+    }
+    ShaderCRT = LoadShader(0, "../assets/shaders/crt_pi.fs");
+    while (!IsShaderReady(ShaderCRT)) {
+        TraceLog(LOG_INFO, "Waiting for ShaderCRT...");
     }
 
     TraceLog(LOG_INFO, "Shaders loaded.");
@@ -240,4 +247,37 @@ void ShaderLevelTransitionSetUniforms(
         return;
     }
     SetShaderValue(ShaderLevelTransition, isCloseLoc, &isClose, SHADER_UNIFORM_INT);
+}
+
+void ShaderCrtSertUniforms() {
+
+    // // Get the location of the uniforms in the shader
+    // int locCurvatureX = GetShaderLocation(ShaderCRT, "CURVATURE_X");
+    // int locCurvatureY = GetShaderLocation(ShaderCRT, "CURVATURE_Y");
+    // int locMaskBrightness = GetShaderLocation(ShaderCRT, "MASK_BRIGHTNESS");
+    // int locScanlineWeight = GetShaderLocation(ShaderCRT, "SCANLINE_WEIGHT");
+    // int locScanlineGapBrightness = GetShaderLocation(ShaderCRT, "SCANLINE_GAP_BRIGHTNESS");
+    // int locBloomFactor = GetShaderLocation(ShaderCRT, "BLOOM_FACTOR");
+    // int locInputGamma = GetShaderLocation(ShaderCRT, "INPUT_GAMMA");
+    // int locOutputGamma = GetShaderLocation(ShaderCRT, "OUTPUT_GAMMA");
+    // int locTextureSize = GetShaderLocation(ShaderCRT, "TextureSize");
+
+    // // Set the values for the shader uniforms
+    // float curvatureX = 0.10f;
+    // float curvatureY = 0.15f;
+    // float maskBrightness = 0.70f;
+    // float scanlineWeight = 6.0f;
+    // float scanlineGapBrightness = 0.12f;
+    // float bloomFactor = 1.5f;
+    // float inputGamma = 2.4f;
+    // float outputGamma = 2.2f;
+
+    // SetShaderValue(ShaderCRT, locCurvatureX, &curvatureX, SHADER_UNIFORM_FLOAT);
+    // SetShaderValue(ShaderCRT, locCurvatureY, &curvatureY, SHADER_UNIFORM_FLOAT);
+    // SetShaderValue(ShaderCRT, locMaskBrightness, &maskBrightness, SHADER_UNIFORM_FLOAT);
+    // SetShaderValue(ShaderCRT, locScanlineWeight, &scanlineWeight, SHADER_UNIFORM_FLOAT);
+    // SetShaderValue(ShaderCRT, locScanlineGapBrightness, &scanlineGapBrightness, SHADER_UNIFORM_FLOAT);
+    // SetShaderValue(ShaderCRT, locBloomFactor, &bloomFactor, SHADER_UNIFORM_FLOAT);
+    // SetShaderValue(ShaderCRT, locInputGamma, &inputGamma, SHADER_UNIFORM_FLOAT);
+    // SetShaderValue(ShaderCRT, locOutputGamma, &outputGamma, SHADER_UNIFORM_FLOAT);
 }

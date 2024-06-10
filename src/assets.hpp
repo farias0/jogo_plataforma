@@ -89,7 +89,7 @@ extern struct SoundBank *SOUNDS;
 
 // Shaders
 extern Shader ShaderLevelTransition;
-
+extern Shader ShaderCRT;
 
 void AssetsInitialize();
 
@@ -119,5 +119,6 @@ Rectangle SpriteHitboxFromMiddle(Sprite *sprite, Vector2 middlePoint);
 void ShaderLevelTransitionSetUniforms(
     Vector2 resolution, Vector2 focusPoint, float duration, float currentTime, int isClose);
 
+void ShaderCrtSertUniforms();
 
 #endif // _ASSETS_H_INCLUDED_
