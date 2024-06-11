@@ -251,33 +251,19 @@ void ShaderLevelTransitionSetUniforms(
 
 void ShaderCrtSertUniforms() {
 
-    // // Get the location of the uniforms in the shader
-    // int locCurvatureX = GetShaderLocation(ShaderCRT, "CURVATURE_X");
-    // int locCurvatureY = GetShaderLocation(ShaderCRT, "CURVATURE_Y");
-    // int locMaskBrightness = GetShaderLocation(ShaderCRT, "MASK_BRIGHTNESS");
-    // int locScanlineWeight = GetShaderLocation(ShaderCRT, "SCANLINE_WEIGHT");
-    // int locScanlineGapBrightness = GetShaderLocation(ShaderCRT, "SCANLINE_GAP_BRIGHTNESS");
-    // int locBloomFactor = GetShaderLocation(ShaderCRT, "BLOOM_FACTOR");
-    // int locInputGamma = GetShaderLocation(ShaderCRT, "INPUT_GAMMA");
-    // int locOutputGamma = GetShaderLocation(ShaderCRT, "OUTPUT_GAMMA");
-    // int locTextureSize = GetShaderLocation(ShaderCRT, "TextureSize");
+    int resolutionLoc = GetShaderLocation(ShaderLevelTransition, "u_resolution");
+    if (resolutionLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_resolution in ShaderLevelTransition");
+        return;
+    }
+    Vector2 res = { (float) GetScreenWidth(), (float) GetScreenHeight() };
+    SetShaderValue(ShaderLevelTransition, resolutionLoc, &res, SHADER_UNIFORM_VEC2);
 
-    // // Set the values for the shader uniforms
-    // float curvatureX = 0.10f;
-    // float curvatureY = 0.15f;
-    // float maskBrightness = 0.70f;
-    // float scanlineWeight = 6.0f;
-    // float scanlineGapBrightness = 0.12f;
-    // float bloomFactor = 1.5f;
-    // float inputGamma = 2.4f;
-    // float outputGamma = 2.2f;
-
-    // SetShaderValue(ShaderCRT, locCurvatureX, &curvatureX, SHADER_UNIFORM_FLOAT);
-    // SetShaderValue(ShaderCRT, locCurvatureY, &curvatureY, SHADER_UNIFORM_FLOAT);
-    // SetShaderValue(ShaderCRT, locMaskBrightness, &maskBrightness, SHADER_UNIFORM_FLOAT);
-    // SetShaderValue(ShaderCRT, locScanlineWeight, &scanlineWeight, SHADER_UNIFORM_FLOAT);
-    // SetShaderValue(ShaderCRT, locScanlineGapBrightness, &scanlineGapBrightness, SHADER_UNIFORM_FLOAT);
-    // SetShaderValue(ShaderCRT, locBloomFactor, &bloomFactor, SHADER_UNIFORM_FLOAT);
-    // SetShaderValue(ShaderCRT, locInputGamma, &inputGamma, SHADER_UNIFORM_FLOAT);
-    // SetShaderValue(ShaderCRT, locOutputGamma, &outputGamma, SHADER_UNIFORM_FLOAT);
+    int timeLoc = GetShaderLocation(ShaderLevelTransition, "u_time");
+    if (timeLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_time in ShaderLevelTransition");
+        return;
+    }
+    float time = GetTime();
+    SetShaderValue(ShaderLevelTransition, timeLoc, &time, SHADER_UNIFORM_VEC2);
 }
