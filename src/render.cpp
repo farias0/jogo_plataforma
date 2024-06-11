@@ -63,7 +63,7 @@ void reloadShaders() {
     levelTransitionShaderTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
     crtShaderTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 
-    ShaderCrtSertUniforms();
+    ShaderCrtSetUniforms();
 }
 
 

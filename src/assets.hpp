@@ -119,6 +119,6 @@ Rectangle SpriteHitboxFromMiddle(Sprite *sprite, Vector2 middlePoint);
 void ShaderLevelTransitionSetUniforms(
     Vector2 resolution, Vector2 focusPoint, float duration, float currentTime, int isClose);
 
-void ShaderCrtSertUniforms();
+void ShaderCrtSetUniforms();
 
 #endif // _ASSETS_H_INCLUDED_

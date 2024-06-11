@@ -249,7 +249,7 @@ void ShaderLevelTransitionSetUniforms(
     SetShaderValue(ShaderLevelTransition, isCloseLoc, &isClose, SHADER_UNIFORM_INT);
 }
 
-void ShaderCrtSertUniforms() {
+void ShaderCrtSetUniforms() {
 
     int resolutionLoc = GetShaderLocation(ShaderLevelTransition, "u_resolution");
     if (resolutionLoc == -1) {
