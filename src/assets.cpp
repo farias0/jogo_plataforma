@@ -143,7 +143,7 @@ static void loadAssets() {
     while (!IsShaderReady(ShaderLevelTransition)) {
         TraceLog(LOG_INFO, "Waiting for ShaderLevelTransition...");
     }
-    ShaderCRT = LoadShader(0, "../assets/shaders/crt_pi.fs");
+    ShaderCRT = LoadShader(0, "../assets/shaders/crt.fs");
     while (!IsShaderReady(ShaderCRT)) {
         TraceLog(LOG_INFO, "Waiting for ShaderCRT...");
     }
@@ -251,19 +251,19 @@ void ShaderLevelTransitionSetUniforms(
 
 void ShaderCrtSetUniforms() {
 
-    int resolutionLoc = GetShaderLocation(ShaderLevelTransition, "u_resolution");
+    int resolutionLoc = GetShaderLocation(ShaderCRT, "u_resolution");
     if (resolutionLoc == -1) {
-        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_resolution in ShaderLevelTransition");
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_resolution in ShaderCRT");
         return;
     }
     Vector2 res = { (float) GetScreenWidth(), (float) GetScreenHeight() };
-    SetShaderValue(ShaderLevelTransition, resolutionLoc, &res, SHADER_UNIFORM_VEC2);
+    SetShaderValue(ShaderCRT, resolutionLoc, &res, SHADER_UNIFORM_VEC2);
 
-    int timeLoc = GetShaderLocation(ShaderLevelTransition, "u_time");
+    int timeLoc = GetShaderLocation(ShaderCRT, "u_time");
     if (timeLoc == -1) {
-        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_time in ShaderLevelTransition");
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_time in ShaderCRT");
         return;
     }
     float time = GetTime();
-    SetShaderValue(ShaderLevelTransition, timeLoc, &time, SHADER_UNIFORM_VEC2);
+    SetShaderValue(ShaderCRT, timeLoc, &time, SHADER_UNIFORM_VEC2);
 }
