@@ -7,7 +7,7 @@ precision mediump float;
 uniform sampler2D texture0;
 
 uniform vec2 u_resolution;  // resolution of the scene
-uniform float u_time; // current time
+
 
 vec2 crt_distort(vec2 uv) {
 	
@@ -19,25 +19,21 @@ vec2 crt_distort(vec2 uv) {
 
 void main() {
 
+	vec3 color;
 	vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-	
+
+
 	// Apply CRT distortion
 	uv = crt_distort(uv);
 	
+
+	color = texture(texture0, uv).rgb;
+	
+
 	// Apply scanlines effect
 	float scanline = mod(gl_FragCoord.y, 2.0) * 0.1;
+	color *= 1.0 - scanline;
 	
-	// Apply color bleeding effect
-	vec3 color = texture(texture0, uv).rgb;
-	vec3 colorBleed = vec3(color.r, 0.0, color.b);
 	
-	// Apply vignette effect
-	vec2 center = vec2(0.5, 0.5);
-	float vignette = smoothstep(0.8, 1.0, distance(uv, center));
-	
-	// Combine all effects
-	vec3 finalColor = mix(colorBleed, color, vignette);
-	finalColor *= 1.0 - scanline;
-	
-	gl_FragColor = vec4(finalColor, 1.0);
+	gl_FragColor = vec4(color, 1.0);
 }
