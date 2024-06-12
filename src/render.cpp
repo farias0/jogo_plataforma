@@ -21,6 +21,7 @@
 #pragma GCC diagnostic ignored "-Wenum-compare"
 #define RAYGUI_IMPLEMENTATION
 #include "../include/raygui.h"
+#include "render.hpp"
 #pragma GCC diagnostic pop
 
 
@@ -51,6 +52,7 @@ LinkedList::Node *SYS_MESSAGES_HEAD = 0;
 
 
 bool isFullscreen = false;
+bool isCrtEnabled = true;
 
 
 // Texture covering the whole screen, used to render shaders
@@ -626,17 +628,22 @@ void Render() {
 
         ClearBackground(BLACK);
 
-        BeginShaderMode(ShaderCRT);
+        if (isCrtEnabled) BeginShaderMode(ShaderCRT);
 
             DrawTextureRec(crtShaderTexture.texture, { 0, 0, (float)crtShaderTexture.texture.width, (float)-crtShaderTexture.texture.height }, { 0, 0 }, WHITE);
 
-        EndShaderMode();
+        if (isCrtEnabled) EndShaderMode();
 
     EndDrawing();
 }
 
 bool IsFullscreen() {
     return isFullscreen;
+}
+
+bool IsCrtEnabled()
+{
+    return isCrtEnabled;
 }
 
 void DrawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally) {
@@ -758,5 +765,9 @@ void FullscreenToggle() {
     reloadShaders(); // TODO why does removing this from here breaks the FS camera on Linux?
 }
 
+void CrtToggle() {
+
+    isCrtEnabled = !isCrtEnabled;
+}
 
 } // namespace
