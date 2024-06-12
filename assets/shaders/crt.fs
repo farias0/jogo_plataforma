@@ -15,6 +15,12 @@ vec2 crt_distort(vec2 uv) {
 	uv = uv * 2.0 - 1.0;
 	uv *= vec2(1.0 + pow(length(uv) * 0.5, 3.0) * 0.1);
 	uv = (uv + 1.0) * 0.5;
+	
+	// Discard pixels that have been wrapped around
+	if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+		discard;
+	}
+	
 	return uv;
 }
 
