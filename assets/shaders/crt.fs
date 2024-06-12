@@ -4,7 +4,8 @@
 precision mediump float;
 #endif
 
-uniform sampler2D texture0;
+
+uniform sampler2D texture0; // underlying texture, automatically provided
 
 uniform vec2 u_resolution;  // resolution of the scene
 
@@ -17,9 +18,14 @@ vec2 crt_distort(vec2 uv) {
 	return uv;
 }
 
+vec3 scanlines(vec3 pixelColors, float pixelY) {
+
+	return pixelColors *= 1.0 - mod(pixelY, 2.0) * 0.1;
+}
+
 void main() {
 
-	vec3 color;
+	vec3 colors;
 	vec2 uv = gl_FragCoord.xy / u_resolution.xy;
 
 
@@ -27,13 +33,12 @@ void main() {
 	uv = crt_distort(uv);
 	
 
-	color = texture(texture0, uv).rgb;
+	colors = texture(texture0, uv).rgb;
 	
 
-	// Apply scanlines effect
-	float scanline = mod(gl_FragCoord.y, 2.0) * 0.1;
-	color *= 1.0 - scanline;
+	// Apply scanlines
+	colors = scanlines(colors, gl_FragCoord.y);
 	
 	
-	gl_FragColor = vec4(color, 1.0);
+	gl_FragColor = vec4(colors, 1.0);
 }
