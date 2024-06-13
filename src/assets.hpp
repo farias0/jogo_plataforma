@@ -41,6 +41,7 @@ struct SpriteBank {
     Sprite EnemyDummySpikePoppingOut2;
     Sprite EnemyDummySpikePoppingOut3;
     Sprite EnemyDummySpikePoppedOut;
+    Sprite Block0Sides;
     Sprite Block1Side;
     Sprite Block2SidesOpp;
     Sprite Block2SidesAdj;
@@ -57,6 +58,8 @@ struct SpriteBank {
     Sprite TextboxButton;
     Sprite TextboxDevButton;
     Sprite TextboxButtonPlaying;
+    Sprite PrincessDefault1;
+    Sprite PrincessEditorIcon;
 
     // Overworld
     Sprite OverworldCursor;
@@ -75,6 +78,8 @@ struct SoundBank {
 
     Sound Jump;
 
+    Sound Track1;
+
 };
 
 
@@ -84,7 +89,7 @@ extern struct SoundBank *SOUNDS;
 
 // Shaders
 extern Shader ShaderLevelTransition;
-
+extern Shader ShaderCRT;
 
 void AssetsInitialize();
 
@@ -114,5 +119,6 @@ Rectangle SpriteHitboxFromMiddle(Sprite *sprite, Vector2 middlePoint);
 void ShaderLevelTransitionSetUniforms(
     Vector2 resolution, Vector2 focusPoint, float duration, float currentTime, int isClose);
 
+void ShaderCrtSetUniforms();
 
 #endif // _ASSETS_H_INCLUDED_

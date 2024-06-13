@@ -14,11 +14,12 @@ std::map<std::string, Sprite*> Block::tileSpriteMap;
 
 void Block::InitializeTileMap() {
     tileSpriteMap = {
-        { "4Sides", &SPRITES->Block4Sides },
+        { "0Sides", &SPRITES->Block0Sides },
         { "1Side", &SPRITES->Block1Side },
         { "2SidesOpp", &SPRITES->Block2SidesOpp },
         { "2SidesAdj", &SPRITES->Block2SidesAdj },
         { "3Sides", &SPRITES->Block3Sides },
+        { "4Sides", &SPRITES->Block4Sides },
     };
 }
 
@@ -39,7 +40,7 @@ Block *Block::Add(Vector2 origin) {
     newBlock->origin = origin;
     newBlock->TileTypeSet(DEFAULT_TILE_TYPE);
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
-
+    newBlock->entityTypeID = BLOCK_ENTITY_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, newBlock);
 
@@ -158,7 +159,7 @@ void Block::TileAutoAdjust() {
         else rotation = 270;
         break;
     case 4:
-        TileTypeSet("1Side"); // with a bottom line when surrounded by blocks
+        TileTypeSet("0Sides");
         rotation = 180;
         break;
     }
@@ -226,8 +227,7 @@ AcidBlock *AcidBlock::Add(Vector2 origin) {
     newBlock->origin = origin;
     newBlock->sprite = &SPRITES->Acid;
     newBlock->hitbox = SpriteHitboxFromEdge(newBlock->sprite, newBlock->origin);
-
-    newBlock->persistanceEntityID = ACID_BLOCK_PERSISTENCE_ID;
+    newBlock->entityTypeID = ACID_BLOCK_ENTITY_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, newBlock);
 

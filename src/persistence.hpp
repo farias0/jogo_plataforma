@@ -33,7 +33,7 @@ public:
 
 	// The ID unique to an entity type that can be persisted.
 	// This ID should be associated to the entity's initalization function at PersistenceLevelLoad().
-	virtual std::string PersistanceEntityID() = 0;
+	virtual const std::string &PersitenceEntityID() = 0;
 
 	/*
 		Adds a value to a data string. To be used inside PersistenceSerialize().

@@ -10,6 +10,7 @@
 #include "grappling_hook.hpp"
 #include "moving_platform.hpp"
 #include "block.hpp"
+#include "npc/npc.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../editor.hpp"
@@ -70,6 +71,8 @@ void initializeState() {
 void leave() {
     
     resetState();
+
+    Sounds::StopMusic();
 
     OverworldLoad();
 
@@ -151,6 +154,7 @@ void Initialize() {
 
     initializeState();
     Block::InitializeTileMap();
+    INpc::Initialize();
     TraceLog(LOG_INFO, "Level system initialized.");
 }
 
@@ -186,6 +190,8 @@ void Load(char *levelName) {
 
     CameraFollow();
 
+    Sounds::PlayMusic(&SOUNDS->Track1);
+
     Render::LevelTransitionEffectStart(
         SpritePosMiddlePoint(
             {PLAYER->hitbox.x, PLAYER->hitbox.y}, PLAYER->sprite), false);
@@ -194,6 +200,8 @@ void Load(char *levelName) {
 }
 
 void GoToOverworld() {
+
+    if (GAME_STATE->menu) DeflatePauseMenu();
 
     if (!PLAYER) {
         leave();
@@ -253,7 +261,7 @@ Entity *ExitAdd(Vector2 pos) {
     newExit->sprite = sprite;
     newExit->isFacingRight = true;
 
-    newExit->persistanceEntityID = EXIT_PERSISTENCE_ID;
+    newExit->entityTypeID = EXIT_ENTITY_ID;
 
     STATE->exit = (Entity *) LinkedList::AddNode(&STATE->listHead, newExit);
 
@@ -366,22 +374,31 @@ void PauseToggle() {
         }
 
         STATE->isPaused = false;
-        
-        delete GAME_STATE->menu;
-        GAME_STATE->menu = 0;
+        DeflatePauseMenu();
 
     } else {
 
         STATE->isPaused = true;
-
-        GAME_STATE->menu = new Menu();
-        GAME_STATE->menu->AddItem(new MenuItem("Continuar", &PauseToggle));
-        GAME_STATE->menu->AddItem(new MenuItemToggle("Caixas de texto do desenvolvedor", &ToggleDevTextbox, &IsDevTextboxEnabled));
-        GAME_STATE->menu->AddItem(new MenuItemToggle("Som", &Sounds::Toggle, &Sounds::IsEnabled));
-        GAME_STATE->menu->AddItem(new MenuItemToggle("Tela cheia", &Render::FullscreenToggle, &Render::IsFullscreen));
-        GAME_STATE->menu->AddItem(new MenuItem("Sair do jogo", &GameExit));
+        InflatePauseMenu();
 
     }
+}
+
+void InflatePauseMenu() {
+
+    GAME_STATE->menu = new Menu();
+    GAME_STATE->menu->AddItem(new MenuItem("Continuar", &PauseToggle));
+    GAME_STATE->menu->AddItem(new MenuItemToggle("Caixas de texto do desenvolvedor", &ToggleDevTextbox, &IsDevTextboxEnabled));
+    GAME_STATE->menu->AddItem(new MenuItemToggle("Som", &Sounds::Toggle, &Sounds::IsEnabled));
+    GAME_STATE->menu->AddItem(new MenuItemToggle("Tela cheia", &Render::FullscreenToggle, &Render::IsFullscreen));
+    GAME_STATE->menu->AddItem(new MenuItemToggle("Shader CRT", &Render::CrtToggle, &Render::IsCrtEnabled));
+    GAME_STATE->menu->AddItem(new MenuItem("Sair do jogo", &GameExit));
+}
+
+void DeflatePauseMenu() {
+
+    delete GAME_STATE->menu;
+    GAME_STATE->menu = 0;
 }
 
 void Tick() {

@@ -130,6 +130,8 @@ Player *Player::Initialize(Vector2 origin) {
 
     newPlayer->jumpGlowAnimationCountdown = -1;
 
+    newPlayer->entityTypeID = PLAYER_ENTITY_ID;
+
     newPlayer->initializeAnimationSystem();
 
 
@@ -715,7 +717,7 @@ void Player::jump() {
         else jumpGlowStrength = 0;
     }
 
-    Sounds::Play(SOUNDS->Jump);
+    Sounds::PlayEffect(&SOUNDS->Jump);
 }
 
 void Player::jumpDouble() {

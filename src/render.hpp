@@ -32,6 +32,8 @@ void Render();
 
 bool IsFullscreen();
 
+bool IsCrtEnabled();
+
 void DrawTexture(Sprite *sprite, Vector2 pos, Color tint, int rotation, bool flipHorizontally);
 
 void DrawLevelEntity(Level::Entity *entity);
@@ -53,6 +55,9 @@ void LevelTransitionEffectStart(Vector2 sceneFocusPont, bool isClose);
 
 // Toggles between full screen and windowed
 void FullscreenToggle();
+
+// Toggles the CRT effect
+void CrtToggle();
 
 
 } // namespace

@@ -14,31 +14,40 @@ void Initialize() {
 
     STATE = SoundsState();
 
+    Toggle(); // disables by default
+
     TraceLog(LOG_INFO, "Sounds initialized.");
-}
-
-void Play(Sound sound) {
-
-    if (STATE.isEnabled) PlaySound(sound);
 }
 
 void Toggle() {
 
-    STATE.isEnabled = !STATE.isEnabled;
-
-    // if (STATE.isEnabled) {
-    //     Render::PrintSysMessage("Som ligado");
-    //     TraceLog(LOG_INFO, "Sound enabled.");
-    // }
-    // else {
-    //     Render::PrintSysMessage("Som desligado");
-    //     TraceLog(LOG_INFO, "Sound disabled.");
-    // }
+    if (IsEnabled())        SetMasterVolume(0);
+    else                    SetMasterVolume(1);
 }
 
 bool IsEnabled() {
-    return STATE.isEnabled;
+    return GetMasterVolume() != 0;
 }
 
+void Tick() {
+
+    if (STATE.trackPlaying && !IsSoundPlaying(*STATE.trackPlaying)) // starts playing song and loops it when finished
+        PlaySound(*STATE.trackPlaying);
+}
+
+void PlayEffect(Sound *sound) {
+    PlaySound(*sound);
+}
+
+void PlayMusic(Sound *track) {
+    STATE.trackPlaying = track;
+}
+
+void StopMusic() {
+    if (STATE.trackPlaying) {
+        StopSound(*STATE.trackPlaying);
+        STATE.trackPlaying = 0;
+    }
+}
 
 }

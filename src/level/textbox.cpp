@@ -45,6 +45,7 @@ Textbox *Textbox::Add(Vector2 pos, int textId) {
     newTextbox->isFacingRight = true;
     newTextbox->isDevTextbox = false;
     newTextbox->SetTextId(textId);
+    newTextbox->entityTypeID = TEXTBOX_BUTTON_ENTITY_ID;
 
     newTextbox->initializeAnimationSystem();
 

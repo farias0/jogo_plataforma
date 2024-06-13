@@ -29,6 +29,7 @@ Enemy *Enemy::Add(Vector2 origin) {
     newEnemy->hitbox = SpriteHitboxFromEdge(newEnemy->sprite, newEnemy->origin);
     newEnemy->isFacingRight = true;
     newEnemy->isFallingDown = true;
+    newEnemy->entityTypeID = ENEMY_ENTITY_ID;
 
     LinkedList::AddNode(&Level::STATE->listHead, newEnemy);
 
@@ -172,6 +173,7 @@ EnemyDummySpike *EnemyDummySpike::Add(Vector2 origin) {
     newEnemy->hitbox = SpriteHitboxFromEdge(newEnemy->sprite, newEnemy->origin);
     newEnemy->isFacingRight = true;
     newEnemy->isFallingDown = true;
+    newEnemy->entityTypeID = ENEMY_DUMMY_ENTITY_ID;
 
     newEnemy->initializeAnimationSystem();
 

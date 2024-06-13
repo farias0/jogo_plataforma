@@ -14,6 +14,8 @@ struct SpriteBank *SPRITES = 0;
 // Shaders
 Shader ShaderLevelTransition;
 
+Shader ShaderCRT;
+
 
 static inline Sprite normalSizeSprite(std::string texturePath) {
     return {
@@ -50,6 +52,7 @@ static void unloadAssets() {
 
 
     UnloadShader(ShaderLevelTransition);
+    UnloadShader(ShaderCRT);
     TraceLog(LOG_INFO, "Shaders unloaded.");
 }
 
@@ -90,6 +93,7 @@ static void loadAssets() {
     sp->LevelCheckpointPickup3 = doubleSizeSprite("../assets/egg_3.png");
     sp->MovingPlatform = normalSizeSprite("../assets/moving_platform.png");
     sp->Block1Side = normalSizeSprite("../assets/floor_tile_1_side.png");
+    sp->Block0Sides = normalSizeSprite("../assets/floor_tile_0_sides.png");
     sp->Block2SidesOpp = normalSizeSprite("../assets/floor_tile_2_sides_opposite.png");
     sp->Block2SidesAdj = normalSizeSprite("../assets/floor_tile_2_sides_adjacent.png");
     sp->Block3Sides = normalSizeSprite("../assets/floor_tile_3_sides.png");
@@ -99,6 +103,8 @@ static void loadAssets() {
     sp->TextboxButton = normalSizeSprite("../assets/textbox_button.png");
     sp->TextboxDevButton = normalSizeSprite("../assets/textbox_dev_button.png");
     sp->TextboxButtonPlaying = normalSizeSprite("../assets/textbox_button_playing.png");
+    sp->PrincessDefault1 = doubleSizeSprite("../assets/princess_default_1.png");
+    sp->PrincessEditorIcon = doubleSizeSprite("../assets/princess_editor_icon.png");
 
     // Overworld
     sp->OverworldCursor = doubleSizeSprite("../assets/cursor_default_1.png");
@@ -118,7 +124,10 @@ static void loadAssets() {
     SoundBank *sn = SOUNDS;
 
     sn->Jump = LoadSound("../assets/sounds/jump.ogg");
-    SetSoundVolume(sn->Jump, 0.5f);
+    SetSoundVolume(sn->Jump, 1.0f);
+
+    sn->Track1 = LoadSound("../assets/sounds/track_1.wav");
+    SetSoundVolume(sn->Track1, 0.6f);
 
     TraceLog(LOG_INFO, "Sounds loaded.");
 
@@ -133,6 +142,10 @@ static void loadAssets() {
     ShaderLevelTransition = LoadShader(0, "../assets/shaders/level_transition.fs");
     while (!IsShaderReady(ShaderLevelTransition)) {
         TraceLog(LOG_INFO, "Waiting for ShaderLevelTransition...");
+    }
+    ShaderCRT = LoadShader(0, "../assets/shaders/crt.fs");
+    while (!IsShaderReady(ShaderCRT)) {
+        TraceLog(LOG_INFO, "Waiting for ShaderCRT...");
     }
 
     TraceLog(LOG_INFO, "Shaders loaded.");
@@ -234,4 +247,23 @@ void ShaderLevelTransitionSetUniforms(
         return;
     }
     SetShaderValue(ShaderLevelTransition, isCloseLoc, &isClose, SHADER_UNIFORM_INT);
+}
+
+void ShaderCrtSetUniforms() {
+
+    int resolutionLoc = GetShaderLocation(ShaderCRT, "u_resolution");
+    if (resolutionLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_resolution in ShaderCRT");
+        return;
+    }
+    Vector2 res = { (float) GetScreenWidth(), (float) GetScreenHeight() };
+    SetShaderValue(ShaderCRT, resolutionLoc, &res, SHADER_UNIFORM_VEC2);
+
+    int timeLoc = GetShaderLocation(ShaderCRT, "u_time");
+    if (timeLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_time in ShaderCRT");
+        return;
+    }
+    double time = GetTime();
+    SetShaderValue(ShaderCRT, timeLoc, &time, SHADER_UNIFORM_INT);
 }
