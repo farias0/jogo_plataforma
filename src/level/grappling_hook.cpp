@@ -16,8 +16,9 @@
 #include "../camera.hpp"
 
 #define ANGLE           PI/3 // With the end being y0 and start being y, 0 <= ANGLE < PI/2
-#define MAX_LENGTH      550
+#define MAX_LENGTH      600
 #define THICKNESS       2.0f
+#define START_SPEED     10.0
 #define LAUNCH_ACCEL    0.85
  
 // Swinging constants
@@ -77,7 +78,7 @@ void GrapplingHook::Tick() {
     }
 
 
-    static float currentSpeed = 0;
+    static float currentSpeed = START_SPEED;
     currentLength += (currentSpeed += LAUNCH_ACCEL);
     if (currentLength > MAX_LENGTH) {
         currentLength = MAX_LENGTH;
