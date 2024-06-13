@@ -391,6 +391,7 @@ void InflatePauseMenu() {
     GAME_STATE->menu->AddItem(new MenuItemToggle("Caixas de texto do desenvolvedor", &ToggleDevTextbox, &IsDevTextboxEnabled));
     GAME_STATE->menu->AddItem(new MenuItemToggle("Som", &Sounds::Toggle, &Sounds::IsEnabled));
     GAME_STATE->menu->AddItem(new MenuItemToggle("Tela cheia", &Render::FullscreenToggle, &Render::IsFullscreen));
+    GAME_STATE->menu->AddItem(new MenuItemToggle("Shader CRT", &Render::CrtToggle, &Render::IsCrtEnabled));
     GAME_STATE->menu->AddItem(new MenuItem("Sair do jogo", &GameExit));
 }
 

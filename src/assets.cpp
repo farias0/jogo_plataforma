@@ -14,6 +14,8 @@ struct SpriteBank *SPRITES = 0;
 // Shaders
 Shader ShaderLevelTransition;
 
+Shader ShaderCRT;
+
 
 static inline Sprite normalSizeSprite(std::string texturePath) {
     return {
@@ -50,6 +52,7 @@ static void unloadAssets() {
 
 
     UnloadShader(ShaderLevelTransition);
+    UnloadShader(ShaderCRT);
     TraceLog(LOG_INFO, "Shaders unloaded.");
 }
 
@@ -139,6 +142,10 @@ static void loadAssets() {
     ShaderLevelTransition = LoadShader(0, "../assets/shaders/level_transition.fs");
     while (!IsShaderReady(ShaderLevelTransition)) {
         TraceLog(LOG_INFO, "Waiting for ShaderLevelTransition...");
+    }
+    ShaderCRT = LoadShader(0, "../assets/shaders/crt.fs");
+    while (!IsShaderReady(ShaderCRT)) {
+        TraceLog(LOG_INFO, "Waiting for ShaderCRT...");
     }
 
     TraceLog(LOG_INFO, "Shaders loaded.");
@@ -240,4 +247,23 @@ void ShaderLevelTransitionSetUniforms(
         return;
     }
     SetShaderValue(ShaderLevelTransition, isCloseLoc, &isClose, SHADER_UNIFORM_INT);
+}
+
+void ShaderCrtSetUniforms() {
+
+    int resolutionLoc = GetShaderLocation(ShaderCRT, "u_resolution");
+    if (resolutionLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_resolution in ShaderCRT");
+        return;
+    }
+    Vector2 res = { (float) GetScreenWidth(), (float) GetScreenHeight() };
+    SetShaderValue(ShaderCRT, resolutionLoc, &res, SHADER_UNIFORM_VEC2);
+
+    int timeLoc = GetShaderLocation(ShaderCRT, "u_time");
+    if (timeLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_time in ShaderCRT");
+        return;
+    }
+    double time = GetTime();
+    SetShaderValue(ShaderCRT, timeLoc, &time, SHADER_UNIFORM_INT);
 }
