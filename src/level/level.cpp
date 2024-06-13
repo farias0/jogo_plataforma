@@ -201,6 +201,8 @@ void Load(char *levelName) {
 
 void GoToOverworld() {
 
+    if (GAME_STATE->menu) DeflatePauseMenu();
+
     if (!PLAYER) {
         leave();
         return;    
@@ -372,22 +374,30 @@ void PauseToggle() {
         }
 
         STATE->isPaused = false;
-        
-        delete GAME_STATE->menu;
-        GAME_STATE->menu = 0;
+        DeflatePauseMenu();
 
     } else {
 
         STATE->isPaused = true;
-
-        GAME_STATE->menu = new Menu();
-        GAME_STATE->menu->AddItem(new MenuItem("Continuar", &PauseToggle));
-        GAME_STATE->menu->AddItem(new MenuItemToggle("Caixas de texto do desenvolvedor", &ToggleDevTextbox, &IsDevTextboxEnabled));
-        GAME_STATE->menu->AddItem(new MenuItemToggle("Som", &Sounds::Toggle, &Sounds::IsEnabled));
-        GAME_STATE->menu->AddItem(new MenuItemToggle("Tela cheia", &Render::FullscreenToggle, &Render::IsFullscreen));
-        GAME_STATE->menu->AddItem(new MenuItem("Sair do jogo", &GameExit));
+        InflatePauseMenu();
 
     }
+}
+
+void InflatePauseMenu() {
+
+    GAME_STATE->menu = new Menu();
+    GAME_STATE->menu->AddItem(new MenuItem("Continuar", &PauseToggle));
+    GAME_STATE->menu->AddItem(new MenuItemToggle("Caixas de texto do desenvolvedor", &ToggleDevTextbox, &IsDevTextboxEnabled));
+    GAME_STATE->menu->AddItem(new MenuItemToggle("Som", &Sounds::Toggle, &Sounds::IsEnabled));
+    GAME_STATE->menu->AddItem(new MenuItemToggle("Tela cheia", &Render::FullscreenToggle, &Render::IsFullscreen));
+    GAME_STATE->menu->AddItem(new MenuItem("Sair do jogo", &GameExit));
+}
+
+void DeflatePauseMenu() {
+
+    delete GAME_STATE->menu;
+    GAME_STATE->menu = 0;
 }
 
 void Tick() {

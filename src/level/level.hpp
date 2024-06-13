@@ -189,6 +189,12 @@ Entity *EntityGetRemoveableAt(Vector2 pos);
 // Toggles between paused and unpaused game
 void PauseToggle();
 
+// Creates the pause menu
+void InflatePauseMenu();
+
+// Destroys the pause menu
+void DeflatePauseMenu();
+
 // Runs the update routine of the level's entities
 void Tick();
 
