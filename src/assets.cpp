@@ -258,4 +258,12 @@ void ShaderCrtSetUniforms() {
     }
     Vector2 res = { (float) GetScreenWidth(), (float) GetScreenHeight() };
     SetShaderValue(ShaderCRT, resolutionLoc, &res, SHADER_UNIFORM_VEC2);
+
+    int timeLoc = GetShaderLocation(ShaderCRT, "u_time");
+    if (timeLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_time in ShaderCRT");
+        return;
+    }
+    double time = GetTime();
+    SetShaderValue(ShaderCRT, timeLoc, &time, SHADER_UNIFORM_INT);
 }

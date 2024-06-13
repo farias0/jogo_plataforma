@@ -628,7 +628,7 @@ void Render() {
 
         ClearBackground(BLACK);
 
-        if (isCrtEnabled) BeginShaderMode(ShaderCRT);
+        if (isCrtEnabled) { ShaderCrtSetUniforms(); BeginShaderMode(ShaderCRT); }
 
             DrawTextureRec(crtShaderTexture.texture, { 0, 0, (float)crtShaderTexture.texture.width, (float)-crtShaderTexture.texture.height }, { 0, 0 }, WHITE);
 

@@ -8,6 +8,7 @@ precision mediump float;
 uniform sampler2D texture0; // underlying texture, automatically provided
 
 uniform vec2 u_resolution;  // resolution of the scene
+uniform int u_time;       	// time elapsed
 
 
 /*
@@ -30,7 +31,9 @@ vec2 crt_distort(vec2 uv) {
 /*
 	Greys out every other line to simulate scanlines.
 */
-vec3 scanlines(vec3 pixelColors, float pixelY) {
+vec3 scanlines(vec3 pixelColors, float pixelY, int time) {
+
+	pixelY += mod(float(time), 5.0);
 
 	if (mod(pixelY, 5.0) < 2.0) {
 		return pixelColors * 0.9;
@@ -85,7 +88,7 @@ void main() {
 
 
 	// Apply scanlines
-	colors = scanlines(colors, gl_FragCoord.y);
+	colors = scanlines(colors, gl_FragCoord.y, u_time);
 	
 	
 	gl_FragColor = vec4(colors, 1.0);
