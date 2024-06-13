@@ -32,7 +32,12 @@ vec2 crt_distort(vec2 uv) {
 */
 vec3 scanlines(vec3 pixelColors, float pixelY) {
 
-	return pixelColors *= 1.0 - mod(pixelY, 2.0) * 0.1;
+	if (mod(pixelY, 5.0) < 2.0) {
+		return pixelColors * 0.9;
+	}
+	else {
+		return pixelColors;
+	}
 }
 
 /*
