@@ -23,7 +23,6 @@ class Player : public Level::Entity, private Animation::IAnimated {
 public:
     // The ground beneath the player, updated every frame, or 0 if there's no ground beneath
     Level::Entity *groundBeneath;
-    Level::Entity *groundBeneathLastFrame;
 
     // TODO maybe add multiple hitboxes support for every entity
     Rectangle upperbody, lowerbody;
@@ -46,7 +45,6 @@ public:
     // for jump buffers
     double lastPressedJump;
     double lastGroundBeneathTime;
-    double lastLandedOnGroundTime;
     Level::Entity *lastGroundBeneath;
 
     // A reference to the launched grappling hook, if there's one  
@@ -57,9 +55,6 @@ public:
 
     // Controls textbox toggling
     Textbox *textboxCollidedLastFrame;
-
-    int jumpGlowAnimationCountdown;
-    int jumpGlowStrength;
 
     // Initializes and adds the player to the level
     static Player *Initialize();
@@ -80,7 +75,7 @@ public:
 
     void SetMode(PlayerMode mode);
 
-    void Jump();
+    void InputJump();
 
     void Tick();
 
@@ -115,9 +110,7 @@ private:
     bool isSkidding;
 
 
-    void jump();
-
-    void jumpDouble();
+    void jump(bool isFromEnemy);
 
     void die();
 
@@ -126,13 +119,6 @@ private:
     float jumpBufferBackwardsSize();
 
     void createAnimations();
-
-    /*
-        Draws glow effect on the player's feet when jumping
-        @param strength The strength of the effect (from 0 to 3)
-        @param progression From far into the animation it is (from 0 to 1)
-    */
-    void drawJumpGlow(int strength, float progression);
     
     Animation::Animation *getCurrentAnimation();
 
