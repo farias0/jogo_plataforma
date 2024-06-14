@@ -109,7 +109,7 @@ void handleInLevelInput() {
 
 
     if (IsKeyPressed(KEY_X) || isGamepadPressed(GP_A))
-        PLAYER->Jump();
+        PLAYER->InputJump();
 
     if (IsKeyPressed(KEY_C) || isGamepadPressed(GP_Y))
         PLAYER->SetCheckpoint();

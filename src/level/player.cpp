@@ -128,8 +128,6 @@ Player *Player::Initialize(Vector2 origin) {
     newPlayer->lastPressedJump = -1;
     newPlayer->lastGroundBeneathTime = -1;
 
-    newPlayer->jumpGlowAnimationCountdown = -1;
-
     newPlayer->entityTypeID = PLAYER_ENTITY_ID;
 
     newPlayer->initializeAnimationSystem();
@@ -217,11 +215,11 @@ void Player::SetMode(PlayerMode newMode) {
     TraceLog(LOG_DEBUG, "Player set mode to %d.", newMode);
 }
 
-void Player::Jump() {
+void Player::InputJump() {
 
     if (hookLaunched && hookLaunched->attachedTo) {
         
-        jump();
+        jump(false);
 
 
         //  Horizontal velocity calculation
@@ -327,7 +325,6 @@ void Player::Tick() {
 
 
     groundBeneath = Level::GetGroundBeneath(PLAYER);
-    if (groundBeneath && !groundBeneathLastFrame) lastLandedOnGroundTime = GetTime();
 
 
     { // Horizontal velocity calculation
@@ -404,17 +401,18 @@ END_HORIZONTAL_VELOCITY_CALCULATION:
         (now - lastPressedJump < jumpBufferBackwardsSize()) &&
         (now - lastGroundBeneathTime < JUMP_BUFFER_FORWARDS_SIZE)) {
 
-        jump();
-
-        // Player jumps off enemy
+        // If player is jumping off enemy
         if (lastGroundBeneath &&
             lastGroundBeneath->tags & Level::IS_ENEMY) {
 
-            jumpDouble();;
+            jump(true);
 
             lastGroundBeneathTime = GetTime();
             ((Enemy *)lastGroundBeneath)->Kill();
             lastGroundBeneath = 0;
+        }
+        else {
+            jump(false);
         }
     }
 
@@ -587,26 +585,12 @@ next_entity:
     }
     textboxCollidedLastFrame = textboxCollidedThisFrame;
 
-    if (jumpGlowAnimationCountdown != -1) {
-        jumpGlowAnimationCountdown--;
-        if (jumpGlowAnimationCountdown <= 0) {
-            jumpGlowAnimationCountdown = -1;
-        }
-    }
-
-    groundBeneathLastFrame = groundBeneath;
-
     sprite = animationTick();
 }
 
 void Player::Draw() {
 
     Entity::Draw();
-
-    if (jumpGlowAnimationCountdown != -1) {
-        float elapsed = (-1 + ((float) jumpGlowAnimationCountdown / (float) ANIMATION_DURATION_JUMP_GLOW)) * - 1;
-        drawJumpGlow(jumpGlowStrength, elapsed);
-    };
 }
 
 void Player::Continue() {
@@ -653,7 +637,6 @@ void Player::Continue() {
     xVelocity = 0;
     lastPressedJump = -1;
     lastGroundBeneathTime = -1;
-    jumpGlowAnimationCountdown = -1;
     lastGroundBeneath = nullptr;
     textboxCollidedLastFrame = nullptr;
 
@@ -699,33 +682,19 @@ void Player::LaunchGrapplingHook() {
     hookLaunched = GrapplingHook::Initialize();
 }
 
-void Player::jump() {
+void Player::jump(bool isFromEnemy) {
 
     isAscending = true;
     yVelocity = jumpStartVelocity();
     yVelocityTarget = 0.0f;
     wasRunningOnJumpStart = Input::STATE.isHoldingRun;
-
-    if (!hookLaunched || !(hookLaunched->attachedTo)) {
-
-        jumpGlowAnimationCountdown = ANIMATION_DURATION_JUMP_GLOW;
-        if (GetTime() - lastLandedOnGroundTime < JUMP_GLOW_MAX_TIME_GAP || (!groundBeneath) || (groundBeneath->tags & Level::IS_ENEMY)) {
-            if (jumpGlowStrength < 3) jumpGlowStrength++;
-            if (jumpGlowStrength == 2) yVelocity = jumpStartVelocity() * 1.3;
-            else if (jumpGlowStrength == 3) yVelocity = jumpStartVelocity() * 1.6;
-        }
-        else jumpGlowStrength = 0;
+    
+    if (isFromEnemy) {
+        yVelocity += (yVelocity/4);
+        if (yVelocity > 20) yVelocity = 20;
     }
 
     Sounds::PlayEffect(&SOUNDS->Jump);
-}
-
-void Player::jumpDouble() {
-
-    jump();
-    yVelocity += (yVelocity/4);
-
-    if (yVelocity > 20) yVelocity = 20;
 }
 
 void Player::die() {
@@ -853,52 +822,4 @@ void Player::PersistenceParse(const std::string &data) {
 
     Level::Entity::PersistenceParse(data);
     SetHitboxPos(origin);
-}
-
-void Player::drawJumpGlow(int strength, float progression) {
-
-    if (progression < 0 || progression > 1) {
-        TraceLog(LOG_ERROR, "Invalid Jump Glow progression :%f.");
-        progression = 0;
-    }
-
-    Color color = RAYWHITE;
-
-    switch (strength) {
-    case 0:
-        return;
-    case 1:
-        color.r = 0;
-        color.g = 0;
-        color.b = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
-        break;
-    case 2:
-        color.r = 0;
-        color.g = 0x66 + ((float)0x44 * ((float)rand()/(float)RAND_MAX));
-        color.b = 0xCC + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
-        break;
-    case 3:
-        color.r = 0;
-        color.g = 0x88 + ((float)0x77 * ((float)rand()/(float)RAND_MAX));
-        color.b = 0;
-        break;
-    default:
-        TraceLog(LOG_ERROR, "Could not draw jump glow, strength:%d.", strength);
-        color = PURPLE;
-        return;
-    }
-
-    Vector2 middlePoint = { hitbox.x + (hitbox.width/2),
-                            hitbox.y + hitbox.height + JUMP_GLOW_Y_OFFSET };
-
-    const float halfLine = JUMP_GLOW_LINE_LENGTH*progression / 2;
-    
-    Vector2 lineOneStart = PosInSceneToScreen({ middlePoint.x - halfLine, middlePoint.y - halfLine });
-    Vector2 lineOneEnd = PosInSceneToScreen({ middlePoint.x + halfLine, middlePoint.y + halfLine });
-
-    Vector2 lineTwoStart = PosInSceneToScreen({ middlePoint.x + halfLine, middlePoint.y - halfLine });
-    Vector2 lineTwoEnd = PosInSceneToScreen({ middlePoint.x - halfLine, middlePoint.y + halfLine });
-
-    DrawLine(lineOneStart.x, lineOneStart.y, lineOneEnd.x, lineOneEnd.y, color);
-    DrawLine(lineTwoStart.x, lineTwoStart.y, lineTwoEnd.x, lineTwoEnd.y, color);
 }
