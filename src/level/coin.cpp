@@ -3,6 +3,8 @@
 #include "../editor.hpp"
 
 
+Animation::Animation Coin::animationDefault;
+
 Coin *Coin::Add() {
     return Add({ 0,0 });
 }
@@ -18,6 +20,8 @@ Coin *Coin::Add(Vector2 origin) {
     newCoin->hitbox = SpriteHitboxFromEdge(newCoin->sprite, newCoin->origin);
     newCoin->entityTypeID = COIN_ENTITY_ID;
     newCoin->isFacingRight = true;
+
+    newCoin->initializeAnimationSystem();
 
     LinkedList::AddNode(&Level::STATE->listHead, newCoin);
 
@@ -52,6 +56,11 @@ bool Coin::IsDisabled() {
     return wasPickedUp;
 }
 
+void Coin::Tick() {
+
+    sprite = animationTick();
+}
+
 void Coin::Draw() {
 
     if (!wasPickedUp)
@@ -68,4 +77,18 @@ std::string Coin::PersistanceSerialize() {
 
 void Coin::PersistenceParse(const std::string &data) {
     Level::Entity::PersistenceParse(data);
+}
+
+void Coin::createAnimations() {
+
+    animationDefault.AddFrame(&SPRITES->Coin1, 240);
+    animationDefault.AddFrame(&SPRITES->Coin2, 2);
+    animationDefault.AddFrame(&SPRITES->Coin3, 4);
+    animationDefault.AddFrame(&SPRITES->Coin2, 2);
+}
+
+
+Animation::Animation * Coin::getCurrentAnimation() {
+
+    return &animationDefault;
 }

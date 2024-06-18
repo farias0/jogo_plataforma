@@ -1,3 +1,4 @@
+
 #ifndef _ASSETS_H_INCLUDED_
 #define _ASSETS_H_INCLUDED_
 
@@ -61,6 +62,8 @@ struct SpriteBank {
     Sprite PrincessDefault1;
     Sprite PrincessEditorIcon;
     Sprite Coin1;
+    Sprite Coin2;
+    Sprite Coin3;
 
     // Overworld
     Sprite OverworldCursor;

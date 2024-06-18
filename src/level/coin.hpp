@@ -1,11 +1,12 @@
 #pragma once
 
 #include "level.hpp"
+#include "../animation.hpp"
 
 #define COIN_ENTITY_ID          "coin"
 
 
-class Coin : public Level::Entity {
+class Coin : public Level::Entity, private Animation::IAnimated {
 
 public:
 
@@ -22,9 +23,19 @@ public:
 
     bool IsDisabled() override;
 
+    void Tick() override;
+
     void Draw() override;
 
     std::string PersistanceSerialize() override;
     
     void PersistenceParse(const std::string &data) override;
+
+private:
+
+    static Animation::Animation animationDefault;
+
+    void createAnimations();
+
+    Animation::Animation *getCurrentAnimation();
 };
