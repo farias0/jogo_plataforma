@@ -59,7 +59,8 @@ void GrapplingHook::Tick() {
 
     if (attachedTo) {
 
-        if (currentLength < MIN_LENGTH) currentLength += ADJUST_SPEED;
+        // Checking only for ground beneath is a very primitive way of avoiding pushing the player into geometry
+        if (currentLength < MIN_LENGTH && !PLAYER->groundBeneath) currentLength += ADJUST_SPEED;
 
         if (attachedTo->tags & Level::IS_MOVING_PLATFORM) {
             Vector2 trajectory = ((MovingPlatform *)attachedTo)->lastFrameTrajectory;
