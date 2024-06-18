@@ -546,12 +546,12 @@ COLISION_CHECKING:
                 ((CheckpointPickup *) entity)->wasPickedUp = true;
             }
 
-            else if (entity->tags & Level::IS_COIN &&
-                        CheckCollisionRecs(entity->hitbox, hitbox)) {
+            else if (entity->tags & Level::IS_COIN) {
 
                 auto coin = (Coin *) entity;
-                coin->PickUp();
-                // TODO increase counter. Here or in PickUp?
+                if (!coin->wasPickedUp && CheckCollisionRecs(entity->hitbox, hitbox)) {
+                    coin->PickUp();
+                }
             }
 
 next_entity:

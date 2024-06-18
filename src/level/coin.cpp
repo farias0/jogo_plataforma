@@ -41,6 +41,8 @@ void Coin::PickUp() {
 
     wasPickedUp = true;
 
+    GAME_STATE->coinsCollected++;
+
     DebugEntityStop(this);
 
     TraceLog(LOG_TRACE, "Picked up coin.");
