@@ -302,13 +302,11 @@ void drawLevelHud() {
 
     if (EDITOR_STATE->isEnabled) return;
 
-    float sceneEndX = CAMERA->sceneXOffset + (SCREEN_WIDTH * CAMERA->fullscreenStretch);
-
     DrawTextureEx(SPRITES->LevelCheckpointFlag.sprite,
-                    { sceneEndX - 149, (float)GetScreenHeight()-65 },
+                    { (float) CAMERA->sceneXOffset + 100, (float)GetScreenHeight()-65 },
                         0, SPRITES->LevelCheckpointFlag.scale/1.7, WHITE);
     DrawText(std::string("x " + std::to_string(Level::STATE->checkpointsLeft)).c_str(),
-                sceneEndX - 100, GetScreenHeight() - 56, 30, RAYWHITE);
+                CAMERA->sceneXOffset + 149, GetScreenHeight() - 56, 30, RAYWHITE);
         
     if (PLAYER && PLAYER->isDead)
         DrawText("VOCÊ MORREU", GetScreenWidth()/2-200, 330, 60, RAYWHITE);
