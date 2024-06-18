@@ -32,7 +32,7 @@ Princess *Princess::Add(Vector2 pos) {
     return newPrincess;
 }
 
-void Princess::CheckAndAdd(Vector2 pos) {
+void Princess::AddFromEditor(Vector2 pos) {
 
     Rectangle hitbox = SpriteHitboxFromMiddle(&SPRITES->PrincessDefault1, pos);
 

@@ -21,11 +21,11 @@ void INpc::Initialize() {
     */
 
     npcTypeMap = {
-        { PRINCESS_ENTITY_ID, &Princess::CheckAndAdd }
+        { PRINCESS_ENTITY_ID, &Princess::AddFromEditor }
     };
 }
 
-void INpc::CheckAndAdd(Vector2 pos, int interactionTags) {
+void INpc::AddFromEditor(Vector2 pos, int interactionTags) {
 
     if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
 

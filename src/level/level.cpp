@@ -271,7 +271,7 @@ Entity *ExitAdd(Vector2 pos) {
     return newExit;
 }
 
-void ExitCheckAndAdd(Vector2 pos, int interactionTags) {
+void ExitAddFromEditor(Vector2 pos, int interactionTags) {
 
     if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
     

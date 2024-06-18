@@ -29,7 +29,7 @@ Level::Entity *GlideAdd(Vector2 origin) {
     return glide;
 }  
 
-void GlideCheckAndAdd(Vector2 origin, int interactionTags) {
+void GlideAddFromEditor(Vector2 origin, int interactionTags) {
 
     if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
 

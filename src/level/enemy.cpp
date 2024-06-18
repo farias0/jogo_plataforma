@@ -39,7 +39,7 @@ Enemy *Enemy::Add(Vector2 origin) {
     return newEnemy;
 }
 
-void Enemy::CheckAndAdd(Vector2 origin, int interactionTags) {
+void Enemy::AddFromEditor(Vector2 origin, int interactionTags) {
 
     if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
 
@@ -185,7 +185,7 @@ EnemyDummySpike *EnemyDummySpike::Add(Vector2 origin) {
     return newEnemy;
 }
 
-void EnemyDummySpike::CheckAndAdd(Vector2 origin, int interactionTags) {
+void EnemyDummySpike::AddFromEditor(Vector2 origin, int interactionTags) {
     
     if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
 

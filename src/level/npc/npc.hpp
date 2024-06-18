@@ -16,7 +16,7 @@ public:
 
     static void Initialize();
 
-    static void CheckAndAdd(Vector2 pos, int interactionTags);
+    static void AddFromEditor(Vector2 pos, int interactionTags);
 
     virtual void Tick() override;
 

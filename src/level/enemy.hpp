@@ -23,7 +23,7 @@ public:
 
     // Initializes and adds an enemy to the level in the given origin,
     // if there are not other elements there already
-    static void CheckAndAdd(Vector2 origin, int interactionTags);
+    static void AddFromEditor(Vector2 origin, int interactionTags);
 
     // Kills a given enemy
     virtual void Kill();
@@ -44,7 +44,7 @@ public:
 
     static EnemyDummySpike *Add(Vector2 origin);
 
-    static void CheckAndAdd(Vector2 origin, int interactionTags);
+    static void AddFromEditor(Vector2 origin, int interactionTags);
 
     void Reset() override;
 

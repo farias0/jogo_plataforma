@@ -131,17 +131,17 @@ EditorControlButton *addControlButton(EditorControlType type, char *label, void 
 void loadInLevelEditor() {
 
     addEntityButton(EDITOR_ENTITY_ERASER, &SPRITES->Eraser, &editorUseEraser);
-    addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->Enemy, &Enemy::CheckAndAdd);
+    addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->Enemy, &Enemy::AddFromEditor);
     EDITOR_STATE->defaultEntityButton =
         addEntityButton(EDITOR_ENTITY_BLOCK, &SPRITES->Block4Sides, &Block::AddOrInteract);
-    addEntityButton(EDITOR_ENTITY_ACID, &SPRITES->Acid, &AcidBlock::CheckAndAdd);   
-    addEntityButton(EDITOR_ENTITY_EXIT, &SPRITES->LevelEndOrb, &Level::ExitCheckAndAdd);
-    addEntityButton(EDITOR_ENTITY_GLIDE, &SPRITES->GlideItem, &GlideCheckAndAdd);
-    addEntityButton(EDITOR_ENTITY_TEXTBOX, &SPRITES->TextboxButton, &Textbox::CheckAndAdd);
-    addEntityButton(EDITOR_ENTITY_CHECKPOINT_PICKUP, &SPRITES->LevelCheckpointPickup1, &CheckpointPickup::CheckAndAdd);
-    addEntityButton(EDITOR_ENTITY_MOVING_PLATFORM, &SPRITES->MovingPlatform, &MovingPlatform::CheckAndAdd);
-    addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->EnemyDummySpike, &EnemyDummySpike::CheckAndAdd);
-    addEntityButton(EDITOR_ENTITY_NPC, &SPRITES->PrincessEditorIcon, &INpc::CheckAndAdd);
+    addEntityButton(EDITOR_ENTITY_ACID, &SPRITES->Acid, &AcidBlock::AddFromEditor);   
+    addEntityButton(EDITOR_ENTITY_EXIT, &SPRITES->LevelEndOrb, &Level::ExitAddFromEditor);
+    addEntityButton(EDITOR_ENTITY_GLIDE, &SPRITES->GlideItem, &GlideAddFromEditor);
+    addEntityButton(EDITOR_ENTITY_TEXTBOX, &SPRITES->TextboxButton, &Textbox::AddFromEditor);
+    addEntityButton(EDITOR_ENTITY_CHECKPOINT_PICKUP, &SPRITES->LevelCheckpointPickup1, &CheckpointPickup::AddFromEditor);
+    addEntityButton(EDITOR_ENTITY_MOVING_PLATFORM, &SPRITES->MovingPlatform, &MovingPlatform::AddFromEditor);
+    addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->EnemyDummySpike, &EnemyDummySpike::AddFromEditor);
+    addEntityButton(EDITOR_ENTITY_NPC, &SPRITES->PrincessEditorIcon, &INpc::AddFromEditor);
 
     addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &Level::Save);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);

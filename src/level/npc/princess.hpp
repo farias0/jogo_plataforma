@@ -14,5 +14,5 @@ public:
 
     static Princess *Add(Vector2 pos);
 
-    static void CheckAndAdd(Vector2 pos);
+    static void AddFromEditor(Vector2 pos);
 };

@@ -107,7 +107,7 @@ MovingPlatform *MovingPlatform::Add(Vector2 startPos, Vector2 endPos, int size) 
     return newPlatform;
 }
 
-void MovingPlatform::CheckAndAdd(Vector2 origin, int interactionTags) {
+void MovingPlatform::AddFromEditor(Vector2 origin, int interactionTags) {
 
     if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
     

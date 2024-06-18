@@ -43,7 +43,7 @@ Level::Entity *CheckpointPickup::Add(Vector2 pos) {
     return newPickup;
 }
 
-void CheckpointPickup::CheckAndAdd(Vector2 pos, int interactionTags) {
+void CheckpointPickup::AddFromEditor(Vector2 pos, int interactionTags) {
 
     if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
     

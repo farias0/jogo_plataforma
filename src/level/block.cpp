@@ -237,7 +237,7 @@ AcidBlock *AcidBlock::Add(Vector2 origin) {
     return newBlock;
 }
 
-void AcidBlock::CheckAndAdd(Vector2 origin, int interactionTags) {
+void AcidBlock::AddFromEditor(Vector2 origin, int interactionTags) {
 
     (void)interactionTags;
     

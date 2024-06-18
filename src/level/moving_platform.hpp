@@ -57,7 +57,7 @@ public:
 
     static MovingPlatform *Add(Vector2 startPos, Vector2 endPos, int size);
 
-    static void CheckAndAdd(Vector2 origin, int interactionTags);
+    static void AddFromEditor(Vector2 origin, int interactionTags);
 
     Rectangle GetOriginHitbox() override;
 

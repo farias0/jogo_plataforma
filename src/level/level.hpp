@@ -167,7 +167,7 @@ Entity *ExitAdd(Vector2 pos);
 
 // Initializes and adds an exit to the level in the given origin,
 // if there are no other entities there already
-void ExitCheckAndAdd(Vector2 pos, int interactionTags);
+void ExitAddFromEditor(Vector2 pos, int interactionTags);
 
 // The ground beneath the entity, or 0 if not on the ground.
 // Gives priority to the tile in the direction the player is looking at.

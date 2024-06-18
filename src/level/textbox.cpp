@@ -57,7 +57,7 @@ Textbox *Textbox::Add(Vector2 pos, int textId) {
     return newTextbox;
 }
 
-void Textbox::CheckAndAdd(Vector2 pos, int interactionTags) {
+void Textbox::AddFromEditor(Vector2 pos, int interactionTags) {
 
     if (!(interactionTags & EDITOR_INTERACTION_CLICK)) return;
 
