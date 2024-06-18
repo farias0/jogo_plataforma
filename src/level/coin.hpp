@@ -33,7 +33,14 @@ public:
 
 private:
 
-    static Animation::Animation animationDefault;
+    // How many frames its animation stays on the idle frame
+    int idlePeriod;
+
+    // How many frames its animation has been idle
+    int timeIntoIdle;
+
+    static Animation::Animation animationIdle;
+    static Animation::Animation animationBlinking;
 
     void createAnimations();
 

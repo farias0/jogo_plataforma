@@ -1,9 +1,16 @@
+#include <stdlib.h>
+
 #include "coin.hpp"
 #include "../debug.hpp"
 #include "../editor.hpp"
 
 
-Animation::Animation Coin::animationDefault;
+#define COIN_ANIMATION_BLINK_PERIOD  8 // in framees
+
+
+Animation::Animation Coin::animationIdle;
+Animation::Animation Coin::animationBlinking;
+
 
 Coin *Coin::Add() {
     return Add({ 0,0 });
@@ -20,6 +27,7 @@ Coin *Coin::Add(Vector2 origin) {
     newCoin->hitbox = SpriteHitboxFromEdge(newCoin->sprite, newCoin->origin);
     newCoin->entityTypeID = COIN_ENTITY_ID;
     newCoin->isFacingRight = true;
+    newCoin->idlePeriod = rand() % 360 + 240;
 
     newCoin->initializeAnimationSystem();
 
@@ -58,6 +66,9 @@ bool Coin::IsDisabled() {
 
 void Coin::Tick() {
 
+    timeIntoIdle++;
+    if (timeIntoIdle > idlePeriod + COIN_ANIMATION_BLINK_PERIOD) timeIntoIdle = 0;
+
     sprite = animationTick();
 }
 
@@ -81,14 +92,19 @@ void Coin::PersistenceParse(const std::string &data) {
 
 void Coin::createAnimations() {
 
-    animationDefault.AddFrame(&SPRITES->Coin1, 240);
-    animationDefault.AddFrame(&SPRITES->Coin2, 2);
-    animationDefault.AddFrame(&SPRITES->Coin3, 4);
-    animationDefault.AddFrame(&SPRITES->Coin2, 2);
+    animationIdle.AddFrame(&SPRITES->Coin1, 1);
+
+    animationBlinking.AddFrame(&SPRITES->Coin2, COIN_ANIMATION_BLINK_PERIOD / 4);
+    animationBlinking.AddFrame(&SPRITES->Coin3, COIN_ANIMATION_BLINK_PERIOD / 2);
+    animationBlinking.AddFrame(&SPRITES->Coin2, COIN_ANIMATION_BLINK_PERIOD / 4);
 }
 
 
 Animation::Animation * Coin::getCurrentAnimation() {
 
-    return &animationDefault;
+    if (timeIntoIdle < idlePeriod) {
+        return &animationIdle;
+    } else {
+        return &animationBlinking;
+    }
 }
