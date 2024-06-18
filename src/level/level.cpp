@@ -118,7 +118,7 @@ static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
         if (possibleGround != entity &&
             possibleGround->tags & IS_GROUND &&
 
-            !possibleGround->IsADeadEnemy() &&
+            !possibleGround->IsDisabled() &&
 
             // If x is within the possible ground
             possibleGround->hitbox.x < (hitbox.x + hitbox.width) &&
@@ -357,7 +357,7 @@ Entity *EntityGetRemoveableAt(Vector2 pos) {
                 result = entity; break;
             }
 
-            if (!entity->IsADeadEnemy() && CheckCollisionPointRec(pos, entity->hitbox)) {
+            if (!entity->IsDisabled() && CheckCollisionPointRec(pos, entity->hitbox)) {
                 result = entity; break;
             }
     }
@@ -434,7 +434,7 @@ Level::Entity *CheckCollisionWithAnyEntity(Rectangle hitbox) {
 
     while (entity != 0) {
 
-        if (!entity->IsADeadEnemy() && CheckCollisionRecs(hitbox, entity->hitbox)) {
+        if (!entity->IsDisabled() && CheckCollisionRecs(hitbox, entity->hitbox)) {
             break; // found it
         }
 
@@ -461,7 +461,7 @@ Level::Entity *CheckCollisionWithAnythingElse(Rectangle hitbox, std::vector<Link
                                     };
 
         if (CheckCollisionRecs(hitbox, entitysOrigin) ||
-            (!entity->IsADeadEnemy() && CheckCollisionRecs(hitbox, entity->hitbox))) {
+            (!entity->IsDisabled() && CheckCollisionRecs(hitbox, entity->hitbox))) {
 
             for (auto e = entitiesToIgnore.begin(); e < entitiesToIgnore.end(); e++) {
                 if (*e == entity) goto next_entity;

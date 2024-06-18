@@ -199,7 +199,7 @@ static void updateEntitySelectionList() {
             }
 
             // generic entity
-            else if (!entity->IsADeadEnemy() && CheckCollisionRecs(selectionHitbox, entity->hitbox)) {
+            else if (!entity->IsDisabled() && CheckCollisionRecs(selectionHitbox, entity->hitbox)) {
                 EDITOR_STATE->selectedEntities.push_back(entity);
                 if (entity->tags & Level::IS_GRIDLOCKED) EDITOR_STATE->isSelectionGridlocked = true;
                 continue;
@@ -467,7 +467,7 @@ bool EditorSelectedEntitiesMove(Vector2 cursorPos) {
             }
             
             // Generic entity
-            else if ((CheckCollisionPointRec(cursorPos, entity->hitbox) && !entity->IsADeadEnemy()) ||
+            else if ((CheckCollisionPointRec(cursorPos, entity->hitbox) && !entity->IsDisabled()) ||
                     CheckCollisionPointRec(cursorPos, entity->GetOriginHitbox())) {
                         
                         clickedOnASelectedEntity = true; break;

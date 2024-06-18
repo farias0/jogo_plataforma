@@ -49,6 +49,7 @@ typedef enum {
     IS_GRIDLOCKED           = 32768,
     IS_TILE_BLOCK           = 32768 * 2,
     IS_NPC                  = 32768 * 4,
+    IS_COIN                 = 32768 * 8,
 } EntityTag;
 
 
@@ -108,9 +109,9 @@ public:
         return entityTypeID;
     }
 
-    // If the entity's hitbox should be ignored when it's dead.
-    bool IsADeadEnemy() {
-        return (tags & IS_ENEMY) && isDead;
+    // If the entity is disabled, it should not be interacted with.
+    virtual bool IsDisabled() {
+        return false;
     }
 };
 

@@ -474,7 +474,7 @@ void drawEditorEntitySelection() {
             if (EDITOR_STATE->isMovingSelectedEntities) {
                 entity->DrawMoveGhost();
             } else {
-                if (!entity->IsADeadEnemy()) drawSceneRectangle(entity->hitbox, color);
+                if (!entity->IsDisabled()) drawSceneRectangle(entity->hitbox, color);
                 drawSceneRectangle(entity->GetOriginHitbox(), color);
             }
 

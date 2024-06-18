@@ -54,6 +54,10 @@ void Enemy::AddFromEditor(Vector2 origin, int interactionTags) {
     Add({ hitbox.x, hitbox.y });
 }
 
+bool Enemy::IsDisabled() {
+    return isDead;
+}
+
 void Enemy::Tick() {
 
     if (Level::STATE->concludedAgo >= 0) return;

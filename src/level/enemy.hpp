@@ -25,6 +25,8 @@ public:
     // if there are not other elements there already
     static void AddFromEditor(Vector2 origin, int interactionTags);
 
+    bool IsDisabled() override;
+
     // Kills a given enemy
     virtual void Kill();
 

@@ -10,6 +10,7 @@
 #include "checkpoint.hpp"
 #include "textbox.hpp"
 #include "moving_platform.hpp"
+#include "coin.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../sounds.hpp"
@@ -545,6 +546,14 @@ COLISION_CHECKING:
                 ((CheckpointPickup *) entity)->wasPickedUp = true;
             }
 
+            else if (entity->tags & Level::IS_COIN &&
+                        CheckCollisionRecs(entity->hitbox, hitbox)) {
+
+                auto coin = (Coin *) entity;
+                coin->PickUp();
+                // TODO increase counter. Here or in PickUp?
+            }
+
 next_entity:
             entity = (Level::Entity *)  entity->next;
         }
@@ -604,7 +613,7 @@ void Player::Continue() {
 
         // Doesn't respawn enemies that are too close to the checkpoint,
         // so the player doesn't get stuck
-        if (Level::STATE->checkpoint && entity->IsADeadEnemy()) {
+        if (Level::STATE->checkpoint && entity->tags & Level::IS_ENEMY && entity->isDead) {
 
             const auto h = Level::STATE->checkpoint->hitbox;
             Rectangle enlargedHitbox = { h.x - h.width,
