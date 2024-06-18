@@ -17,9 +17,11 @@
 
 #define ANGLE           PI/3 // With the end being y0 and start being y, 0 <= ANGLE < PI/2
 #define MAX_LENGTH      600
+#define MIN_LENGTH      150
 #define THICKNESS       2.0f
 #define START_SPEED     10.0
 #define LAUNCH_ACCEL    0.85
+#define ADJUST_SPEED    3
  
 // Swinging constants
 #define GRAVITY_ACCEL               12
@@ -56,6 +58,8 @@ void GrapplingHook::Tick() {
     
 
     if (attachedTo) {
+
+        if (currentLength < MIN_LENGTH) currentLength += ADJUST_SPEED;
 
         if (attachedTo->tags & Level::IS_MOVING_PLATFORM) {
             Vector2 trajectory = ((MovingPlatform *)attachedTo)->lastFrameTrajectory;
