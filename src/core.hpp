@@ -72,6 +72,8 @@ typedef struct GameState {
     // The opened menu, if it exists;
     Menu *menu;
 
+    int coinsCollected;
+
 } GameState;
 
 

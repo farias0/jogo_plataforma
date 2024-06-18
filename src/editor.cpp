@@ -10,6 +10,7 @@
 #include "level/textbox.hpp"
 #include "level/moving_platform.hpp"
 #include "level/npc/princess.hpp"
+#include "level/coin.hpp"
 #include "overworld.hpp"
 #include "linked_list.hpp"
 #include "camera.hpp"
@@ -142,6 +143,7 @@ void loadInLevelEditor() {
     addEntityButton(EDITOR_ENTITY_MOVING_PLATFORM, &SPRITES->MovingPlatform, &MovingPlatform::AddFromEditor);
     addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->EnemyDummySpike, &EnemyDummySpike::AddFromEditor);
     addEntityButton(EDITOR_ENTITY_NPC, &SPRITES->PrincessEditorIcon, &INpc::AddFromEditor);
+    addEntityButton(EDITOR_ENTITY_COIN, &SPRITES->Coin1, &Coin::AddFromEditor);
 
     addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &Level::Save);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);
@@ -197,7 +199,7 @@ static void updateEntitySelectionList() {
             }
 
             // generic entity
-            else if (!entity->IsADeadEnemy() && CheckCollisionRecs(selectionHitbox, entity->hitbox)) {
+            else if (!entity->IsDisabled() && CheckCollisionRecs(selectionHitbox, entity->hitbox)) {
                 EDITOR_STATE->selectedEntities.push_back(entity);
                 if (entity->tags & Level::IS_GRIDLOCKED) EDITOR_STATE->isSelectionGridlocked = true;
                 continue;
@@ -465,7 +467,7 @@ bool EditorSelectedEntitiesMove(Vector2 cursorPos) {
             }
             
             // Generic entity
-            else if ((CheckCollisionPointRec(cursorPos, entity->hitbox) && !entity->IsADeadEnemy()) ||
+            else if ((CheckCollisionPointRec(cursorPos, entity->hitbox) && !entity->IsDisabled()) ||
                     CheckCollisionPointRec(cursorPos, entity->GetOriginHitbox())) {
                         
                         clickedOnASelectedEntity = true; break;

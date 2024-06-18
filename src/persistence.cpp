@@ -14,6 +14,7 @@
 #include "level/textbox.hpp"
 #include "level/moving_platform.hpp"
 #include "level/npc/princess.hpp"
+#include "level/coin.hpp"
 #include "files.hpp"
 #include "render.hpp"
 #include "overworld.hpp"
@@ -124,6 +125,8 @@ bool PersistenceLevelLoad(char *levelName) {
                 entity = EnemyDummySpike::Add();
             else if (entityTag == PRINCESS_ENTITY_ID)
                 entity = Princess::Add();
+            else if (entityTag == COIN_ENTITY_ID)
+                entity = Coin::Add();
             else {
                 TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, entityTag=%s.", entityTag.c_str());
                 continue; 

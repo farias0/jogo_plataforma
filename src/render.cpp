@@ -307,6 +307,12 @@ void drawLevelHud() {
                         0, SPRITES->LevelCheckpointFlag.scale/1.7, WHITE);
     DrawText(std::string("x " + std::to_string(Level::STATE->checkpointsLeft)).c_str(),
                 CAMERA->sceneXOffset + 149, GetScreenHeight() - 56, 30, RAYWHITE);
+
+    DrawTextureEx(SPRITES->Coin1.sprite,
+                    { (float) CAMERA->sceneXOffset + 222, (float)GetScreenHeight()-54 },
+                        0, SPRITES->Coin1.scale, WHITE);
+    DrawText(std::string("x " + std::to_string(GAME_STATE->coinsCollected)).c_str(),
+                CAMERA->sceneXOffset + 259, GetScreenHeight() - 56, 30, RAYWHITE);
         
     if (PLAYER && PLAYER->isDead)
         DrawText("VOCÊ MORREU", GetScreenWidth()/2-200, 330, 60, RAYWHITE);
@@ -474,7 +480,7 @@ void drawEditorEntitySelection() {
             if (EDITOR_STATE->isMovingSelectedEntities) {
                 entity->DrawMoveGhost();
             } else {
-                if (!entity->IsADeadEnemy()) drawSceneRectangle(entity->hitbox, color);
+                if (!entity->IsDisabled()) drawSceneRectangle(entity->hitbox, color);
                 drawSceneRectangle(entity->GetOriginHitbox(), color);
             }
 

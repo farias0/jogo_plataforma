@@ -73,6 +73,8 @@ void GameStateReset() {
     GAME_STATE->showDebugGrid = false;
     GAME_STATE->showDebugHUD = false;
 
+    GAME_STATE->coinsCollected = 0;
+
     EditorDisable();
     DebugHudDisable();
     MouseCursorDisable();
