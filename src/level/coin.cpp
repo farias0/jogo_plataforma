@@ -27,7 +27,7 @@ Coin *Coin::Add(Vector2 origin) {
     newCoin->hitbox = SpriteHitboxFromEdge(newCoin->sprite, newCoin->origin);
     newCoin->entityTypeID = COIN_ENTITY_ID;
     newCoin->isFacingRight = true;
-    newCoin->idlePeriod = rand() % 360 + 240;
+    newCoin->idlePeriod = rand() % 360 + 180;
 
     newCoin->initializeAnimationSystem();
 
