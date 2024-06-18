@@ -60,6 +60,7 @@ struct SpriteBank {
     Sprite TextboxButtonPlaying;
     Sprite PrincessDefault1;
     Sprite PrincessEditorIcon;
+    Sprite Coin1;
 
     // Overworld
     Sprite OverworldCursor;

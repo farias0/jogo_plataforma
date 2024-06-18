@@ -10,6 +10,7 @@
 #include "level/textbox.hpp"
 #include "level/moving_platform.hpp"
 #include "level/npc/princess.hpp"
+#include "level/coin.hpp"
 #include "overworld.hpp"
 #include "linked_list.hpp"
 #include "camera.hpp"
@@ -142,6 +143,7 @@ void loadInLevelEditor() {
     addEntityButton(EDITOR_ENTITY_MOVING_PLATFORM, &SPRITES->MovingPlatform, &MovingPlatform::AddFromEditor);
     addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->EnemyDummySpike, &EnemyDummySpike::AddFromEditor);
     addEntityButton(EDITOR_ENTITY_NPC, &SPRITES->PrincessEditorIcon, &INpc::AddFromEditor);
+    addEntityButton(EDITOR_ENTITY_COIN, &SPRITES->Coin1, &Coin::AddFromEditor);
 
     addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &Level::Save);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);

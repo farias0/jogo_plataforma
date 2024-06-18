@@ -105,6 +105,7 @@ static void loadAssets() {
     sp->TextboxButtonPlaying = normalSizeSprite("../assets/textbox_button_playing.png");
     sp->PrincessDefault1 = doubleSizeSprite("../assets/princess_default_1.png");
     sp->PrincessEditorIcon = doubleSizeSprite("../assets/princess_editor_icon.png");
+    sp->Coin1 = normalSizeSprite("../assets/coin_1.png");
 
     // Overworld
     sp->OverworldCursor = doubleSizeSprite("../assets/cursor_default_1.png");
