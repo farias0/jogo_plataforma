@@ -5,7 +5,9 @@
 #include "../editor.hpp"
 
 
-#define COIN_ANIMATION_BLINK_PERIOD  8 // in framees
+#define COIN_ANIMATION_BLINK_PERIOD     8 // in framees
+#define COIN_ANIMATION_IDLE_MIN_PERIOD  8 * 60 // in frames
+#define COIN_ANIMATION_IDLE_MAX_PERIOD  16 * 60 // in frames
 
 
 Animation::Animation Coin::animationIdle;
@@ -27,7 +29,8 @@ Coin *Coin::Add(Vector2 origin) {
     newCoin->hitbox = SpriteHitboxFromEdge(newCoin->sprite, newCoin->origin);
     newCoin->entityTypeID = COIN_ENTITY_ID;
     newCoin->isFacingRight = true;
-    newCoin->idlePeriod = rand() % 360 + 180;
+    newCoin->idlePeriod = rand() % (COIN_ANIMATION_IDLE_MAX_PERIOD - COIN_ANIMATION_IDLE_MIN_PERIOD)
+                            + COIN_ANIMATION_IDLE_MIN_PERIOD;
 
     newCoin->initializeAnimationSystem();
 
