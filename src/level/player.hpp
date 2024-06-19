@@ -81,8 +81,7 @@ public:
 
     void Draw() override;
 
-    // Continues the game after dying.
-    void Continue();
+    void Reset() override;
 
     void SetCheckpoint();
 

@@ -611,36 +611,10 @@ void Player::Draw() {
     Entity::Draw();
 }
 
-void Player::Continue() {
+void Player::Reset() {
 
-    Level::STATE->isPaused = false;
+    Level::Entity::Reset();
 
-    // Reset all the entities to their origins
-    for (Entity *entity = (Entity *) Level::STATE->listHead;
-        entity != 0;
-        entity = (Entity *) entity->next) {
-
-        // Doesn't respawn enemies that are too close to the checkpoint,
-        // so the player doesn't get stuck
-        if (Level::STATE->checkpoint && entity->tags & Level::IS_ENEMY && entity->isDead) {
-
-            const auto h = Level::STATE->checkpoint->hitbox;
-            Rectangle enlargedHitbox = { h.x - h.width,
-                                            h.y - h.height,
-                                            h.width * 3,
-                                            h.height * 3 };
-
-            if (CheckCollisionRecs(enlargedHitbox, entity->GetOriginHitbox())) {
-
-                TraceLog(LOG_DEBUG, "Didn't respawn entity with tag %d, collided with checkpoint.", entity->tags);
-                continue;
-            }
-        }
-
-        entity->Reset();
-    }
-
-    // TODO put this into player->Reset();
     if (Level::STATE->checkpoint) {
         Vector2 pos = RectangleGetPos(Level::STATE->checkpoint->hitbox);
         pos.y -= Level::STATE->checkpoint->hitbox.height;
@@ -659,10 +633,6 @@ void Player::Continue() {
     textboxCollidedLastFrame = nullptr;
 
     if (hookLaunched) delete hookLaunched;
-
-    CameraLevelCentralizeOnPlayer();
-
-    TraceLog(LOG_DEBUG, "Player continue.");
 }
 
 void Player::SetCheckpoint() {

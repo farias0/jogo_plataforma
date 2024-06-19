@@ -72,6 +72,41 @@ void initializeState() {
     TraceLog(LOG_INFO, "Level State initialized.");
 }
 
+// Resets the level after the player dies and continues
+void continueLevel() {
+
+    STATE->isPaused = false;
+
+    // Reset all the entities to their origins
+    for (Entity *entity = (Entity *) STATE->listHead;
+        entity != 0;
+        entity = (Entity *) entity->next) {
+
+        // Doesn't respawn enemies that are too close to the checkpoint,
+        // so the player doesn't get stuck
+        if (STATE->checkpoint && entity->tags & IS_ENEMY && entity->isDead) {
+
+            const auto h = STATE->checkpoint->hitbox;
+            Rectangle enlargedHitbox = { h.x - h.width,
+                                            h.y - h.height,
+                                            h.width * 3,
+                                            h.height * 3 };
+
+            if (CheckCollisionRecs(enlargedHitbox, entity->GetOriginHitbox())) {
+
+                TraceLog(LOG_DEBUG, "Didn't respawn entity with tag %d, collided with checkpoint.", entity->tags);
+                continue;
+            }
+        }
+
+        entity->Reset();
+    }
+
+    CameraLevelCentralizeOnPlayer();
+
+    TraceLog(LOG_DEBUG, "Level continue.");
+}
+
 void leave() {
     
     resetState();
@@ -374,7 +409,7 @@ void PauseToggle() {
     if (STATE->isPaused) {
 
         if (PLAYER && PLAYER->isDead) {
-            PLAYER->Continue();
+            continueLevel();
         }
 
         STATE->isPaused = false;
