@@ -10,7 +10,7 @@ class Princess : public INpc {
 
 public:
 
-    static Princess *Add();
+    static Princess *AddFromPersistence();
 
     static Princess *Add(Vector2 pos);
 

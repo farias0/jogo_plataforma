@@ -19,7 +19,7 @@ public:
     static void InitializeTileMap();
     
     // Adds a block to the level
-    static Block *Add();
+    static Block *AddFromPersistence();
 
     // Adds a block to the level in the given position
     static Block *Add(Vector2 origin);
@@ -59,7 +59,7 @@ class AcidBlock : public Level::Entity {
 public:
     
     // Adds an acid block to the level
-    static AcidBlock *Add();
+    static AcidBlock *AddFromPersistence();
 
     // Adds an acid block to the level in the given position
     static AcidBlock *Add(Vector2 origin);

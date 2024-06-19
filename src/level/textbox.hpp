@@ -25,7 +25,7 @@ public:
 
     ~Textbox();
 
-    static Textbox *Add();
+    static Textbox *AddFromPersistence();
 
     // Initializes and adds a textbox button to the level
     static Textbox *Add(Vector2 pos, int textId);

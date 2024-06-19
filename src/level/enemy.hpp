@@ -16,7 +16,7 @@ class Enemy : public Level::Entity {
 public:
 
     // Initializes and adds an enemy to the level
-    static Enemy *Add();
+    static Enemy *AddFromPersistence();
 
     // Initializes and adds an enemy to the level in the given origin
     static Enemy *Add(Vector2 origin);
@@ -42,7 +42,7 @@ class EnemyDummySpike : public Enemy, public Animation::IAnimated {
 
 public:
 
-    static EnemyDummySpike *Add();
+    static EnemyDummySpike *AddFromPersistence();
 
     static EnemyDummySpike *Add(Vector2 origin);
 

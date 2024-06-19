@@ -5,7 +5,7 @@
 #include "../editor.hpp"
 
 
-Level::Entity *GlideAdd() {
+Level::Entity *GlideAddFromPersistence() {
     return GlideAdd({ 0, 0 });
 }
 

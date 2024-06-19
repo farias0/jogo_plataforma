@@ -11,7 +11,7 @@
 Animation::Animation CheckpointPickup::animation;
 
 
-Level::Entity *CheckpointPickup::Add() {
+Level::Entity *CheckpointPickup::AddFromPersistence() {
     return Add({ 0, 0 });
 }
 

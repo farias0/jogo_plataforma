@@ -76,6 +76,7 @@
         "map": "cpp",
         "xtree": "cpp",
         "ranges": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "*.rh": "cpp"
     }
 }

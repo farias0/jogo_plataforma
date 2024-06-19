@@ -74,7 +74,7 @@ void MovingPlatformAnchor::DrawMoveGhost() {
 
 ///////
 
-MovingPlatform *MovingPlatform::Add() {
+MovingPlatform *MovingPlatform::AddFromPersistence() {
     return Add({ 0, 0 }, { 20, 20 }, DEFAULT_SIZE);
 }
 

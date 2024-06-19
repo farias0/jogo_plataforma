@@ -23,7 +23,7 @@ void Block::InitializeTileMap() {
     };
 }
 
-Block *Block::Add() {
+Block *Block::AddFromPersistence() {
     return Add({ 0,0 });
 }
 
@@ -210,7 +210,7 @@ void Block::TileTypeSet(const std::string &id) {
 
 //
 
-AcidBlock *AcidBlock::Add() {
+AcidBlock *AcidBlock::AddFromPersistence() {
     return Add({ 0,0 });
 }
 

@@ -13,7 +13,7 @@ public:
     bool wasPickedUp;
 
 
-    static Coin *Add();
+    static Coin *AddFromPersistence();
 
     static Coin *Add(Vector2 origin);
 

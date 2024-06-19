@@ -25,7 +25,7 @@ Textbox::~Textbox() {
     if (TextboxDisplaying == this) TextboxDisplaying = 0;
 }
 
-Textbox *Textbox::Add() {
+Textbox *Textbox::AddFromPersistence() {
     return Add({ 0, 0 }, -1);
 }
 

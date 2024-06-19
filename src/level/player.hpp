@@ -57,7 +57,7 @@ public:
     Textbox *textboxCollidedLastFrame;
 
     // Initializes and adds the player to the level
-    static Player *Initialize();
+    static Player *AddFromPersistence();
 
     // Initializes and adds the player to the level in the given origin
     static Player *Initialize(Vector2 origin);

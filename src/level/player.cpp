@@ -106,7 +106,7 @@ Animation::Animation Player::animationSwingingForwards;
 Animation::Animation Player::animationSwingingBackwards;
 
 
-Player *Player::Initialize() {
+Player *Player::AddFromPersistence() {
 
     return Initialize({ 0, 0 });
 }

@@ -2,7 +2,7 @@
 #include "../../render.hpp"
 
 
-Princess *Princess::Add() {
+Princess *Princess::AddFromPersistence() {
     return Add({ 0, 0 });
 }
 

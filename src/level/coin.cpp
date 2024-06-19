@@ -12,7 +12,7 @@ Animation::Animation Coin::animationIdle;
 Animation::Animation Coin::animationBlinking;
 
 
-Coin *Coin::Add() {
+Coin *Coin::AddFromPersistence() {
     return Add({ 0,0 });
 }
 

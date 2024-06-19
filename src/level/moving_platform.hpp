@@ -53,7 +53,7 @@ public:
 
     MovingPlatform() : Level::Entity(), startAnchor(this, GREEN), endAnchor(this, RED) {};
 
-    static MovingPlatform *Add();
+    static MovingPlatform *AddFromPersistence();
 
     static MovingPlatform *Add(Vector2 startPos, Vector2 endPos, int size);
 

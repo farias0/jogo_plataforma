@@ -8,7 +8,7 @@
 #define GLIDE_PICKUP_ENTITY_ID         "glide_pickup"
 
 
-Level::Entity *GlideAdd();
+Level::Entity *GlideAddFromPersistence();
 
 Level::Entity *GlideAdd(Vector2 origin);
 

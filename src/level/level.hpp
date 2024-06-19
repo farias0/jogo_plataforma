@@ -163,7 +163,7 @@ void GoToOverworld();
 Entity *CheckpointFlagAdd(Vector2 pos);
 
 // Initializes and adds an exit to the level
-Entity *ExitAdd();
+Entity *ExitAddFromPersistence();
 
 // Initializes and adds an exit to the level in the given origin
 Entity *ExitAdd(Vector2 pos);

@@ -247,7 +247,7 @@ Entity *CheckpointFlagAdd(Vector2 pos) {
     return newCheckpoint;
 }
 
-Entity *ExitAdd() {
+Entity *ExitAddFromPersistence() {
     return ExitAdd({ 0, 0 });
 }
 
@@ -501,29 +501,29 @@ void Entity::AddFromPersistence(const std::string &entityTypeID, const std::stri
     Level::Entity *entity;
 
     if (entityTypeID == PLAYER_ENTITY_ID)
-        entity = Player::Initialize();
+        entity = Player::AddFromPersistence();
     else if (entityTypeID == ENEMY_ENTITY_ID)
-        entity = Enemy::Add();
+        entity = Enemy::AddFromPersistence();
     else if (entityTypeID == BLOCK_ENTITY_ID)
-        entity = Block::Add();
+        entity = Block::AddFromPersistence();
     else if (entityTypeID == ACID_BLOCK_ENTITY_ID)
-        entity = AcidBlock::Add();
+        entity = AcidBlock::AddFromPersistence();
     else if (entityTypeID == EXIT_ENTITY_ID)
-        entity = Level::ExitAdd();
+        entity = Level::ExitAddFromPersistence();
     else if (entityTypeID == GLIDE_PICKUP_ENTITY_ID)
-        entity = GlideAdd();
+        entity = GlideAddFromPersistence();
     else if (entityTypeID == CHECKPOINT_PICKUP_ENTITY_ID)
-        entity = CheckpointPickup::Add();
+        entity = CheckpointPickup::AddFromPersistence();
     else if (entityTypeID == TEXTBOX_BUTTON_ENTITY_ID)
-        entity = Textbox::Add();
+        entity = Textbox::AddFromPersistence();
     else if (entityTypeID == MOVING_PLATFORM_ENTITY_ID)
-        entity = MovingPlatform::Add();
+        entity = MovingPlatform::AddFromPersistence();
     else if (entityTypeID == ENEMY_DUMMY_ENTITY_ID)
-        entity = EnemyDummySpike::Add();
+        entity = EnemyDummySpike::AddFromPersistence();
     else if (entityTypeID == PRINCESS_ENTITY_ID)
-        entity = Princess::Add();
+        entity = Princess::AddFromPersistence();
     else if (entityTypeID == COIN_ENTITY_ID)
-        entity = Coin::Add();
+        entity = Coin::AddFromPersistence();
     else {
         TraceLog(LOG_ERROR, "Unknow entity type found when adding level entity for persistence, entityTypeID=%s.", entityTypeID.c_str());
         return; 

@@ -13,7 +13,7 @@
 #define POP_OUT_ANIMATION_LENGTH    6   // in frames
 
 
-Enemy *Enemy::Add() {
+Enemy *Enemy::AddFromPersistence() {
     return Add({ 0,0 });
 }
 
@@ -161,7 +161,7 @@ Animation::Animation EnemyDummySpike::animationDefault;
 Animation::Animation EnemyDummySpike::animationPoppingOut;
 Animation::Animation EnemyDummySpike::animationPopppedOut;
 
-EnemyDummySpike *EnemyDummySpike::Add() {
+EnemyDummySpike *EnemyDummySpike::AddFromPersistence() {
     return Add({ 0,0 });
 }
 
