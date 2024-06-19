@@ -11,6 +11,10 @@
 #include "moving_platform.hpp"
 #include "block.hpp"
 #include "npc/npc.hpp"
+#include "coin.hpp"
+#include "npc/princess.hpp"
+#include "powerups.hpp"
+#include "checkpoint.hpp"
 #include "../camera.hpp"
 #include "../render.hpp"
 #include "../editor.hpp"
@@ -492,8 +496,45 @@ void LoadNew() {
     strcpy(STATE->levelName, NEW_LEVEL_NAME);
 }
 
-void Entity::Reset() {
-    
+void Entity::AddFromPersistence(const std::string &entityTypeID, const std::string &data) {
+
+    Level::Entity *entity;
+
+    if (entityTypeID == PLAYER_ENTITY_ID)
+        entity = Player::Initialize();
+    else if (entityTypeID == ENEMY_ENTITY_ID)
+        entity = Enemy::Add();
+    else if (entityTypeID == BLOCK_ENTITY_ID)
+        entity = Block::Add();
+    else if (entityTypeID == ACID_BLOCK_ENTITY_ID)
+        entity = AcidBlock::Add();
+    else if (entityTypeID == EXIT_ENTITY_ID)
+        entity = Level::ExitAdd();
+    else if (entityTypeID == GLIDE_PICKUP_ENTITY_ID)
+        entity = GlideAdd();
+    else if (entityTypeID == CHECKPOINT_PICKUP_ENTITY_ID)
+        entity = CheckpointPickup::Add();
+    else if (entityTypeID == TEXTBOX_BUTTON_ENTITY_ID)
+        entity = Textbox::Add();
+    else if (entityTypeID == MOVING_PLATFORM_ENTITY_ID)
+        entity = MovingPlatform::Add();
+    else if (entityTypeID == ENEMY_DUMMY_ENTITY_ID)
+        entity = EnemyDummySpike::Add();
+    else if (entityTypeID == PRINCESS_ENTITY_ID)
+        entity = Princess::Add();
+    else if (entityTypeID == COIN_ENTITY_ID)
+        entity = Coin::Add();
+    else {
+        TraceLog(LOG_ERROR, "Unknow entity type found when adding level entity for persistence, entityTypeID=%s.", entityTypeID.c_str());
+        return; 
+    }
+
+    entity->PersistenceParse(data);
+}
+
+void Entity::Reset()
+{
+
     isDead = false;
     hitbox.x = origin.x;
     hitbox.y = origin.y;

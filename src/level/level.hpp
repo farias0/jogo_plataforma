@@ -72,6 +72,8 @@ public:
     // It would save memory, though, if it was part of the class definition -- like a static method returning a compile-time const.
     std::string entityTypeID = UNKNOW_LEVEL_ENTITY_ID;
     
+    // Uses the entityTypeID to create a new entity, and parses the data to it.
+    static void AddFromPersistence(const std::string &entityTypeID, const std::string &data);
 
     // Resets entity to its default state
     virtual void Reset();

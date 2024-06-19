@@ -6,15 +6,6 @@
 #include "persistence.hpp"
 #include "linked_list.hpp"
 #include "level/level.hpp"
-#include "level/player.hpp"
-#include "level/enemy.hpp"
-#include "level/block.hpp"
-#include "level/powerups.hpp"
-#include "level/checkpoint.hpp"
-#include "level/textbox.hpp"
-#include "level/moving_platform.hpp"
-#include "level/npc/princess.hpp"
-#include "level/coin.hpp"
 #include "files.hpp"
 #include "render.hpp"
 #include "overworld.hpp"
@@ -99,41 +90,7 @@ bool PersistenceLevelLoad(char *levelName) {
 
             if (entityTag == "levelname") continue; // TODO exhibit level name instead of filename
 
-            Level::Entity *entity;
-            
-                                                        // There's gotta be a better way to associate (at compilation
-                                                        // or initialization time) a string tag to a function pointer
-            if (entityTag == PLAYER_ENTITY_ID)
-                entity = Player::Initialize();
-            else if (entityTag == ENEMY_ENTITY_ID)
-                entity = Enemy::Add();
-            else if (entityTag == BLOCK_ENTITY_ID)
-                entity = Block::Add();
-            else if (entityTag == ACID_BLOCK_ENTITY_ID)
-                entity = AcidBlock::Add();
-            else if (entityTag == EXIT_ENTITY_ID)
-                entity = Level::ExitAdd();
-            else if (entityTag == GLIDE_PICKUP_ENTITY_ID)
-                entity = GlideAdd();
-            else if (entityTag == CHECKPOINT_PICKUP_ENTITY_ID)
-                entity = CheckpointPickup::Add();
-            else if (entityTag == TEXTBOX_BUTTON_ENTITY_ID)
-                entity = Textbox::Add();
-            else if (entityTag == MOVING_PLATFORM_ENTITY_ID)
-                entity = MovingPlatform::Add();
-            else if (entityTag == ENEMY_DUMMY_ENTITY_ID)
-                entity = EnemyDummySpike::Add();
-            else if (entityTag == PRINCESS_ENTITY_ID)
-                entity = Princess::Add();
-            else if (entityTag == COIN_ENTITY_ID)
-                entity = Coin::Add();
-            else {
-                TraceLog(LOG_ERROR, "Unknow entity type found when desserializing level, entityTag=%s.", entityTag.c_str());
-                continue; 
-            }
-
-            entity->PersistenceParse(entityData);
-
+            Level::Entity::AddFromPersistence(entityTag, entityData);
         }
 
         catch (const std::exception &ex) {
