@@ -134,7 +134,7 @@ void loadInLevelEditor() {
     addEntityButton(EDITOR_ENTITY_ERASER, &SPRITES->Eraser, &editorUseEraser);
     addEntityButton(EDITOR_ENTITY_ENEMY, &SPRITES->Enemy, &Enemy::AddFromEditor);
     EDITOR_STATE->defaultEntityButton =
-        addEntityButton(EDITOR_ENTITY_BLOCK, &SPRITES->Block4Sides, &Block::AddOrInteract);
+        addEntityButton(EDITOR_ENTITY_BLOCK, &SPRITES->Block4Sides, &Block::AddFromEditor);
     addEntityButton(EDITOR_ENTITY_ACID, &SPRITES->Acid, &AcidBlock::AddFromEditor);   
     addEntityButton(EDITOR_ENTITY_EXIT, &SPRITES->LevelEndOrb, &Level::ExitAddFromEditor);
     addEntityButton(EDITOR_ENTITY_GLIDE, &SPRITES->GlideItem, &GlideAddFromEditor);

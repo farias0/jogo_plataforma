@@ -50,7 +50,7 @@ Block *Block::Add(Vector2 origin) {
     return newBlock;
 }
 
-void Block::AddOrInteract(Vector2 origin, int interactionTags) {
+void Block::AddFromEditor(Vector2 origin, int interactionTags) {
 
     origin = SnapToGrid(origin, LEVEL_GRID);
     Rectangle ghostHitbox = SpriteHitboxFromEdge(&SPRITES->Block4Sides, origin);

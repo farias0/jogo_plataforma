@@ -26,7 +26,7 @@ public:
 
     // Initializes and adds a block to the level in the given origin,
     // or interacts with an existing block if present in this position
-    static void AddOrInteract(Vector2 origin, int interactionTags);
+    static void AddFromEditor(Vector2 origin, int interactionTags);
 
     void TileTypeSet(const std::string &tileTypeId);
 
