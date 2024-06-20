@@ -13,8 +13,8 @@ struct SpriteBank *SPRITES = 0;
 
 // Shaders
 Shader ShaderLevelTransition;
-
 Shader ShaderCRT;
+Shader ShaderRainbowStrip;
 
 
 static inline Sprite normalSizeSprite(std::string texturePath) {
@@ -53,6 +53,7 @@ static void unloadAssets() {
 
     UnloadShader(ShaderLevelTransition);
     UnloadShader(ShaderCRT);
+    UnloadShader(ShaderRainbowStrip);
     TraceLog(LOG_INFO, "Shaders unloaded.");
 }
 
@@ -149,6 +150,10 @@ static void loadAssets() {
     ShaderCRT = LoadShader(0, "../assets/shaders/crt.fs");
     while (!IsShaderReady(ShaderCRT)) {
         TraceLog(LOG_INFO, "Waiting for ShaderCRT...");
+    }
+    ShaderRainbowStrip = LoadShader(0, "../assets/shaders/rainbow_strip.fs");
+    while (!IsShaderReady(ShaderRainbowStrip)) {
+        TraceLog(LOG_INFO, "Waiting for ShaderRainbowStrip...");
     }
 
     TraceLog(LOG_INFO, "Shaders loaded.");
@@ -269,4 +274,22 @@ void ShaderCrtSetUniforms() {
     }
     double time = GetTime();
     SetShaderValue(ShaderCRT, timeLoc, &time, SHADER_UNIFORM_INT);
+}
+
+void ShaderRainbowStripSetUniforms(Vector2 resolution) {
+
+    int resolutionLoc = GetShaderLocation(ShaderCRT, "u_resolution");
+    if (resolutionLoc == -1) {
+        TraceLog(LOG_ERROR, "Couldn't find location for uniform u_resolution in ShaderCRT");
+        return;
+    }
+    SetShaderValue(ShaderCRT, resolutionLoc, &resolution, SHADER_UNIFORM_VEC2);
+
+    // int currentTimeLoc = GetShaderLocation(ShaderRainbowStrip, "u_current_time");
+    // if (currentTimeLoc == -1) {
+    //     TraceLog(LOG_ERROR, "Couldn't find location for uniform u_current_time in ShaderRainbowStrip");
+    //     return;
+    // }
+    // double time = GetTime();
+    // SetShaderValue(ShaderLevelTransition, currentTimeLoc, &time, SHADER_UNIFORM_INT);
 }

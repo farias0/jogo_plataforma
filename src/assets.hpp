@@ -94,6 +94,7 @@ extern struct SoundBank *SOUNDS;
 // Shaders
 extern Shader ShaderLevelTransition;
 extern Shader ShaderCRT;
+extern Shader ShaderRainbowStrip;
 
 void AssetsInitialize();
 
@@ -124,5 +125,7 @@ void ShaderLevelTransitionSetUniforms(
     Vector2 resolution, Vector2 focusPoint, float duration, float currentTime, int isClose);
 
 void ShaderCrtSetUniforms();
+
+void ShaderRainbowStripSetUniforms(Vector2 resolution);
 
 #endif // _ASSETS_H_INCLUDED_

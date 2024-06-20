@@ -77,8 +77,16 @@ void Coin::Tick() {
 
 void Coin::Draw() {
 
-    if (!wasPickedUp)
-        Render::DrawLevelEntity(this);
+    if (!wasPickedUp) {
+        
+        ShaderRainbowStripSetUniforms({ hitbox.width, hitbox.height });
+        
+        BeginShaderMode(ShaderRainbowStrip);
+        BeginBlendMode(BLEND_ALPHA);                 
+            Render::DrawLevelEntity(this);
+        EndBlendMode();
+        EndShaderMode();
+    }
 
     if (EDITOR_STATE->isEnabled)
         Render::DrawLevelEntityOriginGhost(this);
