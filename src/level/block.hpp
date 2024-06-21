@@ -32,8 +32,12 @@ public:
 
     void TileTypeNext();
 
-    // Identifies and set to the correct tile type based on the surrounding blocks
-    void TileAutoAdjust();
+    /*
+        Identifies and set to the correct tile type based on the surrounding blocks
+
+        @param isSlope: If the block should be treated as a slope or as square block block if applicable
+    */
+    void TileAutoAdjust(bool isSlope);
 
     void TileRotate();
 

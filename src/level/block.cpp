@@ -97,7 +97,7 @@ void Block::TileTypeNext() {
     TraceLog(LOG_ERROR, "Block tried to toggle type, but couldn't find sprite (tileTypeId=%s).", tileTypeId.c_str());
 }
 
-void Block::TileAutoAdjust() {
+void Block::TileAutoAdjust(bool isSlope) {
 
     // If there is an adjacent block in this direction
     bool toLeft = false, toRight = false, toUp = false, toDown = false;
@@ -145,8 +145,8 @@ void Block::TileAutoAdjust() {
             else rotation = 90;
         }
         else {
-            // TileTypeSet("2SidesAdj");
-            TileTypeSet("Slope45");
+            if (isSlope)    TileTypeSet("Slope45");
+            else            TileTypeSet("2SidesAdj");
             if (toDown && toLeft) rotation = 0;
             else if (toLeft && toUp) rotation = 90;
             else if (toUp && toRight) rotation = 180;
