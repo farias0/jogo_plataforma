@@ -35,9 +35,9 @@ public:
     /*
         Identifies and set to the correct tile type based on the surrounding blocks
 
-        @param isSlope: If the block should be treated as a slope or as square block block if applicable
+        @param treatAsSlope: If the block should be treated as a slope or as square block block if applicable
     */
-    void TileAutoAdjust(bool isSlope);
+    void TileAutoAdjust(bool treatAsSlope);
 
     void TileRotate();
 
