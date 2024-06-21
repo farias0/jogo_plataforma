@@ -20,6 +20,7 @@ void Block::InitializeTileMap() {
         { "2SidesAdj", &SPRITES->Block2SidesAdj },
         { "3Sides", &SPRITES->Block3Sides },
         { "4Sides", &SPRITES->Block4Sides },
+        { "Slope45", &SPRITES->BlockSlope45 },
     };
 }
 
@@ -144,7 +145,8 @@ void Block::TileAutoAdjust() {
             else rotation = 90;
         }
         else {
-            TileTypeSet("2SidesAdj");
+            // TileTypeSet("2SidesAdj");
+            TileTypeSet("Slope45");
             if (toDown && toLeft) rotation = 0;
             else if (toLeft && toUp) rotation = 90;
             else if (toUp && toRight) rotation = 180;

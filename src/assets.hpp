@@ -48,6 +48,7 @@ struct SpriteBank {
     Sprite Block2SidesAdj;
     Sprite Block3Sides;
     Sprite Block4Sides;
+    Sprite BlockSlope45;
     Sprite Acid;
     Sprite LevelEndOrb;
     Sprite LevelCheckpointFlag;
