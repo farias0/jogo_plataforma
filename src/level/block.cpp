@@ -98,11 +98,7 @@ void Block::TileTypeNext() {
 }
 
 void Block::TileAutoAdjust(bool treatAsSlope) {
-
-
-    bool isSlope = false;
-
-
+    
     // If there is an adjacent block in this direction
     bool toLeft = false, toRight = false, toUp = false, toDown = false;
 
@@ -149,11 +145,7 @@ void Block::TileAutoAdjust(bool treatAsSlope) {
             else rotation = 90;
         }
         else {
-            if (treatAsSlope) {
-                TileTypeSet("Slope45");
-                isSlope = true;
-            }
-            else TileTypeSet("2SidesAdj");
+            TileTypeSet(treatAsSlope ? "Slope45" : "2SidesAdj");
             if (toDown && toLeft) rotation = 0;
             else if (toLeft && toUp) rotation = 90;
             else if (toUp && toRight) rotation = 180;
