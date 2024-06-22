@@ -41,6 +41,9 @@ public:
 
     void TileRotate();
 
+    // If the block is a slope, returns true if the slope slopes to the right
+    bool IsSlopeToTheRight();
+
     void Draw() override;
 
     std::string PersistanceSerialize() override;

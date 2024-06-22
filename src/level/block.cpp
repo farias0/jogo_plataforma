@@ -172,10 +172,6 @@ void Block::TileAutoAdjust(bool treatAsSlope) {
         rotation = 180;
         break;
     }
-
-
-    if (isSlope)    tags |= Level::IS_SLOPE;
-    else            tags &= ~Level::IS_SLOPE;
 }
 
 void Block::TileRotate() {
@@ -184,7 +180,12 @@ void Block::TileRotate() {
     if (rotation >= 360) rotation -= 360;
 }
 
-void Block::Draw() {
+bool Block::IsSlopeToTheRight() {
+    return (rotation == 0 || rotation == 180);
+}
+
+void Block::Draw()
+{
 
     Vector2 pos = PosInSceneToScreen({
                                         hitbox.x,
@@ -219,6 +220,9 @@ void Block::TileTypeSet(const std::string &id) {
         TraceLog(LOG_ERROR, "Block couldn't set tile type '%s'.", id.c_str());
         sprite = tileSpriteMap.at(DEFAULT_TILE_TYPE);
     }
+
+    if (tileTypeId == "Slope45")    tags |= Level::IS_SLOPE;
+    else                            tags &= ~Level::IS_SLOPE;
 }
 
 //
