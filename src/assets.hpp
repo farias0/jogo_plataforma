@@ -33,6 +33,8 @@ struct SpriteBank {
     Sprite PlayerGlideDefault2;
     Sprite PlayerGlideGliding1;
     Sprite PlayerGlideGliding2;
+    Sprite PlayerGlideGliding3;
+    Sprite PlayerGlideGliding4;
     Sprite PlayerSwinging;
     Sprite PlayerSwingingForwards;
     Sprite PlayerSwingingBackwards;
