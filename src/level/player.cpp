@@ -75,7 +75,7 @@
 #define ANIMATION_DURATION_WALKING          8
 #define ANIMATION_DURATION_RUNNING          12
 #define ANIMATION_DURATION_GLIDE_IN_PLACE   12
-#define ANIMATION_DURATION_GLIDE_GLIDING    6
+#define ANIMATION_DURATION_GLIDE_GLIDING    9
 
 // Player's animation state machine parameters
 #define ANIMATION_WALKING_XVELOCITY_MIN     0.5
@@ -759,6 +759,8 @@ void Player::createAnimations() {
 
     animationGlideGliding.AddFrame(&SPRITES->PlayerGlideGliding1, ANIMATION_DURATION_GLIDE_GLIDING);
     animationGlideGliding.AddFrame(&SPRITES->PlayerGlideGliding2, ANIMATION_DURATION_GLIDE_GLIDING);
+    animationGlideGliding.AddFrame(&SPRITES->PlayerGlideGliding3, ANIMATION_DURATION_GLIDE_GLIDING);
+    animationGlideGliding.AddFrame(&SPRITES->PlayerGlideGliding4, ANIMATION_DURATION_GLIDE_GLIDING);
 
     animationSwinging.AddFrame(&SPRITES->PlayerSwinging, 1);
 

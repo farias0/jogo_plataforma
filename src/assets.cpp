@@ -77,6 +77,8 @@ static void loadAssets() {
     sp->PlayerGlideDefault2 = doubleSizeSprite("../assets/player_glide_default_2.png");
     sp->PlayerGlideGliding1 = doubleSizeSprite("../assets/player_glide_gliding_1.png");
     sp->PlayerGlideGliding2 = doubleSizeSprite("../assets/player_glide_gliding_2.png");
+    sp->PlayerGlideGliding3 = doubleSizeSprite("../assets/player_glide_gliding_3.png");
+    sp->PlayerGlideGliding4 = doubleSizeSprite("../assets/player_glide_gliding_4.png");
     sp->PlayerSwinging = doubleSizeSprite("../assets/player_swinging_1.png");
     sp->PlayerSwingingForwards = doubleSizeSprite("../assets/player_swinging_forwards.png");
     sp->PlayerSwingingBackwards = doubleSizeSprite("../assets/player_swinging_backwards.png");
