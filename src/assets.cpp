@@ -98,6 +98,7 @@ static void loadAssets() {
     sp->Block2SidesAdj = normalSizeSprite("../assets/floor_tile_2_sides_adjacent.png");
     sp->Block3Sides = normalSizeSprite("../assets/floor_tile_3_sides.png");
     sp->Block4Sides = normalSizeSprite("../assets/floor_tile_4_sides.png");
+    sp->BlockSlope45 = normalSizeSprite("../assets/floor_tile_slope_45.png");
     sp->Acid = normalSizeSprite("../assets/acid_tile_1.png");
     sp->GlideItem = normalSizeSprite("../assets/glide_item.png");
     sp->TextboxButton = normalSizeSprite("../assets/textbox_button.png");

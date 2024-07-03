@@ -86,7 +86,7 @@ static void editorUseEraser(Vector2 cursorPos, int interactionTags) {
     EditorSelectionCancel();
 }
 
-static void editorAutoTileSelection() {
+static void editorAutoTileSelection(bool isSlope) {
 
     if (GAME_STATE->mode != MODE_IN_LEVEL) {
         TraceLog(LOG_ERROR, "editorAutoTileSelection isn't implemented for game mode %d.", GAME_STATE->mode);
@@ -99,9 +99,17 @@ static void editorAutoTileSelection() {
         if (entity->tags & Level::IS_TILE_BLOCK) {
             
             auto block = (Block *) entity;
-            block->TileAutoAdjust();
+            block->TileAutoAdjust(isSlope);
         }
     }
+}
+
+static void editorAutoTileSelectionSquare() {
+    editorAutoTileSelection(false);
+}
+
+static void editorAutoTileSelectionSlope() {
+    editorAutoTileSelection(true);
 }
 
 static EditorEntityButton *addEntityButton(
@@ -147,7 +155,8 @@ void loadInLevelEditor() {
 
     addControlButton(EDITOR_CONTROL_SAVE, (char *) "Salvar fase", &Level::Save);
     addControlButton(EDITOR_CONTROL_NEW_LEVEL, (char *) "Nova fase", &Level::LoadNew);
-    addControlButton(EDITOR_CONTROL_AUTO_TILE, (char *) "Auto ladrilho", &editorAutoTileSelection);
+    addControlButton(EDITOR_CONTROL_AUTO_TILE, (char *) "Auto ladrilho", &editorAutoTileSelectionSquare);
+    addControlButton(EDITOR_CONTROL_AUTO_TILE_SLOPE, (char *) "Auto lad. rampa", &editorAutoTileSelectionSlope);
 
     TraceLog(LOG_TRACE, "Editor loaded in level itens.");
 }

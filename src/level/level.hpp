@@ -50,6 +50,7 @@ typedef enum {
     IS_TILE_BLOCK           = 32768 * 2,
     IS_NPC                  = 32768 * 4,
     IS_COIN                 = 32768 * 8,
+    IS_SLOPE                = 32768 * 16,
 } EntityTag;
 
 

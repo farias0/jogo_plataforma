@@ -20,6 +20,7 @@ void Block::InitializeTileMap() {
         { "2SidesAdj", &SPRITES->Block2SidesAdj },
         { "3Sides", &SPRITES->Block3Sides },
         { "4Sides", &SPRITES->Block4Sides },
+        { "Slope45", &SPRITES->BlockSlope45 },
     };
 }
 
@@ -96,8 +97,8 @@ void Block::TileTypeNext() {
     TraceLog(LOG_ERROR, "Block tried to toggle type, but couldn't find sprite (tileTypeId=%s).", tileTypeId.c_str());
 }
 
-void Block::TileAutoAdjust() {
-
+void Block::TileAutoAdjust(bool treatAsSlope) {
+    
     // If there is an adjacent block in this direction
     bool toLeft = false, toRight = false, toUp = false, toDown = false;
 
@@ -144,7 +145,7 @@ void Block::TileAutoAdjust() {
             else rotation = 90;
         }
         else {
-            TileTypeSet("2SidesAdj");
+            TileTypeSet(treatAsSlope ? "Slope45" : "2SidesAdj");
             if (toDown && toLeft) rotation = 0;
             else if (toLeft && toUp) rotation = 90;
             else if (toUp && toRight) rotation = 180;
@@ -171,7 +172,12 @@ void Block::TileRotate() {
     if (rotation >= 360) rotation -= 360;
 }
 
-void Block::Draw() {
+bool Block::IsSlopeToTheRight() {
+    return (rotation == 0 || rotation == 180);
+}
+
+void Block::Draw()
+{
 
     Vector2 pos = PosInSceneToScreen({
                                         hitbox.x,
@@ -206,6 +212,9 @@ void Block::TileTypeSet(const std::string &id) {
         TraceLog(LOG_ERROR, "Block couldn't set tile type '%s'.", id.c_str());
         sprite = tileSpriteMap.at(DEFAULT_TILE_TYPE);
     }
+
+    if (tileTypeId == "Slope45")    tags |= Level::IS_SLOPE;
+    else                            tags &= ~Level::IS_SLOPE;
 }
 
 //

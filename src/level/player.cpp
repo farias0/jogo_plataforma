@@ -478,7 +478,7 @@ COLISION_CHECKING:
 
                 if (collisionRec.width == 0 || collisionRec.height == 0) goto next_entity;
             
-                const bool isAWall = collisionRec.width <= collisionRec.height;
+                const bool isAWall = collisionRec.width <= collisionRec.height && !(entity->tags & Level::IS_SLOPE);
                 const bool isACeiling = (collisionRec.width >= collisionRec.height) &&
                                     (entity->hitbox.y < hitbox.y);
 
