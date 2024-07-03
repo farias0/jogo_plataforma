@@ -140,6 +140,8 @@ void tickAllEntities() {
 // beneath an existing level entity.
 static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
 
+    Entity *foundGround = 0; 
+
     // Virtual entity to use when checking only hitboxes
     Entity virtualEntity;
     if (!entity) {
@@ -149,17 +151,21 @@ static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
 
     int feetHeight = hitbox.y + hitbox.height;
 
-    Entity *possibleGround = (Entity *) STATE->listHead;
-    Entity *foundGround = 0; 
 
-    while (possibleGround != 0) {
+    for (Entity *possibleGround = (Entity *) STATE->listHead;
+        possibleGround != 0;
+        possibleGround = (Entity *) possibleGround->next) {
 
-        if (possibleGround != entity &&
-            possibleGround->tags & IS_GROUND &&
+    
+        if (possibleGround == entity ||
+            !(possibleGround->tags & IS_GROUND) ||
+            possibleGround->IsDisabled()) {
 
-            !possibleGround->IsDisabled() &&
+            continue;
+        }
 
-            // If x is within the possible ground
+
+        if (// If x is within the possible ground
             possibleGround->hitbox.x < (hitbox.x + hitbox.width) &&
             hitbox.x < (possibleGround->hitbox.x + possibleGround->hitbox.width) &&
 
@@ -181,10 +187,9 @@ static Entity *getGroundBeneath(Rectangle hitbox, Entity *entity) {
                     }
                 }
                 else foundGround = possibleGround;
-            } 
-
-        possibleGround = (Entity *) possibleGround->next;
+            }
     }
+
 
     return foundGround;   
 }
